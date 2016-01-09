@@ -4,4 +4,7 @@
 
 <p><strong>tolua </strong> <br>
 unity lua static binder solution. <br>
-tolua is a unity plugins that greatly simplifies the integration of C# code with Lua.  tolua automatically generates the binding code to access unity from Lua.  tolua maps c# constants,  variables, functions, properties, classes, and methods to Lua</p></div><div id="wmd-preview-section-footnotes" class="preview-content"></div></div></body></html>
+tolua is a unity plugins that greatly simplifies the integration of C# code with Lua.  <br>
+tolua automatically generates the binding code to access unity from Lua.  <br>
+tolua maps c# constants,  variables, functions, properties, classes, and methods to Lua <br>
+</p></div><div id="wmd-preview-section-footnotes" class="preview-content"></div></div></body></html>
