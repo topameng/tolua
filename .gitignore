@@ -19,3 +19,9 @@
 
 # Unity3D Generated File On Crash Reports
 sysinfo.txt
+/Assets/UnityVS.meta
+/Assets/UnityVS
+/UnityVS.tolua.v11.suo
+/UnityVS.tolua.CSharp.csproj
+/UnityVS.tolua.CSharp.Editor.csproj
+/UnityVS.tolua.sln
