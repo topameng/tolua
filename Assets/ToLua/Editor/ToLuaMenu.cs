@@ -102,7 +102,7 @@ public static class ToLuaMenu
             type = t;                        
             nameSpace = ToLuaExport.GetNameSpace(t, out libName);
             name = ToLuaExport.CombineTypeStr(nameSpace, libName);
-            nameSpace = ToLuaExport.ConvertToLibSign(nameSpace);
+            //nameSpace = ToLuaExport.ConvertToLibSign(nameSpace);
             libName = ToLuaExport.ConvertToLibSign(libName);
 
             if (name == "object")
@@ -667,6 +667,13 @@ public static class ToLuaMenu
         {
             Directory.Delete(path, true);
         }
+
+        path = Application.persistentDataPath + "/" + GetOS() + "/Lua";
+
+        if (Directory.Exists(path))
+        {
+            Directory.Delete(path, true);
+        }
     }
 
     [MenuItem("Lua/Build Lua files  (PC运行)", false, 5)]
@@ -762,7 +769,7 @@ public static class ToLuaMenu
         AssetDatabase.Refresh();
     }
 
-    static void CopyLuaBytesFiles(string sourceDir, string destDir)
+    static void CopyLuaBytesFiles(string sourceDir, string destDir, bool appendext = true)
     {
         if (!Directory.Exists(sourceDir))
         {
@@ -775,12 +782,13 @@ public static class ToLuaMenu
         if (sourceDir[len - 1] == '/' || sourceDir[len - 1] == '\\')
         {
             --len;
-        }
+        }        
 
         for (int i = 0; i < files.Length; i++)
         {            
-            string str = files[i].Remove(0, len);            
-            string dest = destDir + str + ".bytes";
+            string str = files[i].Remove(0, len);
+            string dest = destDir + str;
+            if (appendext) dest += ".bytes";
             string dir = Path.GetDirectoryName(dest);
             Directory.CreateDirectory(dir);
             File.Copy(files[i], dest, true);
@@ -791,12 +799,16 @@ public static class ToLuaMenu
     public static void CopyLuaFilesToRes()
     {
         ClearAllLuaFiles();
-        CreateStreamDir(GetOS());
-        CreateStreamDir(GetOS() + "/Lua");
         string destDir = Application.dataPath + "/Resources" + "/Lua";
+        string toluaDir = Application.dataPath + "/ToLua/Lua";
         CopyLuaBytesFiles(CustomSettings.luaDir, destDir);
-        CopyLuaBytesFiles(Application.dataPath + "/ToLua/Lua", destDir);
+        CopyLuaBytesFiles(toluaDir, destDir);
+
+        destDir = Application.persistentDataPath + "/" + GetOS() + "/Lua";
+        CopyLuaBytesFiles(CustomSettings.luaDir, destDir, false);
+        CopyLuaBytesFiles(toluaDir, destDir, false);
         AssetDatabase.Refresh();
+        Debug.Log("Copy lua files over");
     }
 
     [MenuItem("Lua/Clear wrap files", false, 10)]

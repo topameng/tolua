@@ -48,6 +48,16 @@ public class DelegateType
         type = t;
         strType = ToLuaExport.GetTypeStr(t);
         name = ToLuaExport.ConvertToLibSign(strType);
+
+        //if (t.IsGenericType)
+        //{
+        //    name = ToLuaExport.GetGenericLibName(t);
+        //}
+        //else
+        //{
+        //    name = ToLuaExport.GetTypeStr(t);
+        //    name = name.Replace(".", "_");
+        //}
     }
 }
 
@@ -2494,7 +2504,19 @@ public static class ToLuaExport
         for (int i = 0; i < n; i++)
         {
             string push = GetPushFunction(pi[i].ParameterType);
-            sb.AppendFormat("{2}\tfunc.{0}(param{1});\r\n", push, i, head);
+
+            if (!IsParams(pi[i]))
+            {
+                sb.AppendFormat("{2}\tfunc.{0}(param{1});\r\n", push, i, head);
+            }
+            else
+            {
+                sb.AppendLineEx();
+                sb.AppendFormat("{0}\tfor (int i = 0; i < param{1}.Length; i++)\r\n", head, i);
+                sb.AppendLineEx(head + "\t{");
+                sb.AppendFormat("{2}\t\tfunc.{0}(param{1}[i]);\r\n", push, i, head);
+                sb.AppendLineEx(head + "\t}\r\n");
+            }
         }
 
         sb.AppendFormat("{0}\tfunc.PCall();\r\n", head);
@@ -2557,9 +2579,21 @@ public static class ToLuaExport
         sb.AppendLineEx("\tfunc.BeginPCall();");
 
         for (int i = 0; i < n; i++)
-        {
+        {                        
             string push = GetPushFunction(pi[i].ParameterType);
-            sb.AppendFormat("{2}\tfunc.{0}(param{1});\r\n", push, i, head);
+
+            if (!IsParams(pi[i]))
+            {
+                sb.AppendFormat("{2}\tfunc.{0}(param{1});\r\n", push, i, head);
+            }
+            else
+            {
+                sb.AppendLineEx();
+                sb.AppendFormat("{0}\tfor (int i = 0; i < param{1}.Length; i++)\r\n", head, i);
+                sb.AppendLineEx(head + "\t{");
+                sb.AppendFormat("{2}\t\tfunc.{0}(param{1}[i]);\r\n", push, i, head);
+                sb.AppendLineEx(head + "\t}\r\n");
+            }
         }
 
         sb.AppendFormat("{0}\tfunc.PCall();\r\n", head);
@@ -2806,7 +2840,10 @@ public static class ToLuaExport
 
         for (int i = 0; i < infos.Length; i++)
         {
-            list.Add(GetTypeStr(infos[i].ParameterType) + " param" + i);
+            string str = IsParams(infos[i]) ? "params " : "";            
+            string s2 = GetTypeStr(infos[i].ParameterType) + " param" + i;            
+            str += s2;
+            list.Add(str);
         }
 
         return string.Join(",", list.ToArray());

@@ -23,6 +23,7 @@ public static class CustomSettings
         typeof(UnityEngine.Input),
         typeof(UnityEngine.Resources),
         typeof(UnityEngine.Physics),
+        typeof(UnityEngine.RenderSettings),
     };
 
     //附加导出委托类型(在导出委托时, customTypeList 中牵扯的委托类型都会导出， 无需写在这里)
@@ -45,6 +46,7 @@ public static class CustomSettings
         //_GT(typeof(Dictionary<int, TestAccount>)).SetLibName("AccountMap"),                
         //_GT(typeof(KeyValuePair<int, TestAccount>)),    
         //-------------------------------------------------------------------
+        
         _GT(typeof(Debugger)),                       
                                        
         _GT(typeof(Component)),
@@ -53,6 +55,7 @@ public static class CustomSettings
         _GT(typeof(GameObject)),
         _GT(typeof(Transform)),
         _GT(typeof(Space)),
+
         _GT(typeof(Camera)),   
         _GT(typeof(CameraClearFlags)),           
         _GT(typeof(Material)),
@@ -60,7 +63,10 @@ public static class CustomSettings
         _GT(typeof(MeshRenderer)),
         _GT(typeof(SkinnedMeshRenderer)),
         _GT(typeof(Light)),
-        _GT(typeof(LightType)),                             
+        _GT(typeof(LightType)),     
+        _GT(typeof(ParticleEmitter)),
+        _GT(typeof(ParticleRenderer)),
+        _GT(typeof(ParticleAnimator)),   
         _GT(typeof(ParticleSystem)),                
         _GT(typeof(Physics)),
         _GT(typeof(Collider)),
