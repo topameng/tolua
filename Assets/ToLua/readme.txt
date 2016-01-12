@@ -5,3 +5,4 @@
 4. pblua protobuf协议tostring卡死问题
 5. 指定RenderSettings为静态类
 6. Array index 不再检测null参数
+7. 修复LuaInteger64 重载函数匹配检测问题

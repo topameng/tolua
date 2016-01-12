@@ -1451,7 +1451,7 @@ namespace LuaInterface
             if (t == typeof(object))
             {
                 return true;
-            }
+            }    
 
             LuaTypes luaType = LuaDLL.lua_type(L, pos);
 
@@ -1486,6 +1486,11 @@ namespace LuaInterface
 
         static bool IsMatchUserData(IntPtr L, Type t, int pos)
         {
+            if (t == typeof(LuaInteger64))
+            {
+                return LuaDLL.tolua_isint64(L, pos);
+            }        
+
             object obj = null;
             int udata = LuaDLL.tolua_rawnetobj(L, pos);
 
@@ -1542,6 +1547,12 @@ namespace LuaInterface
                         return typeof(Vector2) == t;
                     case LuaValueType.Vector4:
                         return typeof(Vector4) == t;
+                    case LuaValueType.Touch:
+                        return typeof(Touch) == t;
+                    case LuaValueType.LayerMask:
+                        return typeof(LayerMask) == t;
+                    case LuaValueType.RaycastHit:
+                        return typeof(RaycastHit) == t;
                     default:
                         break;
                 }
