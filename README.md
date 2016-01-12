@@ -13,3 +13,6 @@ https://github.com/topameng/Debugger
 
 **tolua_runtime** <br>
 https://github.com/topameng/tolua_runtime
+
+**protoc-gen-lua** <br>
+https://github.com/topameng/protoc-gen-lua
