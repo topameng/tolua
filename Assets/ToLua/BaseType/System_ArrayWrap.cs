@@ -34,13 +34,6 @@ public class System_ArrayWrap
         }
 
         object val = obj.GetValue(index);
-
-        if (val == null)
-        {
-            LuaDLL.luaL_error(L, string.Format("array index {0} is null", index));
-            return 0;
-        }
-
         ToLua.Push(L, val);  
         return 1;
     }
