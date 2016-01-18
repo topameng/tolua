@@ -22,10 +22,22 @@ function xfunctor(func, obj)
 		local flag 	= true	
 		local msg = nil	
 
-		if nil == self.obj then
-			flag, msg = xpcall(self.func, traceback, ...)					
-		else		
-			flag, msg = xpcall(self.func, traceback, self.obj, ...)					
+		if jit then
+			if nil == self.obj then
+				flag, msg = xpcall(self.func, traceback, ...)					
+			else		
+				flag, msg = xpcall(self.func, traceback, self.obj, ...)					
+			end
+		else
+			local args = {...}
+			
+			if nil == self.obj then
+				local func = function() self.func(unpack(args)) end
+				flag, msg = xpcall(func, traceback)					
+			else		
+				local func = function() self.func(self.obj, unpack(args)) end
+				flag, msg = xpcall(func, traceback)
+			end
 		end
 		
 		return flag, msg
