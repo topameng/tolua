@@ -7,3 +7,4 @@
 - NEW: 指定RenderSettings为静态类
 - NEW: LuaFunction转委托函数支持可变参数列表
 - NEW: Wrap函数出错同时附加c#异常堆栈
+- NEW: Add MacOs Plugins
