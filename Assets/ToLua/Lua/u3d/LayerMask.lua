@@ -1,4 +1,4 @@
-﻿local LayerMask = 
+local LayerMask =
 {
 	value = 0,
 }
