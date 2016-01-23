@@ -32,11 +32,11 @@ https://github.com/Neopallium/lua-pb<br>
 　**Parsing**　　　　 　　　Bounds<br>
 　lpeg　　 　　 　　　 　  　Mathf<br>
 　**Protol**　　　　　 　 　　 Touch<br>
-　pblua　　　　　 　 　　RaycastHit<br>
+　pblua　　　　　 　 　RaycastHit<br>
 　
 #Performance
 
 #Examples
 
 #About Lua
-win, android using luajit2.0.4. macos using luac(for u5.x). ios using luajit2.1beta(2015.11.26)
+win, android using luajit2.0.4. macos using luac(for u5.x). ios using luajit2.1beta
