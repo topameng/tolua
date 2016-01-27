@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>BuildMachineOSBuild</key>
-	<string>14D136</string>
+	<string>15D21</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleExecutable</key>
@@ -20,6 +20,10 @@
 	<string>1.0</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+	<key>CFBundleSupportedPlatforms</key>
+	<array>
+		<string>MacOSX</string>
+	</array>
 	<key>CFBundleVersion</key>
 	<string>1</string>
 	<key>CFPlugInDynamicRegisterFunction</key>
@@ -43,17 +47,17 @@
 	<key>DTCompiler</key>
 	<string>com.apple.compilers.llvm.clang.1_0</string>
 	<key>DTPlatformBuild</key>
-	<string>6E35b</string>
+	<string>7C68</string>
 	<key>DTPlatformVersion</key>
 	<string>GM</string>
 	<key>DTSDKBuild</key>
-	<string>14D125</string>
+	<string>15C43</string>
 	<key>DTSDKName</key>
-	<string>macosx10.10</string>
+	<string>macosx10.11</string>
 	<key>DTXcode</key>
-	<string>0640</string>
+	<string>0720</string>
 	<key>DTXcodeBuild</key>
-	<string>6E35b</string>
+	<string>7C68</string>
 	<key>NSHumanReadableCopyright</key>
 	<string>Copyright © 2013 xlcw games. All rights reserved.</string>
 </dict>
