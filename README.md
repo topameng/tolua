@@ -6,6 +6,8 @@ tolua# is an unity plugins that greatly simplifies the integration of C# code wi
 
 tolua# is grow up from cstolua.  tolua#'s goal is to be a powerful development environment for unity.
 
+support unity4.6.x and unity5.x all(int u5, delete Plugins/x86 or Plugins/x86_64)
+
 #Library
 
 **Debugger** <br>
