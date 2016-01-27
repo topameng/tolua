@@ -10,3 +10,4 @@
 tolua# 1.02
 - New: c# event +=和-=操作支持
 - New: 添加 mac 和 ios 运行库
+- Opt: 优化list双向链表
