@@ -2,10 +2,13 @@
 using System;
 using System.Collections.Generic;
 using LuaInterface;
+using System.Reflection;
 
 
 public class TestDelegate: MonoBehaviour
 {
+	private string tips = "";
+
     private string script =
     @"                  
             function DoClick1(go)                
@@ -88,7 +91,13 @@ public class TestDelegate: MonoBehaviour
    
     //需要删除的转LuaFunction为委托，不需要删除的直接加或者等于即可
     void Awake()
-    {               
+    {            
+		#if UNITY_5		
+		Application.logMessageReceived += ShowTips;
+		#else
+		Application.RegisterLogCallback(ShowTips);           
+		#endif
+		new LuaResLoader ();
         state = new LuaState();
         state.Start();
         LuaBinder.Bind(state);
@@ -124,10 +133,18 @@ public class TestDelegate: MonoBehaviour
         func.EndPCall();                
     }
 
+	void ShowTips(string msg, string stackTrace, LogType type)
+	{		
+		tips += msg;             
+		tips += "\r\n";
+	}
+
     void OnGUI()
     {
+		GUI.Label (new Rect (Screen.width / 2 - 200, Screen.height / 2 - 150, 400, 300), tips);
+
         if (GUI.Button(new Rect(10, 10, 120, 40), " = OnClick1"))
-        {
+        {			
             CallLuaFunction(SetClick1);
         }
         else if (GUI.Button(new Rect(10, 60, 120, 40), " + Click1"))
@@ -148,6 +165,8 @@ public class TestDelegate: MonoBehaviour
         }
         else if (GUI.Button(new Rect(10, 260, 120, 40), "OnClick"))
         {
+			tips = "";
+
             if (listener.onClick != null)
             {
                 listener.onClick(gameObject);
@@ -159,6 +178,7 @@ public class TestDelegate: MonoBehaviour
         }
         else if (GUI.Button(new Rect(10, 310, 120, 40), "Override"))
         {
+			tips = "";
             CallLuaFunction(TestOverride);
         }
         else if (GUI.Button(new Rect(10, 360, 120, 40), "Force GC"))
@@ -177,6 +197,7 @@ public class TestDelegate: MonoBehaviour
         }
         else if (GUI.Button(new Rect(10, 512, 120, 40), "event call"))
         {
+			tips = "";
             listener.OnClickEvent(gameObject);
         }
     }
