@@ -7,4 +7,6 @@
 - NEW: 指定RenderSettings为静态类
 - NEW: LuaFunction转委托函数支持可变参数列表
 - NEW: Wrap函数出错同时附加c#异常堆栈
-- NEW: Add MacOs Plugins
+tolua# 1.02
+- New: c# event +=和-=操作支持
+- New: 添加 mac 和 ios 运行库

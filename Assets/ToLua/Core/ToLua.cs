@@ -269,11 +269,11 @@ namespace LuaInterface
         {
             if (!LuaDLL.tolua_isint64(L, stackPos))
             {
-                LuaDLL.luaL_typerror(L, stackPos, "LuaInteger64");
+                LuaDLL.luaL_typerror(L, stackPos, "int64");
                 return 0;
             }
 
-            return LuaDLL.tolua_getint64(L, stackPos);
+            return LuaDLL.tolua_toint64(L, stackPos);
         }
 
         public static object ToVarObject(IntPtr L, int stackPos)
@@ -1094,6 +1094,19 @@ namespace LuaInterface
             }
         }
 
+        public static void Push(IntPtr L, EventObject ev)
+        {
+            if (ev == null)
+            {
+                LuaDLL.lua_pushnil(L);
+            }
+            else
+            {
+                LuaState state = LuaState.Get(L);
+                PushUserData(L, ev, state.EventMetatable);
+            }
+        }
+
         public static void Push(IntPtr L, IEnumerator iter)
         {
             if (iter == null)
@@ -1177,7 +1190,7 @@ namespace LuaInterface
                 //进入反射流程                
                 LuaDLL.luaL_error(L, string.Format("Type {0} not register to lua", obj.GetType()));
             }
-        }
+        }        
 
         /*static void PushNull(IntPtr L, LuaState state = null)
         {

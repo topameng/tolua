@@ -4,7 +4,7 @@ using System.IO;
 namespace LuaInterface
 {
     public static class LuaStatic
-    {       
+    {
         static public void OpenLibs(IntPtr L)
         {
             LuaDLL.lua_atpanic(L, Panic);
@@ -13,18 +13,18 @@ namespace LuaInterface
             LuaDLL.lua_pushstdcallcfunction(L, DoFile);
             LuaDLL.lua_setfield(L, LuaIndexes.LUA_GLOBALSINDEX, "dofile");
 
-//#if UNITY_EDITOR
+            //#if UNITY_EDITOR
             //AddLuaLoader(L);
-//#else   
+            //#else   
             AddLuaLoader2(L);
-//#endif
+            //#endif
         }
 
         static void AddLuaLoader(IntPtr L)
         {
             LuaDLL.lua_getglobal(L, "package");
             LuaDLL.lua_getfield(L, -1, "loaders");
-            int pos = LuaDLL.lua_objlen(L, -1) + 1;            
+            int pos = LuaDLL.lua_objlen(L, -1) + 1;
             LuaDLL.lua_pushstdcallcfunction(L, Loader);
             LuaDLL.lua_rawseti(L, -2, pos);
             LuaDLL.lua_setfield(L, -2, "loaders");
@@ -120,7 +120,7 @@ namespace LuaInterface
 
         [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
         public static int DoFile(IntPtr L)
-        {                        
+        {
             string fileName = LuaDLL.lua_tostring(L, 1);
 
             if (!Path.HasExtension(fileName))
@@ -142,6 +142,42 @@ namespace LuaInterface
             }
 
             return LuaDLL.lua_gettop(L) - n;
+        }
+
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        public static int traceback(IntPtr L)
+        {
+            int arg;
+            IntPtr L1;
+
+            if (LuaDLL.lua_isthread(L, 1))
+            {
+                arg = 1;
+                L1 = LuaDLL.lua_tothread(L, 1);
+            }
+            else
+            {
+                arg = 0;
+                L1 = L;
+            }
+
+            string msg = LuaDLL.lua_tostring(L, arg + 1);
+
+            if (string.IsNullOrEmpty(msg))
+            {
+                LuaDLL.lua_pushvalue(L, arg + 1);
+            }
+            else
+            {
+                int level = (int)LuaDLL.luaL_optinteger(L, arg + 2, (L == L1) ? 1 : 0);
+                LuaDLL.lua_getref(L, 3);
+                LuaDLL.lua_pushthread(L1);
+                LuaDLL.lua_pushvalue(L, arg + 1);
+                LuaDLL.lua_pushnumber(L, level + 1);
+                LuaDLL.lua_call(L, 3, 1);                
+            }
+
+            return 1;
         }
     }
 }

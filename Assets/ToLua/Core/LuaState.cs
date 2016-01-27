@@ -18,6 +18,7 @@ namespace LuaInterface
         public int EnumMetatable { get; private set; }
         public int IterMetatable { get; private set; }
         public int OutMetatable { get; private set; }
+        public int EventMetatable { get; private set; }
 
         //function ref                
         public int PackBounds { get; private set; }
@@ -67,7 +68,7 @@ namespace LuaInterface
 #endif                            
             L = LuaDLL.luaL_newstate();                                                                        
             LuaDLL.tolua_openlibs(L);
-            LuaDLL.tolua_openint64(L);              
+            LuaDLL.tolua_openint64(L);    //
             LuaStatic.OpenLibs(L);                                                                                                  
             stateMap.Add(L, this);                       
             OpenBaseLibs();            
@@ -92,6 +93,7 @@ namespace LuaInterface
             System_ArrayWrap.Register(this);
             System_TypeWrap.Register(this);
             LuaInterface_LuaOutWrap.Register(this);
+            LuaInterface_EventObjectWrap.Register(this);
             BeginModule("Collections");
             System_Collections_IEnumeratorWrap.Register(this);
             EndModule();
@@ -108,6 +110,7 @@ namespace LuaInterface
             DelegateMetatable = metaMap[typeof(System.Delegate)];
             EnumMetatable = metaMap[typeof(System.Enum)];
             IterMetatable = metaMap[typeof(IEnumerator)];
+            EventMetatable = metaMap[typeof(EventObject)];
         }
 
         void OpenBaseLuaLibs()
@@ -435,28 +438,6 @@ namespace LuaInterface
 
         public void EndPCall(int oldTop)
         {            
-            LuaDLL.lua_settop(L, oldTop);
-        }
-
-        public int BeginXPCall(int reference)
-        {
-            return LuaDLL.tolua_beginpcall(L, reference);
-        }
-
-        public string XPCall(int args, int oldTop)
-        {
-            string error = null;
-
-            if (LuaDLL.lua_pcall(L, args, LuaDLL.LUA_MULTRET, oldTop) != 0)
-            {
-                error = LuaDLL.lua_tostring(L, -1);
-            }
-            
-            return error;
-        }
-
-        public void EndXPCall(int oldTop)
-        {
             LuaDLL.lua_settop(L, oldTop);
         }
 
@@ -1261,6 +1242,20 @@ namespace LuaInterface
             return d;            
         }
 
+        public int CheckInteger(int stackPos, out string error)
+        {
+            error = null;
+            int n = LuaDLL.luaL_checkinteger(L, stackPos);
+
+            if (n == 0 && !LuaDLL.lua_isnumber(L, stackPos))
+            {                                                
+                error = GetTypeError(stackPos, "number");
+                return 0;
+            }
+            
+            return n;               
+        }
+
         public bool CheckBoolean(int stackPos, out string error)
         {            
             if (!LuaDLL.lua_isboolean(L, stackPos))
@@ -1442,11 +1437,11 @@ namespace LuaInterface
 
             if (!LuaDLL.tolua_isint64(L, stackPos))
             {
-                error = GetTypeError(stackPos, "LuaInteger64");
+                error = GetTypeError(stackPos, "int64");
                 return 0;
             }
             
-            return LuaDLL.tolua_getint64(L, stackPos);            
+            return LuaDLL.tolua_toint64(L, stackPos);            
         }        
 
         public string CheckString(int stackPos, out string error)
@@ -1986,40 +1981,43 @@ namespace LuaInterface
 
         /*--------------------------------对于LuaDLL函数的简单封装------------------------------------------*/
         #region SIMPLELUAFUNCTION
-        public int LuaGetTop()
+        public int GetTop()
         {
             return LuaDLL.lua_gettop(L);
         }
 
-        public void LuaSetTop(int newTop)
+        public void SetTop(int newTop)
         {
             LuaDLL.lua_settop(L, newTop);
         }
 
-        public object RawGetI(int tableIndex, int index)
+        public void RawGet(int index)
         {
-            LuaDLL.lua_rawgeti(L, tableIndex, index);
-            return ToVariant(-1);            
+            LuaDLL.lua_rawget(L, index);
         }
 
-        public void LuaRawSetI(int tableIndex, int index)
+        public void RawGetI(int tableIndex, int index)
+        {
+            LuaDLL.lua_rawgeti(L, tableIndex, index);                  
+        }
+
+        public void RawGlobal(string name)
+        {
+            LuaDLL.lua_pushstring(L, name);
+            LuaDLL.lua_rawget(L, LuaIndexes.LUA_GLOBALSINDEX);
+        }
+
+        public void RawSetI(int tableIndex, int index)
         {
             LuaDLL.lua_rawseti(L, tableIndex, index);
         }
 
-        public void LuaRemove(int pos)
+        public void LuaRemove(int index)
         {
-            LuaDLL.lua_remove(L, pos);
+            LuaDLL.lua_remove(L, index);
         }
 
-        public void LuaRawGet(int stackPos, string field)
-        {
-            stackPos = LuaDLL.abs_index(L, stackPos);
-            LuaDLL.lua_pushstring(L, field);
-            LuaDLL.lua_rawget(L, stackPos);            
-        }
-
-        public IntPtr LuaToThread(int stackPos)
+        public IntPtr ToThread(int stackPos)
         {
             return LuaDLL.lua_tothread(L, stackPos);
         }
@@ -2031,17 +2029,17 @@ namespace LuaInterface
             LuaDLL.lua_gettable(L, stackPos);
         }
 
-        public bool LuaNext(int index)
+        public bool Next(int index)
         {
             return LuaDLL.lua_next(L, index) != 0;
         }
 
-        public void LuaPop(int amount)
+        public void Pop(int amount)
         {
             LuaDLL.lua_pop(L, amount);
         }
 
-        public int LuaObjLen(int reference)
+        public int ObjLen(int reference)
         {
             LuaDLL.lua_getref(L, reference);
             int n = LuaDLL.lua_objlen(L, -1);
@@ -2083,7 +2081,7 @@ namespace LuaInterface
             LuaDLL.lua_rawset(L, stackPos);
         }
 
-        public void LuaGC(LuaGCOptions what, int data = 0)
+        public void GC(LuaGCOptions what, int data = 0)
         {            
             LuaDLL.lua_gc(L, what, data);
         }
@@ -2143,7 +2141,7 @@ namespace LuaInterface
             mainState = null;
 #endif                              
             LuaFileUtils.Instance.Dispose();
-            GC.SuppressFinalize(this);            
+            System.GC.SuppressFinalize(this);            
         }
 
         public virtual void Dispose(bool dispose)

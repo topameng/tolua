@@ -3,71 +3,54 @@ using System.Collections;
 using System;
 using LuaInterface;
 
-/*public class TestInt64Exp
-{
-    public Func<LuaInteger64, LuaInteger64> click;
-    public LuaInteger64 value;
-
-    public void Test(long n)
-    {
-
-    }
-
-    public void Test(LuaInteger64 n) { }
-
-    public LuaInteger64 Test1() { return 0; }
-
-    public LuaInteger64 Test2(LuaInteger64 n) { return 0; }
-}*/
-
-
 public class TestInt64 : MonoBehaviour 
 {
+	private string tips = "";
+
     string script =
         @"
             function TestInt64(x)
-                x = x + 789
-                local low, high = x:toint32()
-                print('x value is: '..tostring(x)..' low is: '.. low .. ' high is: '..high)           
-                local y = tolua.int64(1,2)                
-                local z = tolua.int64(1,2)
+                x = x + 789				
+                local low, high = int64.toint32(x)                
+                print('x value is: '..int64.tostring(x)..':'..tostring(x)..' low is: '.. low .. ' high is: '..high.. ' type is: '.. tolua.typename(x))           
+                local y = int64.new(1,2)                
+                local z = int64.new(1,2)
                 
                 if y == z then
-                    print('int64 equals is ok, value: '..tostring(y))
+                    print('int64 equals is ok, value: '..int64.tostring(y))
                 end
 
-                x = tolua.int64(123)                   
+                x = int64.new(123)                   
             
-                if x:equals(123) then
+                if int64.equals(x, 123) then
                     print('int64 equals to number ok')
+                else
+                    print('int64 equals to number failed')
                 end
 
-                x = tolua.int64('78962871035984074')
-                print('int64 is', tostring(x))
+                x = int64.new('78962871035984074')
+                print('int64 is: '..tostring(x))
 
-                local t = {}
-                t[y] = 123
-                
-                --lua table userdata做key就这样
-                print('for lua userdata in table, t[z] not t[y], table index return not 123 but '..(t[z] or 'nil'))
                 return y
             end
         ";
 
+
 	void Start () 
     {
+		#if UNITY_5		
+		Application.logMessageReceived += ShowTips;
+		#else
+		Application.RegisterLogCallback(ShowTips);           
+		#endif
+		new LuaResLoader();
         LuaState lua = new LuaState();
         lua.Start();
-        lua.DoString(script);
-
-        long x  = 123456789123456789;
-        double low = (double)(x & 0xFFFFFFFF);
-        double high = (double)(x >> 32);
-        Debugger.Log("number x low is {0}, high is {1}", low, high);
+        lua.DoString(script);				                   
 
         LuaFunction func = lua.GetFunction("TestInt64");
         func.BeginPCall();
-        func.PushInt64(123456789123456000);
+		func.PushInt64(9223372036854775807 - 789);
         func.PCall();
         LuaInteger64 n64 = func.CheckInteger64();
         Debugger.Log("int64 return from lua is: {0}", n64);
@@ -75,7 +58,28 @@ public class TestInt64 : MonoBehaviour
         func.Dispose();
         func = null;
 
-        lua.CheckTop();
-        lua.Dispose();        
+        lua.CheckTop();    
+		lua.Dispose();  
+		lua = null;
 	}	
+
+	void ShowTips(string msg, string stackTrace, LogType type)
+	{		
+		tips += msg;             
+		tips += "\r\n";
+	}
+
+	void OnDestroy()
+	{		
+		#if UNITY_5		
+		Application.logMessageReceived -= ShowTips;
+		#else
+		Application.RegisterLogCallback(null);
+		#endif
+	}
+
+	void OnGUI()
+	{
+		GUI.Label (new Rect (Screen.width / 2 - 200, Screen.height / 2 - 150, 400, 300), tips);
+	}
 }

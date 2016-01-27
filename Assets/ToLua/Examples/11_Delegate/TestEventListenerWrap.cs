@@ -7,9 +7,11 @@ public class TestEventListenerWrap
 	{
 		L.BeginClass(typeof(TestEventListener), typeof(UnityEngine.MonoBehaviour));
 		L.RegFunction("SetOnFinished", SetOnFinished);
-		L.RegFunction("New", _CreateTestEventListener);		
+		L.RegFunction("New", _CreateTestEventListener);
 		L.RegFunction("__eq", op_Equality);
+		L.RegFunction("__tostring", Lua_ToString);
 		L.RegVar("onClick", get_onClick, set_onClick);
+		L.RegVar("onClickEvent", get_onClickEvent, set_onClickEvent);
 		L.RegFunction("VoidDelegate", VoidDelegate);
 		L.RegFunction("OnClick", OnClick);
 		L.RegVar("out", get_out, null);
@@ -19,8 +21,7 @@ public class TestEventListenerWrap
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	static int _CreateTestEventListener(IntPtr L)
 	{
-		LuaDLL.luaL_error(L, "TestEventListener class does not have a constructor function");
-		return 0;
+		return LuaDLL.luaL_error(L, "TestEventListener class does not have a constructor function");
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
@@ -50,8 +51,7 @@ public class TestEventListenerWrap
 			}
 			catch(Exception e)
 			{
-				LuaDLL.luaL_error(L, e.Message);
-				return 0;
+				return LuaDLL.toluaL_exception(L, e);
 			}
 
 			return 0;
@@ -78,8 +78,7 @@ public class TestEventListenerWrap
 			}
 			catch(Exception e)
 			{
-				LuaDLL.luaL_error(L, e.Message);
-				return 0;
+				return LuaDLL.toluaL_exception(L, e);
 			}
 
 			return 0;
@@ -106,11 +105,27 @@ public class TestEventListenerWrap
 		}
 		catch(Exception e)
 		{
-			LuaDLL.luaL_error(L, e.Message);
-			return 0;
+			return LuaDLL.toluaL_exception(L, e);
 		}
 
 		LuaDLL.lua_pushboolean(L, o);
+		return 1;
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int Lua_ToString(IntPtr L)
+	{
+		object obj = ToLua.ToObject(L, 1);
+
+		if (obj != null)
+		{
+			LuaDLL.lua_pushstring(L, obj.ToString());
+		}
+		else
+		{
+			LuaDLL.lua_pushnil(L);
+		}
+
 		return 1;
 	}
 
@@ -126,18 +141,17 @@ public class TestEventListenerWrap
 		}
 		catch(Exception e)
 		{
-			if (obj == null)
-			{
-				LuaDLL.luaL_error(L, "attempt to index onClick on a nil value");
-			}
-			else
-			{
-				LuaDLL.luaL_error(L, e.Message);
-			}
-			return 0;
+			return LuaDLL.luaL_error(L, obj == null ? "attempt to index onClick on a nil value" : e.Message);
 		}
 
 		ToLua.Push(L, ret);
+		return 1;
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int get_onClickEvent(IntPtr L)
+	{
+		ToLua.Push(L, new EventObject("TestEventListener.onClickEvent"));
 		return 1;
 	}
 
@@ -164,15 +178,51 @@ public class TestEventListenerWrap
 		}
 		catch(Exception e)
 		{
-			if (obj == null)
+			return LuaDLL.luaL_error(L, obj == null ? "attempt to index onClick on a nil value" : e.Message);
+		}
+
+		return 0;
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int set_onClickEvent(IntPtr L)
+	{
+		TestEventListener obj = (TestEventListener)ToLua.CheckObject(L, 1, typeof(TestEventListener));
+		EventObject arg0 = null;
+
+		if (LuaDLL.lua_isuserdata(L, 2) != 0)
+		{
+			arg0 = (EventObject)ToLua.ToObject(L, 2);
+		}
+		else
+		{
+			return LuaDLL.luaL_error(L, "The event 'TestEventListener.onClickEvent' can only appear on the left hand side of += or -= when used outside of the type 'TestEventListener'");
+		}
+
+		if (arg0.op == EventOp.Add)
+		{
+			TestEventListener.OnClick ev = (TestEventListener.OnClick)DelegateFactory.CreateDelegate(L, typeof(TestEventListener.OnClick), arg0.func);
+			obj.onClickEvent += ev;
+		}
+		else if (arg0.op == EventOp.Sub)
+		{
+			TestEventListener.OnClick ev = (TestEventListener.OnClick)LuaMisc.GetEventHandler(obj, typeof(TestEventListener), "onClickEvent");
+			Delegate[] ds = ev.GetInvocationList();
+
+			for (int i = 0; i < ds.Length; i++)
 			{
-				LuaDLL.luaL_error(L, "attempt to index onClick on a nil value");
+				ev = (TestEventListener.OnClick)ds[i];
+				LuaDelegate ld = ev.Target as LuaDelegate;
+
+				if (ld != null && ld.func == arg0.func)
+				{
+					obj.onClickEvent -= ev;
+					ld.func.Dispose();
+					break;
+				}
 			}
-			else
-			{
-				LuaDLL.luaL_error(L, e.Message);
-			}
-			return 0;
+
+			arg0.func.Dispose();
 		}
 
 		return 0;

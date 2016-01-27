@@ -58,7 +58,7 @@ public class UnityEngine_ObjectWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.luaL_error(L, e.Message);
+			return LuaDLL.toluaL_exception(L, e);
 		}
 
 		LuaDLL.lua_pushboolean(L, o);
@@ -78,7 +78,7 @@ public class UnityEngine_ObjectWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.luaL_error(L, e.Message);
+			return LuaDLL.toluaL_exception(L, e);
 		}
 
 		LuaDLL.lua_pushinteger(L, o);
@@ -98,7 +98,7 @@ public class UnityEngine_ObjectWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.luaL_error(L, e.Message);
+			return LuaDLL.toluaL_exception(L, e);
 		}
 
 		LuaDLL.lua_pushinteger(L, o);
@@ -121,7 +121,7 @@ public class UnityEngine_ObjectWrap
 			}
 			catch(Exception e)
 			{
-				return LuaDLL.luaL_error(L, e.Message);
+				return LuaDLL.toluaL_exception(L, e);
 			}
 
 			ToLua.Push(L, o);
@@ -140,7 +140,7 @@ public class UnityEngine_ObjectWrap
 			}
 			catch(Exception e)
 			{
-				return LuaDLL.luaL_error(L, e.Message);
+				return LuaDLL.toluaL_exception(L, e);
 			}
 
 			ToLua.Push(L, o);
@@ -167,7 +167,7 @@ public class UnityEngine_ObjectWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.luaL_error(L, e.Message);
+			return LuaDLL.toluaL_exception(L, e);
 		}
 
 		ToLua.Push(L, o);
@@ -187,7 +187,7 @@ public class UnityEngine_ObjectWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.luaL_error(L, e.Message);
+			return LuaDLL.toluaL_exception(L, e);
 		}
 
 		ToLua.Push(L, o);
@@ -206,7 +206,7 @@ public class UnityEngine_ObjectWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.luaL_error(L, e.Message);
+			return LuaDLL.toluaL_exception(L, e);
 		}
 
 		return 0;
@@ -225,7 +225,7 @@ public class UnityEngine_ObjectWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.luaL_error(L, e.Message);
+			return LuaDLL.toluaL_exception(L, e);
 		}
 
 		LuaDLL.lua_pushstring(L, o);
@@ -246,7 +246,7 @@ public class UnityEngine_ObjectWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.luaL_error(L, e.Message);
+			return LuaDLL.toluaL_exception(L, e);
 		}
 
 		LuaDLL.lua_pushboolean(L, o);
@@ -384,15 +384,7 @@ public class UnityEngine_ObjectWrap
 		}
 		catch(Exception e)
 		{
-			if (obj == null)
-			{
-				LuaDLL.luaL_error(L, "attempt to index name on a nil value");
-			}
-			else
-			{
-				LuaDLL.luaL_error(L, e.Message);
-			}
-			return 0;
+			return LuaDLL.luaL_error(L, obj == null ? "attempt to index name on a nil value" : e.Message);
 		}
 
 		return 0;
@@ -410,15 +402,7 @@ public class UnityEngine_ObjectWrap
 		}
 		catch(Exception e)
 		{
-			if (obj == null)
-			{
-				LuaDLL.luaL_error(L, "attempt to index hideFlags on a nil value");
-			}
-			else
-			{
-				LuaDLL.luaL_error(L, e.Message);
-			}
-			return 0;
+			return LuaDLL.luaL_error(L, obj == null ? "attempt to index hideFlags on a nil value" : e.Message);
 		}
 
 		return 0;

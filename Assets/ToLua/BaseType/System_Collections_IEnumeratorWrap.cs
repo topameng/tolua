@@ -33,7 +33,7 @@ public class System_Collections_IEnumeratorWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.luaL_error(L, e.Message);
+			return LuaDLL.toluaL_exception(L, e);
 		}
 
 		LuaDLL.lua_pushboolean(L, o);
@@ -52,7 +52,7 @@ public class System_Collections_IEnumeratorWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.luaL_error(L, e.Message);
+			return LuaDLL.toluaL_exception(L, e);
 		}
 
 		return 0;

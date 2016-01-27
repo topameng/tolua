@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace LuaInterface
 {
@@ -89,9 +90,11 @@ namespace LuaInterface
     
     public class LuaException : Exception
     {
+        public static string luaStack = null;
+
         public LuaException(string msg)
             : base(msg)
-        {
+        {            
         }
 
         public LuaException(string fmt, params object[] args)
@@ -187,6 +190,12 @@ namespace LuaInterface
                 return pureTypeName + "<" + string.Join(",", GetGenericName(gArgs)) + ">";
             }
         }
+
+        public static Delegate GetEventHandler(object obj, Type t, string eventName)
+        {
+            FieldInfo eventField = t.GetField(eventName, BindingFlags.GetField | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
+            return (Delegate)eventField.GetValue(obj);
+        }
     }       
 
     [NoToLuaAttribute]
@@ -243,6 +252,49 @@ namespace LuaInterface
         Destroy = 1,
         DestroyImmediate = 2,
         DestroyObject = 3,
+    }
+
+    public enum EventOp
+    {
+        None = 0,
+        Add = 1,
+        Sub = 2,
+    }
+
+    public class EventObject
+    {
+        [NoToLuaAttribute]
+        public EventOp op = EventOp.None;
+        [NoToLuaAttribute]
+        public LuaFunction func = null;
+        [NoToLuaAttribute]
+        public string name = string.Empty;
+
+        [NoToLuaAttribute]
+        public EventObject(string name)
+        {
+            this.name = name;
+        }
+
+        public static EventObject operator +(EventObject a, LuaFunction b)
+        {
+            a.op = EventOp.Add;
+            a.func = b;
+            return a;
+        }
+
+        public static EventObject operator -(EventObject a, LuaFunction b)
+        {
+            a.op = EventOp.Sub;
+            a.func = b;
+            return a;
+        }
+
+        [NoToLuaAttribute]
+        public override string ToString()
+        {
+            return name;
+        }
     }
 }
 

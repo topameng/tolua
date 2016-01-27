@@ -24,6 +24,7 @@ public class TestCoroutine : MonoBehaviour
         LuaFunction f = lua.GetFunction("TestCortinue");
         f.Call();
         f.Dispose();
+        f = null;
 	}
 
     void OnDestroy()

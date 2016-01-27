@@ -16,7 +16,7 @@ public class LuaThread : LuaBaseRef
         objs = null;
         int top = 0;
         luaState.Push(this);                
-        IntPtr L = luaState.LuaToThread(-1);
+        IntPtr L = luaState.ToThread(-1);
         int nArgs = 0;
         
         if (args != null)
@@ -45,11 +45,11 @@ public class LuaThread : LuaBaseRef
             }
 
             error = LuaDLL.lua_tostring(L, -1);
-            luaState.LuaPop(1);
+            luaState.Pop(1);
             throw new LuaException(error);       
         }
 
-        luaState.LuaPop(1);
+        luaState.Pop(1);
         top = LuaDLL.lua_gettop(L);
 
         if (top > 0)

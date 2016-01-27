@@ -269,7 +269,14 @@ namespace LuaInterface
             if (error != null)
             {
                 EndPCall();
-                throw new LuaException(error);                
+
+                if (LuaException.luaStack != null)
+                {
+                    error = string.Format("{0}{1}{2}", error, Environment.NewLine, LuaException.luaStack);
+                    LuaException.luaStack = null;
+                }
+
+                throw new LuaException(error);
             }            
         }
 

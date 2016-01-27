@@ -186,6 +186,8 @@ public class LuaFileUtils
         return "Android";
 #elif UNITY_IPHONE
         return "IOS";
+#else
+        return "";
 #endif
     }
 }

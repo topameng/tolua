@@ -52,7 +52,7 @@ public class System_DelegateWrap
 			}
 			catch(Exception e)
 			{
-				return LuaDLL.luaL_error(L, e.Message);
+				return LuaDLL.toluaL_exception(L, e);
 			}
 
 			ToLua.Push(L, o);
@@ -71,7 +71,7 @@ public class System_DelegateWrap
 			}
 			catch(Exception e)
 			{
-				return LuaDLL.luaL_error(L, e.Message);
+				return LuaDLL.toluaL_exception(L, e);
 			}
 
 			ToLua.Push(L, o);
@@ -90,7 +90,7 @@ public class System_DelegateWrap
 			}
 			catch(Exception e)
 			{
-				return LuaDLL.luaL_error(L, e.Message);
+				return LuaDLL.toluaL_exception(L, e);
 			}
 
 			ToLua.Push(L, o);
@@ -109,7 +109,7 @@ public class System_DelegateWrap
 			}
 			catch(Exception e)
 			{
-				return LuaDLL.luaL_error(L, e.Message);
+				return LuaDLL.toluaL_exception(L, e);
 			}
 
 			ToLua.Push(L, o);
@@ -128,7 +128,7 @@ public class System_DelegateWrap
 			}
 			catch(Exception e)
 			{
-				return LuaDLL.luaL_error(L, e.Message);
+				return LuaDLL.toluaL_exception(L, e);
 			}
 
 			ToLua.Push(L, o);
@@ -148,7 +148,7 @@ public class System_DelegateWrap
 			}
 			catch(Exception e)
 			{
-				return LuaDLL.luaL_error(L, e.Message);
+				return LuaDLL.toluaL_exception(L, e);
 			}
 
 			ToLua.Push(L, o);
@@ -168,7 +168,7 @@ public class System_DelegateWrap
 			}
 			catch(Exception e)
 			{
-				return LuaDLL.luaL_error(L, e.Message);
+				return LuaDLL.toluaL_exception(L, e);
 			}
 
 			ToLua.Push(L, o);
@@ -188,7 +188,7 @@ public class System_DelegateWrap
 			}
 			catch(Exception e)
 			{
-				return LuaDLL.luaL_error(L, e.Message);
+				return LuaDLL.toluaL_exception(L, e);
 			}
 
 			ToLua.Push(L, o);
@@ -209,7 +209,7 @@ public class System_DelegateWrap
 			}
 			catch(Exception e)
 			{
-				return LuaDLL.luaL_error(L, e.Message);
+				return LuaDLL.toluaL_exception(L, e);
 			}
 
 			ToLua.Push(L, o);
@@ -230,7 +230,7 @@ public class System_DelegateWrap
 			}
 			catch(Exception e)
 			{
-				return LuaDLL.luaL_error(L, e.Message);
+				return LuaDLL.toluaL_exception(L, e);
 			}
 
 			ToLua.Push(L, o);
@@ -258,7 +258,7 @@ public class System_DelegateWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.luaL_error(L, e.Message);
+			return LuaDLL.toluaL_exception(L, e);
 		}
 
 		ToLua.Push(L, o);
@@ -278,7 +278,7 @@ public class System_DelegateWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.luaL_error(L, e.Message);
+			return LuaDLL.toluaL_exception(L, e);
 		}
 
 		ToLua.Push(L, o);
@@ -299,7 +299,7 @@ public class System_DelegateWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.luaL_error(L, e.Message);
+			return LuaDLL.toluaL_exception(L, e);
 		}
 
 		return 0;
@@ -318,7 +318,7 @@ public class System_DelegateWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.luaL_error(L, e.Message);
+			return LuaDLL.toluaL_exception(L, e);
 		}
 
 		ToLua.Push(L, o);
@@ -342,7 +342,7 @@ public class System_DelegateWrap
 			}
 			catch(Exception e)
 			{
-				return LuaDLL.luaL_error(L, e.Message);
+				return LuaDLL.toluaL_exception(L, e);
 			}
 
 			ToLua.Push(L, o);
@@ -359,7 +359,7 @@ public class System_DelegateWrap
 			}
 			catch(Exception e)
 			{
-				return LuaDLL.luaL_error(L, e.Message);
+				return LuaDLL.toluaL_exception(L, e);
 			}
 
 			ToLua.Push(L, o);
@@ -387,7 +387,7 @@ public class System_DelegateWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.luaL_error(L, e.Message);
+			return LuaDLL.toluaL_exception(L, e);
 		}
 
 		ToLua.Push(L, o);
@@ -408,7 +408,7 @@ public class System_DelegateWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.luaL_error(L, e.Message);
+			return LuaDLL.toluaL_exception(L, e);
 		}
 
 		ToLua.Push(L, o);
@@ -491,7 +491,7 @@ public class System_DelegateWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.luaL_error(L, e.Message);
+			return LuaDLL.toluaL_exception(L, e);
 		}
 
 		LuaDLL.lua_pushboolean(L, o);
@@ -530,7 +530,7 @@ public class System_DelegateWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.luaL_error(L, e.Message);
+			return LuaDLL.toluaL_exception(L, e);
 		}
 
 		LuaDLL.lua_pushinteger(L, o);
@@ -551,7 +551,7 @@ public class System_DelegateWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.luaL_error(L, e.Message);
+			return LuaDLL.toluaL_exception(L, e);
 		}
 
 		LuaDLL.lua_pushboolean(L, o);

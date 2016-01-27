@@ -75,8 +75,10 @@ public static class ToLuaExport
     static MethodInfo[] methods = null;
     static Dictionary<string, int> nameCounter = null;
     static FieldInfo[] fields = null;
-    static PropertyInfo[] props = null;
+    static PropertyInfo[] props = null;    
     static List<PropertyInfo> propList = new List<PropertyInfo>();  //非静态属性
+    static EventInfo[] events = null;
+    static List<EventInfo> eventList = new List<EventInfo>();
 
     static BindingFlags binding = BindingFlags.Public | BindingFlags.Static | BindingFlags.IgnoreCase;
         
@@ -92,6 +94,7 @@ public static class ToLuaExport
 
     public static List<string> memberFilter = new List<string>
     {
+        "String.Chars",
         "AnimationClip.averageDuration",
         "AnimationClip.averageAngularSpeed",
         "AnimationClip.averageSpeed",
@@ -110,14 +113,14 @@ public static class ToLuaExport
         "WebCamTexture.isReadable",		
 		"Graphic.OnRebuildRequested",
 		"Text.OnRebuildRequested",
+        "Resources.LoadAssetAtPath",
+        "Application.ExternalEval",         
         //NGUI
         "UIInput.ProcessEvent",
         "UIWidget.showHandlesWithMoveTool",
-        "UIWidget.showHandles",
-        "Application.ExternalEval",
-        "Resources.LoadAssetAtPath",
-        "Input.IsJoystickPreconfigured",
-        "String.Chars",
+        "UIWidget.showHandles",               
+        "Input.IsJoystickPreconfigured",    
+        "UIDrawCall.isActive",    
     };
 
     public static bool IsMemberFilter(MemberInfo mi)
@@ -413,7 +416,9 @@ public static class ToLuaExport
     {
         fields = type.GetFields(BindingFlags.GetField | BindingFlags.SetField | BindingFlags.Instance | binding);
         props = type.GetProperties(BindingFlags.GetProperty | BindingFlags.SetProperty | BindingFlags.Instance | binding);
-        propList.AddRange(type.GetProperties(BindingFlags.GetProperty | BindingFlags.SetProperty | BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase));
+        events = type.GetEvents(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public | BindingFlags.Static);
+        eventList.AddRange(type.GetEvents(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public));
+        propList.AddRange(type.GetProperties(BindingFlags.GetProperty | BindingFlags.SetProperty | BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase));            
 
         List<FieldInfo> fieldList = new List<FieldInfo>();
         fieldList.AddRange(fields);
@@ -457,7 +462,32 @@ public static class ToLuaExport
             }
         }
 
-        if (fields.Length == 0 && props.Length == 0 && isStaticClass && baseType == null)
+        List<EventInfo> evList = new List<EventInfo>();
+        evList.AddRange(events);
+
+        for (int i = evList.Count - 1; i >= 0; i--)
+        {
+            if (IsObsolete(evList[i]))
+            {
+                evList.RemoveAt(i);
+            }
+            else if (typeof(System.Delegate).IsAssignableFrom(evList[i].EventHandlerType))
+            {
+                eventSet.Add(evList[i].EventHandlerType);
+            }
+        }
+
+        events = evList.ToArray();
+
+        for (int i = eventList.Count - 1; i >= 0; i--)
+        {
+            if (IsObsolete(eventList[i]))
+            {
+                eventList.RemoveAt(i);
+            }
+        }
+
+        if (fields.Length == 0 && props.Length == 0 && events.Length == 0 && isStaticClass && baseType == null)
         {
             return;
         }
@@ -496,10 +526,15 @@ public static class ToLuaExport
             {
                 sb.AppendFormat("\t\tL.RegVar(\"{0}\", null, set_{0});\r\n", props[i].Name);
             }
-        }        
+        }
+
+        for (int i = 0; i < events.Length; i++)
+        {
+            sb.AppendFormat("\t\tL.RegVar(\"{0}\", get_{0}, set_{0});\r\n", events[i].Name);            
+        }  
     }
 
-    static void GenRegisterEvents()
+    static void GenRegisterEventTypes()
     {
         List<Type> list = new List<Type>();
 
@@ -561,7 +596,7 @@ public static class ToLuaExport
         GenRegisterFuncItems();
         GenRegisterOpItems();
         GenRegisterVariables();
-        GenRegisterEvents();
+        GenRegisterEventTypes();            //注册事件类型
 
         if (!isStaticClass)
         {
@@ -1110,8 +1145,8 @@ public static class ToLuaExport
     {
         sb.AppendLineEx(head + "}");
         sb.AppendLineEx(head + "catch(Exception e)");
-        sb.AppendLineEx(head + "{");
-        sb.AppendLineEx(head + "\treturn LuaDLL.luaL_error(L, e.Message);");        
+        sb.AppendLineEx(head + "{");        
+        sb.AppendLineEx(head + "\treturn LuaDLL.toluaL_exception(L, e);");
         sb.AppendLineEx(head + "}");        
     }
 
@@ -1221,7 +1256,7 @@ public static class ToLuaExport
         {
             sb.AppendFormat("{0}{1} {2} = ({1})LuaDLL.lua_touserdata(L, {3});\r\n", head, str, arg, stackPos);                        
         }
-        else if (varType.IsPrimitive) //枚举不对吧
+        else if (varType.IsPrimitive)
         {
             string chkstr = beCheckTypes ? "lua_tonumber" : "luaL_checknumber";
             sb.AppendFormat("{0}{1} {2} = ({1})LuaDLL.{3}(L, {4});\r\n", head, str, arg, chkstr, stackPos);
@@ -1291,7 +1326,7 @@ public static class ToLuaExport
         }
         else if (varType == typeof(LuaInteger64))
         {
-            string chkstr = beCheckTypes ? "LuaDLL.tolua_getint64" : "ToLua.CheckLuaInteger64";
+            string chkstr = beCheckTypes ? "LuaDLL.tolua_toint64" : "ToLua.CheckLuaInteger64";
             sb.AppendFormat("{0}LuaInteger64 {1} = {2}(L, {3});\r\n", head, arg, chkstr, stackPos);                
         }
         else if (varType == typeof(object))
@@ -2228,6 +2263,16 @@ public static class ToLuaExport
         sb.AppendLineEx("\t}");
     }
 
+    static void GenGetEventStr(string varName, Type varType)
+    {
+        sb.AppendLineEx("\r\n\t[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]");
+        sb.AppendFormat("\tstatic int get_{0}(IntPtr L)\r\n", varName);
+        sb.AppendLineEx("\t{");                
+        sb.AppendFormat("\t\tToLua.Push(L, new EventObject(\"{0}.{1}\"));\r\n",GetTypeStr(type), varName);
+        sb.AppendLineEx("\t\treturn 1;");
+        sb.AppendLineEx("\t}");
+    }
+
     static void GenIndexFunc()
     {
         for(int i = 0; i < fields.Length; i++)
@@ -2257,6 +2302,11 @@ public static class ToLuaExport
 
             GenGetFieldStr(props[i].Name, props[i].PropertyType, isStatic);
         }
+
+        for (int i = 0; i < events.Length; i++)
+        {            
+            GenGetEventStr(events[i].Name, events[i].EventHandlerType);
+        }
     }
 
     static void GenSetFieldStr(string varName, Type varType, bool isStatic)
@@ -2284,17 +2334,9 @@ public static class ToLuaExport
             sb.AppendLineEx("\t\tcatch(Exception e)");
             sb.AppendLineEx("\t\t{");
 
-            CheckObjectNull();                                    
-            sb.AppendLineEx("\t\t\t{");
-            sb.AppendFormat("\t\t\t\tLuaDLL.luaL_error(L, \"attempt to index {0} on a nil value\");\r\n", varName);
-            sb.AppendLineEx("\t\t\t}");
-            sb.AppendLineEx("\t\t\telse");
-            sb.AppendLineEx("\t\t\t{");
-            sb.AppendLineEx("\t\t\t\tLuaDLL.luaL_error(L, e.Message);");
-            sb.AppendLineEx("\t\t\t}");
-            sb.AppendLineEx("\t\t\treturn 0;");
-            sb.AppendLineEx("\t\t}");
-            
+            string chkstr = type.IsValueType ? "o == null" : "obj == null";
+            sb.AppendFormat("\t\t\treturn LuaDLL.luaL_error(L, {0} ? \"attempt to index {1} on a nil value\" : e.Message);\r\n", chkstr, varName);      
+            sb.AppendLineEx("\t\t}");            
             sb.AppendLineEx();
         }
         else
@@ -2307,6 +2349,61 @@ public static class ToLuaExport
         {
             sb.AppendLineEx("\t\tToLua.SetBack(L, 1, obj);");
         }
+
+        sb.AppendLineEx("\t\treturn 0;");
+        sb.AppendLineEx("\t}");
+    }
+
+    static void GenSetEventStr(string varName, Type varType, bool isStatic)
+    {
+        sb.AppendLineEx("\r\n\t[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]");
+        sb.AppendFormat("\tstatic int set_{0}(IntPtr L)\r\n", varName);
+        sb.AppendLineEx("\t{");
+
+        if (!isStatic)
+        {
+            sb.AppendFormat("\t\t{0} obj = ({0})ToLua.CheckObject(L, 1, typeof({0}));\r\n", className);
+        }
+
+        string strVarType = GetTypeStr(varType);
+        string objStr = isStatic ? className : "obj";
+
+        sb.AppendLineEx("\t\tEventObject arg0 = null;\r\n");
+        sb.AppendLineEx("\t\tif (LuaDLL.lua_isuserdata(L, 2) != 0)");
+        sb.AppendLineEx("\t\t{");
+        sb.AppendLineEx("\t\t\targ0 = (EventObject)ToLua.ToObject(L, 2);");
+        sb.AppendLineEx("\t\t}");
+        sb.AppendLineEx("\t\telse");
+        sb.AppendLineEx("\t\t{");
+        sb.AppendFormat("\t\t\treturn LuaDLL.luaL_error(L, \"The event '{0}.{1}' can only appear on the left hand side of += or -= when used outside of the type '{0}'\");\r\n", className, varName);
+        sb.AppendLineEx("\t\t}\r\n");
+
+        sb.AppendLineEx("\t\tif (arg0.op == EventOp.Add)");
+        sb.AppendLineEx("\t\t{");
+        sb.AppendFormat("\t\t\t{0} ev = ({0})DelegateFactory.CreateDelegate(L, typeof({0}), arg0.func);\r\n", strVarType);
+        sb.AppendFormat("\t\t\t{0}.{1} += ev;\r\n", objStr, varName);
+        sb.AppendLineEx("\t\t}");
+        sb.AppendLineEx("\t\telse if (arg0.op == EventOp.Sub)");
+        sb.AppendLineEx("\t\t{");
+        sb.AppendFormat("\t\t\t{0} ev = ({0})LuaMisc.GetEventHandler({1}, typeof({2}), \"{3}\");\r\n", strVarType, isStatic ? "null" : "obj", className, varName);
+        sb.AppendFormat("\t\t\tDelegate[] ds = ev.GetInvocationList();\r\n");
+        sb.AppendLineEx();
+
+        sb.AppendLineEx("\t\t\tfor (int i = 0; i < ds.Length; i++)");
+        sb.AppendLineEx("\t\t\t{");
+        sb.AppendFormat("\t\t\t\tev = ({0})ds[i];\r\n", strVarType);
+        sb.AppendLineEx("\t\t\t\tLuaDelegate ld = ev.Target as LuaDelegate;\r\n");
+
+        sb.AppendLineEx("\t\t\t\tif (ld != null && ld.func == arg0.func)");
+        sb.AppendLineEx("\t\t\t\t{");
+        sb.AppendFormat("\t\t\t\t\t{0}.{1} -= ev;\r\n", objStr, varName);
+        sb.AppendLineEx("\t\t\t\t\tld.func.Dispose();");
+        sb.AppendLineEx("\t\t\t\t\tbreak;");
+        sb.AppendLineEx("\t\t\t\t}");
+        sb.AppendLineEx("\t\t\t}\r\n");
+
+        sb.AppendLineEx("\t\t\targ0.func.Dispose();");
+        sb.AppendLineEx("\t\t}\r\n");
 
         sb.AppendLineEx("\t\treturn 0;");
         sb.AppendLineEx("\t}");
@@ -2340,6 +2437,12 @@ public static class ToLuaExport
             }
 
             GenSetFieldStr(props[i].Name, props[i].PropertyType, isStatic);
+        }
+
+        for (int i = 0; i < events.Length; i++)
+        {
+            bool isStatic = eventList.IndexOf(events[i]) < 0;
+            GenSetEventStr(events[i].Name, events[i].EventHandlerType, isStatic);
         }
     }
 

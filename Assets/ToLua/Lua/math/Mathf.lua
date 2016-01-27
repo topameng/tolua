@@ -209,3 +209,5 @@ end
 function Mathf.IsNan(number)
 	return not (number == number)
 end
+
+return Mathf

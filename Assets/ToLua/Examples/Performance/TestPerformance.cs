@@ -9,14 +9,21 @@ public class TestPerformance : MonoBehaviour
     private string tips = "";
 
 	void Start () 
-    {        
+    {
+        if (IntPtr.Size == 8) Debugger.Log("64 go");
         Application.RegisterLogCallback(ShowTips);           
         new LuaResLoader();          
         state = new LuaState();
         state.Start();
         LuaBinder.Bind(state);                       
         state.DoFile("Test.lua");        
-        state.LuaGC(LuaGCOptions.LUA_GCCOLLECT);      
+        state.GC(LuaGCOptions.LUA_GCCOLLECT);
+        state.LogGC = true;        
+
+        state.RawGlobal("xxoo");
+        string error = null;
+        int n = state.CheckInteger(-1, out error);
+        Debugger.Log("xxoo {0}", n);
 	}
 
     void ShowTips(string msg, string stackTrace, LogType type)
@@ -31,8 +38,16 @@ public class TestPerformance : MonoBehaviour
         state = null;
     }
 
+    //int lastFrameCount = 0;
+
     void OnGUI()
     {
+        //if (lastFrameCount == Time.frameCount)
+	    //{
+        //    return;
+        //}
+
+        //lastFrameCount = Time.frameCount;
         GUI.Label(new Rect(Screen.width / 2 - 150, Screen.height / 2, 300, 200), tips);
 
         if (GUI.Button(new Rect(50, 50, 120, 45), "Test1"))

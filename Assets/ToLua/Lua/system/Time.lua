@@ -1,7 +1,7 @@
 local scaledTime = 0
 local unscaledTime = tolua.gettime()
 
-Time = 
+local Time = 
 {
 	fixedDeltaTime 	= 0,
 	deltaTime 		= 0,
@@ -46,3 +46,5 @@ function Time:SetTimeScale(scale)
 	UnityEngine.Time.timeScale = scale
 	return lastScale
 end
+
+return Time

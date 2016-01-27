@@ -60,6 +60,18 @@ public class TestDelegate: MonoBehaviour
                 listener:SetOnFinished(TestEventListener.OnClick(DoClick1))
                 listener:SetOnFinished(TestEventListener.VoidDelegate(DoClick2))
             end
+
+            function TestEvent()
+                print('this is a event')
+            end
+
+            function AddEvent(listener)
+                listener.onClickEvent = listener.onClickEvent + TestEvent
+            end
+
+            function RemoveEvent(listener)
+                listener.onClickEvent = listener.onClickEvent - TestEvent
+            end
     ";
 
     LuaState state = null;
@@ -71,6 +83,8 @@ public class TestDelegate: MonoBehaviour
     LuaFunction RemoveClick1 = null;
     LuaFunction RemoveClick2 = null;
     LuaFunction TestOverride = null;
+    LuaFunction RemoveEvent = null;
+    LuaFunction AddEvent = null;
    
     //需要删除的转LuaFunction为委托，不需要删除的直接加或者等于即可
     void Awake()
@@ -91,6 +105,8 @@ public class TestDelegate: MonoBehaviour
         RemoveClick1 = state.GetFunction("RemoveClick1");
         RemoveClick2 = state.GetFunction("RemoveClick2");
         TestOverride = state.GetFunction("TestOverride");
+        AddEvent = state.GetFunction("AddEvent");
+        RemoveEvent = state.GetFunction("RemoveEvent");
     }
 
     void Bind(LuaState L)
@@ -148,8 +164,20 @@ public class TestDelegate: MonoBehaviour
         else if (GUI.Button(new Rect(10, 360, 120, 40), "Force GC"))
         {
             //自动gc log: collect lua reference name , id xxx in thread 
-            state.LuaGC(LuaGCOptions.LUA_GCCOLLECT, 0);
+            state.GC(LuaGCOptions.LUA_GCCOLLECT, 0);
             GC.Collect();
+        }
+        else if (GUI.Button(new Rect(10, 410, 120, 40), "event +"))
+        {
+            CallLuaFunction(AddEvent);
+        }
+        else if (GUI.Button(new Rect(10, 460, 120, 40), "event -"))
+        {
+            CallLuaFunction(RemoveEvent);
+        }
+        else if (GUI.Button(new Rect(10, 512, 120, 40), "event call"))
+        {
+            listener.OnClickEvent(gameObject);
         }
     }
 

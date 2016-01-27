@@ -54,6 +54,7 @@ public static class ToLuaMenu
         typeof(System.Type),        
         typeof(System.Collections.IEnumerator),        
         typeof(UnityEngine.Object),
+        typeof(LuaInterface.EventObject),
     };
 
     private static bool beAutoGen = false;
