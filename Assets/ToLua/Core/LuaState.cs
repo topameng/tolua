@@ -1245,7 +1245,7 @@ namespace LuaInterface
         public int CheckInteger(int stackPos, out string error)
         {
             error = null;
-            int n = LuaDLL.luaL_checkinteger(L, stackPos);
+            int n = LuaDLL.lua_tointeger(L, stackPos);
 
             if (n == 0 && !LuaDLL.lua_isnumber(L, stackPos))
             {                                                
@@ -2089,21 +2089,19 @@ namespace LuaInterface
         }
 
         public void LuaGetTable(int index, out string error)
-        {
-            error = null;                        
+        {            
+            error = null;
             int top = LuaDLL.lua_gettop(L);
-            index = index > 0 ? index : top + index + 1;                         
+            index = index > 0 ? index : top + index + 1;
             LuaDLL.lua_pushstdcallcfunction(L, Lua_GetTable);
-            LuaDLL.lua_pushvalue(L, index);            
+            LuaDLL.lua_pushvalue(L, index);
             LuaDLL.lua_pushvalue(L, top);
             LuaDLL.lua_remove(L, top);
 
             if (LuaDLL.lua_pcall(L, 2, -1, 0) != 0)
-            {                
+            {
                 error = LuaDLL.lua_tostring(L, -1);
-                LuaDLL.lua_pop(L, 1);
-                LuaDLL.lua_pushnil(L);
-            }    
+            }   
         }
 
         public void LuaGC(LuaGCOptions what, int data = 0)

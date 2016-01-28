@@ -8,8 +8,12 @@ public class TestCustomLoader : MonoBehaviour
     string tips = "Test custom loader";
 
 	void Start () 
-    {        
+    {
+#if UNITY_5
+        Application.logMessageReceived += Logger;
+#else
         Application.RegisterLogCallback(Logger);
+#endif    
         new LuaResLoader();        
         LuaState state = new LuaState();
         state.Start();
@@ -17,10 +21,14 @@ public class TestCustomLoader : MonoBehaviour
         state.DoFile("TestLoader.lua");
 
         LuaFunction func = state.GetFunction("Test");        
-        func.Call();
-        Application.RegisterLogCallback(null);
+        func.Call();        
         func.Dispose();
         state.Dispose();
+#if UNITY_5
+        Application.logMessageReceived -= Logger;
+#else
+        Application.RegisterLogCallback(null);
+#endif    
 	}
 
     void Logger(string msg, string stackTrace, LogType type)

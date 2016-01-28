@@ -162,7 +162,7 @@ public class LuaFileUtils
 
         if (zipFile != null)
         {
-#if UNITY_5 
+#if UNITY_5
             TextAsset luaCode = zipFile.LoadAsset<TextAsset>(fileName);
 #else
             TextAsset luaCode = zipFile.Load(fileName, typeof(TextAsset)) as TextAsset;

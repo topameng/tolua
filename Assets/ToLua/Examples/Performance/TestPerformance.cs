@@ -9,9 +9,12 @@ public class TestPerformance : MonoBehaviour
     private string tips = "";
 
 	void Start () 
-    {
-        if (IntPtr.Size == 8) Debugger.Log("64 go");
-        Application.RegisterLogCallback(ShowTips);           
+    {        
+#if UNITY_5		
+		Application.logMessageReceived += ShowTips;
+#else
+        Application.RegisterLogCallback(ShowTips);
+#endif         
         new LuaResLoader();          
         state = new LuaState();
         state.Start();
@@ -19,21 +22,21 @@ public class TestPerformance : MonoBehaviour
         state.DoFile("Test.lua");        
         state.LuaGC(LuaGCOptions.LUA_GCCOLLECT);
         state.LogGC = true;        
-
-        state.LuaRawGlobal("xxoo");
-        string error = null;
-        int n = state.CheckInteger(-1, out error);
-        Debugger.Log("xxoo {0}", n);
 	}
 
     void ShowTips(string msg, string stackTrace, LogType type)
     {
-        tips += msg;             
+        tips += msg;
+        tips += "\r\n";
     }
 
     void OnDestroy()
     {
+#if UNITY_5		
+		Application.logMessageReceived -= ShowTips;
+#else
         Application.RegisterLogCallback(null);
+#endif
         state.Dispose();
         state = null;
     }
@@ -42,13 +45,7 @@ public class TestPerformance : MonoBehaviour
 
     void OnGUI()
     {
-        //if (lastFrameCount == Time.frameCount)
-	    //{
-        //    return;
-        //}
-
-        //lastFrameCount = Time.frameCount;
-        GUI.Label(new Rect(Screen.width / 2 - 150, Screen.height / 2, 300, 200), tips);
+        GUI.Label(new Rect(Screen.width / 2 - 200, Screen.height / 2 - 100, 400, 300), tips);
 
         if (GUI.Button(new Rect(50, 50, 120, 45), "Test1"))
         {
@@ -62,8 +59,7 @@ public class TestPerformance : MonoBehaviour
 
             time = Time.realtimeSinceStartup - time;
             tips = "";
-            Debug.Log("c# Transform getset cost time: " + time);
-            tips += "\r\n";   
+            Debugger.Log("c# Transform getset cost time: " + time);            
             transform.position = Vector3.zero;
 
             LuaFunction func = state.GetFunction("Test1");
@@ -85,8 +81,7 @@ public class TestPerformance : MonoBehaviour
 
             time = Time.realtimeSinceStartup - time;
             tips = "";
-            Debug.Log("c# Transform.Rotate cost time: " + time);
-            tips += "\r\n";   
+            Debugger.Log("c# Transform.Rotate cost time: " + time);
 
             LuaFunction func = state.GetFunction("Test2");
             func.BeginPCall();
@@ -107,8 +102,7 @@ public class TestPerformance : MonoBehaviour
 
             time = Time.realtimeSinceStartup - time;
             tips = "";
-            Debug.Log("c# new Vector3 cost time: " + time);
-            tips += "\r\n";   
+            Debugger.Log("c# new Vector3 cost time: " + time);            
 
             LuaFunction func = state.GetFunction("Test3");
             func.Call();
@@ -126,34 +120,10 @@ public class TestPerformance : MonoBehaviour
 
             time = Time.realtimeSinceStartup - time;
             tips = "";
-            Debug.Log("c# new GameObject cost time: " + time);
-            tips += "\r\n";   
+            Debugger.Log("c# new GameObject cost time: " + time);             
 
             LuaFunction func = state.GetFunction("Test4");
             func.Call();         
-            func.Dispose();
-            func = null;  
-        }
-        else if (GUI.Button(new Rect(50, 450, 120, 45), "Test5"))
-        {
-            float time = Time.realtimeSinceStartup;
-
-            for (int i = 0; i < 20000; i++)
-            {
-                GameObject go = new GameObject();
-                go.AddComponent<SkinnedMeshRenderer>();
-                SkinnedMeshRenderer sm = go.GetComponent<SkinnedMeshRenderer>();
-                sm.castShadows = false;
-                sm.receiveShadows = false;
-            }
-
-            time = Time.realtimeSinceStartup - time;
-            tips = "";
-            Debug.Log("Test5 c# cost time: " + time);
-            tips += "\r\n";   
-
-            LuaFunction func = state.GetFunction("Test5");
-            func.Call();
             func.Dispose();
             func = null;  
         }
@@ -171,8 +141,7 @@ public class TestPerformance : MonoBehaviour
 
             time = Time.realtimeSinceStartup - time;            
             tips = "";
-            Debug.Log("Vector3 New Normalize cost: " + time);
-            tips += "\r\n";   
+            Debugger.Log("Vector3 New Normalize cost: " + time);
             LuaFunction func = state.GetFunction("Test7");
             func.Call();
             func.Dispose();
@@ -191,8 +160,7 @@ public class TestPerformance : MonoBehaviour
 
             time = Time.realtimeSinceStartup - time;
             tips = "";
-            Debug.Log("Quaternion Euler Slerp cost: " + time);
-            tips += "\r\n";
+            Debugger.Log("Quaternion Euler Slerp cost: " + time);            
             
             LuaFunction func = state.GetFunction("Test8");
             func.Call();

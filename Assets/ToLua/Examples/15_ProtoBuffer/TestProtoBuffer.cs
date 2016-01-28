@@ -32,7 +32,11 @@ public class TestProtoBuffer : MonoBehaviour
     //pb_data = msg.data    
     void Start()
     {
-        Application.RegisterLogCallback(ShowTips);  
+#if UNITY_5		
+		Application.logMessageReceived += ShowTips;
+#else
+        Application.RegisterLogCallback(ShowTips);
+#endif  
         new LuaResLoader();        
         LuaState state = new LuaState();
         state.Start();
@@ -69,6 +73,15 @@ public class TestProtoBuffer : MonoBehaviour
 
     void OnGUI()
     {
-        GUI.Label(new Rect(Screen.width / 2 - 150, Screen.height / 2, 300, 200), tips);
+        GUI.Label(new Rect(Screen.width / 2 - 200, Screen.height / 2 - 100, 400, 300), tips);
+    }
+
+    void OnDestroy()
+    {
+#if UNITY_5		
+		Application.logMessageReceived -= ShowTips;
+#else
+        Application.RegisterLogCallback(null);
+#endif
     }
 }
