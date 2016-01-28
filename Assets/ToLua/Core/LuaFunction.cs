@@ -102,6 +102,11 @@ namespace LuaInterface
             return objs;
         }
 
+        public bool IsBegin()
+        {
+            return oldTop != -1;
+        }
+
         public void Push(double num)
         {
             luaState.Push(num);
