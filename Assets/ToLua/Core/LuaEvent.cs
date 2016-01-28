@@ -18,13 +18,10 @@ namespace LuaInterface
             self = table;
             luaState = table.GetLuaState();
             self.AddRef();
-
-            LuaTable meta = self.GetMetaTable();
-            _add = meta.RawGetLuaFunction("Add");
-            _remove = meta.RawGetLuaFunction("Remove");
-            meta.Dispose();
-            meta = null;
-            //_call = self.RawGetLuaFunction("__call");            
+            
+            _add = self.GetLuaFunction("Add");
+            _remove = self.GetLuaFunction("Remove");
+            //_call = self.GetLuaFunction("__call");            
         }
 
         public void Dispose()

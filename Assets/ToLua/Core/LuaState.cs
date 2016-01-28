@@ -2081,6 +2081,31 @@ namespace LuaInterface
             return n;
         }
 
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int Lua_GetTable(IntPtr L)
+        {                        
+            LuaDLL.lua_gettable(L, 1);            
+            return 1;
+        }
+
+        public void LuaGetTable(int index, out string error)
+        {
+            error = null;                        
+            int top = LuaDLL.lua_gettop(L);
+            index = index > 0 ? index : top + index + 1;                         
+            LuaDLL.lua_pushstdcallcfunction(L, Lua_GetTable);
+            LuaDLL.lua_pushvalue(L, index);            
+            LuaDLL.lua_pushvalue(L, top);
+            LuaDLL.lua_remove(L, top);
+
+            if (LuaDLL.lua_pcall(L, 2, -1, 0) != 0)
+            {                
+                error = LuaDLL.lua_tostring(L, -1);
+                LuaDLL.lua_pop(L, 1);
+                LuaDLL.lua_pushnil(L);
+            }    
+        }
+
         public void LuaGC(LuaGCOptions what, int data = 0)
         {            
             LuaDLL.lua_gc(L, what, data);

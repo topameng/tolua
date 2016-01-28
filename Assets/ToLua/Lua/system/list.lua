@@ -167,7 +167,7 @@ function list:reverse_items()
 end
 
 function list:erase(value)
-	local iter = self:Find(value)
+	local iter = self:find(value)
 
 	if iter then
 		self:remove(iter)
