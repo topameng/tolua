@@ -22,6 +22,8 @@ namespace LuaInterface
             LuaTable meta = self.GetMetaTable();
             _add = meta.RawGetLuaFunction("Add");
             _remove = meta.RawGetLuaFunction("Remove");
+            meta.Dispose();
+            meta = null;
             //_call = self.RawGetLuaFunction("__call");            
         }
 
