@@ -29,5 +29,3 @@ require "u3d/Plane"
 require "math/ValueType"
 require "system/typeof"
 require "misc/strict"
-
-xxoo = -1

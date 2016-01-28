@@ -17,10 +17,10 @@ public class TestPerformance : MonoBehaviour
         state.Start();
         LuaBinder.Bind(state);                       
         state.DoFile("Test.lua");        
-        state.GC(LuaGCOptions.LUA_GCCOLLECT);
+        state.LuaGC(LuaGCOptions.LUA_GCCOLLECT);
         state.LogGC = true;        
 
-        state.RawGlobal("xxoo");
+        state.LuaRawGlobal("xxoo");
         string error = null;
         int n = state.CheckInteger(-1, out error);
         Debugger.Log("xxoo {0}", n);

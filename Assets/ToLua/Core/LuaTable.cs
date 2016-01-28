@@ -35,9 +35,9 @@ namespace LuaInterface
                 }
 
                 luaState.Push(this);
-                luaState.RawGetI(-1, key);
+                luaState.LuaRawGetI(-1, key);
                 object obj = luaState.ToVariant(-1);
-                luaState.Pop(2);
+                luaState.LuaPop(2);
                 return obj;
             }
 
@@ -50,8 +50,8 @@ namespace LuaInterface
 
                 luaState.Push(this);
                 luaState.Push(value);
-                luaState.RawSetI(-2, key);
-                luaState.Pop(1);
+                luaState.LuaRawSetI(-2, key);
+                luaState.LuaPop(1);
             }
         }
 
@@ -59,7 +59,7 @@ namespace LuaInterface
         {
             get
             {
-                return luaState.ObjLen(reference);
+                return luaState.LuaObjLen(reference);
             }
         }
 
@@ -67,10 +67,10 @@ namespace LuaInterface
         {
             luaState.Push(this);
             luaState.Push(key);
-            luaState.RawGet(-2);
+            luaState.LuaRawGet(-2);
             string error = null;
             LuaFunction func = luaState.CheckLuaFunction(-1, out error);
-            luaState.Pop(2);
+            luaState.LuaPop(2);
 
             if (error != null)
             {                
@@ -91,7 +91,7 @@ namespace LuaInterface
             luaState.GetTableField(-1, key);
             string error = null;
             LuaFunction func = luaState.CheckLuaFunction(-1, out error);
-            luaState.Pop(2);
+            luaState.LuaPop(2);
 
             if (error != null)
             {                
@@ -110,7 +110,7 @@ namespace LuaInterface
         {
             luaState.Push(this);
             luaState.AddTable(-1, name);
-            luaState.Pop(1);
+            luaState.LuaPop(1);
         }
 
         public object[] ToArray()
@@ -213,9 +213,9 @@ namespace LuaInterface
 
             public bool MoveNext()
             {
-                state.RawGetI(-1, index);
+                state.LuaRawGetI(-1, index);
                 current = state.ToVariant(-1);
-                state.Pop(1);
+                state.LuaPop(1);
                 ++index;
                 return current == null ? false : true;
             }
@@ -228,7 +228,7 @@ namespace LuaInterface
 
             public void Dispose()
             {
-                state.Pop(1);
+                state.LuaPop(1);
             }
         }
     }
@@ -323,12 +323,12 @@ namespace LuaInterface
 
             public bool MoveNext()
             {
-                if (state.Next(-2))
+                if (state.LuaNext(-2))
                 {
                     current = new DictionaryEntry();
                     current.Key = state.ToVariant(-2);
                     current.Value = state.ToVariant(-1);
-                    state.Pop(1);
+                    state.LuaPop(1);
                     return true;
                 }
                 else
@@ -345,7 +345,7 @@ namespace LuaInterface
 
             public void Dispose()
             {
-                state.Pop(1);
+                state.LuaPop(1);
             }
         }
     }

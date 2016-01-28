@@ -1979,49 +1979,6 @@ namespace LuaInterface
             return reference;
         }
 
-        /*--------------------------------对于LuaDLL函数的简单封装------------------------------------------*/
-        #region SIMPLELUAFUNCTION
-        public int GetTop()
-        {
-            return LuaDLL.lua_gettop(L);
-        }
-
-        public void SetTop(int newTop)
-        {
-            LuaDLL.lua_settop(L, newTop);
-        }
-
-        public void RawGet(int index)
-        {
-            LuaDLL.lua_rawget(L, index);
-        }
-
-        public void RawGetI(int tableIndex, int index)
-        {
-            LuaDLL.lua_rawgeti(L, tableIndex, index);                  
-        }
-
-        public void RawGlobal(string name)
-        {
-            LuaDLL.lua_pushstring(L, name);
-            LuaDLL.lua_rawget(L, LuaIndexes.LUA_GLOBALSINDEX);
-        }
-
-        public void RawSetI(int tableIndex, int index)
-        {
-            LuaDLL.lua_rawseti(L, tableIndex, index);
-        }
-
-        public void LuaRemove(int index)
-        {
-            LuaDLL.lua_remove(L, index);
-        }
-
-        public IntPtr ToThread(int stackPos)
-        {
-            return LuaDLL.lua_tothread(L, stackPos);
-        }
-
         public void GetTableField(int stackPos, string field)
         {
             stackPos = LuaDLL.abs_index(L, stackPos);
@@ -2029,34 +1986,16 @@ namespace LuaInterface
             LuaDLL.lua_gettable(L, stackPos);
         }
 
-        public bool Next(int index)
-        {
-            return LuaDLL.lua_next(L, index) != 0;
-        }
-
-        public void Pop(int amount)
-        {
-            LuaDLL.lua_pop(L, amount);
-        }
-
-        public int ObjLen(int reference)
-        {
-            LuaDLL.lua_getref(L, reference);
-            int n = LuaDLL.lua_objlen(L, -1);
-            LuaDLL.lua_pop(L, 1);
-            return n;
-        }
-
         public LuaTable GetMetaTable(LuaTable table)
         {
             LuaTable t = null;
-            Push(table);            
+            Push(table);
 
             if (LuaDLL.lua_getmetatable(L, -1) != 0)
-            {                
+            {
                 LuaDLL.lua_pushvalue(L, -1);
                 int reference = LuaDLL.toluaL_ref(L);
-                t = GetTable(reference);                
+                t = GetTable(reference);
             }
 
             LuaDLL.lua_pop(L, 2);
@@ -2081,7 +2020,68 @@ namespace LuaInterface
             LuaDLL.lua_rawset(L, stackPos);
         }
 
-        public void GC(LuaGCOptions what, int data = 0)
+        /*--------------------------------对于LuaDLL函数的简单封装------------------------------------------*/
+        #region SIMPLELUAFUNCTION
+        public int LuaGetTop()
+        {
+            return LuaDLL.lua_gettop(L);
+        }
+
+        public void LuaSetTop(int newTop)
+        {
+            LuaDLL.lua_settop(L, newTop);
+        }
+
+        public void LuaRawGet(int index)
+        {
+            LuaDLL.lua_rawget(L, index);
+        }
+
+        public void LuaRawGetI(int tableIndex, int index)
+        {
+            LuaDLL.lua_rawgeti(L, tableIndex, index);                  
+        }
+
+        public void LuaRawGlobal(string name)
+        {
+            LuaDLL.lua_pushstring(L, name);
+            LuaDLL.lua_rawget(L, LuaIndexes.LUA_GLOBALSINDEX);
+        }
+
+        public void LuaRawSetI(int tableIndex, int index)
+        {
+            LuaDLL.lua_rawseti(L, tableIndex, index);
+        }
+
+        public void LuaRemove(int index)
+        {
+            LuaDLL.lua_remove(L, index);
+        }
+
+        public IntPtr LuaToThread(int stackPos)
+        {
+            return LuaDLL.lua_tothread(L, stackPos);
+        }
+
+        public bool LuaNext(int index)
+        {
+            return LuaDLL.lua_next(L, index) != 0;
+        }
+
+        public void LuaPop(int amount)
+        {
+            LuaDLL.lua_pop(L, amount);
+        }
+
+        public int LuaObjLen(int reference)
+        {
+            LuaDLL.lua_getref(L, reference);
+            int n = LuaDLL.lua_objlen(L, -1);
+            LuaDLL.lua_pop(L, 1);
+            return n;
+        }
+
+        public void LuaGC(LuaGCOptions what, int data = 0)
         {            
             LuaDLL.lua_gc(L, what, data);
         }
