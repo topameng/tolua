@@ -11,7 +11,7 @@ public class TestInt64 : MonoBehaviour
         @"
             function TestInt64(x)
                 x = x + 789				
-                local low, high = int64.toint32(x)                
+                local low, high = int64.tonum2(x)                
                 print('x value is: '..int64.tostring(x)..':'..tostring(x)..' low is: '.. low .. ' high is: '..high.. ' type is: '.. tolua.typename(x))           
                 local y = int64.new(1,2)                
                 local z = int64.new(1,2)
