@@ -769,7 +769,7 @@ namespace LuaInterface
 
         public void Push(int n)
         {
-            LuaDLL.lua_pushinteger(L, n);
+            LuaDLL.lua_pushnumber(L, n);
         }
 
         public void PushInt64(LuaInteger64 n)
