@@ -1,9 +1,7 @@
 --------------------------------------------------------------------------------
 --      Copyright (c) 2015 , 蒙占志(topameng) topameng@gmail.com
 --      All rights reserved.
---
---      Use, modification and distribution are subject to the "New BSD License"
---      as listed at <url: http://www.opensource.org/licenses/bsd-license.php >.
+--      Use, modification and distribution are subject to the "MIT License"
 --------------------------------------------------------------------------------
 
 local setmetatable = setmetatable
@@ -138,33 +136,34 @@ function _event:Dump()
 	print("all function is:", count)
 end
 
-_event.__call = function(self, ...)
-	local lock = self.lock
-	self.lock = true
+_event.__call = function(self, ...)		
+	local safe = self.keepSafe
+	local _list = self.list
+	local _rmList = self.rmList
+	self.lock = true	
 
-	for _, v in ilist(self.rmList) do					
-		for i, item in ilist(self.list) do							
+	for _, v in ilist(_rmList) do					
+		for i, item in ilist(_list) do							
 			if v.func == item.func and v.obj == item.obj then
-				self.list:remove(i)
+				_list:remove(i)
 				break
 			end 
 		end
 	end
 
-	self.rmList:clear()
+	_rmList:clear()
 
-	for _, f in ilist(self.list) do								
+	for i, f in ilist(_list) do								
 		local flag, msg = f(...)
 		
-		if not flag then			
-			local t = {func = f.func, obj = f.obj}			
-			self.rmList:push(t)									
-			self.lock = lock		
+		if not flag and safe then								
+			_list:remove(i)
+			self.lock = false		
 			error(msg)				
 		end
 	end
 
-	self.lock = lock			
+	self.lock = false			
 end
 
 setmetatable(_event, _event)
@@ -183,6 +182,24 @@ LateUpdateBeat	= event("LateUpdate", true)
 FixedUpdateBeat	= event("FixedUpdate", true)
 CoUpdateBeat	= event("CoUpdate")				--只在协同使用
 
+
+--逻辑update
+function Update(deltaTime, unscaledDeltaTime)
+	Time:SetDeltaTime(deltaTime, unscaledDeltaTime)				
+	UpdateBeat()			
+end
+
+function LateUpdate()	
+	LateUpdateBeat()	
+	CoUpdateBeat()	
+	Time:SetFrameCount()		
+end
+
+--物理update
+function FixedUpdate(fixedDeltaTime)
+	Time:SetFixedDelta(fixedDeltaTime)
+	FixedUpdateBeat()
+end
 
 function PrintEvents()
 	UpdateBeat:Dump()

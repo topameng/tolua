@@ -8,11 +8,23 @@ public class TestInstantiate : MonoBehaviour
     {
         LuaState state = LuaState.Get(IntPtr.Zero);
 
-        LuaFunction func = state.GetFunction("Show");
-        func.BeginPCall(TracePCall.Trace);
-        func.PCall();
-        func.EndPCall();
-        func.Dispose();
-        func = null;
+        try
+        {
+            LuaFunction func = state.GetFunction("Show");
+            func.BeginPCall();
+            func.PCall();
+            func.EndPCall();
+            func.Dispose();
+            func = null;
+        }
+        catch (Exception e)
+        {            
+            state.ToLuaException(e);
+        }
+    }
+
+    void Start()
+    {
+        Debugger.Log("start");
     }
 }

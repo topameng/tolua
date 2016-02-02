@@ -7,11 +7,10 @@ public class System_Collections_Generic_KeyValuePair_int_TestAccountWrap
 	{
 		L.BeginClass(typeof(System.Collections.Generic.KeyValuePair<int,TestAccount>), null, "KeyValuePair_int_TestAccount");
 		L.RegFunction("ToString", ToString);
-		L.RegFunction("New", _CreateSystem_Collections_Generic_KeyValuePair_int_TestAccount);		
+		L.RegFunction("New", _CreateSystem_Collections_Generic_KeyValuePair_int_TestAccount);
 		L.RegFunction("__tostring", Lua_ToString);
 		L.RegVar("Key", get_Key, null);
-		L.RegVar("Value", get_Value, null);
-		L.RegVar("out", get_out, null);
+		L.RegVar("Value", get_Value, null);		
 		L.EndClass();
 	}
 
@@ -45,23 +44,19 @@ public class System_Collections_Generic_KeyValuePair_int_TestAccountWrap
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	static int ToString(IntPtr L)
 	{
-		ToLua.CheckArgsCount(L, 1);
-		System.Collections.Generic.KeyValuePair<int,TestAccount> obj = (System.Collections.Generic.KeyValuePair<int,TestAccount>)ToLua.CheckObject(L, 1, typeof(System.Collections.Generic.KeyValuePair<int,TestAccount>));
-		string o = null;
-
 		try
 		{
-			o = obj.ToString();
+			ToLua.CheckArgsCount(L, 1);
+			System.Collections.Generic.KeyValuePair<int,TestAccount> obj = (System.Collections.Generic.KeyValuePair<int,TestAccount>)ToLua.CheckObject(L, 1, typeof(System.Collections.Generic.KeyValuePair<int,TestAccount>));
+			string o = obj.ToString();
+			LuaDLL.lua_pushstring(L, o);
+			ToLua.SetBack(L, 1, obj);
+			return 1;
 		}
 		catch(Exception e)
 		{
-			LuaDLL.luaL_error(L, e.Message);
-			return 0;
+			return LuaDLL.toluaL_exception(L, e);
 		}
-
-		LuaDLL.lua_pushstring(L, o);
-		ToLua.SetBack(L, 1, obj);
-		return 1;
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
@@ -75,7 +70,7 @@ public class System_Collections_Generic_KeyValuePair_int_TestAccountWrap
 		}
 		else
 		{
-			LuaDLL.lua_pushstring(L, "class System.Collections.Generic.KeyValuePair<int,TestAccount>");
+			LuaDLL.lua_pushnil(L);
 		}
 
 		return 1;
@@ -84,64 +79,41 @@ public class System_Collections_Generic_KeyValuePair_int_TestAccountWrap
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	static int get_Key(IntPtr L)
 	{
-		object o = ToLua.ToObject(L, 1);
-		System.Collections.Generic.KeyValuePair<int,TestAccount> obj = (System.Collections.Generic.KeyValuePair<int,TestAccount>)o;
-		int ret;
+		object o = null;
 
 		try
 		{
-			ret = obj.Key;
+			o = ToLua.ToObject(L, 1);
+
+			System.Collections.Generic.KeyValuePair<int,TestAccount> obj = (System.Collections.Generic.KeyValuePair<int,TestAccount>)o;
+			int ret = obj.Key;
+			LuaDLL.lua_pushinteger(L, ret);
+			return 1;
 		}
 		catch(Exception e)
 		{
-			if (o == null)
-			{
-				LuaDLL.luaL_error(L, "attempt to index Key on a nil value");
-			}
-			else
-			{
-				LuaDLL.luaL_error(L, e.Message);
-			}
-			return 0;
+			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index Key on a nil value" : e.Message);
 		}
-
-		LuaDLL.lua_pushinteger(L, ret);
-		return 1;
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	static int get_Value(IntPtr L)
 	{
-		object o = ToLua.ToObject(L, 1);
-		System.Collections.Generic.KeyValuePair<int,TestAccount> obj = (System.Collections.Generic.KeyValuePair<int,TestAccount>)o;
-		TestAccount ret = null;
+		object o = null;
 
 		try
 		{
-			ret = obj.Value;
+			o = ToLua.ToObject(L, 1);
+
+			System.Collections.Generic.KeyValuePair<int,TestAccount> obj = (System.Collections.Generic.KeyValuePair<int,TestAccount>)o;
+			TestAccount ret = obj.Value;
+			ToLua.PushObject(L, ret);
+			return 1;
 		}
 		catch(Exception e)
 		{
-			if (o == null)
-			{
-				LuaDLL.luaL_error(L, "attempt to index Value on a nil value");
-			}
-			else
-			{
-				LuaDLL.luaL_error(L, e.Message);
-			}
-			return 0;
+			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index Value on a nil value" : e.Message);
 		}
-
-		ToLua.PushObject(L, ret);
-		return 1;
-	}
-
-	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int get_out(IntPtr L)
-	{
-		ToLua.PushOut<System.Collections.Generic.KeyValuePair<int,TestAccount>>(L, new LuaOut<System.Collections.Generic.KeyValuePair<int,TestAccount>>());
-		return 1;
 	}
 }
 

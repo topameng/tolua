@@ -1,4 +1,25 @@
-﻿using UnityEngine;
+﻿/*
+Copyright (c) 2015-2016 topameng(topameng@qq.com)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+using UnityEngine;
 using UnityEditor;
 using System;
 using System.Collections;
@@ -24,7 +45,7 @@ public static class ToLuaMenu
         typeof(UnityEngine.WaitForEndOfFrame),              //内部支持
         typeof(UnityEngine.WaitForFixedUpdate),
         typeof(UnityEngine.WaitForSeconds),        
-        typeof(UnityEngine.Mathf),                          //lua层支持
+        typeof(UnityEngine.Mathf),                          //lua层支持        
         typeof(Plane),                                      
         typeof(LayerMask),                                  
         typeof(Vector3),
@@ -58,6 +79,7 @@ public static class ToLuaMenu
     };
 
     private static bool beAutoGen = false;
+    private static bool beCheck = true;
     private static string toluaLuaDir = Application.dataPath + "/ToLua/Lua";
 
     static ToLuaMenu()
@@ -65,7 +87,7 @@ public static class ToLuaMenu
         string dir = CustomSettings.saveDir;
         string[] files = Directory.GetFiles(dir, "*.cs", SearchOption.TopDirectoryOnly);
 
-        if (files.Length < 3)
+        if (files.Length < 3 && beCheck)
         {
             if (EditorUtility.DisplayDialog("自动生成", "点击确定自动生成常用类型注册文件， 也可通过菜单逐步完成此功能", "确定", "取消"))
             {
@@ -76,6 +98,8 @@ public static class ToLuaMenu
                 GenLuaBinder();
                 beAutoGen = false;                
             }
+
+            beCheck = false;
         }
     }
 
@@ -361,35 +385,47 @@ public static class ToLuaMenu
         for (int i = 0; i < list.Length; i++)
         {
             string space = list[i].nameSpace;
+            AddSpaceNameToTree(tree, root, space);
+        }
 
-            if (space == null || space == string.Empty)
-            {
-                continue;
-            }
+        DelegateType[] dts = CustomSettings.customDelegateList;        
 
-            string[] ns = space.Split(new char[] { '.' });
-            ToLuaNode<string> parent = root;
-
-            for (int j = 0; j < ns.Length; j++)
-            {
-                ToLuaNode<string> node = tree.Find((_t) => { return _t == ns[j];});
-
-                if (node == null)
-                {
-                    node = new ToLuaNode<string>();
-                    node.value = ns[j];
-                    parent.childs.Add(node);
-                    node.parent = parent;
-                    parent = node;
-                }
-                else
-                {
-                    parent = node;
-                }
-            }
+        for (int i = 0; i < dts.Length; i++)
+        {            
+            string space = dts[i].type.Namespace;                        
+            AddSpaceNameToTree(tree, root, space);            
         }
 
         return tree;
+    }
+
+    static void AddSpaceNameToTree(ToLuaTree<string> tree, ToLuaNode<string> root, string space)
+    {
+        if (space == null || space == string.Empty)
+        {
+            return;
+        }
+
+        string[] ns = space.Split(new char[] { '.' });
+        ToLuaNode<string> parent = root;
+
+        for (int j = 0; j < ns.Length; j++)
+        {
+            ToLuaNode<string> node = tree.Find((_t) => { return _t == ns[j]; });
+
+            if (node == null)
+            {
+                node = new ToLuaNode<string>();
+                node.value = ns[j];
+                parent.childs.Add(node);
+                node.parent = parent;
+                parent = node;
+            }
+            else
+            {
+                parent = node;
+            }
+        }
     }
 
     static string GetSpaceNameFromTree(ToLuaNode<string> node)
@@ -420,7 +456,7 @@ public static class ToLuaMenu
         return str;
     }
 
-    static string GetNameSpace(Type t, out string libName)
+    /*static string GetNameSpace(Type t, out string libName)
     {
         if (t.IsGenericType)
         {
@@ -463,7 +499,7 @@ public static class ToLuaMenu
                 return t.Namespace;
             }
         }        
-    }
+    }*/
 
     /*[MenuItem("Lua/Gen DelegateFactoryWrap", false, 3)]
     static void GenLuaDelegateWrap()
@@ -502,6 +538,7 @@ public static class ToLuaMenu
         allTypes.Clear();
         ToLuaTree<string> tree = InitTree();        
         StringBuilder sb = new StringBuilder();
+        List<DelegateType> dtList = new List<DelegateType>();
 
         sb.AppendLineEx("using System;");
         sb.AppendLineEx("using UnityEngine;");
@@ -514,10 +551,10 @@ public static class ToLuaMenu
         sb.AppendLineEx("\t\tfloat t = Time.realtimeSinceStartup;");
         sb.AppendLineEx("\t\tL.BeginModule(null);");
 
-        if (File.Exists(CustomSettings.saveDir + "DelegateFactoryWrap.cs"))
-        {
-            sb.AppendLineEx("\t\tDelegateFactoryWrap.Register(L);");
-        }
+        //if (File.Exists(CustomSettings.saveDir + "DelegateFactoryWrap.cs"))
+        //{
+        //    sb.AppendLineEx("\t\tDelegateFactoryWrap.Register(L);");
+        //}
 
         for (int i = 0; i < allTypes.Count; i++)
         {
@@ -547,7 +584,25 @@ public static class ToLuaMenu
                     sb.Append(str);
                     allTypes.RemoveAt(i--);
                 }
-            }            
+            }
+
+            string funcName = null;
+
+            for (int i = 0; i < CustomSettings.customDelegateList.Length; i++)
+            {
+                DelegateType dt = CustomSettings.customDelegateList[i];
+                Type type = CustomSettings.customDelegateList[i].type;
+
+                if (type.Namespace == space)
+                {
+                    ToLuaExport.GetNameSpace(type, out funcName);
+                    funcName = ToLuaExport.ConvertToLibSign(funcName);
+                    string abr = dt.abr;
+                    abr = abr == null ? funcName : abr;
+                    sb.AppendFormat("\t\tL.RegFunction(\"{0}\", {1});\r\n", abr, dt.name);
+                    dtList.Add(dt);
+                }
+            }
         };
 
         Action<ToLuaNode<string>> end = (node) =>
@@ -563,8 +618,13 @@ public static class ToLuaMenu
         sb.AppendLineEx("\t\tL.EndModule();");
         sb.AppendLineEx("\t\tDebugger.Log(\"Register lua type cost time: {0}\", Time.realtimeSinceStartup - t);");
         sb.AppendLineEx("\t}");
-        sb.AppendLineEx("}\r\n");
 
+        for (int i = 0; i < dtList.Count; i++)
+        {
+            ToLuaExport.GenEventFunction(dtList[i].type, sb);
+        }
+
+        sb.AppendLineEx("}\r\n");
         allTypes.Clear();
         string file = CustomSettings.saveDir + "LuaBinder.cs";
 
@@ -585,7 +645,7 @@ public static class ToLuaMenu
 #elif UNITY_ANDROID
         return "Android";
 #elif UNITY_IPHONE
-        return "IOS";
+        return "iOS";
 #endif
     }
 

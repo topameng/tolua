@@ -1,26 +1,48 @@
-﻿using System;
+﻿/*
+Copyright (c) 2015-2016 topameng(topameng@qq.com)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+
+using System;
 using System.Runtime.InteropServices;
 using System.Reflection;
 using System.Collections;
 using System.Text;
 using System.Security;
 
-
 namespace LuaInterface
-{    
+{
     public enum LuaTypes
     {
         LUA_TNONE = -1,
         LUA_TNIL = 0,
+        LUA_TBOOLEAN = 1,
+        LUA_TLIGHTUSERDATA = 2,
         LUA_TNUMBER = 3,
         LUA_TSTRING = 4,
-        LUA_TBOOLEAN = 1,
         LUA_TTABLE = 5,
         LUA_TFUNCTION = 6,
         LUA_TUSERDATA = 7,
         LUA_TTHREAD = 8,
-        LUA_TLIGHTUSERDATA = 2
-    }    
+
+    }
 
     public enum LuaGCOptions
     {
@@ -46,14 +68,14 @@ namespace LuaInterface
     sealed class LuaIndexes
     {
         public static int LUA_REGISTRYINDEX = -10000;
-        public static int LUA_ENVIRONINDEX = -10001;
-        public static int LUA_GLOBALSINDEX = -10002;        
+        public static int LUA_ENVIRONINDEX  = -10001;
+        public static int LUA_GLOBALSINDEX  = -10002;
     }
 
     public static class ToLuaFlags
     {
-        public const int INDEX_ERROR = 1;      //Index 失败提示error信息，关闭则只返回nil， 默认true
-        public const int USE_INT64 = 2;      //是否内部支持原生int64, 默认 false
+        public const int INDEX_ERROR = 1;       //Index 失败提示error信息，false返回nil
+        public const int USE_INT64 = 2;         //是否内部支持原生int64, 默认 false
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -63,18 +85,53 @@ namespace LuaInterface
         public bool finished;
     }
 
-#if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN    
+    [StructLayout(LayoutKind.Explicit)]
+    public struct Lua_Debug
+    {
+        [FieldOffset(0)]
+        public int slot;
+        [FieldOffset(4)]
+        public IntPtr name;	            /* (n) */
+        [FieldOffset(8)]
+        public IntPtr namewhat;	        /* (n) `global', `local', `field', `method' */
+        [FieldOffset(12)]
+        public IntPtr what;	            /* (S) `Lua', `C', `main', `tail' */
+        [FieldOffset(16)]
+        public IntPtr source;	        /* (S) */
+        [FieldOffset(20)]
+        public int currentline;	        /* (l) */
+        [FieldOffset(24)]
+        public int nups;		        /* (u) number of upvalues */
+        [FieldOffset(28)]
+        public int linedefined;     	/* (S) */
+        [FieldOffset(32)]
+        public int lastlinedefined; 	/* (S) */
+        [FieldOffset(160)]
+        public byte[] short_src;        
+        [FieldOffset(164)]
+        public int i_ci;                /* active function */
+    }
+
+
+#if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-#endif
     public delegate int LuaCSFunction(IntPtr luaState);
-
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate string LuaChunkReader(IntPtr luaState, ref ReaderInfo data, ref uint size);
-
-    public delegate int LuaFunctionCallback(IntPtr luaState);
-
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public delegate void LuaHook(IntPtr L, ref Lua_Debug ar);
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public delegate IntPtr LuaAlloc(IntPtr ud, IntPtr ptr, int osize, int nsize);
+#else
+    public delegate int LuaCSFunction(IntPtr luaState);
+    public delegate string LuaChunkReader(IntPtr luaState, ref ReaderInfo data, ref uint size);
+    public delegate void LuaHook(IntPtr L, ref Lua_Debug ar);
+    public delegate IntPtr LuaAlloc(IntPtr ud, IntPtr ptr, int osize, int nsize);
+#endif
 
     public class LuaDLL
-    {        
+    {
+        public static string version = "1.0.3.59";
         public static int LUA_MULTRET = -1;
         public static string[] LuaTypeName = { "none", "nil", "boolean", "lightuserdata", "number", "string", "table", "function", "userdata", "thread" };
 
@@ -84,253 +141,542 @@ namespace LuaInterface
         const string LUADLL = "tolua";
 #endif
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int luaopen_pb(IntPtr L);        
+        public static extern int luaopen_pb(IntPtr L);
 
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int luaopen_ffi(IntPtr L);        
+        public static extern int luaopen_ffi(IntPtr L);
 
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int luaopen_bit(IntPtr L);
+
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int luaopen_cjson(IntPtr L);
+
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int luaopen_cjson_safe(IntPtr L);
+        /*
+         ** pseudo-indices
+         */
         public static int lua_upvalueindex(int i)
         {
             return LuaIndexes.LUA_GLOBALSINDEX - i;
         }
 
-        // Thread Funcs
+        /*
+         * state manipulation
+         */
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr lua_tothread(IntPtr L, int index);
+        public static extern IntPtr lua_newstate(LuaAlloc f, IntPtr ud);
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int lua_xmove(IntPtr from, IntPtr to, int n);
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int lua_yield(IntPtr L, int nresults);
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void lua_close(IntPtr luaState);
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]                        //[-0, +1, m]  
         public static extern IntPtr lua_newthread(IntPtr L);
+
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr lua_atpanic(IntPtr luaState, IntPtr panic);
+
+        /*
+         * basic stack manipulation
+         */
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int lua_gettop(IntPtr luaState);
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void lua_settop(IntPtr luaState, int top);
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void lua_pushvalue(IntPtr luaState, int idx);
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void lua_remove(IntPtr luaState, int idx);
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void lua_insert(IntPtr luaState, int idx);
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void lua_replace(IntPtr luaState, int index);
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int lua_checkstack(IntPtr luaState, int extra);
+
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void lua_xmove(IntPtr from, IntPtr to, int n);
+
+        /*
+         * access functions (stack -> C)
+         */
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int lua_isnumber(IntPtr luaState, int idx);
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int lua_isstring(IntPtr luaState, int index);
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int lua_iscfunction(IntPtr luaState, int index);
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int lua_isuserdata(IntPtr luaState, int stackPos);
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern LuaTypes lua_type(IntPtr luaState, int index);
+
+        public static string lua_typename(IntPtr luaState, LuaTypes type)
+        {
+            int t = (int)type;
+            return LuaTypeName[t + 1];
+        }
+
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int lua_equal(IntPtr luaState, int idx1, int idx2);
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int lua_rawequal(IntPtr luaState, int idx1, int idx2);
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int lua_lessthan(IntPtr luaState, int idx1, int idx2);
+
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern double lua_tonumber(IntPtr luaState, int idx);
+
+        public static int lua_tointeger(IntPtr luaState, int idx)
+        {
+            return tolua_tointeger(luaState, idx);
+        }
+
+        public static bool lua_toboolean(IntPtr luaState, int idx)
+        {
+            return tolua_toboolean(luaState, idx);
+        }
+
+        public static IntPtr lua_tolstring(IntPtr luaState, int index, out int strLen)               //[-0, +0, m]
+        {
+            return tolua_tolstring(luaState, index, out strLen);
+        }
+
+        public static int lua_objlen(IntPtr luaState, int idx)
+        {
+            return tolua_objlen(luaState, idx);
+        }
+
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr lua_tocfunction(IntPtr luaState, int idx);
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr lua_touserdata(IntPtr luaState, int idx);
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr lua_tothread(IntPtr L, int idx);
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr lua_topointer(IntPtr L, int idx);
+
+        /* 
+         * push functions (C -> stack)
+         */
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void lua_pushnil(IntPtr luaState);
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void lua_pushnumber(IntPtr luaState, double number);
+
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void lua_pushinteger(IntPtr luaState, int n);                          //是否替换为 pushnumber
+
+        public static void lua_pushlstring(IntPtr luaState, byte[] str, int size)                   //[-0, +1, m]
+        {
+            tolua_pushlstring(luaState, str, size);
+        }
+
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void lua_pushstring(IntPtr luaState, string str);                      //[-0, +1, m]
+
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void lua_pushcclosure(IntPtr luaState, IntPtr fn, int n);              //[-n, +1, m]
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void lua_pushboolean(IntPtr luaState, int value);
+
+        public static void lua_pushboolean(IntPtr luaState, bool value)
+        {
+            lua_pushboolean(luaState, value ? 1 : 0);
+        }
+
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void lua_pushlightuserdata(IntPtr luaState, IntPtr udata);
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int lua_pushthread(IntPtr L);
+
+        /*
+         * get functions (Lua -> stack)
+         */
+        public static void lua_gettable(IntPtr L, int idx)
+        {
+            if (LuaDLL.tolua_gettable(L, idx) != 0)
+            {
+                string error = LuaDLL.lua_tostring(L, -1);
+                throw new LuaException(error);
+            }
+        }
+
+        public static void lua_getfield(IntPtr L, int idx, string key)
+        {
+            if (LuaDLL.tolua_getfield(L, idx, key) != 0)
+            {
+                string error = LuaDLL.lua_tostring(L, -1);
+                throw new LuaException(error);
+            }
+        }
+
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void lua_rawget(IntPtr luaState, int idx);
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void lua_rawgeti(IntPtr luaState, int idx, int n);
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void lua_createtable(IntPtr luaState, int narr, int nrec);             //[-0, +1, m]        
+
+        public static IntPtr lua_newuserdata(IntPtr luaState, int size)                             //[-0, +1, m]
+        {
+            return tolua_newuserdata(luaState, size);
+        }
+
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int lua_getmetatable(IntPtr luaState, int objIndex);
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void lua_getfenv(IntPtr luaState, int idx);
+
+        /*
+         * set functions (stack -> Lua)
+         */
+        public static void lua_settable(IntPtr L, int idx)
+        {
+            if (tolua_settable(L, idx) != 0)
+            {
+                string error = LuaDLL.lua_tostring(L, -1);
+                throw new LuaException(error);
+            }
+        }
+
+        public static void lua_setfield(IntPtr L, int idx, string key)
+        {
+            if (tolua_setfield(L, idx, key) != 0)
+            {
+                string error = LuaDLL.lua_tostring(L, -1);
+                throw new LuaException(error);
+            }
+        }
+
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void lua_rawset(IntPtr luaState, int idx);                             //[-2, +0, m]       
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void lua_rawseti(IntPtr luaState, int tableIndex, int index);          //[-1, +0, m]
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void lua_setmetatable(IntPtr luaState, int objIndex);
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int lua_setfenv(IntPtr luaState, int stackPos);
+
+        /*
+         * `load' and `call' functions (load and run Lua code)
+         */
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void lua_call(IntPtr luaState, int nArgs, int nResults);               //[-(nargs+1), +nresults, e]       
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int lua_pcall(IntPtr luaState, int nArgs, int nResults, int errfunc);
+        //[DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        //public static extern int lua_cpcall(IntPtr L, LuaCSFunction func, IntPtr ud);
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int lua_load(IntPtr luaState, LuaChunkReader chunkReader, ref ReaderInfo data, string chunkName);
+        //[DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        //public static extern int lua_dump(IntPtr L, LuaWriter writer, IntPtr data);
+
+        /* 
+         * coroutine functions
+         */
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int lua_yield(IntPtr L, int nresults);                                 //[-?, +?, e]       
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
         public static extern int lua_resume(IntPtr L, int narg);
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
         public static extern int lua_status(IntPtr L);
 
-        public static int luaL_getn(IntPtr luaState, int i)
-        {
-            return (int)LuaDLL.lua_objlen(luaState, i);
-        }
+        /*
+         * garbage-collection function and options
+         */
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int lua_gc(IntPtr luaState, LuaGCOptions what, int data);              //[-0, +0, e]
 
+        /*
+         * miscellaneous functions
+         */
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int lua_gc(IntPtr luaState, LuaGCOptions what, int data);
-        //[DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        //public static extern IntPtr lua_typename(IntPtr luaState, LuaTypes type);
+        public static extern int lua_error(IntPtr luaState);                                        //[-1, +0, v]        
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int lua_next(IntPtr luaState, int index);                              //[-1, +(2|0), e]        
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void lua_concat(IntPtr luaState, int n);                               //[-n, +1, e]
 
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr lua_topointer(IntPtr L, int idx);
-
-        public static string luaL_typename(IntPtr luaState, int stackPos)
-        {            
-            int index = (int)LuaDLL.lua_type(luaState, stackPos) + 1;
-            return LuaTypeName[index];            
-        }
-
-        public static bool lua_isfunction(IntPtr luaState, int stackPos)
-        {
-            return lua_type(luaState, stackPos) == LuaTypes.LUA_TFUNCTION;
-        }
-
-        public static bool lua_islightuserdata(IntPtr luaState, int stackPos)
-        {
-            return lua_type(luaState, stackPos) == LuaTypes.LUA_TLIGHTUSERDATA;
-        }
-
-        public static bool lua_istable(IntPtr luaState, int stackPos)
-        {
-            return lua_type(luaState, stackPos) == LuaTypes.LUA_TTABLE;
-        }
-
-        public static bool lua_isthread(IntPtr luaState, int stackPos)
-        {
-            return lua_type(luaState, stackPos) == LuaTypes.LUA_TTHREAD;
-        }
-
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int lua_error(IntPtr luaState);
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int luaL_error(IntPtr luaState, string message);
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr luaL_gsub(IntPtr luaState, string str, string pattern, string replacement);
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void lua_getfenv(IntPtr luaState, int stackPos);
-
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int lua_isuserdata(IntPtr luaState, int stackPos);
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int lua_lessthan(IntPtr luaState, int stackPos1, int stackPos2);
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int lua_rawequal(IntPtr luaState, int stackPos1, int stackPos2);
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int lua_setfenv(IntPtr luaState, int stackPos);
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void lua_setfield(IntPtr luaState, int stackPos, string name);
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int luaL_callmeta(IntPtr luaState, int stackPos, string name);
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr luaL_newstate();
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void lua_close(IntPtr luaState);
-
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int tolua_objlen(IntPtr luaState, int stackPos);
-        
-        public static int lua_objlen(IntPtr luaState, int stackPos)
-        {
-            return tolua_objlen(luaState, stackPos);
-        }
-
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int luaL_loadstring(IntPtr luaState, string chunk);
-        public static int luaL_dostring(IntPtr luaState, string chunk)
-        {
-            int result = LuaDLL.luaL_loadstring(luaState, chunk);
-            if (result != 0)
-                return result;
-
-            return LuaDLL.lua_pcall(luaState, 0, LUA_MULTRET, 0);
-        }
-
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void lua_createtable(IntPtr luaState, int narr, int nrec);
-        public static void lua_newtable(IntPtr luaState)
-        {
-            LuaDLL.lua_createtable(luaState, 0, 0);
-        }
-        public static int luaL_dofile(IntPtr luaState, string fileName)
-        {
-            int result = LuaDLL.luaL_loadfile(luaState, fileName);
-            if (result != 0)
-                return result;
-
-            return LuaDLL.lua_pcall(luaState, 0, LUA_MULTRET, 0);
-        }
-        public static void lua_getglobal(IntPtr luaState, string name)
-        {
-            LuaDLL.lua_pushstring(luaState, name);
-            LuaDLL.lua_gettable(luaState, LuaIndexes.LUA_GLOBALSINDEX);
-        }
-        public static void lua_setglobal(IntPtr luaState, string name)
-        {
-            LuaDLL.lua_setfield(luaState, LuaIndexes.LUA_GLOBALSINDEX, name);
-        }
-        public static void lua_rawglobal(IntPtr luaState, string name)
-        {
-            LuaDLL.lua_pushstring(luaState, name);
-            LuaDLL.lua_rawget(luaState, LuaIndexes.LUA_GLOBALSINDEX);
-        }
-
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void lua_settop(IntPtr luaState, int newTop);
+        /* 
+        ** ===============================================================
+        ** some useful functions
+        ** ===============================================================
+        */
         public static void lua_pop(IntPtr luaState, int amount)
         {
             LuaDLL.lua_settop(luaState, -(amount) - 1);
         }
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void lua_insert(IntPtr luaState, int newTop);
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void lua_remove(IntPtr luaState, int index);
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void lua_gettable(IntPtr luaState, int index);
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void lua_rawget(IntPtr luaState, int index);
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void lua_settable(IntPtr luaState, int index);
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void lua_rawset(IntPtr luaState, int index);
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void lua_setmetatable(IntPtr luaState, int objIndex);
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int lua_getmetatable(IntPtr luaState, int objIndex);
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int lua_equal(IntPtr luaState, int index1, int index2);
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void lua_pushvalue(IntPtr luaState, int index);
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void lua_replace(IntPtr luaState, int index);
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int lua_gettop(IntPtr luaState);
 
+        public static void lua_newtable(IntPtr luaState)
+        {
+            LuaDLL.lua_createtable(luaState, 0, 0);
+        }
+
+        public static void lua_register(IntPtr luaState, string name, LuaCSFunction func)
+        {
+            lua_pushcfunction(luaState, func);
+            lua_setglobal(luaState, name);
+        }
+
+        public static void lua_pushcfunction(IntPtr luaState, LuaCSFunction func)
+        {
+            IntPtr fn = Marshal.GetFunctionPointerForDelegate(func);
+            lua_pushcclosure(luaState, fn, 0);
+        }
+
+        public static bool lua_isfunction(IntPtr luaState, int n)
+        {
+            return lua_type(luaState, n) == LuaTypes.LUA_TFUNCTION;
+        }
+
+        public static bool lua_istable(IntPtr luaState, int n)
+        {
+            return lua_type(luaState, n) == LuaTypes.LUA_TTABLE;
+        }
+
+        public static bool lua_islightuserdata(IntPtr luaState, int n)
+        {
+            return lua_type(luaState, n) == LuaTypes.LUA_TLIGHTUSERDATA;
+        }
+
+        public static bool lua_isnil(IntPtr luaState, int n)
+        {
+            return (lua_type(luaState, n) == LuaTypes.LUA_TNIL);
+        }
+
+        public static bool lua_isboolean(IntPtr luaState, int n)
+        {
+            LuaTypes type = lua_type(luaState, n);
+            return type == LuaTypes.LUA_TBOOLEAN || type == LuaTypes.LUA_TNIL;
+        }
+
+        public static bool lua_isthread(IntPtr luaState, int n)
+        {
+            return lua_type(luaState, n) == LuaTypes.LUA_TTHREAD;
+        }
+
+        public static bool lua_isnone(IntPtr luaState, int n)
+        {
+            return lua_type(luaState, n) == LuaTypes.LUA_TNONE;
+        }
+
+        public static bool lua_isnoneornil(IntPtr luaState, int n)
+        {
+            return lua_type(luaState, n) <= LuaTypes.LUA_TNIL;
+        }
+
+        public static void lua_setglobal(IntPtr luaState, string name)
+        {
+            lua_setfield(luaState, LuaIndexes.LUA_GLOBALSINDEX, name);
+        }
+
+        public static void lua_getglobal(IntPtr luaState, string name)
+        {
+            lua_getfield(luaState, LuaIndexes.LUA_GLOBALSINDEX, name);
+        }
+
+        public static string lua_ptrtostring(IntPtr str, int len)
+        {
+            string ss = Marshal.PtrToStringAnsi(str, len);
+
+            if (ss == null)
+            {
+                byte[] buffer = new byte[len];
+                Marshal.Copy(str, buffer, 0, len);
+                return Encoding.UTF8.GetString(buffer);
+            }
+
+            return ss;
+        }
+
+        public static string lua_tostring(IntPtr luaState, int index)
+        {
+            int len = 0;
+            IntPtr str = tolua_tolstring(luaState, index, out len);
+
+            if (str != IntPtr.Zero)
+            {
+                return lua_ptrtostring(str, len);
+            }
+
+            return null;
+        }
+
+        public static IntPtr lua_open()
+        {
+            return luaL_newstate();
+        }
+
+        public static void lua_getregistry(IntPtr L)
+        {
+            lua_pushvalue(L, LuaIndexes.LUA_REGISTRYINDEX);
+        }
+
+        public static int lua_getgccount(IntPtr L)
+        {
+            return lua_gc(L, LuaGCOptions.LUA_GCCOUNT, 0);
+        }
+
+        /*
+         ** ======================================================================
+         ** Debug API
+         ** =======================================================================
+         */
+
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int lua_getstack(IntPtr L, int level, ref Lua_Debug ar);
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int lua_getinfo(IntPtr L, string what, ref Lua_Debug ar);
+
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern string lua_getlocal(IntPtr L, ref Lua_Debug ar, int n);
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern string lua_setlocal(IntPtr L, ref Lua_Debug ar, int n);
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern string lua_getupvalue(IntPtr L, int funcindex, int n);
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern string lua_setupvalue(IntPtr L, int funcindex, int n);
+
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int lua_sethook(IntPtr L, LuaHook func, int mask, int count);
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern LuaHook lua_gethook(IntPtr L);
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int lua_gethookmask(IntPtr L);
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int lua_gethookcount(IntPtr L);
+
+        //lualib.h
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void luaL_openlibs(IntPtr luaState);
+
+        //lauxlib.h
         public static int abs_index(IntPtr L, int i)
         {
             return (i > 0 || i <= LuaIndexes.LUA_REGISTRYINDEX) ? i : lua_gettop(L) + i + 1;
         }
 
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern LuaTypes lua_type(IntPtr luaState, int index);
-        public static bool lua_isnil(IntPtr luaState, int index)
+        public static int luaL_getn(IntPtr luaState, int i)
         {
-            return (LuaDLL.lua_type(luaState, index) == LuaTypes.LUA_TNIL);
+            return (int)tolua_getn(luaState, i);
         }
+
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern bool lua_isnumber(IntPtr luaState, int index);
-        public static bool lua_isboolean(IntPtr luaState, int index)
+        public static extern int luaL_getmetafield(IntPtr luaState, int stackPos, string field);           //[-0, +(0|1), m]
+
+        public static int luaL_callmeta(IntPtr L, int stackPos, string field)                              //[-0, +(0|1), m]
         {
-            LuaTypes type = LuaDLL.lua_type(luaState, index);
-            return type == LuaTypes.LUA_TBOOLEAN || type == LuaTypes.LUA_TNIL;
-        }
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int luaL_ref(IntPtr luaState, int t);
-        public static int lua_ref(IntPtr luaState, int lockRef)
-        {
-            if (lockRef != 0)
+            stackPos = abs_index(L, stackPos);
+
+            if (luaL_getmetafield(L, stackPos, field) == 0)  /* no metafield? */
             {
-                return LuaDLL.luaL_ref(luaState, LuaIndexes.LUA_REGISTRYINDEX);
+                return 0;
             }
-            else return 0;
-        }
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void lua_rawgeti(IntPtr luaState, int tableIndex, int index);
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void lua_rawseti(IntPtr luaState, int tableIndex, int index);
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr lua_newuserdata(IntPtr luaState, int size);
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr lua_touserdata(IntPtr luaState, int index);
-        public static void lua_getref(IntPtr luaState, int reference)
-        {
-            LuaDLL.lua_rawgeti(luaState, LuaIndexes.LUA_REGISTRYINDEX, reference);
-        }
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void luaL_unref(IntPtr luaState, int registryIndex, int reference);
-        public static void lua_unref(IntPtr luaState, int reference)
-        {
-            LuaDLL.luaL_unref(luaState, LuaIndexes.LUA_REGISTRYINDEX, reference);
-        }
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int lua_isstring(IntPtr luaState, int index);
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern bool lua_iscfunction(IntPtr luaState, int index);
 
-        public static void lua_pushstdcallcfunction(IntPtr luaState, LuaCSFunction function, int n = 0)
-        {
-            IntPtr fn = Marshal.GetFunctionPointerForDelegate(function);
-            lua_pushcclosure(luaState, fn, n);
+            lua_pushvalue(L, stackPos);
+
+            if (lua_pcall(L, 1, 1, 0) != 0)
+            {
+                string error = LuaDLL.lua_tostring(L, -1);
+                lua_pop(L, 1);
+                throw new LuaException(error);
+            }
+
+            return 1;
         }
 
-        public static void lua_pushcfunction(IntPtr luaState, LuaCSFunction function)
+        public static int luaL_argerror(IntPtr L, int narg, string extramsg)
         {
-            IntPtr fn = Marshal.GetFunctionPointerForDelegate(function);
-            lua_pushcclosure(luaState, fn, 0);
-        }        
+            if (tolua_argerror(L, narg, extramsg) != 0)
+            {
+                string error = LuaDLL.lua_tostring(L, -1);
+                lua_pop(L, 1);
+                throw new LuaException(error);
+            }
 
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void lua_call(IntPtr luaState, int nArgs, int nResults);
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int lua_pcall(IntPtr luaState, int nArgs, int nResults, int errfunc);
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr lua_tocfunction(IntPtr luaState, int index);
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern double lua_tonumber(IntPtr luaState, int index);
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int lua_tointeger(IntPtr luaState, int index);
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern bool lua_toboolean(IntPtr luaState, int index);
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern double luaL_checknumber(IntPtr luaState, int index);
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int luaL_checkinteger(IntPtr luaState, int index);
+            return 0;
+        }
+
+        public static int luaL_typerror(IntPtr L, int stackPos, string tname, string t2 = null)
+        {
+            if (t2 == null)
+            {
+                t2 = luaL_typename(L, stackPos);
+            }
+
+            string msg = string.Format("{1} expected, got {2}", stackPos - 1, tname, t2);
+            return luaL_argerror(L, stackPos, msg);
+        }
+
+        public static string luaL_checklstring(IntPtr L, int numArg, out int len)
+        {
+            IntPtr str = tolua_tolstring(L, numArg, out len);
+
+            if (str == IntPtr.Zero)
+            {
+                luaL_typerror(L, numArg, "string");
+                return null;
+            }
+
+            return lua_ptrtostring(str, len);
+        }
+
+        public static string luaL_optlstring(IntPtr L, int narg, string def, out int len)
+        {
+            if (lua_isnoneornil(L, narg))
+            {
+                len = def != null ? def.Length : 0;
+                return def;
+            }
+
+            return luaL_checklstring(L, narg, out len);
+        }
+
+        public static double luaL_checknumber(IntPtr L, int stackPos)
+        {
+            double d = lua_tonumber(L, stackPos);
+
+            if (d == 0 && LuaDLL.lua_isnumber(L, stackPos) == 0)
+            {
+                luaL_typerror(L, stackPos, "number");
+                return 0;
+            }
+
+            return d;
+        }
+
+        public static double luaL_optnumber(IntPtr L, int idx, double def)
+        {
+            if (lua_isnoneornil(L, idx))
+            {
+                return def;
+            }
+
+            return luaL_checknumber(L, idx);
+        }
+
+        public static int luaL_checkinteger(IntPtr L, int stackPos)
+        {
+            int d = lua_tointeger(L, stackPos);
+
+            if (d == 0 && lua_isnumber(L, stackPos) == 0)
+            {
+                luaL_typerror(L, stackPos, "number");
+                return 0;
+            }
+
+            return d;
+        }
+
+        public static int luaL_optinteger(IntPtr L, int idx, int def)
+        {
+            if (lua_isnoneornil(L, idx))
+            {
+                return def;
+            }
+
+            return luaL_checkinteger(L, idx);
+        }
 
         public static bool luaL_checkboolean(IntPtr luaState, int index)
         {
@@ -343,113 +689,137 @@ namespace LuaInterface
             return false;
         }
 
+        public static void luaL_checkstack(IntPtr L, int space, string mes)
+        {
+            if (lua_checkstack(L, space) == 0)
+            {
+                throw new LuaException(string.Format("stack overflow (%s)", mes));
+            }
+        }
+
+        public static void luaL_checktype(IntPtr L, int narg, LuaTypes t)
+        {
+            if (lua_type(L, narg) != t)
+            {
+                luaL_typerror(L, narg, lua_typename(L, t));
+            }
+        }
+
+        public static void luaL_checkany(IntPtr L, int narg)
+        {
+            if (lua_type(L, narg) == LuaTypes.LUA_TNONE)
+            {
+                luaL_argerror(L, narg, "value expected");
+            }
+        }
 
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr tolua_tolstring(IntPtr luaState, int index, out int strLen);
+        public static extern int luaL_newmetatable(IntPtr luaState, string meta);                               //[-0, +1, m]
 
-        public static IntPtr lua_tolstring(IntPtr luaState, int index, out int strLen)
+        public static IntPtr luaL_checkudata(IntPtr L, int ud, string tname)
         {
-            return tolua_tolstring(luaState, index, out strLen);
-        }
+            IntPtr p = lua_touserdata(L, ud);
 
-        static string AnsiToUnicode(IntPtr source, int strlen)
-        {
-            byte[] buffer = new byte[strlen];
-            Marshal.Copy(source, buffer, 0, strlen);
-            string str = Encoding.UTF8.GetString(buffer);
-            return str;
-        }
-
-        public static string lua_tostring(IntPtr luaState, int index)
-        {
-            int strlen;
-            IntPtr str = tolua_tolstring(luaState, index, out strlen);
-
-            if (str != IntPtr.Zero)
+            if (p != IntPtr.Zero)
             {
-                string ss = Marshal.PtrToStringAnsi(str, strlen);
-
-                //当从c传出中文时会转换失败， topameng
-                if (ss == null)
+                if (lua_getmetatable(L, ud) != 0)
                 {
-                    return AnsiToUnicode(str, strlen);
-                }
+                    lua_getfield(L, LuaIndexes.LUA_REGISTRYINDEX, tname);  /* get correct metatable */
 
-                return ss;
+                    if (lua_rawequal(L, -1, -2) != 0)
+                    {  /* does it have the correct mt? */
+                        lua_pop(L, 2);  /* remove both metatables */
+                        return p;
+                    }
+                }
             }
 
-            return null;
-        }
-
-
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern LuaCSFunction lua_atpanic(IntPtr luaState, LuaCSFunction panicf);
-
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void lua_pushnumber(IntPtr luaState, double number);
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void lua_pushinteger(IntPtr luaState, int number);
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void lua_pushboolean(IntPtr luaState, bool value);
-        
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]        
-        public static extern void tolua_pushlstring(IntPtr luaState, byte[] str, int size);
-
-        public static void lua_pushlstring(IntPtr luaState, byte[] str, int size)
-        {
-            tolua_pushlstring(luaState, str, size);
+            luaL_typerror(L, ud, tname);    /* else error */
+            return IntPtr.Zero;             /* to avoid warnings */
         }
 
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void lua_pushstring(IntPtr luaState, string str);
+        public static extern void luaL_where(IntPtr luaState, int level);                                           //[-0, +1, e]
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int lua_pushthread(IntPtr L);        
+        public static extern int luaL_error(IntPtr luaState, string message);
+
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void lua_pushlightuserdata(IntPtr luaState, IntPtr udata);
+        public static extern int luaL_ref(IntPtr luaState, int t);                                                  //[-1, +0, m]
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void lua_pushnil(IntPtr luaState);
+        public static extern void luaL_unref(IntPtr luaState, int registryIndex, int reference);
+
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void lua_pushcclosure(IntPtr luaState, IntPtr fn, int n);
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int luaL_newmetatable(IntPtr luaState, string meta);
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void lua_getfield(IntPtr luaState, int stackPos, string meta);
-        public static void luaL_getmetatable(IntPtr luaState, string meta)
-        {
-            LuaDLL.lua_getfield(luaState, LuaIndexes.LUA_REGISTRYINDEX, meta);
-        }
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr luaL_checkudata(IntPtr luaState, int stackPos, string meta);
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern LuaTypes luaL_getmetafield(IntPtr luaState, int stackPos, string field);
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int lua_load(IntPtr luaState, LuaChunkReader chunkReader, ref ReaderInfo data, string chunkName);
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int tolua_loadbuffer(IntPtr luaState, byte[] buff, int size, string name);
-        
+        public static extern int luaL_loadfile(IntPtr luaState, string filename);                                   //[-0, +1, e]
+
         public static int luaL_loadbuffer(IntPtr luaState, byte[] buff, int size, string name)
         {
             return tolua_loadbuffer(luaState, buff, size, name);
         }
 
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int luaL_loadfile(IntPtr luaState, string filename);
+        public static extern int luaL_loadstring(IntPtr luaState, string chunk);
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void luaL_where(IntPtr luaState, int level);
+        public static extern IntPtr luaL_newstate();
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr luaL_gsub(IntPtr luaState, string str, string pattern, string replacement);     //[-0, +1, e]  
 
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr lua_getupvalue(IntPtr L, int funcindex, int n);
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int luaL_typerror(IntPtr luaState, int narg, string tname);
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int luaL_argerror(IntPtr luaState, int narg, string extramsg);
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int lua_next(IntPtr luaState, int index);
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern bool lua_checkstack(IntPtr luaState, int extra);
+        public static extern IntPtr luaL_findtable(IntPtr luaState, int idx, string fname, int szhint = 1);
 
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int luaL_optinteger(IntPtr luaState, int idx, int def);
+        /*
+         ** ===============================================================
+         ** some useful functions
+         ** ===============================================================
+        */
+        public static string luaL_typename(IntPtr luaState, int stackPos)
+        {
+            LuaTypes type = LuaDLL.lua_type(luaState, stackPos);
+            return lua_typename(luaState, type);
+        }
+
+        public static int luaL_dofile(IntPtr luaState, string fileName)
+        {
+            int result = luaL_loadfile(luaState, fileName);
+
+            if (result != 0)
+            {
+                return result;
+            }
+
+            return LuaDLL.lua_pcall(luaState, 0, LUA_MULTRET, 0);
+        }
+
+        public static int luaL_dostring(IntPtr luaState, string chunk)
+        {
+            int result = LuaDLL.luaL_loadstring(luaState, chunk);
+
+            if (result != 0)
+            {
+                return result;
+            }
+
+            return LuaDLL.lua_pcall(luaState, 0, LUA_MULTRET, 0);
+        }
+
+        public static void luaL_getmetatable(IntPtr luaState, string meta)
+        {
+            LuaDLL.lua_getfield(luaState, LuaIndexes.LUA_REGISTRYINDEX, meta);
+        }
+
+        public static int lua_ref(IntPtr luaState)
+        {
+            return LuaDLL.luaL_ref(luaState, LuaIndexes.LUA_REGISTRYINDEX);
+        }
+
+        public static void lua_getref(IntPtr luaState, int reference)
+        {
+            lua_rawgeti(luaState, LuaIndexes.LUA_REGISTRYINDEX, reference);
+        }
+
+        public static void lua_unref(IntPtr luaState, int reference)
+        {
+            luaL_unref(luaState, LuaIndexes.LUA_REGISTRYINDEX, reference);
+        }
 
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
         public static extern void tolua_openlibs(IntPtr L);
@@ -458,7 +828,6 @@ namespace LuaInterface
         public static extern void tolua_openint64(IntPtr L);
 
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-		[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
         public static extern int tolua_openlualibs(IntPtr L);
 
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
@@ -480,7 +849,7 @@ namespace LuaInterface
         public static extern int tolua_beginpcall(IntPtr L, int reference);
 
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void tolua_pushtraceback(IntPtr L);        
+        public static extern void tolua_pushtraceback(IntPtr L);
 
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
         public static extern void tolua_getvec2(IntPtr luaState, int stackPos, out float x, out float y);
@@ -535,12 +904,12 @@ namespace LuaInterface
 
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
         public static extern int toluaL_ref(IntPtr L);
-            
+
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
         public static extern void toluaL_unref(IntPtr L, int reference);
 
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr tolua_getmainstate(IntPtr L);        
+        public static extern IntPtr tolua_getmainstate(IntPtr L);
 
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
         public static extern LuaValueType tolua_getvaluetype(IntPtr L, int stackPos);
@@ -553,17 +922,17 @@ namespace LuaInterface
 
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
         public static extern bool tolua_beginmodule(IntPtr L, string name);
-        
+
         public static void tolua_endmodule(IntPtr L)
         {
             lua_pop(L, 1);
-        }      
+        }
 
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
         public static extern int tolua_beginclass(IntPtr L, string name, int baseMetaRef, int reference = 0);
 
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void tolua_endclass(IntPtr L);        
+        public static extern void tolua_endclass(IntPtr L);
 
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
         public static extern void tolua_function(IntPtr L, string name, IntPtr fn);
@@ -590,7 +959,7 @@ namespace LuaInterface
         public static extern void tolua_beginstaticclass(IntPtr L, string name);
 
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void tolua_endstaticclass(IntPtr L);                
+        public static extern void tolua_endstaticclass(IntPtr L);
 
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
         public static extern int tolua_require(IntPtr L, string fileName);
@@ -598,17 +967,102 @@ namespace LuaInterface
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
         public static extern int tolua_getmetatableref(IntPtr L, int pos);
 
-        //flag = true, index 失败提示错误，否则返回nil
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
         public static extern void tolua_setflag(int bit, bool flag);
 
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
         public static extern bool tolua_isvptrtable(IntPtr L, int index);
 
-        public static int toluaL_exception(IntPtr L, Exception e)
+        public static int toluaL_exception(IntPtr L, Exception e, string msg = null)
         {
-            LuaException.luaStack = e.StackTrace;
-            return luaL_error(L, e.Message);
+            msg = msg == null ? e.Message : msg;
+
+            //if (e is LuaException)
+            //{
+            //    LuaException.luaStack = e;
+            //}
+            //else
+            //{
+            LuaException.luaStack = new LuaException(msg, e, 2);
+            //}
+
+            return tolua_error(L, msg);
+        }
+
+        //适配函数
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int tolua_loadbuffer(IntPtr luaState, byte[] buff, int size, string name);
+
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool tolua_toboolean(IntPtr luaState, int index);
+
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int tolua_tointeger(IntPtr luaState, int idx);
+
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr tolua_tolstring(IntPtr luaState, int index, out int strLen);
+
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void tolua_pushlstring(IntPtr luaState, byte[] str, int size);
+
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int tolua_objlen(IntPtr luaState, int stackPos);
+
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr tolua_newuserdata(IntPtr luaState, int size);                     //[-0, +1, m]
+
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int tolua_argerror(IntPtr luaState, int narg, string extramsg);
+
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int tolua_error(IntPtr L, string msg);
+
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int tolua_getfield(IntPtr L, int idx, string key);
+
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int tolua_setfield(IntPtr L, int idx, string key);
+
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int tolua_gettable(IntPtr luaState, int idx);
+
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int tolua_settable(IntPtr luaState, int idx);
+
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int tolua_getn(IntPtr luaState, int stackPos);
+
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int tolua_strlen(IntPtr str);
+
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void tolua_pushcclosure(IntPtr L, IntPtr fn);
+
+        public static void tolua_pushcfunction(IntPtr luaState, LuaCSFunction func)
+        {
+            IntPtr fn = Marshal.GetFunctionPointerForDelegate(func);
+            tolua_pushcclosure(luaState, fn);
+        }
+
+        public static string tolua_findtable(IntPtr L, int idx, string name, int size = 1)
+        {
+            int oldTop = lua_gettop(L);
+            IntPtr p = LuaDLL.luaL_findtable(L, idx, name, size);
+
+            if (p != IntPtr.Zero)
+            {
+                LuaDLL.lua_settop(L, oldTop);
+                int len = LuaDLL.tolua_strlen(p);
+                return LuaDLL.lua_ptrtostring(p, len);
+            }
+
+            return null;
+        }
+
+        public static IntPtr tolua_atpanic(IntPtr L, LuaCSFunction func)
+        {
+            IntPtr fn = Marshal.GetFunctionPointerForDelegate(func);
+            return lua_atpanic(L, fn);
         }
     }
 }

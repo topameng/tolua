@@ -6,20 +6,25 @@ public class ToLua_System_String
 {
     [NoToLuaAttribute]
     public static string ToLua_System_StringDefined =
-@"        LuaTypes luatype = LuaDLL.lua_type(L, 1);
+@"        try
+        {
+            LuaTypes luatype = LuaDLL.lua_type(L, 1);
 
-        if (luatype == LuaTypes.LUA_TSTRING)
-        {
-            string arg0 = LuaDLL.lua_tostring(L, 1);
-            ToLua.PushObject(L, arg0);
-            return 1;
+            if (luatype == LuaTypes.LUA_TSTRING)
+            {
+                string arg0 = LuaDLL.lua_tostring(L, 1);
+                ToLua.PushObject(L, arg0);
+                return 1;
+            }
+            else
+            {
+                return LuaDLL.tolua_error(L, ""invalid arguments to method: String.New"");
+            }            
         }
-        else
+        catch(Exception e)
         {
-            LuaDLL.luaL_error(L, ""invalid arguments to method: String.New"");
-        }
-        
-		return 0;";
+            return LuaDLL.toluaL_exception(L, e);
+        }";
 
     [UseDefinedAttribute]
     public ToLua_System_String()

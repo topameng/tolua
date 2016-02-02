@@ -1,3 +1,8 @@
+--------------------------------------------------------------------------------
+--      Copyright (c) 2015 , 蒙占志(topameng) topameng@gmail.com
+--      All rights reserved.
+--      Use, modification and distribution are subject to the "MIT License"
+--------------------------------------------------------------------------------
 local list = {}
 list.__index = list
 
@@ -29,8 +34,7 @@ function list:push(v)
 end
 
 function list:pop()
-	if not self.last then return end
-	
+	if not self.last then return end	
 	local t = self.last	
 	
 	if t._prev then
@@ -46,35 +50,37 @@ function list:pop()
 	return t.value
 end
 
---[[function List:PushFront(value)
-  if nil == self.first or nil == self.last then
-    self.first = List_Node:New()
-    self.last = self.first
-    self.last.value = value
-    return
-  end
-  local NewNode = List_Node:New()
-  NewNode.value = value
-  NewNode.next = self.first
-  self.first.prev = NewNode
-  self.first = NewNode
+function list:unshift(v)
+	local t = {value = v}
+
+	if self.first then
+		self.first._prev = t
+		t._next = self.first
+		self.first = t
+	else
+		self.first = t
+		self.last = t
+	end
+	
+	self.length = self.length + 1
 end
 
-function List:PopFront()
-  if nil == self.first then
-    return nil
-  end
-  local front = self:Front()
-  local nextNode = self.first.next
-  if nextNode == nil then
-    self.first = nil
-    self.last = nil
-  else
-    nextNode.prev = nil
-    self.first = nextNode
-  end
-  return front
-end]]
+function list:shift()
+	if not self.first then return end
+	local t = self.first
+
+	if t._next then
+		t._next._prev = nil
+		self.first = t._next
+		t._next = nil
+	else
+		self.first = nil
+		self.last = nil
+	end
+
+	self.length = self.length - 1
+	return t.value
+end
 
 function list:remove(iter)
 	if iter._next then
@@ -95,9 +101,7 @@ function list:remove(iter)
 		self.first = nil
 		self.last = nil
 	end
-	
-	iter._next = nil
-	iter._prev = nil
+		
 	self.length = self.length - 1
 	return iter
 end
@@ -192,6 +196,20 @@ function list:insert(v, iter)
 	t._prev = iter
 	iter._next = t
 	self.length = self.length + 1
+end
+
+function list:head()
+  if self.first ~= nil then
+    return self.first.value
+  end
+  return nil
+end
+
+function list:tail()
+  if self.last ~= nil then
+    return self.last.value
+  end
+  return nil
 end
 
 function list:clone()

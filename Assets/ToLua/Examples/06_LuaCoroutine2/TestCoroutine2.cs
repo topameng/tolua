@@ -2,10 +2,9 @@
 using System.Collections;
 using LuaInterface;
 
-public class TestCoroutine2 : MonoBehaviour 
+//两套协同勿交叉使用，类unity原生，大量使用效率低
+public class TestCoroutine2 : LuaClient 
 {
-    LuaState luaState = null;    
-
     string script =
     @"
         function CoExample()            
@@ -27,34 +26,58 @@ public class TestCoroutine2 : MonoBehaviour
             print('coroutine over')
         end
 
-        function TestCo()
-            print('TestCo')
-            local co = coroutine.create(CoExample)
-                        
-            local flag, msg = coroutine.resume(co)
-            
-            if not flag then
-                error(msg)
-            end
+        function TestCo()            
+            StartCoroutine(CoExample)                                   
+        end
+
+        local coDelay = nil
+
+        function Delay()
+	        local c = 1
+
+	        while true do
+		        WaitForSeconds(1) 
+		        print('Count: '..c)
+		        c = c + 1
+	        end
+        end
+
+        function StartDelay()
+	        coDelay = StartCoroutine(Delay)            
+        end
+
+        function StopDelay()
+	        StopCoroutine(coDelay)
         end
     ";
 
-	void Awake () 
+    protected override void OnLoadFinished()
     {
-        luaState = new LuaState();
-        luaState.Start();
-        LuaBinder.Bind(luaState);
-        LuaCoroutine.Register(luaState, this);
+        base.OnLoadFinished();
 
         luaState.DoString(script);
         LuaFunction func = luaState.GetFunction("TestCo");
         func.Call();
         func.Dispose();
-	}
+        func = null;
+    }
 
-    void OnDestroy()
+    //屏蔽，例子不需要运行
+    protected override void CallMain() { }
+
+    void OnGUI()
     {
-        luaState.Dispose();
-        luaState = null;
+        if (GUI.Button(new Rect(50, 50, 120, 45), "Start Coroutine"))
+        {
+            LuaFunction func = luaState.GetFunction("StartDelay");
+            func.Call();
+            func.Dispose();
+        }
+        else if (GUI.Button(new Rect(50, 150, 120, 45), "Stop Coroutine"))
+        {
+            LuaFunction func = luaState.GetFunction("StopDelay");
+            func.Call();
+            func.Dispose();
+        }
     }
 }

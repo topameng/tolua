@@ -1,4 +1,25 @@
-﻿using System;
+﻿/*
+Copyright (c) 2015-2016 topameng(topameng@qq.com)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+using System;
 using System.Runtime.InteropServices;
 using UnityEngine;
 
@@ -10,15 +31,11 @@ namespace LuaInterface
         {
             InitMathf(L);
             InitLayer(L);
-            //InitTouchBits(L);
-            //InitRaycastBits(L);
         }
 
         public static void OpenLuaLibs(IntPtr L)
-        {
-            LuaDLL.lua_pushstdcallcfunction(L, LuaDLL.tolua_openlualibs);
-
-            if (LuaDLL.lua_pcall(L, 0, -1, 0) != 0)
+        {                        
+            if (LuaDLL.tolua_openlualibs(L) != 0)
             {
                 string error = LuaDLL.lua_tostring(L, -1);
                 LuaDLL.lua_pop(L, 1);
@@ -41,7 +58,7 @@ namespace LuaInterface
         {
             LuaDLL.lua_getglobal(L, "Mathf");
             LuaDLL.lua_pushstring(L, "PerlinNoise");
-            LuaDLL.lua_pushstdcallcfunction(L, PerlinNoise);
+            LuaDLL.tolua_pushcfunction(L, PerlinNoise);
             LuaDLL.lua_rawset(L, -3);
             LuaDLL.lua_pop(L, 1);
         }
@@ -65,46 +82,21 @@ namespace LuaInterface
             LuaDLL.lua_pop(L, 1);
         }
 
-        /*static void InitTouchBits(IntPtr L)
-        {
-            LuaDLL.tolua_createtable(L, "TouchBits");
-            LuaDLL.lua_pushinteger(L, TouchBits.Position);
-            LuaDLL.lua_setfield(L, -2, "position");
-            LuaDLL.lua_pushinteger(L, TouchBits.RawPosition);
-            LuaDLL.lua_setfield(L, -2, "rawPosition");
-            LuaDLL.lua_pushinteger(L, TouchBits.DeltaPosition);
-            LuaDLL.lua_setfield(L, -2, "deltaPosition");
-            LuaDLL.lua_pushinteger(L, TouchBits.ALL);
-            LuaDLL.lua_setfield(L, -2, "all");     
-            LuaDLL.lua_pop(L, 1);
-        }
-
-        static void InitRaycastBits(IntPtr L)
-        {
-            LuaDLL.tolua_createtable(L, "RaycastBits");
-            LuaDLL.lua_pushinteger(L, RaycastBits.Collider);
-            LuaDLL.lua_setfield(L, -2, "collider");
-            LuaDLL.lua_pushinteger(L, RaycastBits.Normal);
-            LuaDLL.lua_setfield(L, -2, "normal");
-            LuaDLL.lua_pushinteger(L, RaycastBits.Point);
-            LuaDLL.lua_setfield(L, -2, "point");
-            LuaDLL.lua_pushinteger(L, RaycastBits.Rigidbody);
-            LuaDLL.lua_setfield(L, -2, "rigidbody");
-            LuaDLL.lua_pushinteger(L, RaycastBits.Transform);
-            LuaDLL.lua_setfield(L, -2, "transform");
-            LuaDLL.lua_pushinteger(L, RaycastBits.ALL);
-            LuaDLL.lua_setfield(L, -2, "all");
-            LuaDLL.lua_pop(L, 1);
-        }*/
-
         [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
         static int PerlinNoise(IntPtr L)
         {
-            float x = (float)LuaDLL.luaL_checknumber(L, 1);
-            float y = (float)LuaDLL.luaL_checknumber(L, 2);
-            float ret = Mathf.PerlinNoise(x, y);
-            LuaDLL.lua_pushnumber(L, ret);
-            return 1;
+            try
+            {
+                float x = (float)LuaDLL.luaL_checknumber(L, 1);
+                float y = (float)LuaDLL.luaL_checknumber(L, 2);
+                float ret = Mathf.PerlinNoise(x, y);
+                LuaDLL.lua_pushnumber(L, ret);
+                return 1;
+            }
+            catch (Exception e)
+            {
+                return LuaDLL.toluaL_exception(L, e);
+            }            
         }
 
         static void SetOutMethods(IntPtr L, string table, LuaCSFunction getOutFunc = null)

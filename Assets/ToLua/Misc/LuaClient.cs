@@ -4,181 +4,132 @@ using LuaInterface;
 using System.Collections;
 using System.IO;
 
-public class LuaClient : MonoBehaviour 
+public class LuaClient : MonoBehaviour
 {
     public static LuaClient Instance
     {
         get;
-        private set;
+        protected set;
     }
 
-    LuaState luaState = null;
-    LuaFunction updateFunc = null;
-    LuaFunction lateUpdateFunc = null;
-    LuaFunction fixedUpdateFunc = null;
-    LuaFunction levelLoaded = null;       
+    protected LuaState luaState = null;
+    protected LuaLooper loop = null;
+    protected LuaFunction levelLoaded = null;
 
-    public LuaEvent UpdateEvent
+    protected virtual LuaFileUtils InitLoader()
     {
-        get;
-        private set;
+        return new LuaFileUtils();
     }
 
-    public LuaEvent LateUpdateEvent
+    protected virtual void LoadLuaFiles()
     {
-        get;
-        private set;
+        OnLoadFinished();
     }
 
-    public LuaEvent FixedUpdateEvent
+    protected virtual void OpenLibs()
     {
-        get;
-        private set;
-    }
-
-    void Awake()
-    {
-        Instance = this;             
-        luaState = new LuaState();
         luaState.OpenLibs(LuaDLL.luaopen_pb);
-        LuaBinder.Bind(luaState);
-        LuaCoroutine.Register(luaState, this);
+#if UNITY_STANDALONE_OSX || UNITY_EDITOR_OSX
+        luaState.OpenLibs(LuaDLL.luaopen_bit);
+#endif
     }
 
-	void Start () 
+    protected virtual void CallMain()
     {
-        luaState.Start();
-        luaState.DoFile("Main.lua");
-
-        updateFunc = luaState.GetFunction("Update");
-        lateUpdateFunc = luaState.GetFunction("LateUpdate");
-        fixedUpdateFunc = luaState.GetFunction("FixedUpdate");
-        levelLoaded = luaState.GetFunction("OnLevelWasLoaded");
-
         LuaFunction main = luaState.GetFunction("Main");
         main.Call();
         main.Dispose();
         main = null;
-
-        UpdateEvent = GetEvent("UpdateBeat");
-        LateUpdateEvent = GetEvent("LateUpdateBeat");
-        FixedUpdateEvent = GetEvent("FixedUpdateBeat");                
-	}
-
-    LuaEvent GetEvent(string name)
-    {
-        LuaTable table = luaState.GetTable(name);
-        LuaEvent e = new LuaEvent(table);
-        table.Dispose();
-        table = null;
-        return e;
-    }
-		
-	void Update () 
-    {
-        if (updateFunc != null)
-        {
-            updateFunc.BeginPCall(TracePCall.Ignore);
-            updateFunc.Push(Time.deltaTime);
-            updateFunc.Push(Time.unscaledDeltaTime);
-            updateFunc.PCall();
-            updateFunc.EndPCall();
-        }
-
-        luaState.Collect();
-
-#if UNITY_EDITOR
-        luaState.CheckTop();
-#endif
-	}
-
-    void LateUpdate()
-    {
-        if (lateUpdateFunc != null)
-        {
-            lateUpdateFunc.BeginPCall(TracePCall.Ignore);
-            lateUpdateFunc.PCall();
-            lateUpdateFunc.EndPCall();
-        }
     }
 
-    void FixedUpdate()
+    protected virtual void StartMain()
     {
-        if (fixedUpdateFunc != null)
-        {
-            fixedUpdateFunc.BeginPCall(TracePCall.Ignore);
-            fixedUpdateFunc.Push(Time.fixedDeltaTime);
-            fixedUpdateFunc.PCall();
-            fixedUpdateFunc.EndPCall();
-        }
+        luaState.DoFile("Main.lua");
+        levelLoaded = luaState.GetFunction("OnLevelWasLoaded");
+        CallMain();
     }
 
-    void OnLevelWasLoaded(int level)
+    protected void StartLooper()
     {
-        if (level == 1)
-        {
-            return;
-        }
-
-        levelLoaded.BeginPCall();
-        levelLoaded.Push(level);
-        levelLoaded.PCall();
-        levelLoaded.EndPCall();
+        loop = gameObject.AddComponent<LuaLooper>();
+        loop.luaState = luaState;
     }
 
-    void SafeRelease(ref LuaFunction luaRef)
+    protected virtual void Bind()
     {
-        if (luaRef != null)
+        LuaCoroutine.Register(luaState, this);
+        LuaBinder.Bind(luaState);      
+    }
+
+    protected void Init()
+    {        
+        InitLoader();
+        luaState = new LuaState();
+        OpenLibs();
+        luaState.LuaSetTop(0);
+        Bind();
+        LoadLuaFiles();    
+    }
+
+    protected void Awake()
+    {
+        Instance = this;
+        Init();
+    }
+
+    protected virtual void OnLoadFinished()
+    {
+        luaState.Start();                
+        StartLooper();
+        StartMain();
+    }
+
+    protected void OnLevelWasLoaded(int level)
+    {
+        if (levelLoaded != null)
         {
-            luaRef.Dispose();
-            luaRef = null;
+            levelLoaded.BeginPCall();
+            levelLoaded.Push(level);
+            levelLoaded.PCall();
+            levelLoaded.EndPCall();
         }
     }
 
-    void SafeRelease(ref LuaEvent luaEvent)
-    {
-        if (luaEvent != null)
-        {
-            luaEvent.Dispose();
-            luaEvent = null;
-        }
-    }
-
-    void OnApplicationQuit()
+    protected void Destroy()
     {
         if (luaState != null)
         {
-            SafeRelease(ref updateFunc);
-            SafeRelease(ref lateUpdateFunc);
-            SafeRelease(ref fixedUpdateFunc);
-            SafeRelease(ref levelLoaded);
-
-            if (UpdateEvent != null)
+            if (levelLoaded != null)
             {
-                UpdateEvent.Dispose();
-                UpdateEvent = null;
+                levelLoaded.Dispose();
+                levelLoaded = null;
             }
 
-            if (LateUpdateEvent != null)
-            {
-                LateUpdateEvent.Dispose();
-                LateUpdateEvent = null;
-            }
-
-            if (FixedUpdateEvent != null)
-            {
-                FixedUpdateEvent.Dispose();
-                FixedUpdateEvent = null;
-            }
-
+            loop.Destroy();
             luaState.Dispose();
+            loop = null;
             luaState = null;
             Instance = null;
         }
     }
 
+    protected void OnDestroy()
+    {
+        Destroy();
+    }
+
+    protected void OnApplicationQuit()
+    {
+        Destroy();
+    }
+
     public static LuaState GetMainState()
     {
         return Instance.luaState;
-    }    
+    }
+
+    public LuaLooper GetLooper()
+    {
+        return loop;
+    }
 }

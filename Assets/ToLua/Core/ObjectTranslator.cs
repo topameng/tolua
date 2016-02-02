@@ -1,4 +1,25 @@
-﻿using System;
+﻿/*
+Copyright (c) 2015-2016 topameng(topameng@qq.com)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,15 +27,15 @@ namespace LuaInterface
 {
     public class ObjectTranslator
     {        
-        private class DelayAction
+        private class DelayGC
         {
-            public DelayAction(Action act, float time)
+            public DelayGC(int id, float time)
             {
-                this.Call = act;
+                this.id = id;
                 this.time = time;
             }
 
-            public Action Call = null;
+            public int id;
             public float time;
         }
 
@@ -38,76 +59,18 @@ namespace LuaInterface
 
         public bool LogGC { get; set; }
         public readonly Dictionary<object, int> objectsBackMap = new Dictionary<object, int>(new CompareObject());
-
-        /*public readonly Dictionary<object, int> objectsBackMap = new Dictionary<object, int>();
-        
-        public readonly Dictionary<int, object> objects = new Dictionary<int, object>();
-        int nextObj = 1;
-
-        public int AddObject(object obj)
-        {
-            int index = nextObj++;
-            objects[index] = obj;
-
-            if (!CheckType.IsValueType(obj.GetType()))
-            {
-                objectsBackMap[obj] = index;
-            }
-
-            return index;
-        }
-         
-        public void RemoveObject(int udata)
-        {
-            object o;
-            bool found = objects.TryGetValue(udata, out o);
-
-            if (found)
-            {
-                objects.Remove(udata);
-
-                if (o != null && !CheckType.IsValueType(o.GetType()))
-                {
-                    objectsBackMap.Remove(o);
-                }
-            }
-        }
-
-        public bool Getudata(object o, out int index)
-        {
-            index = -1;
-            return objectsBackMap.TryGetValue(o, out index);
-        }
-
-        public object GetObject(int udata)
-        {
-            object o = null;
-
-            if (objects.TryGetValue(udata, out o))
-            {
-                return o;
-            }
-
-            return null;
-        }
-
-        public void Destroy(int udata)
-        {
-            object o = objects[udata];
-            objects[udata] = null;
-
-            if (o != null && !CheckType.IsValueType(o.GetType()))
-            {
-                objectsBackMap.Remove(o);                
-            }
-        }*/
-
         public readonly LuaObjectPool objects = new LuaObjectPool();
-        private List<DelayAction> gcList = new List<DelayAction>();
+        private List<DelayGC> gcList = new List<DelayGC>();
+
+        private static ObjectTranslator _translator = null;
 
         public ObjectTranslator()
         {
             LogGC = false;
+
+#if !MULTI_STATE
+            _translator = this;
+#endif
         }
 
         public int AddObject(object obj)
@@ -122,53 +85,63 @@ namespace LuaInterface
             return index;
         }
 
-        public void RemoveObject(int udata)
+        public static ObjectTranslator Get(IntPtr L)
         {
-            object o = objects.Remove(udata);
-
-            if (o != null && !TypeChecker.IsValueType(o.GetType()))
-            {
-                objectsBackMap.Remove(o);
-            }            
+#if !MULTI_STATE
+                return _translator;
+#else
+                return LuaState.GetTranslator(L);
+#endif
         }
 
-        //public void RemoveObject(object o)
-        //{
-        //    if (o != null && !TypeChecker.IsValueType(o.GetType()))
-        //    {
-        //        int udata = 0;
+        //完全移除一个对象，适合lua gc
+        public void RemoveObject(int udata)
+        {
+            RemoveFromGCList(udata);
+            object o = objects.Remove(udata);
 
-        //        if (objectsBackMap.TryGetValue(o, out udata))
-        //        {
-        //            objects.Remove(udata);
-        //            objectsBackMap.Remove(o);
-        //        }
-        //    }
-        //}
+            if (o != null)
+            {
+                if (!TypeChecker.IsValueType(o.GetType()))
+                {
+                    objectsBackMap.Remove(o);
+                }
+
+                if (LogGC)
+                {
+                    Debugger.Log("remove object {0}, id {1}", o, udata);
+                }
+            }
+        }
 
         public object GetObject(int udata)
         {
             return objects.TryGetValue(udata);         
         }
 
+        //删除，但不移除一个lua对象
         public void Destroy(int udata)
         {
+            RemoveFromGCList(udata);
             object o = objects.Destroy(udata);
 
-            if (o != null && !TypeChecker.IsValueType(o.GetType()))
+            if (o != null)
             {
-                objectsBackMap.Remove(o);
+                if (!TypeChecker.IsValueType(o.GetType()))
+                {
+                    objectsBackMap.Remove(o);
+                }
 
                 if (LogGC)
                 {
-                    Debugger.Log("collect object {0}, id {1}", o, udata);
+                    Debugger.LogWarning("destroy object {0}, id {1}", o, udata);
                 }
             }
         }
 
-        public void DelayDestroy(Action act, float time)
+        public void DelayDestroy(int id, float time)
         {
-            gcList.Add(new DelayAction(act, time));
+            gcList.Add(new DelayGC(id, time));
         }
 
         public bool Getudata(object o, out int index)
@@ -182,6 +155,16 @@ namespace LuaInterface
             object obj = objects.Replace(index, o);
             objectsBackMap.Remove(obj);
             objectsBackMap[o] = index;
+        }
+
+        void RemoveFromGCList(int id)
+        {
+            int index = gcList.FindIndex((p) => { return p.id == id; });
+
+            if (index >= 0)
+            {
+                gcList.RemoveAt(index);                                
+            }
         }
 
         public void Collect()
@@ -199,7 +182,7 @@ namespace LuaInterface
 
                 if (time <= 0)
                 {
-                    gcList[i].Call();
+                    Destroy(gcList[i].id);                    
                     gcList.RemoveAt(i);
                 }
                 else
@@ -212,7 +195,11 @@ namespace LuaInterface
         public void Dispose()
         {
             objectsBackMap.Clear();
-            objects.Clear();                        
+            objects.Clear();     
+            
+#if !MULTI_STATE
+            _translator = null;
+#endif
         }
     }
 }

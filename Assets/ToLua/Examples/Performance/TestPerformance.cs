@@ -19,7 +19,7 @@ public class TestPerformance : MonoBehaviour
         state = new LuaState();
         state.Start();
         LuaBinder.Bind(state);                       
-        state.DoFile("Test.lua");        
+        state.DoFile("TestPerf.lua");        
         state.LuaGC(LuaGCOptions.LUA_GCCOLLECT);
         state.LogGC = true;        
 	}
@@ -175,5 +175,8 @@ public class TestPerformance : MonoBehaviour
             func.Dispose();
             func = null;
         }
+
+        state.CheckTop();
+        state.Collect();
     }
 }

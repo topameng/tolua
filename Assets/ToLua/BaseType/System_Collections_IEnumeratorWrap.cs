@@ -10,78 +10,66 @@ public class System_Collections_IEnumeratorWrap
 		L.RegFunction("Reset", Reset);
 		L.RegFunction("New", _CreateSystem_Collections_IEnumerator);
 		L.RegVar("Current", get_Current, null);
-		L.RegVar("out", get_out, null);
 		L.EndClass();
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	static int _CreateSystem_Collections_IEnumerator(IntPtr L)
 	{
-		return LuaDLL.luaL_error(L, "System.Collections.IEnumerator class does not have a constructor function");
+		return LuaDLL.tolua_error(L, "System.Collections.IEnumerator class does not have a constructor function");
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	static int MoveNext(IntPtr L)
 	{
-		ToLua.CheckArgsCount(L, 1);
-		System.Collections.IEnumerator obj = (System.Collections.IEnumerator)ToLua.CheckObject(L, 1, typeof(System.Collections.IEnumerator));
-		bool o;
-
 		try
 		{
-			o = obj.MoveNext();
+			ToLua.CheckArgsCount(L, 1);
+			System.Collections.IEnumerator obj = (System.Collections.IEnumerator)ToLua.CheckObject(L, 1, typeof(System.Collections.IEnumerator));
+			bool o = obj.MoveNext();
+			LuaDLL.lua_pushboolean(L, o);
+			return 1;
 		}
 		catch(Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
-
-		LuaDLL.lua_pushboolean(L, o);
-		return 1;
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	static int Reset(IntPtr L)
 	{
-		ToLua.CheckArgsCount(L, 1);
-		System.Collections.IEnumerator obj = (System.Collections.IEnumerator)ToLua.CheckObject(L, 1, typeof(System.Collections.IEnumerator));
-
 		try
 		{
+			ToLua.CheckArgsCount(L, 1);
+			System.Collections.IEnumerator obj = (System.Collections.IEnumerator)ToLua.CheckObject(L, 1, typeof(System.Collections.IEnumerator));
 			obj.Reset();
+			return 0;
 		}
 		catch(Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
-
-		return 0;
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	static int get_Current(IntPtr L)
 	{
-		System.Collections.IEnumerator obj = (System.Collections.IEnumerator)ToLua.ToObject(L, 1);
-		object ret = null;
+		object o = null;
 
 		try
 		{
-			ret = obj.Current;
+			o = ToLua.ToObject(L, 1);
+
+			System.Collections.IEnumerator obj = (System.Collections.IEnumerator)o;
+			object ret = obj.Current;
+			ToLua.Push(L, ret);
+			return 1;
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.luaL_error(L, obj == null ? "attempt to index Current on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index Current on a nil value" : e.Message);
 		}
-
-		ToLua.Push(L, ret);
-		return 1;
-	}
-
-	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int get_out(IntPtr L)
-	{
-		ToLua.PushOut<System.Collections.IEnumerator>(L, new LuaOut<System.Collections.IEnumerator>());
-		return 1;
 	}
 }
 

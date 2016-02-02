@@ -1,4 +1,25 @@
-﻿using System;
+﻿/*
+Copyright (c) 2015-2016 topameng(topameng@qq.com)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -16,12 +37,41 @@ namespace LuaInterface
         {
             get
             {
-                return luaState.GetObject(reference, key);
+                int oldTop = luaState.LuaGetTop();
+
+                try
+                {
+                    luaState.Push(this);
+                    luaState.Push(key);
+                    luaState.LuaGetTable(-2);
+                    object ret = luaState.ToVariant(-1);
+                    luaState.LuaSetTop(oldTop);
+                    return ret;
+                }
+                catch (Exception e)
+                {
+                    luaState.LuaSetTop(oldTop);
+                    throw e;                    
+                }                
             }
 
             set
             {
-                luaState.SetObject(reference, key, value);
+                int oldTop = luaState.LuaGetTop();
+
+                try
+                {
+                    luaState.Push(this);
+                    luaState.Push(key);
+                    luaState.Push(value);
+                    luaState.LuaSetTable(-3);
+                    luaState.LuaSetTop(oldTop);
+                }
+                catch (Exception e)
+                {
+                    luaState.LuaSetTop(oldTop);
+                    throw e;
+                }
             }
         }
 
@@ -31,27 +81,47 @@ namespace LuaInterface
             {
                 if (key < 1)
                 {
-                    throw new LuaException("array index out of bounds: {0}", key);                    
+                    throw new LuaException(string.Format("array index out of bounds: {0}", key));                    
                 }
 
-                luaState.Push(this);
-                luaState.LuaRawGetI(-1, key);
-                object obj = luaState.ToVariant(-1);
-                luaState.LuaPop(2);
-                return obj;
+                int oldTop = luaState.LuaGetTop();
+
+                try
+                {
+                    luaState.Push(this);
+                    luaState.LuaRawGetI(-1, key);
+                    object obj = luaState.ToVariant(-1);
+                    luaState.LuaSetTop(oldTop);
+                    return obj;
+                }
+                catch (Exception e)
+                {
+                    luaState.LuaSetTop(oldTop);
+                    throw e;
+                }
             }
 
             set
             {
                 if (key < 1)
                 {                    
-                    throw new LuaException("array index out of bounds: {0}", key);                          
+                    throw new LuaException("array index out of bounds: " + key);                          
                 }
 
-                luaState.Push(this);
-                luaState.Push(value);
-                luaState.LuaRawSetI(-2, key);
-                luaState.LuaPop(1);
+                int oldTop = luaState.LuaGetTop();
+
+                try
+                {
+                    luaState.Push(this);
+                    luaState.Push(value);
+                    luaState.LuaRawSetI(-2, key);
+                    luaState.LuaSetTop(oldTop);
+                }
+                catch (Exception e)
+                {
+                    luaState.LuaSetTop(oldTop);
+                    throw e;
+                }
             }
         }
 
@@ -59,76 +129,139 @@ namespace LuaInterface
         {
             get
             {
-                return luaState.LuaObjLen(reference);
+                luaState.Push(this);
+                int n = luaState.LuaObjLen(-1);
+                luaState.LuaPop(1);
+                return n;
             }
         }
 
         public LuaFunction RawGetLuaFunction(string key)
-        {
-            luaState.Push(this);
-            luaState.Push(key);
-            luaState.LuaRawGet(-2);
-            string error = null;
-            LuaFunction func = luaState.CheckLuaFunction(-1, out error);
-            luaState.LuaPop(2);
+        {            
+            int top = luaState.LuaGetTop();
 
-            if (error != null)
-            {                
-                throw new LuaException(error);
-            }
-
-            if (func != null)
+            try
             {
-                func.name = name + "." + key;
-            }
+                luaState.Push(this);
+                luaState.Push(key);
+                luaState.LuaRawGet(-2);
+                LuaFunction func = luaState.CheckLuaFunction(-1);
+                luaState.LuaSetTop(top);
 
-            return func;
+                if (func != null)
+                {
+                    func.name = name + "." + key;
+                }
+
+                return func;
+            }
+            catch(Exception e)            
+            {
+                luaState.LuaSetTop(top);
+                throw e;
+            }
         }
 
         public LuaFunction GetLuaFunction(string key)
         {
-            string error = null;            
-            luaState.Push(this);
-            luaState.Push(key);
-            luaState.LuaGetTable(-2, out error);
+            int top = luaState.LuaGetTop();
 
-            if (error != null)
-            {                
-                luaState.LuaPop(2);                        
-                throw new LuaException(error);
-            }
-
-            LuaFunction func = luaState.CheckLuaFunction(-1, out error);
-            luaState.LuaPop(2);
-
-            if (error != null)
-            {                
-                throw new LuaException(error);
-            }
-
-            if (func != null)
+            try
             {
-                func.name = name + "." + key;
-            }
+                luaState.Push(this);
+                luaState.Push(key);
+                luaState.LuaGetTable(-2);
+                LuaFunction func = luaState.CheckLuaFunction(-1);
+                luaState.LuaSetTop(top);
 
-            return func;
+                if (func != null)
+                {
+                    func.name = name + "." + key;
+                }
+
+                return func;
+            }
+            catch(Exception e)
+            {
+                luaState.LuaSetTop(top);
+                throw e;
+            }
+        }
+
+        public string GetStringField(string name)
+        {
+            int oldTop = luaState.LuaGetTop();
+     
+            try
+            {
+                luaState.Push(this);
+                luaState.LuaGetField(-1, name);
+                string str = luaState.CheckString(-1);
+                luaState.LuaSetTop(oldTop);
+                return str;
+            }
+            catch(LuaException e)
+            {
+                luaState.LuaSetTop(oldTop);
+                throw e;
+            }
         }
 
         public void AddTable(string name)
         {
-            luaState.Push(this);
-            luaState.AddTable(-1, name);
-            luaState.LuaPop(1);
+            int oldTop = luaState.LuaGetTop();
+
+            try
+            {
+                luaState.Push(this);
+                luaState.Push(name);
+                luaState.LuaCreateTable();                
+                luaState.LuaRawSet(-3);
+                luaState.LuaSetTop(oldTop);
+            }
+            catch (Exception e)
+            {
+                luaState.LuaSetTop(oldTop);
+                throw e;
+            }
         }
 
         public object[] ToArray()
-        {            
-            return luaState.TableToArray(this);
+        {
+            int oldTop = luaState.LuaGetTop();
+
+            try
+            {
+                luaState.Push(this);
+                int len = luaState.LuaObjLen(-1);
+                List<object> list = new List<object>(len + 1);
+                int index = 1;
+                object obj = null;
+
+                while(index <= len)
+                {
+                    luaState.LuaRawGetI(-1, index++);
+                    obj = luaState.ToVariant(-1);
+                    luaState.LuaPop(1);
+                    list.Add(obj);
+                }                
+
+                luaState.LuaSetTop(oldTop);
+                return list.ToArray();
+            }
+            catch (Exception e)
+            {
+                luaState.LuaSetTop(oldTop);
+                throw e;
+            }
         }
 
         public override string ToString()
         {
-            return luaState.TableToString(this);
+            luaState.Push(this);
+            IntPtr p = luaState.LuaToPointer(-1);
+            luaState.LuaPop(1);
+            return string.Format("table:0x{0}", p.ToString("X"));            
         }
 
         public LuaArrayTable ToArrayTable()
@@ -143,7 +276,26 @@ namespace LuaInterface
 
         public LuaTable GetMetaTable()
         {            
-            return luaState.GetMetaTable(this);
+            int oldTop = luaState.LuaGetTop();
+
+            try
+            {
+                LuaTable t = null;
+                luaState.Push(this);
+
+                if (luaState.LuaGetMetaTable(-1) != 0)
+                {
+                    t = luaState.CheckLuaTable(-1);
+                }
+
+                luaState.LuaSetTop(oldTop);
+                return t;
+            }
+            catch (Exception e)
+            {
+                luaState.LuaSetTop(oldTop);
+                throw e;
+            }
         }
     }
 

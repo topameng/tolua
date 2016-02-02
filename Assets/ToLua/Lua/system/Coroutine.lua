@@ -1,9 +1,7 @@
 --------------------------------------------------------------------------------
 --      Copyright (c) 2015 , 蒙占志(topameng) topameng@gmail.com
 --      All rights reserved.
---
---      Use, modification and distribution are subject to the "New BSD License"
---      as listed at <url: http://www.opensource.org/licenses/bsd-license.php >.
+--      Use, modification and distribution are subject to the "MIT License"
 --------------------------------------------------------------------------------
 
 local create = coroutine.create
@@ -11,6 +9,9 @@ local running = coroutine.running
 local resume = coroutine.resume
 local yield = coroutine.yield
 local error = error
+
+local comap = {}
+setmetatable(comap, {_mode = "kv"})
 
 function coroutine.start(f, ...)	
 	local co = create(f)
@@ -26,19 +27,22 @@ function coroutine.start(f, ...)
 		local args = {...}
 		local timer = nil
 		
-		local action = function()							
-			local flag, msg = resume(co, unpack(args))
+		local action = function()												
+			local flag, msg = resume(co, unpack(args))			
 	
 			if not flag then				
-				timer:Stop()
+				timer:Stop()				
 				msg = debug.traceback(co, msg)				
 				error(msg)						
 			end		
 		end
 			
 		timer = FrameTimer.New(action, 0, 1)
+		comap[co] = timer
 		timer:Start()		
 	end
+
+	return co
 end
 
 function coroutine.wait(t, co, ...)
@@ -46,7 +50,7 @@ function coroutine.wait(t, co, ...)
 	co = co or running()		
 	local timer = nil
 		
-	local action = function()		
+	local action = function()				
 		local flag, msg = resume(co, unpack(args))
 		
 		if not flag then	
@@ -57,7 +61,8 @@ function coroutine.wait(t, co, ...)
 		end
 	end
 	
-	timer = CoTimer.New(action, t, 1)	
+	timer = CoTimer.New(action, t, 1)
+	comap[co] = timer	
 	timer:Start()
 	return yield()
 end
@@ -67,7 +72,7 @@ function coroutine.step(t, co, ...)
 	co = co or running()		
 	local timer = nil
 	
-	local action = function()							
+	local action = function()						
 		local flag, msg = resume(co, unpack(args))
 	
 		if not flag then							
@@ -79,6 +84,7 @@ function coroutine.step(t, co, ...)
 	end
 				
 	timer = FrameTimer.New(action, t or 1, 1)
+	comap[co] = timer
 	timer:Start()
 	return yield()
 end
@@ -91,7 +97,7 @@ function coroutine.www(www, co)
 		if not www.isDone then		
 			return		
 		end		
-		
+				
 		timer:Stop()		
 		local flag, msg = resume(co)		
 			
@@ -102,7 +108,17 @@ function coroutine.www(www, co)
 		end				
 	end		
 					
-	timer = FrameTimer.New(action, 1, -1)		
+	timer = FrameTimer.New(action, 1, -1)	
+	comap[co] = timer	
  	timer:Start()
  	return yield()
- end
+end
+
+function coroutine.stop(co)
+ 	local timer = comap[co]
+
+ 	if timer ~= nil then
+ 		comap[co] = nil
+ 		timer:Stop() 		
+ 	end
+end

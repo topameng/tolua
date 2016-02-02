@@ -52,6 +52,7 @@ public class TestOutArg : MonoBehaviour
         }
 
         state.CheckTop();
+        state.Collect();
     }
 
     void OnDestroy()

@@ -7,13 +7,13 @@ using LuaInterface;
 public class TestDelegate: MonoBehaviour
 {
     private string script =
-    @"                  
+    @"                              
             function DoClick1(go)                
-                print('click1 gameObject is '..go.name)
+                print('click1 gameObject is '..go.name)                    
             end
 
             function DoClick2(go)                
-                print('click2 gameObject is '..go.name)
+                print('click2 gameObject is '..go.name)                              
             end                       
 
             function AddClick1(listener)       
@@ -21,7 +21,7 @@ public class TestDelegate: MonoBehaviour
                     listener.onClick = listener.onClick + DoClick1                                                    
                 else
                     listener.onClick = DoClick1    
-                end
+                end                
             end
 
             function AddClick2(listener)
@@ -29,7 +29,7 @@ public class TestDelegate: MonoBehaviour
                     listener.onClick = listener.onClick + DoClick2                      
                 else
                     listener.onClick = DoClick2
-                end
+                end                
             end
 
             function SetClick1(listener)
@@ -56,6 +56,7 @@ public class TestDelegate: MonoBehaviour
                 end
             end
 
+            --测试重载问题
             function TestOverride(listener)
                 listener:SetOnFinished(TestEventListener.OnClick(DoClick1))
                 listener:SetOnFinished(TestEventListener.VoidDelegate(DoClick2))
@@ -146,7 +147,20 @@ public class TestDelegate: MonoBehaviour
         {
             CallLuaFunction(RemoveClick2);
         }
-        else if (GUI.Button(new Rect(10, 260, 120, 40), "OnClick"))
+        else if (GUI.Button(new Rect(10, 260, 120, 40), "+ Click1 in C#"))
+        {
+            LuaFunction func = state.GetFunction("DoClick1");
+            TestEventListener.OnClick onClick = (TestEventListener.OnClick)DelegateFactory.CreateDelegate(typeof(TestEventListener.OnClick), func);
+            listener.onClick += onClick;
+        }        
+        else if (GUI.Button(new Rect(10, 310, 120, 40), " - Click1 in C#"))
+        {
+            LuaFunction func = state.GetFunction("DoClick1");
+            listener.onClick = (TestEventListener.OnClick)DelegateFactory.RemoveDelegate(listener.onClick, func);
+            func.Dispose();
+            func = null;
+        }
+        else if (GUI.Button(new Rect(10, 360, 120, 40), "OnClick"))
         {
             if (listener.onClick != null)
             {
@@ -157,25 +171,25 @@ public class TestDelegate: MonoBehaviour
                 Debug.Log("empty delegate!!");
             }
         }
-        else if (GUI.Button(new Rect(10, 310, 120, 40), "Override"))
+        else if (GUI.Button(new Rect(10, 410, 120, 40), "Override"))
         {
             CallLuaFunction(TestOverride);
         }
-        else if (GUI.Button(new Rect(10, 360, 120, 40), "Force GC"))
+        else if (GUI.Button(new Rect(10, 460, 120, 40), "Force GC"))
         {
             //自动gc log: collect lua reference name , id xxx in thread 
             state.LuaGC(LuaGCOptions.LUA_GCCOLLECT, 0);
             GC.Collect();
         }
-        else if (GUI.Button(new Rect(10, 410, 120, 40), "event +"))
+        else if (GUI.Button(new Rect(10, 510, 120, 40), "event +"))
         {
             CallLuaFunction(AddEvent);
         }
-        else if (GUI.Button(new Rect(10, 460, 120, 40), "event -"))
+        else if (GUI.Button(new Rect(10, 560, 120, 40), "event -"))
         {
             CallLuaFunction(RemoveEvent);
         }
-        else if (GUI.Button(new Rect(10, 512, 120, 40), "event call"))
+        else if (GUI.Button(new Rect(10, 610, 120, 40), "event call"))
         {
             listener.OnClickEvent(gameObject);
         }

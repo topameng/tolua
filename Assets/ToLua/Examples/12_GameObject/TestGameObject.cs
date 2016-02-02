@@ -30,12 +30,12 @@ public class TestGameObject: MonoBehaviour
 
     void Update()
     {
-        lua.Collect();
+        lua.CheckTop();
+        lua.Collect();        
     }
 
     void OnDestroy()
-    {
-        lua.CheckTop();
+    {        
         lua.Dispose();
         lua = null;   
     }

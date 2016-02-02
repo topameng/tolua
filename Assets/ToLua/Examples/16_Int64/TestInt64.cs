@@ -3,9 +3,9 @@ using System.Collections;
 using System;
 using LuaInterface;
 
-public class TestInt64 : MonoBehaviour 
+public class TestInt64 : MonoBehaviour
 {
-	private string tips = "";
+    private string tips = "";
 
     string script =
         @"
@@ -36,21 +36,21 @@ public class TestInt64 : MonoBehaviour
         ";
 
 
-	void Start () 
+    void Start()
     {
-		#if UNITY_5		
+#if UNITY_5		
 		Application.logMessageReceived += ShowTips;
-		#else
-		Application.RegisterLogCallback(ShowTips);           
-		#endif
-		new LuaResLoader();
+#else
+        Application.RegisterLogCallback(ShowTips);
+#endif
+        new LuaResLoader();
         LuaState lua = new LuaState();
         lua.Start();
-        lua.DoString(script);				                   
+        lua.DoString(script);
 
         LuaFunction func = lua.GetFunction("TestInt64");
         func.BeginPCall();
-		func.PushInt64(9223372036854775807 - 789);
+        func.PushInt64(9223372036854775807 - 789);
         func.PCall();
         LuaInteger64 n64 = func.CheckInteger64();
         Debugger.Log("int64 return from lua is: {0}", n64);
@@ -58,28 +58,28 @@ public class TestInt64 : MonoBehaviour
         func.Dispose();
         func = null;
 
-        lua.CheckTop();    
-		lua.Dispose();  
-		lua = null;
-	}	
+        lua.CheckTop();
+        lua.Dispose();
+        lua = null;
+    }
 
-	void ShowTips(string msg, string stackTrace, LogType type)
-	{		
-		tips += msg;             
-		tips += "\r\n";
-	}
+    void ShowTips(string msg, string stackTrace, LogType type)
+    {
+        tips += msg;
+        tips += "\r\n";
+    }
 
-	void OnDestroy()
-	{		
-		#if UNITY_5		
+    void OnDestroy()
+    {
+#if UNITY_5		
 		Application.logMessageReceived -= ShowTips;
-		#else
-		Application.RegisterLogCallback(null);
-		#endif
-	}
+#else
+        Application.RegisterLogCallback(null);
+#endif
+    }
 
-	void OnGUI()
-	{
-		GUI.Label (new Rect (Screen.width / 2 - 200, Screen.height / 2 - 150, 400, 300), tips);
-	}
+    void OnGUI()
+    {
+        GUI.Label(new Rect(Screen.width / 2 - 200, Screen.height / 2 - 150, 400, 300), tips);
+    }
 }

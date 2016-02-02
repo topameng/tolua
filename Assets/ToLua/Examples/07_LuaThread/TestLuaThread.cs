@@ -23,7 +23,7 @@ public class TestLuaThread : MonoBehaviour
                     local flag = coroutine.yield(fib(i))					
                     if not flag then
                         break
-                    end
+                    end                                      
                 end
                 print('Coroutine ended')
             end
@@ -66,6 +66,12 @@ public class TestLuaThread : MonoBehaviour
         state = null;
     }
 
+    void Update()
+    {
+        state.CheckTop();
+        state.Collect();
+    }
+
     void OnGUI()
     {
         if (GUI.Button(new Rect(10, 10, 120, 40), "Resume Thead"))
@@ -79,8 +85,7 @@ public class TestLuaThread : MonoBehaviour
         else if (GUI.Button(new Rect(10, 60, 120, 40), "Close Thread"))
         {
             if (thread != null)
-            {
-                thread.Resume(false);
+            {                
                 thread.Dispose();
                 thread = null;
             }

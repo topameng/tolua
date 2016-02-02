@@ -3,24 +3,22 @@ using System;
 using System.Collections;
 using LuaInterface;
 
+//两套协同系统勿交叉使用，此为推荐方案
 public class TestCoroutine : MonoBehaviour 
 {
     public TextAsset luaFile = null;
     private LuaState lua = null;
-    private LuaFunction update = null;
-    private LuaFunction lateupdate = null;
-    private LuaFunction fixedupdate = null;
+    private LuaLooper looper = null;
 
 	void Awake () 
     {        
         lua  = new LuaState();
         lua.Start();
-        LuaBinder.Bind(lua);
+        LuaBinder.Bind(lua);                
+        looper = gameObject.AddComponent<LuaLooper>();
+        looper.luaState = lua;
 
-        lua.DoString(luaFile.text, "LuaCoroutine.lua");
-        update = lua.GetFunction("Update");
-        lateupdate = lua.GetFunction("LateUpdate");
-        fixedupdate = lua.GetFunction("FixedUpdate");                
+        lua.DoString(luaFile.text, "LuaCoroutine");
         LuaFunction f = lua.GetFunction("TestCortinue");
         f.Call();
         f.Dispose();
@@ -29,36 +27,24 @@ public class TestCoroutine : MonoBehaviour
 
     void OnDestroy()
     {
-        update.Dispose();
-        lateupdate.Dispose();
-        fixedupdate.Dispose();
+        looper.Destroy();
         lua.Dispose();
-    }
-	
-	// Update is called once per frame
-	void Update () 
-    {
-        update.BeginPCall(TracePCall.Ignore);
-        update.Push(Time.deltaTime);
-        update.Push(Time.unscaledDeltaTime);
-        update.PCall();
-        update.EndPCall();
+        lua = null;
+    }	
 
-        lua.CheckTop();
-	}
-
-    void LateUpdate()
+    void OnGUI()
     {
-        lateupdate.BeginPCall(TracePCall.Ignore);
-        lateupdate.PCall();
-        lateupdate.EndPCall();
-    }
-
-    void FixedUpdate()
-    {
-        fixedupdate.BeginPCall(TracePCall.Ignore);
-        fixedupdate.Push(Time.fixedDeltaTime);
-        fixedupdate.PCall();
-        fixedupdate.EndPCall();        
+        if (GUI.Button(new Rect(50, 50, 120, 45), "Start Coroutine"))
+        {            
+            LuaFunction func = lua.GetFunction("StartDelay");
+            func.Call();
+            func.Dispose();
+        }
+        else if (GUI.Button(new Rect(50, 150, 120, 45), "Stop Coroutine"))
+        {
+            LuaFunction func = lua.GetFunction("StopDelay");
+            func.Call();
+            func.Dispose();
+        }
     }
 }

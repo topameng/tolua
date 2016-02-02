@@ -1,3 +1,8 @@
+--------------------------------------------------------------------------------
+--      Copyright (c) 2015 , 蒙占志(topameng) topameng@gmail.com
+--      All rights reserved.
+--      Use, modification and distribution are subject to the "MIT License"
+--------------------------------------------------------------------------------
 local setmetatable = setmetatable
 
 local _slot = {}

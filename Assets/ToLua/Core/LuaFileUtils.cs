@@ -1,8 +1,23 @@
-﻿/*    
- * Copyright (c) 2015.10 , 蒙占志 (Zhanzhi Meng) topameng@gmail.com
- * Use, modification and distribution are subject to the "MIT License"
- * (bezip = false)在search path 中查找读取lua文件。
- * (bezip = true)可以从外部设置过来bundel文件中读取lua文件。
+﻿/*
+Copyright (c) 2015-2016 topameng(topameng@qq.com)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
 */
 
 using UnityEngine;
@@ -31,6 +46,7 @@ public class LuaFileUtils
         }
     }
 
+    //beZip = false 在search path 中查找读取lua文件。否则从外部设置过来bundel文件中读取lua文件
     public bool beZip = false;    
     protected List<string> searchPaths = new List<string>();      
     protected Dictionary<string, AssetBundle> zipMap = new Dictionary<string, AssetBundle>();
@@ -58,12 +74,19 @@ public class LuaFileUtils
         }
     }
 
-    public void AddSearchPath(string path, bool front = false)
+    public bool AddSearchPath(string path, bool front = false)
     {
         if (path.Length > 0 && path[path.Length - 1] != '/')
         {
             path += "/";
-        }        
+        }
+
+        int index = searchPaths.IndexOf(path);
+
+        if (index >= 0)
+        {
+            return false;
+        }
 
         if (front)
         {
@@ -73,6 +96,8 @@ public class LuaFileUtils
         {
             searchPaths.Add(path);
         }
+
+        return true;
     }
 
     public void RemoveSearchPath(string path)
@@ -185,7 +210,7 @@ public class LuaFileUtils
 #elif UNITY_ANDROID
         return "Android";
 #elif UNITY_IPHONE
-        return "IOS";
+        return "iOS";
 #else
         return "";
 #endif
