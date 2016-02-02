@@ -2,11 +2,11 @@
 
 tolua# is an unity lua static binder solution. 
 
-tolua# is an unity plugins that greatly simplifies the integration of C# code with Lua. can automatically generates the binding code to access unity from Lua. it maps c# constants,  variables, functions, properties, classes, and methods to Lua.
+tolua# is an unity plugin that greatly simplifies the integration of C# code with Lua. can automatically generates the binding code to access unity from Lua. it maps c# constants,  variables, functions, properties, classes, and methods to Lua.
 
-tolua# is grow up from cstolua.  tolua#'s goal is to be a powerful development environment for unity.
+tolua# grows up from cstolua.  tolua#'s goal is to be a powerful development environment for unity.
 
-support unity4.6.x and unity5.x all(int u5, delete Plugins/x86 or Plugins/x86_64)
+support unity4.6.x and unity5.x all(in unity5.x, delete Plugins/x86 or Plugins/x86_64)
 
  **if you want to test in mobile, first click menu Lua/Copy lua files to Resources. then build it**
 
