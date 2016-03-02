@@ -119,8 +119,10 @@ namespace LuaInterface
             return objects.TryGetValue(udata);         
         }
 
-        void _Destroy(int udata)
+        //删除，但不移除一个lua对象
+        public void Destroy(int udata)
         {
+            RemoveFromGCList(udata);
             object o = objects.Destroy(udata);
 
             if (o != null)
@@ -135,13 +137,6 @@ namespace LuaInterface
                     Debugger.LogWarning("destroy object {0}, id {1}", o, udata);
                 }
             }
-        }
-
-        //删除，但不移除一个lua对象
-        public void Destroy(int udata)
-        {
-            RemoveFromGCList(udata);
-            _Destroy(udata);
         }
 
         public void DelayDestroy(int id, float time)
@@ -171,6 +166,31 @@ namespace LuaInterface
                 gcList.RemoveAt(index);                                
             }
         }
+        
+        void DestroyUnityObject(int udata)
+        {
+            object o = objects.Destroy(udata);
+
+            if (o != null)
+            {                
+                if (!TypeChecker.IsValueType(o.GetType()))
+                {
+                    objectsBackMap.Remove(o);
+                }
+
+                UnityEngine.Object obj = o as UnityEngine.Object;
+
+                if (obj != null)
+                {
+                    UnityEngine.Object.Destroy(obj);
+                }
+
+                if (LogGC)
+                {
+                    Debugger.LogWarning("destroy object {0}, id {1}", o, udata);
+                }
+            }
+        }
 
         public void Collect()
         {
@@ -187,7 +207,7 @@ namespace LuaInterface
 
                 if (time <= 0)
                 {
-                    _Destroy(gcList[i].id);                    
+                    DestroyUnityObject(gcList[i].id);                    
                     gcList.RemoveAt(i);
                 }
                 else
