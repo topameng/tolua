@@ -9,7 +9,7 @@
 	<key>CFBundleExecutable</key>
 	<string>tolua</string>
 	<key>CFBundleIdentifier</key>
-	<string>xlcw.{PRODUCT_NAME:rfc1034identifier}$</string>
+	<string>ameng.tolua</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
