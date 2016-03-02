@@ -119,10 +119,8 @@ namespace LuaInterface
             return objects.TryGetValue(udata);         
         }
 
-        //删除，但不移除一个lua对象
-        public void Destroy(int udata)
+        void _Destroy(int udata)
         {
-            RemoveFromGCList(udata);
             object o = objects.Destroy(udata);
 
             if (o != null)
@@ -137,6 +135,13 @@ namespace LuaInterface
                     Debugger.LogWarning("destroy object {0}, id {1}", o, udata);
                 }
             }
+        }
+
+        //删除，但不移除一个lua对象
+        public void Destroy(int udata)
+        {
+            RemoveFromGCList(udata);
+            _Destroy(udata);
         }
 
         public void DelayDestroy(int id, float time)
@@ -182,7 +187,7 @@ namespace LuaInterface
 
                 if (time <= 0)
                 {
-                    Destroy(gcList[i].id);                    
+                    _Destroy(gcList[i].id);                    
                     gcList.RemoveAt(i);
                 }
                 else
