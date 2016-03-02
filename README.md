@@ -46,7 +46,7 @@ https://github.com/Neopallium/lua-pb<br>
 #Performance
 
 #Examples
-参考包内例子
+参考包内1-20例子
 
 #About Lua
 win, android using luajit2.0.4. macos using luac(for u5.x). ios using luajit2.1beta
