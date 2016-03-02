@@ -963,7 +963,7 @@ public static class ToLuaMenu
             return;
         }
 
-        string dir = Application.dataPath + "/ToLua/BaseType/";
+        string dir = CustomSettings.toluaBaseType;
 
         if (!File.Exists(dir))
         {
@@ -1030,5 +1030,6 @@ public static class ToLuaMenu
         CreateDefaultWrapFile(CustomSettings.toluaBaseType, "System_TypeWrap");
         CreateDefaultWrapFile(CustomSettings.toluaBaseType, "System_Collections_IEnumeratorWrap");
         CreateDefaultWrapFile(CustomSettings.toluaBaseType, "UnityEngine_ObjectWrap");
+        CreateDefaultWrapFile(CustomSettings.toluaBaseType, "LuaInterface_EventObjectWrap");        
     }
 }
