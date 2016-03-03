@@ -544,6 +544,47 @@ namespace LuaInterface
             return null;
         }
 
+        public static UnityEngine.TrackedReference CheckTrackedReference(IntPtr L, int stackPos, Type type)
+        {
+            int udata = LuaDLL.tolua_rawnetobj(L, stackPos);
+            object obj = null;
+
+            if (udata != -1)
+            {
+                ObjectTranslator translator = ObjectTranslator.Get(L);
+                obj = translator.GetObject(udata);
+
+                if (obj != null)
+                {
+                    UnityEngine.TrackedReference uObj = (UnityEngine.TrackedReference)obj;
+
+                    if (uObj == null)
+                    {
+                        LuaDLL.luaL_argerror(L, stackPos, string.Format("{0} expected, got nil", type.FullName));
+                        return null;
+                    }
+
+                    Type objType = uObj.GetType();
+
+                    if (type == objType || objType.IsSubclassOf(type))
+                    {
+                        return uObj;
+                    }
+
+                    LuaDLL.luaL_argerror(L, stackPos, string.Format("{0} expected, got {1}", type.FullName, objType.FullName));
+                }
+
+                return null;
+            }
+            else if (LuaDLL.lua_isnil(L, stackPos))
+            {
+                return null;
+            }
+
+            LuaDLL.luaL_typerror(L, stackPos, type.FullName);
+            return null;
+        }
+
         //必须检测类型
         public static object[] CheckObjectArray(IntPtr L, int stackPos)
         {
@@ -1256,7 +1297,31 @@ namespace LuaInterface
                 LuaDLL.lua_pushnil(L);                
                 Debugger.LogError("Type {0} not register to lua", obj.GetType());
             }
-        }        
+        }
+
+        public static void Push(IntPtr L, UnityEngine.TrackedReference obj)
+        {
+            LuaState state = LuaState.Get(L);
+
+            if (obj == null)
+            {
+                LuaDLL.lua_pushnil(L);
+                return;
+            }
+
+            int reference = state.GetMetaReference(obj.GetType());
+
+            if (reference > 0)
+            {
+                PushUserData(L, obj, reference);
+            }
+            else
+            {
+                //类型未注册
+                LuaDLL.lua_pushnil(L);                
+                Debugger.LogError("Type {0} not register to lua", obj.GetType());
+            }
+        }         
 
         /*static void PushNull(IntPtr L, LuaState state = null)
         {
@@ -1357,6 +1422,10 @@ namespace LuaInterface
                 else if (obj is UnityEngine.Object)
                 {
                     Push(L, (UnityEngine.Object)obj);
+                }
+                else if (obj is UnityEngine.TrackedReference)
+                {
+                    Push(L, (UnityEngine.TrackedReference)obj);
                 }
                 else if (t == typeof(LuaByteBuffer))
                 {

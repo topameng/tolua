@@ -727,7 +727,8 @@ public static class ToLuaExport
             || t == typeof(LuaFunction) || typeof(UnityEngine.Object).IsAssignableFrom(t) || t == typeof(Type) || t == typeof(IntPtr) 
             || typeof(Delegate).IsAssignableFrom(t) || t == typeof(LuaByteBuffer) || t == typeof(Vector3) || t == typeof(Vector2) || t == typeof(Vector4) 
             || t == typeof(Quaternion) || t == typeof(Color) || t == typeof(RaycastHit) || t == typeof(Ray) || t == typeof(Touch) || t == typeof(Bounds)
-            || t == typeof(object) || t.IsArray || t == typeof(System.Array) || typeof(IEnumerator).IsAssignableFrom(t))
+            || t == typeof(object) || t.IsArray || t == typeof(System.Array) || typeof(IEnumerator).IsAssignableFrom(t)
+            || typeof(UnityEngine.TrackedReference).IsAssignableFrom(t))
         {
             return "Push";
         }        
@@ -1471,6 +1472,10 @@ public static class ToLuaExport
             if (beCheckTypes)
             {
                 sb.AppendFormat("{0}{1} {2} = ({1})ToLua.ToObject(L, {3});\r\n", head, str, arg, stackPos);
+            }
+            else if (varType == typeof(UnityEngine.TrackedReference) || typeof(UnityEngine.TrackedReference).IsAssignableFrom(varType))
+            {
+                sb.AppendFormat("{3}{0} {1} = ({0})ToLua.CheckTrackedReference(L, {2}, typeof({0}));\r\n", str, arg, stackPos, head);
             }
             else if (typeof(UnityEngine.Object).IsAssignableFrom(varType))
             {
@@ -2220,7 +2225,7 @@ public static class ToLuaExport
         {
             sb.AppendLineEx("\t\tobject o = null;\r\n");
             BeginTry();
-            sb.AppendLineEx("\t\t\to = ToLua.ToObject(L, 1);\r\n");
+            sb.AppendLineEx("\t\t\to = ToLua.ToObject(L, 1);");
             sb.AppendFormat("\t\t\t{0} obj = ({0})o;\r\n", className);                               
             sb.AppendFormat("\t\t\t{0} ret = obj.{1};\r\n", GetTypeStr(varType), varName);
             GenPushStr(varType, "ret", "\t\t\t");
@@ -2293,7 +2298,7 @@ public static class ToLuaExport
         {            
             sb.AppendLineEx("\t\tobject o = null;\r\n");
             BeginTry();
-            sb.AppendLineEx("\t\t\to = ToLua.ToObject(L, 1);\r\n");
+            sb.AppendLineEx("\t\t\to = ToLua.ToObject(L, 1);");
             sb.AppendFormat("\t\t\t{0} obj = ({0})o;\r\n", className);
             ProcessArg(varType, "\t\t\t", "arg0", 2);                                             
             sb.AppendFormat("\t\t\tobj.{0} = arg0;\r\n", varName);

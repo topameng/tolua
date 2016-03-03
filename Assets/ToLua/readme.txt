@@ -34,3 +34,6 @@ git地址: https://github.com/topameng/tolua
 - New: Add cjson libs and examples
 - New: CustomSettings.cs 加入新的静态类，以及out类链表(默认不在为每个类加.out属性, 除非out列表有这个类型）
 - New: 加入LuaConst， 可以自定义Lua文件目录，设置后让例子环境正常运行
+
+1.0.4 (需要重新导出Wrap文件)
+- FIX: 修复遗漏的TrackedReference问题

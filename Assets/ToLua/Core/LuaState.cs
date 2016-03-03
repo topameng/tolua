@@ -1020,6 +1020,28 @@ namespace LuaInterface
             }
         }
 
+        public void Push(UnityEngine.TrackedReference tracker)
+        {
+            if (tracker == null)
+            {
+                LuaDLL.lua_pushnil(L);
+                return;
+            }
+
+            int reference;
+
+            if (metaMap.TryGetValue(tracker.GetType(), out reference))
+            {
+                PushUserData(tracker, reference);
+            }
+            else
+            {
+                //类型未注册
+                LuaDLL.lua_pushnil(L);
+                Debugger.LogError("Type {0} not register to lua", tracker.GetType());
+            }
+        }
+
         public void PushValue(ValueType vt)
         {
             if (vt == null)
@@ -1128,6 +1150,10 @@ namespace LuaInterface
                 else if (obj is UnityEngine.Object)
                 {
                     Push((UnityEngine.Object)obj);
+                }
+                else if (obj is UnityEngine.TrackedReference)
+                {
+                    Push((UnityEngine.TrackedReference)obj);
                 }
                 else if (t.IsSubclassOf(typeof(Delegate)))
                 {

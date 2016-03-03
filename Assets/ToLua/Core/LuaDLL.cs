@@ -150,6 +150,12 @@ namespace LuaInterface
         public static extern int luaopen_bit(IntPtr L);
 
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int luaopen_struct(IntPtr L);     
+   
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int luaopen_lpeg(IntPtr L);               
+
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
         public static extern int luaopen_cjson(IntPtr L);
 
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]

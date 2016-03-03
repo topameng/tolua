@@ -29,9 +29,22 @@ public class LuaClient : MonoBehaviour
     protected virtual void OpenLibs()
     {
         luaState.OpenLibs(LuaDLL.luaopen_pb);
+        luaState.OpenLibs(LuaDLL.luaopen_struct);
+        luaState.OpenLibs(LuaDLL.luaopen_lpeg);
 #if UNITY_STANDALONE_OSX || UNITY_EDITOR_OSX
         luaState.OpenLibs(LuaDLL.luaopen_bit);
 #endif
+    }
+
+    //cjson 比较特殊，只new了一个table，没有注册库，这里注册一下
+    protected void OpenCJson()
+    {
+        luaState.LuaGetField(LuaIndexes.LUA_REGISTRYINDEX, "_LOADED");
+        luaState.OpenLibs(LuaDLL.luaopen_cjson);
+        luaState.LuaSetField(-2, "cjson");
+
+        luaState.OpenLibs(LuaDLL.luaopen_cjson_safe);
+        luaState.LuaSetField(-2, "cjson.safe");
     }
 
     protected virtual void CallMain()
@@ -39,7 +52,7 @@ public class LuaClient : MonoBehaviour
         LuaFunction main = luaState.GetFunction("Main");
         main.Call();
         main.Dispose();
-        main = null;
+        main = null;        
     }
 
     protected virtual void StartMain()
