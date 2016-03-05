@@ -839,7 +839,7 @@ namespace LuaInterface
             try
             {
                 PCall(nArgs, top);
-                EndPCall(top);
+                LuaDLL.lua_remove(L, top);
             }
             catch (Exception e)
             {
@@ -853,7 +853,7 @@ namespace LuaInterface
             int oldTop = BeginPCall(PackRay);            
             Push(ray.direction);            
             Push(ray.origin);
-            _Call(2, oldTop);
+            _Call(2, oldTop);            
             
         }
 
