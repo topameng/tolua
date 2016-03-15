@@ -28,6 +28,8 @@ public class ToLuaNode<T>
     public List<ToLuaNode<T>> childs = new List<ToLuaNode<T>>();
     public ToLuaNode<T> parent = null;
     public T value;
+    //添加命名空间节点所在位置，解决A.B.C/A.C存在相同名称却在不同命名空间所造成的Wrap问题
+    public int pos;
 }
 
 public class ToLuaTree<T> 
@@ -39,7 +41,8 @@ public class ToLuaTree<T>
         _root = new ToLuaNode<T>();
     }
 
-    ToLuaNode<T> FindParent(List<ToLuaNode<T>> root, Predicate<T> match)
+    //加入pos跟root里的pos比较，只有位置相同才是统一命名空间节点
+    ToLuaNode<T> FindParent(List<ToLuaNode<T>> root, Predicate<T> match, int pos)
     {
         if (root == null)
         {
@@ -48,12 +51,13 @@ public class ToLuaTree<T>
 
         for (int i = 0; i < root.Count; i++)
         {
-            if (match(root[i].value))
+            //加入pos跟root里的pos比较，只有位置相同才是统一命名空间节点
+            if (match(root[i].value) && root[i].pos == pos)
             {
                 return root[i];
             }
 
-            ToLuaNode<T> node = FindParent(root[i].childs, match);
+            ToLuaNode<T> node = FindParent(root[i].childs, match, pos);
 
             if (node != null)
             {
@@ -101,9 +105,10 @@ public class ToLuaTree<T>
         end(node);
     }
 
-    public ToLuaNode<T> Find(Predicate<T> match)
+    //只有位置相同才是统一命名空间节点
+    public ToLuaNode<T> Find(Predicate<T> match, int pos)
     {
-        return FindParent(_root.childs, match);
+        return FindParent(_root.childs, match, pos);
     }
 
     public ToLuaNode<T> GetRoot()
