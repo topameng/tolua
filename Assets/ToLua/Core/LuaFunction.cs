@@ -193,12 +193,6 @@ namespace LuaInterface
             ++argCount;
         }
 
-        public void Push(ValueType value)
-        {
-            luaState.Push(value);
-            ++argCount;
-        }
-
         public void Push(Enum e)
         {
             luaState.Push(e);
@@ -275,6 +269,20 @@ namespace LuaInterface
             }  
         }
 
+        public void Push(RaycastHit hit)
+        {
+            try
+            {
+                luaState.Push(hit);
+                ++argCount;
+            }
+            catch (Exception e)
+            {
+                EndPCall();
+                throw e;
+            }
+        }
+
         public void Push(Touch t)
         {
             try
@@ -292,6 +300,12 @@ namespace LuaInterface
         public void Push(LuaByteBuffer buffer)
         {
             luaState.Push(buffer);
+            ++argCount;
+        }
+
+        public void PushValue(ValueType value)
+        {
+            luaState.PushValue(value);
             ++argCount;
         }
 

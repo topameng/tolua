@@ -187,7 +187,7 @@ namespace LuaInterface
 
                 if (LogGC)
                 {
-                    Debugger.LogWarning("destroy object {0}, id {1}", o, udata);
+                    Debugger.Log("destroy object {0}, id {1}", o, udata);
                 }
             }
         }

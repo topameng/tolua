@@ -20,79 +20,81 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 using System;
-using LuaInterface;
 
-public class LuaThread : LuaBaseRef
+namespace LuaInterface
 {
-    object[] objs = null;
-
-    public LuaThread(int reference, LuaState state)
+    public class LuaThread : LuaBaseRef
     {
-        this.luaState = state;
-        this.reference = reference;
-    }
+        object[] objs = null;
 
-    public int Resume(params object[] args)
-    {
-        objs = null;
-        int top = 0;
-        luaState.Push(this);                
-        IntPtr L = luaState.LuaToThread(-1);        
-        luaState.LuaPop(1);
-        int nArgs = 0;
-        
-        if (args != null)
+        public LuaThread(int reference, LuaState state)
         {
-            nArgs = args.Length;
-
-            for (int i = 0; i < args.Length; i++)
-            {
-                ToLua.Push(L, args[i]);
-            }
+            this.luaState = state;
+            this.reference = reference;
         }
-        
-        int ret = LuaDLL.lua_resume(L, nArgs);
 
-        if (ret > (int)LuaThreadStatus.LUA_YIELD)
+        public int Resume(params object[] args)
         {
-            string error = null;
+            objs = null;
+            int top = 0;
+            luaState.Push(this);
+            IntPtr L = luaState.LuaToThread(-1);
+            luaState.LuaPop(1);
+            int nArgs = 0;
+
+            if (args != null)
+            {
+                nArgs = args.Length;
+
+                for (int i = 0; i < args.Length; i++)
+                {
+                    ToLua.Push(L, args[i]);
+                }
+            }
+
+            int ret = LuaDLL.lua_resume(L, nArgs);
+
+            if (ret > (int)LuaThreadStatus.LUA_YIELD)
+            {
+                string error = null;
+                top = LuaDLL.lua_gettop(L);
+                LuaDLL.tolua_pushtraceback(L);
+                LuaDLL.lua_pushthread(L);
+                LuaDLL.lua_pushvalue(L, -3);
+
+                if (LuaDLL.lua_pcall(L, 2, -1, 0) != 0)
+                {
+                    LuaDLL.lua_settop(L, top);
+                }
+
+                error = LuaDLL.lua_tostring(L, -1);
+                LuaDLL.lua_settop(L, 0);
+                throw new LuaException(error);
+            }
+
             top = LuaDLL.lua_gettop(L);
-            LuaDLL.tolua_pushtraceback(L);
-            LuaDLL.lua_pushthread(L);
-            LuaDLL.lua_pushvalue(L, -3);
 
-            if (LuaDLL.lua_pcall(L, 2, -1, 0) != 0)
+            if (top > 0)
             {
-                LuaDLL.lua_settop(L, top);
+                objs = new object[top];
+
+                for (int i = 0; i < top; i++)
+                {
+                    objs[i] = ToLua.ToVarObject(L, i + 1);
+                }
             }
 
-            error = LuaDLL.lua_tostring(L, -1);
-            LuaDLL.lua_settop(L, 0);
-            throw new LuaException(error);       
-        }
-        
-        top = LuaDLL.lua_gettop(L);
+            if (ret == 0)
+            {
+                Dispose();
+            }
 
-        if (top > 0)
+            return ret;
+        }
+
+        public object[] GetResult()
         {
-            objs = new object[top];
-
-            for (int i = 0; i < top; i++)
-            {
-                objs[i] = ToLua.ToVarObject(L, i + 1);
-            }
+            return objs;
         }
-
-        if (ret == 0)
-        {            
-            Dispose();
-        }
-        
-        return ret;
-    }    
-
-    public object[] GetResult()
-    {
-        return objs;
     }
 }

@@ -33,6 +33,7 @@ namespace LuaInterface
         public static Exception luaStack = null;
         public static string projectFolder = null;
         public static int InstantiateCount = 0;
+        public static int SendMsgCount = 0;
 
         public override string StackTrace
         {
@@ -72,6 +73,11 @@ namespace LuaInterface
             }                        
         }
 
+        static bool SkipStack()
+        {
+            return InstantiateCount > 0 || SendMsgCount > 0;
+        }
+
         public static void ExtractFormattedStackTrace(StackTrace trace, StringBuilder sb, StackTrace skip = null)
         {
             int begin = 0;
@@ -108,8 +114,8 @@ namespace LuaInterface
                 Type declaringType = method.DeclaringType;
                 string str = declaringType.Namespace;
 
-                if ( (InstantiateCount == 0 && declaringType == typeof(UnityEngine.Object) && (method.Name == "Internal_CloneSingle" || method.Name == "Instantiate")) ||
-                    (declaringType == typeof(GameObject) && method.Name == "SendMessage"))
+                if ( (InstantiateCount == 0 && declaringType == typeof(UnityEngine.Object) &&  method.Name == "Instantiate") //(method.Name == "Internal_CloneSingle"
+                    || (SendMsgCount == 0 && declaringType == typeof(GameObject) && method.Name == "SendMessage"))
                 {
                     break;
                 }

@@ -462,7 +462,7 @@ namespace LuaInterface
             {                
                 state = list.state;
                 state.Push(list.table);
-                state.Push((object)null);
+                state.LuaPushNil();                
             }
 
             public DictionaryEntry Current

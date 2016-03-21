@@ -46,4 +46,11 @@ namespace LuaInterface
 
         }
     }
+    
+    public sealed class LuaByteBufferAttribute : Attribute
+    {                
+        public LuaByteBufferAttribute()
+        {
+        }       
+    }
 }
