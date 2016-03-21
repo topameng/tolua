@@ -25,10 +25,6 @@ using LuaInterface;
 
 public class LuaLooper : MonoBehaviour 
 {    
-    LuaFunction updateFunc = null;
-    LuaFunction lateUpdateFunc = null;
-    LuaFunction fixedUpdateFunc = null;    
-
     public LuaEvent UpdateEvent
     {
         get;
@@ -53,10 +49,6 @@ public class LuaLooper : MonoBehaviour
     {
         try
         {
-            updateFunc = GetLuaFunction("Update");
-            lateUpdateFunc = GetLuaFunction("LateUpdate");
-            fixedUpdateFunc = GetLuaFunction("FixedUpdate");            
-
             UpdateEvent = GetEvent("UpdateBeat");
             LateUpdateEvent = GetEvent("LateUpdateBeat");
             FixedUpdateEvent = GetEvent("FixedUpdateBeat");
@@ -65,20 +57,8 @@ public class LuaLooper : MonoBehaviour
         {
             Destroy(this);
             throw e;
-        }
+        }        
 	}
-
-    LuaFunction GetLuaFunction(string name)
-    {
-        LuaFunction func = luaState.GetFunction(name, false);
-
-        if (func == null)
-        {
-            throw new LuaException(string.Format("Lua function {0} not exists", name));
-        }
-
-        return func;
-    }
 
     LuaEvent GetEvent(string name)
     {
@@ -95,14 +75,23 @@ public class LuaLooper : MonoBehaviour
         return e;
     }
 
+    void ThrowException()
+    {
+        string error = luaState.LuaToString(-1);
+        luaState.LuaPop(2);
+        Exception last = LuaException.luaStack;
+        LuaException.luaStack = null;        
+        throw new LuaException(error, last);
+    }
+
     void Update()
     {
-        updateFunc.BeginPCall();
-        updateFunc.Push(Time.deltaTime);
-        updateFunc.Push(Time.unscaledDeltaTime);
-        updateFunc.PCall();
-        updateFunc.EndPCall();
+        if (luaState.LuaUpdate(Time.deltaTime, Time.unscaledDeltaTime) != 0)
+        {
+            ThrowException();
+        }
 
+        luaState.LuaPop(1);
         luaState.Collect();
 #if UNITY_EDITOR
         luaState.CheckTop();
@@ -111,36 +100,28 @@ public class LuaLooper : MonoBehaviour
 
     void LateUpdate()
     {
-        lateUpdateFunc.BeginPCall();
-        lateUpdateFunc.PCall();
-        lateUpdateFunc.EndPCall();
+        if (luaState.LuaLateUpdate() != 0)
+        {
+            ThrowException();
+        }
+
+        luaState.LuaPop(1);
     }
 
     void FixedUpdate()
     {
-        fixedUpdateFunc.BeginPCall();
-        fixedUpdateFunc.Push(Time.fixedDeltaTime);
-        fixedUpdateFunc.PCall();
-        fixedUpdateFunc.EndPCall();
-    }
-
-    void SafeRelease(ref LuaFunction luaRef)
-    {
-        if (luaRef != null)
+        if (luaState.LuaFixedUpdate(Time.fixedDeltaTime) != 0)
         {
-            luaRef.Dispose();
-            luaRef = null;
+            ThrowException();
         }
+
+        luaState.LuaPop(1);
     }
 
     public void Destroy()
     {
         if (luaState != null)
         {
-            SafeRelease(ref updateFunc);
-            SafeRelease(ref lateUpdateFunc);
-            SafeRelease(ref fixedUpdateFunc);            
-
             if (UpdateEvent != null)
             {
                 UpdateEvent.Dispose();

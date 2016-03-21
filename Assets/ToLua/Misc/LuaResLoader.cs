@@ -91,7 +91,11 @@ public class LuaResLoader : LuaFileUtils
 
         if (File.Exists(path))
         {
+#if !UNITY_WEBPLAYER
             return File.ReadAllBytes(path);
+#else
+            throw new LuaException("can't run in web platform, please switch to other platform");
+#endif
         }
 
         return null;
