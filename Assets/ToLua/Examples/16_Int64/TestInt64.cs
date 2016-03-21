@@ -2,6 +2,8 @@
 using System.Collections;
 using System;
 using LuaInterface;
+using System.Collections.Generic;
+
 
 public class TestInt64 : MonoBehaviour
 {
@@ -12,7 +14,7 @@ public class TestInt64 : MonoBehaviour
             function TestInt64(x)
                 x = x + 789				
                 local low, high = int64.tonum2(x)                
-                print('x value is: '..int64.tostring(x)..':'..tostring(x)..' low is: '.. low .. ' high is: '..high.. ' type is: '.. tolua.typename(x))           
+                print('x value is: '..tostring(x)..' low is: '.. low .. ' high is: '..high.. ' type is: '.. tolua.typename(x))           
                 local y = int64.new(1,2)                
                 local z = int64.new(1,2)
                 
@@ -30,6 +32,11 @@ public class TestInt64 : MonoBehaviour
 
                 x = int64.new('78962871035984074')
                 print('int64 is: '..tostring(x))
+
+                local str = tostring(int64.new(3605690779, 30459971))                
+                local n2 = int64.new(str)
+                local l, h = int64.tonum2(n2)                        
+                print(str..':'..tostring(n2)..' low:'..l..' high:'..h)       
 
                 return y
             end
@@ -60,7 +67,7 @@ public class TestInt64 : MonoBehaviour
 
         lua.CheckTop();
         lua.Dispose();
-        lua = null;
+        lua = null;              
     }
 
     void ShowTips(string msg, string stackTrace, LogType type)

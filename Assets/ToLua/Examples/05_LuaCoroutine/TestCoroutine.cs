@@ -18,24 +18,24 @@ public class TestCoroutine : MonoBehaviour
         looper = gameObject.AddComponent<LuaLooper>();
         looper.luaState = lua;
 
-        lua.DoString(luaFile.text, "LuaCoroutine");
+        lua.DoString(luaFile.text, "TestCoroutine.cs");
         LuaFunction f = lua.GetFunction("TestCortinue");
         f.Call();
         f.Dispose();
-        f = null;
-	}
+        f = null;        
+    }
 
     void OnDestroy()
     {
         looper.Destroy();
         lua.Dispose();
         lua = null;
-    }	
+    }
 
     void OnGUI()
     {
         if (GUI.Button(new Rect(50, 50, 120, 45), "Start Coroutine"))
-        {            
+        {
             LuaFunction func = lua.GetFunction("StartDelay");
             func.Call();
             func.Dispose();

@@ -14,8 +14,7 @@ function CoFunc()
     for i = 0, 10, 1 do
         print(fib(i))                    
         coroutine.wait(0.1)						
-    end
-	
+    end	
 	print("current frameCount: "..Time.frameCount)
 	coroutine.step()
 	print("yield frameCount: "..Time.frameCount)

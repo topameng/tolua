@@ -6,11 +6,11 @@ public class TestOutArg : MonoBehaviour
 {            
     string script =
         @"
-            local layer = 2 ^ LayerMask.NameToLayer('Default')
+            local _layer = 2 ^ LayerMask.NameToLayer('Default')
 
-            function TestPick(ray)                
-                local flag, hit = UnityEngine.Physics.Raycast(ray, nil, 5000, layer)                
-                --local flag, hit = UnityEngine.Physics.Raycast(ray, RaycastHit.out, 5000, layer)
+            function TestPick(ray)                     
+                local flag, hit = UnityEngine.Physics.Raycast(ray, nil, 5000, _layer)                
+                --local flag, hit = UnityEngine.Physics.Raycast(ray, RaycastHit.out, 5000, _layer)
                 
                 if flag then
                     print('pick from lua, point: '..tostring(hit.point))
@@ -23,6 +23,7 @@ public class TestOutArg : MonoBehaviour
 
 	void Start () 
     {
+        new LuaResLoader();
         state = new LuaState();
         state.Start();
         LuaBinder.Bind(state);

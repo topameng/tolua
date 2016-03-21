@@ -18,14 +18,31 @@ public class TestLuaStack : MonoBehaviour
     private string tips = "";
     public static TestLuaStack Instance = null;
 
+    static Lua_Debug ar = new Lua_Debug();
+
+    static string LuaWhere(IntPtr L)
+    {
+        if (LuaDLL.lua_getstack(L, 1, ref ar) != 0)
+        {  /* check function at level */
+            LuaDLL.lua_getinfo(L, "Sl", ref ar);  /* get info about it */
+
+            if (ar.currentline > 0)
+            {  /* is there info? */
+                return string.Format("{0}:{1}: ", ar.short_src, ar.currentline);                
+            }
+        }
+
+        return "";
+    }
+
     [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
     static int Test1(IntPtr L)
     {
         try
-        {
-            show.BeginPCall();            
+        {                                                    
+            show.BeginPCall();
             show.PCall();
-            show.EndPCall();        
+            show.EndPCall();
         }
         catch (Exception e)
         {            
@@ -262,10 +279,17 @@ public class TestLuaStack : MonoBehaviour
 
     void OnSendMsg()
     {
-        LuaFunction func = state.GetFunction("TestStack.Test6");
-        func.BeginPCall();
-        func.PCall();
-        func.EndPCall();
+        try
+        {
+            LuaFunction func = state.GetFunction("TestStack.Test6");
+            func.BeginPCall();
+            func.PCall();
+            func.EndPCall();
+        }
+        catch(Exception e)
+        {
+            state.ToLuaException(e);
+        }
     }
     
 
@@ -464,7 +488,16 @@ public class TestLuaStack : MonoBehaviour
             tips = "";
             gameObject.SendMessage("OnSendMsg");
         }
-        else if (GUI.Button(new Rect(10, 560, 120, 40), "AddComponent"))
+        else if (GUI.Button(new Rect(10, 560, 120, 40), "SendMessageInLua"))
+        {
+            LuaFunction func = state.GetFunction("SendMsgError");
+            func.BeginPCall();
+            func.Push(gameObject);
+            func.PCall();
+            func.EndPCall();
+            func.Dispose();
+        }
+        else if (GUI.Button(new Rect(10, 610, 120, 40), "AddComponent"))
         {
             tips = "";
             LuaFunction func = state.GetFunction("TestAddComponent");            

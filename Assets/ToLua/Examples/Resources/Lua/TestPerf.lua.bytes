@@ -42,7 +42,7 @@ end
 function Test4()
 	local t = os.clock()	
 
-	for i = 1,200000 do				
+	for i = 1,20000 do				
 		GameObject.New()
 	end
 	

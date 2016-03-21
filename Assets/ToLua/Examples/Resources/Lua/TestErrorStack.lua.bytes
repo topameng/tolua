@@ -31,6 +31,10 @@ function Test5()
     TestStack.Test5()          
 end
 
+function SendMsgError(go)
+	go:SendMessage("OnSendMsg");
+end
+
 function resume(co, ...)
     local r, msg = nil
     local func = function(...)

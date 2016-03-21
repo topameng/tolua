@@ -22,6 +22,7 @@ public class TestCustomLoader : LuaClient
     protected override void StartMain()
     {
         luaState.DoFile("TestLoader.lua");
+        CallMain();
     }
 
     new void Awake()
@@ -47,7 +48,8 @@ public class TestCustomLoader : LuaClient
 
     void Logger(string msg, string stackTrace, LogType type)
     {
-        tips = msg;
+        tips += msg;
+        tips += "\r\n";
     }
 
     void OnGUI()
