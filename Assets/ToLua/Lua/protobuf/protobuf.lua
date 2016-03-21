@@ -138,9 +138,9 @@ local NON_PACKABLE_TYPES = {
 
 local _VALUE_CHECKERS = {
     [FieldDescriptor.CPPTYPE_INT32] = type_checkers.Int32ValueChecker(),
-    [FieldDescriptor.CPPTYPE_INT64] = type_checkers.Int32ValueChecker(),
+    [FieldDescriptor.CPPTYPE_INT64] = type_checkers.TypeChecker({string = true, number = true}),
     [FieldDescriptor.CPPTYPE_UINT32] = type_checkers.Uint32ValueChecker(),
-    [FieldDescriptor.CPPTYPE_UINT64] = type_checkers.Uint64ValueChecker(),
+    [FieldDescriptor.CPPTYPE_UINT64] = type_checkers.TypeChecker({string = true, number = true}),
     [FieldDescriptor.CPPTYPE_DOUBLE] = type_checkers.TypeChecker({number = true}),
     [FieldDescriptor.CPPTYPE_FLOAT] = type_checkers.TypeChecker({number = true}),
     [FieldDescriptor.CPPTYPE_BOOL] = type_checkers.TypeChecker({boolean = true, bool = true, int=true}),

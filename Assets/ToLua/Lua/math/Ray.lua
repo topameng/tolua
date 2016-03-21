@@ -22,10 +22,10 @@ Ray.__index = function(t,k)
 end
 
 function Ray.New(direction, origin)
-	local ray = {}
-	setmetatable(ray, Ray)
+	local ray = {}	
 	ray.direction 	= direction:Normalize()
 	ray.origin 		= origin
+	setmetatable(ray, Ray)	
 	return ray
 end
 

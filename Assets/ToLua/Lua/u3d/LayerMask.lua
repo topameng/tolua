@@ -1,3 +1,7 @@
+local Layer = Layer
+local rawget = rawget
+local setmetatable = setmetatable
+
 local LayerMask =
 {
 	value = 0,

@@ -214,6 +214,8 @@ end
 
 local _EncodeVarint = pb.varint_encoder
 local _EncodeSignedVarint = pb.signed_varint_encoder
+local _EncodeVarint64 = pb.varint_encoder64
+local _EncodeSignedVarint64 = pb.signed_varint_encoder64
 
 
 function _VarintBytes(value)
@@ -330,18 +332,18 @@ function _StructPackEncoder(wire_type, value_size, format)
 end
 
 Int32Encoder = _SimpleEncoder(wire_format.WIRETYPE_VARINT, _EncodeSignedVarint, _SignedVarintSize)
-Int64Encoder = Int32Encoder
+Int64Encoder = _SimpleEncoder(wire_format.WIRETYPE_VARINT, _EncodeSignedVarint64, _SignedVarintSize)
 EnumEncoder = Int32Encoder
 
 UInt32Encoder = _SimpleEncoder(wire_format.WIRETYPE_VARINT, _EncodeVarint, _VarintSize)
-UInt64Encoder = UInt32Encoder
+UInt64Encoder = _SimpleEncoder(wire_format.WIRETYPE_VARINT, _EncodeVarint64, _VarintSize)
 
 SInt32Encoder = _ModifiedEncoder(
     wire_format.WIRETYPE_VARINT, _EncodeVarint, _VarintSize,
     wire_format.ZigZagEncode32)
 
 SInt64Encoder = _ModifiedEncoder(
-    wire_format.WIRETYPE_VARINT, _EncodeVarint, _VarintSize,
+    wire_format.WIRETYPE_VARINT, _EncodeVarint64, _VarintSize,
     wire_format.ZigZagEncode64)
 
 Fixed32Encoder  = _StructPackEncoder(wire_format.WIRETYPE_FIXED32, 4, string.byte('I'))
