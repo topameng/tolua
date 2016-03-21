@@ -1,8 +1,10 @@
 ﻿tolua#
 git地址: https://github.com/topameng/tolua
+bug 反馈群: 286510803
 
 如果你想在手机上测试，首先点击菜单Lua/Copy lua files to Resources， 之后再build
-如果在mac上发布，可以删除x86 和 x86_64 目录，或者自己配置plugins系统
+如果在mac上发布ios，删除x86和x86_64目录
+更新插件之前，请先执行Lua/Clear wrap files，更新后再重新生成wrap文件。
 
 1.01
 - FIX: 5.x AssetBundle.Load函数废弃问题.
@@ -24,16 +26,30 @@ git地址: https://github.com/topameng/tolua
 - FIX: ios发布mono版本编译问题
 - FIX: 模拟unity协同在使用过程中发生协同被gc的bug. 加入StartCoroutine 和 StopCoroutine 来启动或者停止这种协同
 - FIX: LuaFunction递归调用自身问题
-- New: 出错后能反映两端正确的堆栈（并且格式与unity相同）。无论是c#异常还是lua异常！
-- New: 从LuaClient拆分出LuaLooper（负责update驱动分发）
-- New: Lua API 接口按照lua头文件方式排序，加入所有的Lua API函数
-- New: 重写大量可发生异常的Lua API转换为C#异常。
-- New: lua 全双工协同加入 coroutine.stop 函数，请跟 coroutine.start 配合使用
-- New: Event 改为小写 event, 增加 c# 端委托 +- LuaFunction
-- New: Add utf-8 libs and examples
-- New: Add cjson libs and examples
-- New: CustomSettings.cs 加入新的静态类，以及out类链表(默认不在为每个类加.out属性, 除非out列表有这个类型）
-- New: 加入LuaConst， 可以自定义Lua文件目录，设置后让例子环境正常运行
+- NEW: 出错后能反映两端正确的堆栈（并且格式与unity相同,无论是c#异常还是lua异常！)
+- NEW: 从LuaClient拆分出LuaLooper（负责update驱动分发）
+- NEW: Lua API 接口按照lua头文件方式排序，加入所有的Lua API函数（无法兼容的除非，部分被改写来）
+- NEW: 重写大量可发生异常的Lua API（native异常转换为C#异常）。
+- NEW: lua 全双工协同加入 coroutine.stop 函数，请跟 coroutine.start 配合使用
+- NEW: Event 改为小写 event, 增加 c# 端委托 +- LuaFunction
+- NEW: Add utf-8 libs and examples
+- NEW: Add cjson libs and examples
+- NEW: CustomSettings.cs 加入新的静态类，以及out类链表(默认不在为每个类加.out属性, 除非out列表有这个类型）
+- NEW: 加入LuaConst， 可以自定义Lua文件目录，设置后让例子环境正常运行
 
-1.0.4 (需要重新导出Wrap文件)
-- FIX: 修复遗漏的TrackedReference问题
+1.0.4 (需要重新导出Wrap文件,即使下载过这个版本也要重新导出)
+- FIX: 修复遗漏的TrackedReference问题(导出问题)
+- FIX: 导出wrap文件时当一个ref类型在其他非系统dll中也能正确找到。
+- FIX: abstrace class 作为基类不再自动导出（默认跳过），如果需要导出，请加入到导出列表
+- FIX: 如果函数名字与属性名相同（如get_Name 函数与 Name 属性），可以正确产生重载函数。
+- FIX: char[] 转换问题
+- FIX: int64.tonum2 符号位不对问题，int64加入范围检测
+- NEW: int64 使用字符串赋值时加入溢出检查
+- NEW: 修改proto-gen-lua库，使之支持int64, uint64。fixed64, ufixed64等等
+- NEW: CheckTypes系列函数放入TypeChecker类
+- NEW: 加入预加载库功能，预加载的库通过require类型延迟导入, 比如 require "UnityEngine.GameObject"。严格区分.与/。使用目录切勿用.
+- NEW: LuaConst加入ZeroBraneStudio路径设置，可以通过LuaClient.OpenZbsDebugger启动ZeroBraneStudio调试
+- NEW: print 编辑器下可以打印所在的lua文件名和位置
+- NEW: this操作符增加this属性，可以通过get和set操作, 在get_Item有重载函数，并且重载函数折叠掉this属性函数可以使用
+- NEW: 增加LuaByteBufferAttribute, 加上这个标记的委托类型，在压入byte[]时作为lua string压入，而不是System.Array
+- Opt: 优化update系列函数速度
