@@ -65,7 +65,7 @@ public class System_ArrayWrap
             object val = ToLua.ToVarObject(L, 3);
             Type type = obj.GetType().GetElementType();
 
-            if (!ToLua.CheckType(L, type, 3))
+            if (!TypeChecker.CheckType(L, type, 3))
             {                
                 throw new LuaException("trying to set object type is not correct");                
             }
