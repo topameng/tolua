@@ -34,6 +34,7 @@ end
 
 --number of chars in string
 function utf8.len(s)
+	assert(s, "bad argument #1 to 'len' (string expected, got nil)")
 	local len = 0
 	for _ in utf8.byte_indices(s) do
 		len = len + 1
@@ -51,7 +52,7 @@ function utf8.byte_index(s, target_ci)
 			return i
 		end
 	end
-	assert(target_ci > ci, 'invalid index')
+	assert(target_ci > ci, "invalid index")
 end
 
 --char index given byte index. nil if the index is outside the string.
@@ -64,7 +65,7 @@ function utf8.char_index(s, target_i)
 			return ci
 		end
 	end
-	error'invalid index'
+	error("invalid index")
 end
 
 --byte index of the prev. char before the char at byte index i, which defaults to #s + 1.
@@ -83,7 +84,7 @@ function utf8.prev(s, nexti)
 	if nexti == #s + 1 then
 		return lasti, lastvalid
 	end
-	error'invalid index'
+	error("invalid index")
 end
 
 --iterate chars in reverse order, returning the byte index where each char starts.
