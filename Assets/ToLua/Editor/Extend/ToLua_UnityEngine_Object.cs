@@ -26,7 +26,7 @@ public class ToLua_UnityEngine_Object
             }
             else
             {
-                return LuaDLL.tolua_error(L, ""invalid arguments to method: Object.Destroy"");
+                return LuaDLL.luaL_throw(L, ""invalid arguments to method: Object.Destroy"");
             }
         }
         catch (Exception e)
@@ -56,7 +56,7 @@ public class ToLua_UnityEngine_Object
             }
             else
             {
-                return LuaDLL.tolua_error(L, ""invalid arguments to method: Object.DestroyImmediate"");
+                return LuaDLL.luaL_throw(L, ""invalid arguments to method: Object.DestroyImmediate"");
             }
         }
         catch (Exception e)
@@ -70,7 +70,7 @@ public class ToLua_UnityEngine_Object
             ++LuaException.InstantiateCount;
             int count = LuaDLL.lua_gettop(L);
 
-            if (count == 1 && ToLua.CheckTypes(L, 1, typeof(UnityEngine.Object)))
+            if (count == 1 && TypeChecker.CheckTypes(L, 1, typeof(UnityEngine.Object)))
             {
                 UnityEngine.Object arg0 = (UnityEngine.Object)ToLua.ToObject(L, 1);
                 UnityEngine.Object o = UnityEngine.Object.Instantiate(arg0);
@@ -89,7 +89,7 @@ public class ToLua_UnityEngine_Object
                 --LuaException.InstantiateCount;
                 return 1;
             }
-            else if (count == 3 && ToLua.CheckTypes(L, 1, typeof(UnityEngine.Object), typeof(UnityEngine.Vector3), typeof(UnityEngine.Quaternion)))
+            else if (count == 3 && TypeChecker.CheckTypes(L, 1, typeof(UnityEngine.Object), typeof(UnityEngine.Vector3), typeof(UnityEngine.Quaternion)))
             {
                 UnityEngine.Object arg0 = (UnityEngine.Object)ToLua.ToObject(L, 1);
                 UnityEngine.Vector3 arg1 = ToLua.ToVector3(L, 2);
@@ -113,7 +113,7 @@ public class ToLua_UnityEngine_Object
             else
             {
                 --LuaException.InstantiateCount;
-                return LuaDLL.tolua_error(L, ""invalid arguments to method: UnityEngine.Object.Instantiate"");
+                return LuaDLL.luaL_throw(L, ""invalid arguments to method: UnityEngine.Object.Instantiate"");
             }
         }
         catch (Exception e)

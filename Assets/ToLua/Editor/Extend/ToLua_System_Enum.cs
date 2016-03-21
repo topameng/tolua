@@ -1,7 +1,7 @@
 ﻿using System;
 using LuaInterface;
 
-public struct ToLua_System_Enum
+public class ToLua_System_Enum
 {
     public static string ToIntDefined =
 @"        try

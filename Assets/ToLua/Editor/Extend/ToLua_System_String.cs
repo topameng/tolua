@@ -18,7 +18,7 @@ public class ToLua_System_String
             }
             else
             {
-                return LuaDLL.tolua_error(L, ""invalid arguments to method: String.New"");
+                return LuaDLL.luaL_throw(L, ""invalid arguments to string's ctor method"");
             }            
         }
         catch(Exception e)
