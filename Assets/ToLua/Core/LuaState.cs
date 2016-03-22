@@ -587,18 +587,19 @@ namespace LuaInterface
                     string funcName = fullPath.Substring(pos + 1);
                     LuaDLL.lua_pushstring(L, funcName);
                     LuaDLL.lua_rawget(L, -2);
+
+                    LuaTypes type = LuaDLL.lua_type(L, -1);
+
+                    if (type == LuaTypes.LUA_TFUNCTION)
+                    {
+                        LuaDLL.lua_insert(L, oldTop + 1);
+                        LuaDLL.lua_settop(L, oldTop + 1);
+                        return true;
+                    }
                 }
 
-                LuaTypes type = LuaDLL.lua_type(L, -1);
-
-                if (type != LuaTypes.LUA_TFUNCTION)
-                {
-                    LuaDLL.lua_settop(L, oldTop);
-                    return false;
-                }
-
-                LuaDLL.lua_insert(L, oldTop + 1);
-                LuaDLL.lua_settop(L, oldTop + 1);                
+                LuaDLL.lua_settop(L, oldTop);
+                return false;              
             }
             else
             {
