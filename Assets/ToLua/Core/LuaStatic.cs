@@ -21,6 +21,7 @@ SOFTWARE.
 */
 using System;
 using System.IO;
+using System.Text;
 
 namespace LuaInterface
 {
@@ -177,7 +178,7 @@ namespace LuaInterface
         
         static string LuaWhere(IntPtr L)
         {
-#if DEVELOPER
+#if UNITY_EDITOR || DEVELOPER
             int top = LuaDLL.lua_gettop(L);
             LuaDLL.luaL_where(L, 1);
             string str = LuaDLL.lua_tostring(L, -1);
@@ -194,23 +195,24 @@ namespace LuaInterface
             try
             {
                 int n = LuaDLL.lua_gettop(L);
-                string s = LuaWhere(L);
+                StringBuilder sb = StringBuilderCache.Acquire();
+                sb.Append(LuaWhere(L));
 
                 for (int i = 1; i <= n; i++)
                 {
-                    if (i > 1) s += "    ";
+                    if (i > 1) sb.Append("    ");
 
                     if (LuaDLL.lua_isstring(L, i) == 1)
                     {
-                        s += LuaDLL.lua_tostring(L, i);
+                        sb.Append(LuaDLL.lua_tostring(L, i));
                     }
                     else if (LuaDLL.lua_isnil(L, i))
                     {
-                        s += "nil";
+                        sb.Append("nil");
                     }
                     else if (LuaDLL.lua_isboolean(L, i))
                     {
-                        s += LuaDLL.lua_toboolean(L, i) ? "true" : "false";
+                        sb.Append(LuaDLL.lua_toboolean(L, i) ? "true" : "false");
                     }
                     else
                     {
@@ -218,16 +220,16 @@ namespace LuaInterface
 
                         if (p == IntPtr.Zero)
                         {
-                            s += "nil";
+                            sb.Append("nil");
                         }
                         else
                         {
-                            s += string.Format("{0}:0x{1}", LuaDLL.luaL_typename(L, i), p.ToString("X"));
+                            sb.AppendFormat("{0}:0x{1}", LuaDLL.luaL_typename(L, i), p.ToString("X"));
                         }
                     }
                 }
 
-                Debugger.Log(s);
+                Debugger.Log(sb.ToString());
                 return 0;
             }
             catch (Exception e)
