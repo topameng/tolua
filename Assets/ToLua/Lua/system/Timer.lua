@@ -20,7 +20,7 @@ mt.__index = Timer
 --scale false 采用deltaTime计时，true 采用 unscaledDeltaTime计时
 function Timer.New(func, duration, loop, scale)
 	local timer = {}
-	scale = scale or true
+	scale = scale or false and true
 	setmetatable(timer, mt)	
 	timer:Reset(func, duration, loop, scale)
 	return timer
