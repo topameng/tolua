@@ -423,7 +423,8 @@ public static class ToLuaMenu
 
         for (int j = 0; j < ns.Length; j++)
         {
-            ToLuaNode<string> node = tree.Find((_t) => { return _t == ns[j]; });
+            //pos变量
+            ToLuaNode<string> node = tree.Find((_t) => { return _t == ns[j]; }, j);
 
             if (node == null)
             {
@@ -431,6 +432,8 @@ public static class ToLuaMenu
                 node.value = ns[j];
                 parent.childs.Add(node);
                 node.parent = parent;
+                //加入pos跟root里的pos比较，只有位置相同才是统一命名空间节点
+                node.pos = j;
                 parent = node;
             }
             else
