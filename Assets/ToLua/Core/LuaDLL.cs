@@ -182,7 +182,7 @@ namespace LuaInterface
 
     public class LuaDLL
     {
-        public static string version = "1.0.4.80";
+        public static string version = "1.0.4.91";
         public static int LUA_MULTRET = -1;
         public static string[] LuaTypeName = { "none", "nil", "boolean", "lightuserdata", "number", "string", "table", "function", "userdata", "thread" };
 
@@ -1135,7 +1135,7 @@ namespace LuaInterface
         }
 
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr tolua_beginbuffer(IntPtr luaState);
+        public static extern IntPtr tolua_buffinit(IntPtr luaState);
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
         public static extern void tolua_addlstring(IntPtr b, string str, int l);      
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
