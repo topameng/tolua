@@ -97,7 +97,7 @@ namespace LuaInterface
         //完全移除一个对象，适合lua gc
         public void RemoveObject(int udata)
         {
-            RemoveFromGCList(udata);
+            bool flag = RemoveFromGCList(udata);
             object o = objects.Remove(udata);
 
             if (o != null)
@@ -110,6 +110,16 @@ namespace LuaInterface
                 if (LogGC)
                 {
                     Debugger.Log("remove object {0}, id {1}", o, udata);
+                }
+
+                if (flag)
+                {
+                    UnityEngine.Object obj = o as UnityEngine.Object;
+
+                    if (obj != null)
+                    {
+                        UnityEngine.Object.Destroy(obj);
+                    }
                 }
             }
         }
@@ -157,14 +167,17 @@ namespace LuaInterface
             objectsBackMap[o] = index;
         }
 
-        void RemoveFromGCList(int id)
+        bool RemoveFromGCList(int id)
         {
             int index = gcList.FindIndex((p) => { return p.id == id; });
 
             if (index >= 0)
             {
-                gcList.RemoveAt(index);                                
+                gcList.RemoveAt(index);
+                return true;                       
             }
+
+            return false;
         }
         
         void DestroyUnityObject(int udata)
