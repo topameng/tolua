@@ -99,7 +99,7 @@ namespace LuaInterface
             LuaDLL.lua_settop(L, 0);
 
             if (!LuaFileUtils.Instance.beZip)
-            {
+            {                
                 AddSearchPath(LuaConst.luaDir);
                 AddSearchPath(LuaConst.toluaDir);
             }
@@ -455,6 +455,12 @@ namespace LuaInterface
 
         public void AddSearchPath(string fullPath)
         {
+            if (!Directory.Exists(fullPath))
+            {
+                string msg = string.Format("Lua config path not exists: {0}", fullPath);
+                throw new LuaException(msg, null, 1);
+            }
+
             if (!Path.IsPathRooted(fullPath))
             {
                 throw new LuaException(fullPath + " is not a full path");
