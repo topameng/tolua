@@ -47,7 +47,12 @@ namespace LuaInterface
 
             LuaDLL.lua_pushstring(L, "typeof");
             LuaDLL.lua_pushcfunction(L, GetClassType);
-            LuaDLL.lua_rawset(L, -3);  
+            LuaDLL.lua_rawset(L, -3);
+
+            //手动模拟gc
+            //LuaDLL.lua_pushstring(L, "collect");
+            //LuaDLL.lua_pushcfunction(L, Collect);
+            //LuaDLL.lua_rawset(L, -3);            
 
             int meta = LuaStatic.GetMetaReference(L, typeof(NullObject));
             LuaDLL.lua_pushstring(L, "null");
@@ -180,6 +185,20 @@ namespace LuaInterface
 
             return 1;
         }
+
+        /*[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        public static int Collect(IntPtr L)
+        {
+            int udata = LuaDLL.tolua_rawnetobj(L, 1);
+
+            if (udata != -1)
+            {
+                ObjectTranslator translator = ObjectTranslator.Get(L);
+                translator.RemoveObject(udata);
+            }
+
+            return 0;
+        }*/
         #endregion
         /*-------------------------------------------------------------------------------------------*/
 
@@ -233,12 +252,12 @@ namespace LuaInterface
             int reference = LuaDLL.toluaL_ref(L);
             return LuaStatic.GetLuaThread(L, reference);
         }
-       
+
         public static Vector3 ToVector3(IntPtr L, int stackPos)
         {            
             float x = 0, y = 0, z = 0;
-            LuaDLL.tolua_getvec3(L, stackPos, out x, out y, out z);            
-            return new Vector3(x, y, z);
+            LuaDLL.tolua_getvec3(L, stackPos, out x, out y, out z);
+            return new Vector3(x, y, z);            
         }
 
         public static Vector4 ToVector4(IntPtr L, int stackPos)
@@ -947,7 +966,7 @@ namespace LuaInterface
             return buffer;
         }
 
-        public static T[] CheckParamsObject<T>(IntPtr L, int stackPos, int count) where T : class
+        public static T[] CheckParamsObject<T>(IntPtr L, int stackPos, int count)
         {
             List<T> list = new List<T>(count);
             T obj = default(T);
@@ -955,7 +974,7 @@ namespace LuaInterface
 
             while (count > 0)
             {
-                object tmp = ToObject(L, stackPos);
+                object tmp = ToVarObject(L, stackPos);
 
                 if (TypeChecker.CheckType(L, type, stackPos))
                 {

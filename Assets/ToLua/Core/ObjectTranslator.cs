@@ -29,13 +29,15 @@ namespace LuaInterface
     {        
         private class DelayGC
         {
-            public DelayGC(int id, float time)
+            public DelayGC(int id, UnityEngine.Object obj, float time)
             {
                 this.id = id;
                 this.time = time;
+                this.obj = obj;
             }
 
             public int id;
+            public UnityEngine.Object obj = null;
             public float time;
         }
 
@@ -96,8 +98,8 @@ namespace LuaInterface
 
         //完全移除一个对象，适合lua gc
         public void RemoveObject(int udata)
-        {
-            bool flag = RemoveFromGCList(udata);
+        {            
+            //只有lua gc才能移除
             object o = objects.Remove(udata);
 
             if (o != null)
@@ -109,17 +111,7 @@ namespace LuaInterface
 
                 if (LogGC)
                 {
-                    Debugger.Log("remove object {0}, id {1}", o, udata);
-                }
-
-                if (flag)
-                {
-                    UnityEngine.Object obj = o as UnityEngine.Object;
-
-                    if (obj != null)
-                    {
-                        UnityEngine.Object.Destroy(obj);
-                    }
+                    Debugger.Log("gc object {0}, id {1}", o, udata);
                 }
             }
         }
@@ -129,7 +121,7 @@ namespace LuaInterface
             return objects.TryGetValue(udata);         
         }
 
-        //删除，但不移除一个lua对象
+        //删除，但不移除一个lua对象(移除id只能由gc完成)
         public void Destroy(int udata)
         {
             RemoveFromGCList(udata);
@@ -144,14 +136,20 @@ namespace LuaInterface
 
                 if (LogGC)
                 {
-                    Debugger.Log("destroy object {0}, id {1}", o, udata);
+                    Debugger.Log("pre destroy object {0}, id {1}", o, udata);
                 }
             }
         }
 
+        //Unity Object 延迟删除
         public void DelayDestroy(int id, float time)
         {
-            gcList.Add(new DelayGC(id, time));
+            UnityEngine.Object obj = (UnityEngine.Object)GetObject(id);
+
+            if (obj != null)
+            {
+                gcList.Add(new DelayGC(id, obj, time));
+            }            
         }
 
         public bool Getudata(object o, out int index)
@@ -180,29 +178,23 @@ namespace LuaInterface
             return false;
         }
         
-        void DestroyUnityObject(int udata)
+        void DestroyUnityObject(int udata, UnityEngine.Object obj)
         {
-            object o = objects.Destroy(udata);
+            UnityEngine.Object o = (UnityEngine.Object)objects.TryGetValue(udata);
 
-            if (o != null)
-            {                
-                if (!TypeChecker.IsValueType(o.GetType()))
-                {
-                    objectsBackMap.Remove(o);
-                }
-
-                UnityEngine.Object obj = o as UnityEngine.Object;
-
-                if (obj != null)
-                {
-                    UnityEngine.Object.Destroy(obj);
-                }
+            if (object.ReferenceEquals(o, obj))
+            {
+                objectsBackMap.Remove(o);
+                //一定不能Remove, 因为GC还可能再来一次
+                objects.Destroy(udata);     
 
                 if (LogGC)
                 {
                     Debugger.Log("destroy object {0}, id {1}", o, udata);
                 }
             }
+
+            UnityEngine.Object.Destroy(obj);
         }
 
         public void Collect()
@@ -220,7 +212,7 @@ namespace LuaInterface
 
                 if (time <= 0)
                 {
-                    DestroyUnityObject(gcList[i].id);                    
+                    DestroyUnityObject(gcList[i].id, gcList[i].obj);                    
                     gcList.RemoveAt(i);
                 }
                 else

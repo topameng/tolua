@@ -75,7 +75,7 @@ namespace LuaInterface
     public static class ToLuaFlags
     {
         public const int INDEX_ERROR = 1;       //Index 失败提示error信息，false返回nil
-        public const int USE_INT64 = 2;         //是否内部支持原生int64, 默认 false
+        public const int USE_INT64 = 2;         //是否luavm内部支持原生int64(目前用的vm都不支持, 默认false)
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -182,7 +182,7 @@ namespace LuaInterface
 
     public class LuaDLL
     {
-        public static string version = "1.0.4.104";
+        public static string version = "1.0.4.105";
         public static int LUA_MULTRET = -1;
         public static string[] LuaTypeName = { "none", "nil", "boolean", "lightuserdata", "number", "string", "table", "function", "userdata", "thread" };
 
@@ -229,7 +229,7 @@ namespace LuaInterface
          * state manipulation
          */
         //[DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        //public static extern IntPtr lua_newstate(LuaAlloc f, IntPtr ud);
+        //public static extern IntPtr lua_newstate(LuaAlloc f, IntPtr ud);                      //luajit64位不能用这个函数
 
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
         public static extern void lua_close(IntPtr luaState);
@@ -1170,6 +1170,6 @@ namespace LuaInterface
             }
 
             tolua_regthis(L, pGet, pSet);
-        }
+        }   
     }
 }
