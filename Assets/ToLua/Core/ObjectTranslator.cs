@@ -96,7 +96,7 @@ namespace LuaInterface
 #endif
         }
 
-        //完全移除一个对象，适合lua gc
+        //lua gc一个对象(lua 库不再引用，但不代表c#没使用)
         public void RemoveObject(int udata)
         {            
             //只有lua gc才能移除
@@ -123,8 +123,7 @@ namespace LuaInterface
 
         //删除，但不移除一个lua对象(移除id只能由gc完成)
         public void Destroy(int udata)
-        {
-            RemoveFromGCList(udata);
+        {            
             object o = objects.Destroy(udata);
 
             if (o != null)
@@ -136,7 +135,7 @@ namespace LuaInterface
 
                 if (LogGC)
                 {
-                    Debugger.Log("pre destroy object {0}, id {1}", o, udata);
+                    Debugger.Log("destroy object {0}, id {1}", o, udata);
                 }
             }
         }
