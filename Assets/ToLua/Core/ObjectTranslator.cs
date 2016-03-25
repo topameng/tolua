@@ -179,18 +179,12 @@ namespace LuaInterface
         
         void DestroyUnityObject(int udata, UnityEngine.Object obj)
         {
-            UnityEngine.Object o = (UnityEngine.Object)objects.TryGetValue(udata);
+            object o = objects.TryGetValue(udata);
 
             if (object.ReferenceEquals(o, obj))
             {
-                objectsBackMap.Remove(o);
-                //一定不能Remove, 因为GC还可能再来一次
-                objects.Destroy(udata);     
-
-                if (LogGC)
-                {
-                    Debugger.Log("destroy object {0}, id {1}", o, udata);
-                }
+				//一定不能Remove, 因为GC还可能再来一次
+				Destroy(udata);
             }
 
             UnityEngine.Object.Destroy(obj);
