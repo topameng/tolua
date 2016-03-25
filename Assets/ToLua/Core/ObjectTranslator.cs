@@ -179,7 +179,7 @@ namespace LuaInterface
         
         void DestroyUnityObject(int udata, UnityEngine.Object obj)
         {
-            UnityEngine.Object o = (UnityEngine.Object)objects.TryGetValue(udata);
+            object o = objects.TryGetValue(udata);
 
             if (object.ReferenceEquals(o, obj))
             {
