@@ -55,6 +55,10 @@ Quaternion.__newindex = function(t, name, k)
 	end	
 end
 
+Quaternion.__call = function(t, x, y, z, w)
+	return Quaternion.New(x, y, z, w)
+end
+
 function Quaternion.New(x, y, z, w)	
 	local quat = {x = x or 0, y = y or 0, z = z or 0, w = w or 0}
 	setmetatable(quat, Quaternion)	
@@ -471,7 +475,7 @@ function Quaternion:ToAngleAxis()
 	end
 	
 	local div = 1 / sqrt(1 - sqrt(self.w))
-	return angle * 57.29578, Vector3.New(q.x * div, q.y * div, q.z * div)
+	return angle * 57.29578, Vector3.New(self.x * div, self.y * div, self.z * div)
 end
 
 local pi = Mathf.PI

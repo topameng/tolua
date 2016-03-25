@@ -31,6 +31,10 @@ Vector4.__index = function(t,k)
 	return var
 end
 
+Vector4.__call = function(t, x, y, z, w)
+	return Vector4.New(x, y, z, w)
+end
+
 function Vector4.New(x, y, z, w)
 	local v = {x = 0, y = 0, z = 0, w = 0}
 	setmetatable(v, Vector4)

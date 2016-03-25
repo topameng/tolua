@@ -31,6 +31,9 @@ Bounds.__index = function(t,k)
 	return var
 end
 
+Bounds.__call = function(t, center, size)
+	return Bounds.New(center, size)
+end
 
 function Bounds.New(center, size)
 	local bd = {center = zero, extents = zero}

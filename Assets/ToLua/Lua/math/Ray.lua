@@ -21,6 +21,10 @@ Ray.__index = function(t,k)
 	return var
 end
 
+Ray.__call = function(t, direction, origin)
+	return Ray.New(direction, origin)
+end
+
 function Ray.New(direction, origin)
 	local ray = {}	
 	ray.direction 	= direction:Normalize()

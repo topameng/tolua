@@ -29,6 +29,10 @@ Vector2.__index = function(t,k)
 	return var
 end
 
+Vector2.__call = function(t, x, y)
+	return Vector2.New(x, y)
+end
+
 function Vector2.New(x, y)
 	local v = {x = x or 0, y = y or 0}
 	setmetatable(v, Vector2)	

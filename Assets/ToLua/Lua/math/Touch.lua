@@ -46,6 +46,7 @@ Touch.__index = function(t,k)
 	return var
 end
 
+--c# 创建
 function Touch.New(fingerId, position, rawPosition, deltaPostion, deltaTime, tapCount, phase)
 	local touch = {fingerId = fingerId or 0, position = position or zero, rawPosition = rawPosition or zero, deltaPostion = deltaPostion or zero, deltaTime = deltaTime or 0, tapCount = tapCount or 0, phase = phase or 0}		
 	setmetatable(touch, Touch)

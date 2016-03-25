@@ -22,6 +22,10 @@ Color.__index = function(t,k)
 	return var
 end
 
+Color.__call = function(t, r, g, b, a)
+	return Color.New(r, g, b, a)
+end
+
 function Color.New(r, g, b, a)
 	local v = {r = r or 0, g = g or 0, b = b or 0, a = a or 1}
 	setmetatable(v, Color)
@@ -43,15 +47,18 @@ function Color:Equals(other)
 	return self.r == other.r and self.g == other.g and self.b == other.b and self.a == other.a
 end
 
-function Color:Lerp(a, b, t)
+function Color.Lerp(a, b, t)
 	t = Mathf.Clamp01(t)
 	return Color.New(a.r + t * (b.r - a.r), a.g + t * (b.g - a.g), a.b + t * (b.b - a.b), a.a + t * (b.a - a.a))
+end
+
+function Color.LerpUnclamped(a, b, t)
+  return Color.New(a.r + t * (b.r - a.r), a.g + t * (b.g - a.g), a.b + t * (b.b - a.b), a.a + t * (b.a - a.a))
 end
 
 function Color.GrayScale(a)
 	return 0.299 * a.r + 0.587 * a.g + 0.114 * a.b
 end
-
 
 Color.__tostring = function(self)
 	return string.format("RGBA(%f,%f,%f,%f)", self.r, self.g, self.b, self.a)
@@ -91,6 +98,18 @@ get.cyan	= function() return Color.New(0,1,1,1) end
 get.magenta	= function() return Color.New(1,0,1,1) end
 get.gray	= function() return Color.New(0.5,0.5,0.5,1) end
 get.clear	= function() return Color.New(0,0,0,0) end
+
+get.gamma = function(c) 
+  return Color.New(Mathf.LinearToGammaSpace(c.r), Mathf.LinearToGammaSpace(c.g), Mathf.LinearToGammaSpace(c.b), c.a)  
+end
+
+get.linear = function(c)
+  return Color.New(Mathf.GammaToLinearSpace(c.r), Mathf.GammaToLinearSpace(c.g), Mathf.GammaToLinearSpace(c.b), c.a)
+end
+
+get.maxColorComponent = function(c)    
+  return Mathf.Max(Mathf.Max(c.r, c.g), c.b)
+end
 
 get.grayscale = Color.GrayScale
 
