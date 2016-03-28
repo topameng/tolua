@@ -805,8 +805,8 @@ namespace LuaInterface
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
         public static extern void luaL_where(IntPtr luaState, int level);                                           //[-0, +1, e]
 
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int luaL_error(IntPtr luaState, string message);
+        //[DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        //public static extern int luaL_error(IntPtr luaState, string message);
 
         public static int luaL_throw(IntPtr luaState, string message)
         {

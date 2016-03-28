@@ -342,8 +342,11 @@ local function _AddPropertiesForRepeatedField(field, message_meta)
         local field_value = self._fields[field]
         if field_value == nil then
             field_value = field._default_constructor(self)
-
             self._fields[field] = field_value
+
+            if not self._cached_byte_size_dirty then
+                message_meta._member._Modified(self)
+            end
         end
         return field_value
     end
@@ -361,9 +364,12 @@ local function _AddPropertiesForNonRepeatedCompositeField(field, message_meta)
         local field_value = self._fields[field]
         if field_value == nil then
             field_value = message_type._concrete_class()
-            field_value:_SetListener(self._listener_for_children)
-            
+            field_value:_SetListener(self._listener_for_children)            
             self._fields[field] = field_value
+
+            if not self._cached_byte_size_dirty then
+                message_meta._member._Modified(self)
+            end
         end
         return field_value
     end
@@ -522,7 +528,7 @@ local function _AddListFieldsMethod(message_descriptor, message_meta)
                 while true do
                     local descriptor, value = f(a, i)
                     if descriptor == nil then
-                        return 
+                        return                     
                     elseif _IsPresent(descriptor, value) then
                         return descriptor, value
                     end
