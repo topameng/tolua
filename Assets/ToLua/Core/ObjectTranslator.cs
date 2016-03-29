@@ -64,7 +64,9 @@ namespace LuaInterface
         public readonly LuaObjectPool objects = new LuaObjectPool();
         private List<DelayGC> gcList = new List<DelayGC>();
 
+#if !MULTI_STATE
         private static ObjectTranslator _translator = null;
+#endif
 
         public ObjectTranslator()
         {
