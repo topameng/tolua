@@ -98,11 +98,13 @@ namespace LuaInterface
             OpenBaseLibs();            
             LuaDLL.lua_settop(L, 0);
 
+#if UNITY_EDITOR
             if (!LuaFileUtils.Instance.beZip)
             {                
                 AddSearchPath(LuaConst.luaDir);
                 AddSearchPath(LuaConst.toluaDir);
             }
+#endif
         }
 
         void OpenBaseLibs()
@@ -1486,7 +1488,7 @@ namespace LuaInterface
         }
 
         /*--------------------------------对于LuaDLL函数的简单封装------------------------------------------*/
-        #region SIMPLE_LUA_FUNCTION
+#region SIMPLE_LUA_FUNCTION
         public int LuaGetTop()
         {
             return LuaDLL.lua_gettop(L);
@@ -1613,7 +1615,7 @@ namespace LuaInterface
             {
                 throw new LuaException("Require not need file extension: " + str);
             }
-#endif                        
+#endif
             return LuaDLL.tolua_require(L, fileName);
         }
 
@@ -1684,7 +1686,7 @@ namespace LuaInterface
         {
             return LuaDLL.tolua_fixedupdate(L, fixedTime);
         }
-        #endregion
+#endregion
         /*--------------------------------------------------------------------------------------------------*/
 
         void CloseBaseRef()
