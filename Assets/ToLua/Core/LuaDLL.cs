@@ -182,7 +182,7 @@ namespace LuaInterface
 
     public class LuaDLL
     {
-        public static string version = "1.0.4.111";
+        public static string version = "1.0.4.116";
         public static int LUA_MULTRET = -1;
         public static string[] LuaTypeName = { "none", "nil", "boolean", "lightuserdata", "number", "string", "table", "function", "userdata", "thread" };
 
@@ -327,8 +327,10 @@ namespace LuaInterface
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
         public static extern void lua_pushnumber(IntPtr luaState, double number);
 
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void lua_pushinteger(IntPtr luaState, int n);                          
+        public static void lua_pushinteger(IntPtr L, int n)
+        {
+            lua_pushnumber(L, n);
+        }                       
 
         public static void lua_pushlstring(IntPtr luaState, byte[] str, int size)                   //[-0, +1, m]
         {

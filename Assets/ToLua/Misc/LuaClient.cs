@@ -169,10 +169,18 @@ public class LuaClient : MonoBehaviour
                 levelLoaded = null;
             }
 
-            loop.Destroy();
-            luaState.Dispose();
-            loop = null;
-            luaState = null;
+            if (loop != null)
+            {
+                loop.Destroy();
+                loop = null;
+            }
+
+            if (luaState != null)
+            {
+                luaState.Dispose();
+                luaState = null;
+            }
+            
             Instance = null;
         }
     }
