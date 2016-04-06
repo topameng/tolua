@@ -327,6 +327,16 @@ namespace LuaInterface
                 uint n = Convert.ToUInt32(obj);
                 return (double)n;
             }
+            else if (t == typeof(long))
+            {
+                long n = Convert.ToInt64(obj);
+                return (double)n;
+            }
+            else if (t == typeof(ulong))
+            {
+                ulong n = Convert.ToUInt64(obj);
+                return (double)n;
+            }
             else if (t == typeof(byte))
             {
                 byte b = Convert.ToByte(obj);
