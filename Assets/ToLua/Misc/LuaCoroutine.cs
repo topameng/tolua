@@ -32,7 +32,7 @@ public static class LuaCoroutine
         @"
         local _WaitForSeconds, _WaitForFixedUpdate, _WaitForEndOfFrame, _Yield = WaitForSeconds, WaitForFixedUpdate, WaitForEndOfFrame, Yield        
         local comap = {}
-        setmetatable(comap, {_mode = 'kv'})
+        setmetatable(comap, {__mode = 'kv'})
 
         function WaitForSeconds(t)
             local co = coroutine.running()

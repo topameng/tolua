@@ -11,7 +11,7 @@ local yield = coroutine.yield
 local error = error
 
 local comap = {}
-setmetatable(comap, {_mode = "kv"})
+setmetatable(comap, {__mode = "kv"})
 
 function coroutine.start(f, ...)	
 	local co = create(f)
