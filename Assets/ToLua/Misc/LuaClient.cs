@@ -42,6 +42,11 @@ public class LuaClient : MonoBehaviour
 
     protected virtual LuaFileUtils InitLoader()
     {
+        if (LuaFileUtils.Instance != null)
+        {
+            return LuaFileUtils.Instance;
+        }
+
         return new LuaFileUtils();
     }
 

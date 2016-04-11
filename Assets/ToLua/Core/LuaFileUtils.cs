@@ -35,7 +35,7 @@ namespace LuaInterface
             {
                 if (instance == null)
                 {
-                    Instance = new LuaFileUtils();
+                    instance = new LuaFileUtils();
                 }
 
                 return instance;

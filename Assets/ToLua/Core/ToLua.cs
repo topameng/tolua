@@ -966,6 +966,20 @@ namespace LuaInterface
             return buffer;
         }
 
+
+        public static string[] CheckParamsString(IntPtr L, int stackPos, int count)
+        {
+            string[] list = new string[count];                        
+            int pos = 0;
+
+            while (pos < count)
+            {
+                list[pos++] = CheckString(L, stackPos++);                                                
+            }
+
+            return list;
+        }
+
         public static T[] CheckParamsObject<T>(IntPtr L, int stackPos, int count)
         {
             List<T> list = new List<T>(count);
