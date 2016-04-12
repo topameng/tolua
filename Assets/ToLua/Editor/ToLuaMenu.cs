@@ -91,22 +91,26 @@ public static class ToLuaMenu
     static ToLuaMenu()
     {
         string dir = CustomSettings.saveDir;
-        string[] files = Directory.GetFiles(dir, "*.cs", SearchOption.TopDirectoryOnly);
-
-        if (files.Length < 3 && beCheck)
+        if (Directory.Exists(dir))
         {
-            if (EditorUtility.DisplayDialog("自动生成", "点击确定自动生成常用类型注册文件， 也可通过菜单逐步完成此功能", "确定", "取消"))
-            {
-                beAutoGen = true;
-                GenLuaDelegates();
-                AssetDatabase.Refresh();
-                GenerateClassWraps();
-                GenLuaBinder();
-                beAutoGen = false;                
-            }
+            string[] files = Directory.GetFiles(dir, "*.cs", SearchOption.TopDirectoryOnly);
 
-            beCheck = false;
+            if (files.Length < 3 && beCheck)
+            {
+                if (EditorUtility.DisplayDialog("自动生成", "点击确定自动生成常用类型注册文件， 也可通过菜单逐步完成此功能", "确定", "取消"))
+                {
+                    beAutoGen = true;
+                    GenLuaDelegates();
+                    AssetDatabase.Refresh();
+                    GenerateClassWraps();
+                    GenLuaBinder();
+                    beAutoGen = false;                
+                }
+
+                beCheck = false;
+            }
         }
+        CollectCustomTypeList();
     }
 
     static string RemoveNameSpace(string name, string space)
@@ -288,6 +292,56 @@ public static class ToLuaMenu
         Debug.Log("Generate lua binding files over");
         allTypes.Clear();
         AssetDatabase.Refresh();
+    }
+
+    private static void CollectCustomTypeList()
+    {
+        var t_list = new List<Type>();
+        var d_list = new List<Type>();
+
+        var btlist = new List<BindType>();
+        var asms = AppDomain.CurrentDomain.GetAssemblies();
+        for (int i = 0, isize = asms.Length; i < isize; ++i)
+        {
+            var types = asms[i].GetTypes();
+            for (int j = 0, jsize = types.Length; j < jsize; ++j)
+            {
+                var type = types[j];
+                var tags = type.GetCustomAttributes(typeof(LuaInterface.LuaBindAttribute), false);
+                if (tags.Length != 0)
+                {
+                    t_list.Add(type);
+                    if ((tags[0] as LuaInterface.LuaBindAttribute).isDynamic)
+                    {
+                        d_list.Add(type);
+                    }
+                }
+            }
+        }
+        var cs_type_list = CustomSettings.customTypeList;
+        var cs_dyn_type_list = CustomSettings.dynamicList;
+
+        for (int i = 0, isize = cs_type_list.Length; i < isize; ++i)
+        {
+            if (!t_list.Contains(cs_type_list[i].type))
+            {
+                t_list.Add(cs_type_list[i].type);
+            }
+        }
+        for (int i = 0, isize = d_list.Count; i < isize; ++i)
+        {
+            if (!d_list.Contains(cs_dyn_type_list[i]))
+            {
+                d_list.Add(cs_dyn_type_list[i]);
+            }
+        }
+        for (int i = 0, isize = t_list.Count; i < isize; ++i)
+        {
+            btlist.Add(new BindType(t_list[i]));
+        }
+        CustomSettings.customTypeList = btlist.ToArray();
+        CustomSettings.dynamicList = d_list;
+        Debug.Log("CustomSettings refreshed");
     }
 
     static HashSet<Type> GetCustomTypeDelegates()
@@ -505,9 +559,11 @@ public static class ToLuaMenu
         sb.AppendLineEx("using UnityEngine;");
         sb.AppendLineEx("using LuaInterface;");
         sb.AppendLineEx();
-        sb.AppendLineEx("public static class LuaBinder");
+        sb.AppendLineEx("public static partial class LuaBinder");
         sb.AppendLineEx("{");
-        sb.AppendLineEx("\tpublic static void Bind(LuaState L)");
+        sb.AppendLineEx("\tstatic LuaBinder() { _RealBind = _Bind; }");
+        sb.AppendLineEx();
+        sb.AppendLineEx("\tpublic static void _Bind(LuaState L)");
         sb.AppendLineEx("\t{");
         sb.AppendLineEx("\t\tfloat t = Time.realtimeSinceStartup;");
         sb.AppendLineEx("\t\tL.BeginModule(null);");
@@ -584,6 +640,10 @@ public static class ToLuaMenu
             {
                 Type t1 = CustomSettings.dynamicList[i];
                 BindType bt = backupList.Find((p) => { return p.type == t1; });
+                if (bt == null) 
+                {
+                    Debug.LogError(t1 + " not found");
+                }
                 sb.AppendFormat("\t\tL.AddPreLoad(\"{0}\", LuaOpen_{1}, typeof({0}));\r\n", bt.name, bt.wrapName);
             }
 
@@ -802,12 +862,8 @@ public static class ToLuaMenu
         sb.AppendLineEx("using System;");
         sb.AppendLineEx("using LuaInterface;");
         sb.AppendLineEx();
-        sb.AppendLineEx("public static class LuaBinder");
+        sb.AppendLineEx("public static partial class LuaBinder");
         sb.AppendLineEx("{");
-        sb.AppendLineEx("\tpublic static void Bind(LuaState L)");
-        sb.AppendLineEx("\t{");
-        sb.AppendLineEx("\t\tthrow new LuaException(\"Please generate LuaBinder files first!\");");
-        sb.AppendLineEx("\t}");
         sb.AppendLineEx("}");
 
         string file = CustomSettings.saveDir + "LuaBinder.cs";
