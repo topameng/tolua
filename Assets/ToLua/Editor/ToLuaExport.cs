@@ -456,7 +456,11 @@ public static class ToLuaExport
     }
 
     static void SaveFile(string file)
-    {        
+    {
+        if (!Directory.Exists(CustomSettings.saveDir))
+        {
+            Directory.CreateDirectory(CustomSettings.saveDir);
+        }
         using (StreamWriter textWriter = new StreamWriter(file, false, Encoding.UTF8))
         {            
             StringBuilder usb = new StringBuilder();
@@ -500,7 +504,14 @@ public static class ToLuaExport
             {
                 if (!m.Name.Contains("op_"))
                 {
-                    sb.AppendFormat("\t\tL.RegFunction(\"{0}\", {1});\r\n", m.Name, m.Name == "Register" ? "_Register" : m.Name);
+                    if (m.GetCustomAttributes(typeof(MonoPInvokeCallbackAttribute), false).Length != 0)
+                    {
+                        sb.AppendFormat("\t\tL.RegFunction(\"{0}\", {1}.{0});\r\n", m.Name, type.FullName);
+                    }
+                    else
+                    {
+                        sb.AppendFormat("\t\tL.RegFunction(\"{0}\", {1});\r\n", m.Name, m.Name == "Register" ? "_Register" : m.Name);
+                    }
                 }
 
                 nameCounter[m.Name] = 1;
@@ -726,6 +737,11 @@ public static class ToLuaExport
 
     static void GenFunction(MethodInfo m)
     {
+        if (m.GetCustomAttributes(typeof(MonoPInvokeCallbackAttribute), false).Length != 0)
+        {
+            return;
+        }
+
         sb.AppendLineEx("\r\n\t[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]");
         sb.AppendFormat("\tstatic int {0}(IntPtr L)\r\n", m.Name == "Register" ? "_Register" : m.Name);
         sb.AppendLineEx("\t{");
@@ -2865,44 +2881,6 @@ public static class ToLuaExport
         sb.AppendLineEx("\t}");    
     }
 
-    static string CreateDelegate = @"
-    [NoToLuaAttribute]
-    public static Delegate CreateDelegate(Type t, LuaFunction func = null)
-    {
-        DelegateValue create = null;
-
-        if (!dict.TryGetValue(t, out create))
-        {
-            throw new LuaException(string.Format(""Delegate {0} not register"", LuaMisc.GetTypeName(t)));            
-        }
-        
-        return create(func);        
-    }
-";
-
-    static string RemoveDelegate = @"
-    [NoToLuaAttribute]
-    public static Delegate RemoveDelegate(Delegate obj, LuaFunction func)
-    {
-        LuaState state = func.GetLuaState();
-        Delegate[] ds = obj.GetInvocationList();
-
-        for (int i = 0; i < ds.Length; i++)
-        {
-            LuaDelegate ld = ds[i].Target as LuaDelegate;
-
-            if (ld != null && ld.func == func)
-            {
-                obj = Delegate.Remove(obj, ds[i]);
-                state.DelayDispose(ld.func);
-                break;
-            }
-        }
-
-        return obj;
-    }
-";
-
     static string GetDelegateParams(MethodInfo mi)
     {
         ParameterInfo[] infos = mi.GetParameters();
@@ -2935,15 +2913,9 @@ public static class ToLuaExport
             }          
         }
 
-        sb.Append("public static class DelegateFactory\r\n");
+        sb.Append("public static partial class DelegateFactory\r\n");
         sb.Append("{\r\n");
-        sb.Append("\tdelegate Delegate DelegateValue(LuaFunction func);\r\n");
-        sb.Append("\tstatic Dictionary<Type, DelegateValue> dict = new Dictionary<Type, DelegateValue>();\r\n");
-        sb.AppendLineEx();
-        sb.Append("\tstatic DelegateFactory()\r\n");
-        sb.Append("\t{\r\n");
-        sb.Append("\t\tRegister();\r\n");
-        sb.AppendLineEx("\t}\r\n");
+        sb.Append("\tstatic DelegateFactory() { Register(); }\r\n");
 
         sb.Append("\t[NoToLuaAttribute]\r\n");
         sb.Append("\tpublic static void Register()\r\n");
@@ -2958,8 +2930,6 @@ public static class ToLuaExport
         }
 
         sb.Append("\t}\r\n");
-        sb.Append(CreateDelegate);
-        sb.AppendLineEx(RemoveDelegate);
 
         for (int i = 0; i < list.Length; i++)
         {
