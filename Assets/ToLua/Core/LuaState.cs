@@ -92,7 +92,6 @@ namespace LuaInterface
             LuaException.Init();     
             L = LuaDLL.luaL_newstate();                                                                        
             LuaDLL.tolua_openlibs(L);
-            LuaDLL.tolua_openint64(L);    
             LuaStatic.OpenLibs(L);                                                                                                  
             stateMap.Add(L, this);                       
             OpenBaseLibs();            
