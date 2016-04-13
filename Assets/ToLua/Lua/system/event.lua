@@ -8,6 +8,7 @@ local setmetatable = setmetatable
 local xpcall = xpcall
 local pcall = pcall
 local traceback = traceback
+local ilist = ilist
 
 local _xpcall = {}
 setmetatable(_xpcall, _xpcall)

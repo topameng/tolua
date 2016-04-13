@@ -500,14 +500,7 @@ public static class ToLuaExport
             {
                 if (!m.Name.Contains("op_"))
                 {
-                    if (m.GetCustomAttributes(typeof(MonoPInvokeCallbackAttribute), false).Length != 0)
-                    {
-                        sb.AppendFormat("\t\tL.RegFunction(\"{0}\", {1}.{0});\r\n", m.Name, type.FullName);
-                    }
-                    else
-                    {
-                        sb.AppendFormat("\t\tL.RegFunction(\"{0}\", {1});\r\n", m.Name, m.Name == "Register" ? "_Register" : m.Name);
-                    }
+                    sb.AppendFormat("\t\tL.RegFunction(\"{0}\", {1});\r\n", m.Name, m.Name == "Register" ? "_Register" : m.Name);                 
                 }
 
                 nameCounter[m.Name] = 1;
@@ -733,10 +726,6 @@ public static class ToLuaExport
 
     static void GenFunction(MethodInfo m)
     {
-        if (m.GetCustomAttributes(typeof(MonoPInvokeCallbackAttribute), false).Length != 0)
-        {
-            return;
-        }
         sb.AppendLineEx("\r\n\t[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]");
         sb.AppendFormat("\tstatic int {0}(IntPtr L)\r\n", m.Name == "Register" ? "_Register" : m.Name);
         sb.AppendLineEx("\t{");
@@ -2795,7 +2784,7 @@ public static class ToLuaExport
         {
             Type t = attrs[j].GetType() ;
 
-            if (t == typeof(System.ObsoleteAttribute) || t == typeof(NoToLuaAttribute)) // || t.ToString() == "UnityEngine.WrapperlessIcall")
+            if (t == typeof(System.ObsoleteAttribute) || t == typeof(NoToLuaAttribute) || t == typeof(MonoPInvokeCallbackAttribute)) // || t.ToString() == "UnityEngine.WrapperlessIcall")
             {
                 return true;               
             }
