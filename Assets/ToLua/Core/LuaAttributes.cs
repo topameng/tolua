@@ -31,6 +31,16 @@ namespace LuaInterface
         }
     }
 
+    public class LuaBindAttribute : System.Attribute
+    {
+        public bool isDynamic { get; set; }
+
+        public LuaBindAttribute()
+        {
+            isDynamic = false;
+        }
+    }
+
     public class NoToLuaAttribute : System.Attribute
     {
         public NoToLuaAttribute()
