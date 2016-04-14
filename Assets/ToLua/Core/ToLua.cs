@@ -63,7 +63,6 @@ namespace LuaInterface
 
             LuaDLL.tolua_pushudata(L, 1);
             LuaDLL.lua_setfield(L, LuaIndexes.LUA_GLOBALSINDEX, "null");
-            LuaDLL.lua_pop(L, 1);
         }
 
         /*--------------------------------对于tolua扩展函数------------------------------------------*/

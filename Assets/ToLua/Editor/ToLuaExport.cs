@@ -2034,7 +2034,7 @@ public static class ToLuaExport
         }
         else
         {
-            return t.FullName;
+            return t.FullName.Replace("+", ".");
         }
     }
 
