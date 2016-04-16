@@ -1500,7 +1500,7 @@ namespace LuaInterface
                 }
                 else if (t == typeof(LayerMask))
                 {
-                    Push(L, (LayerMask)obj);
+                    PushLayerMask(L, (LayerMask)obj);
                 }
                 else
                 {
