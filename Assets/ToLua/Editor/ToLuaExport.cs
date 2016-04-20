@@ -2044,7 +2044,7 @@ public static class ToLuaExport
         if (t.IsByRef)
         {
             t = t.GetElementType();
-            return GetTypeStr(t);
+            return "ref " + GetTypeStr(t);
         }
         else if(t == extendType)
         {            
