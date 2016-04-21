@@ -260,7 +260,7 @@ public static class ToLuaMenu
     {
         if (!beAutoGen && EditorApplication.isCompiling)
         {
-            EditorUtility.DisplayDialog("警告", "请等待编辑器完成编译在执行此功能", "确定");
+            EditorUtility.DisplayDialog("警告", "请等待编辑器完成编译再执行此功能", "确定");
             return;
         }
 
@@ -364,7 +364,7 @@ public static class ToLuaMenu
     {
         if (!beAutoGen && EditorApplication.isCompiling)
         {
-            EditorUtility.DisplayDialog("警告", "请等待编辑器完成编译在执行此功能", "确定");
+            EditorUtility.DisplayDialog("警告", "请等待编辑器完成编译再执行此功能", "确定");
             return;
         }
 
@@ -476,7 +476,7 @@ public static class ToLuaMenu
     {
         if (!beAutoGen && EditorApplication.isCompiling)
         {
-            EditorUtility.DisplayDialog("警告", "请等待编辑器完成编译在执行此功能", "确定");
+            EditorUtility.DisplayDialog("警告", "请等待编辑器完成编译再执行此功能", "确定");
             return;
         }
 
@@ -755,7 +755,7 @@ public static class ToLuaMenu
     {
         if (EditorApplication.isCompiling)
         {
-            EditorUtility.DisplayDialog("警告", "请等待编辑器完成编译在执行此功能", "确定");
+            EditorUtility.DisplayDialog("警告", "请等待编辑器完成编译再执行此功能", "确定");
             return;
         }
 
@@ -771,7 +771,7 @@ public static class ToLuaMenu
     {
         if (EditorApplication.isCompiling)
         {
-            EditorUtility.DisplayDialog("警告", "请等待编辑器完成编译在执行此功能", "确定");
+            EditorUtility.DisplayDialog("警告", "请等待编辑器完成编译再执行此功能", "确定");
             return;
         }
 
@@ -978,7 +978,7 @@ public static class ToLuaMenu
     {
         if (!beAutoGen && EditorApplication.isCompiling)
         {
-            EditorUtility.DisplayDialog("警告", "请等待编辑器完成编译在执行此功能", "确定");
+            EditorUtility.DisplayDialog("警告", "请等待编辑器完成编译再执行此功能", "确定");
             return;
         }
 
