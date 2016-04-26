@@ -25,9 +25,13 @@ https://github.com/topameng/tolua_runtime
 **protoc-gen-lua** <br>
 https://github.com/topameng/protoc-gen-lua
 
+**LuaSocket** <br>
+https://github.com/diegonehab/luasocket
+
 **luapb**<br>
 https://github.com/Neopallium/lua-pb<br>
 支持luapb可自行整合.未放入插件内
+
 #FrameWork and Demo
 **LuaFrameWork**<br>
 https://github.com/jarjin/LuaFramework_NGUI <br>
@@ -61,4 +65,4 @@ tolua#提供的替换方法是:<br>
 参考包内1-20例子
 
 #About Lua
-win, android using luajit2.0.4. macos using luac(for u5.x). ios using luajit2.1beta
+win, android using luajit2.0.4. macos using luac(for u5.x). ios using luajit2.1-beta2
