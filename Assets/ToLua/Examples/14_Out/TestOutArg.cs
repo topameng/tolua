@@ -5,10 +5,11 @@ using LuaInterface;
 public class TestOutArg : MonoBehaviour 
 {            
     string script =
-        @"
-            local _layer = 2 ^ LayerMask.NameToLayer('Default')
+        @"                                                                        
+            function TestPick(ray)                                     
+                require 'UnityEngine.BoxCollider'   -- BoxCollider 是preload类型，需要require一下
 
-            function TestPick(ray)                     
+                local _layer = 2 ^ LayerMask.NameToLayer('Default')
                 local flag, hit = UnityEngine.Physics.Raycast(ray, nil, 5000, _layer)                
                 --local flag, hit = UnityEngine.Physics.Raycast(ray, RaycastHit.out, 5000, _layer)
                 
@@ -27,7 +28,7 @@ public class TestOutArg : MonoBehaviour
         state = new LuaState();
         state.Start();
         LuaBinder.Bind(state);
-        state.DoString(script);
+        state.DoString(script, "TestOutArg.cs");
 
         func = state.GetFunction("TestPick");
 	}

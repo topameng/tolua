@@ -1,14 +1,17 @@
 --------------------------------------------------------------------------------
---      Copyright (c) 2015 , 蒙占志(topameng) topameng@gmail.com
+--      Copyright (c) 2015 - 2016 , 蒙占志(topameng) topameng@gmail.com
 --      All rights reserved.
 --      Use, modification and distribution are subject to the "MIT License"
 --------------------------------------------------------------------------------
-
 local create = coroutine.create
 local running = coroutine.running
 local resume = coroutine.resume
 local yield = coroutine.yield
 local error = error
+local unpack = unpack
+local debug = debug
+local FrameTimer = FrameTimer
+local CoTimer = CoTimer
 
 local comap = {}
 setmetatable(comap, {__mode = "kv"})

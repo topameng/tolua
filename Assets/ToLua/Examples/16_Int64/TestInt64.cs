@@ -46,20 +46,20 @@ public class TestInt64 : MonoBehaviour
     void Start()
     {
 #if UNITY_5		
-		Application.logMessageReceived += ShowTips;
+        Application.logMessageReceived += ShowTips;
 #else
         Application.RegisterLogCallback(ShowTips);
-#endif
+#endif        
         new LuaResLoader();
         LuaState lua = new LuaState();
         lua.Start();
-        lua.DoString(script);
+        lua.DoString(script);                
 
         LuaFunction func = lua.GetFunction("TestInt64");
         func.BeginPCall();
         func.PushInt64(9223372036854775807 - 789);
         func.PCall();
-        LuaInteger64 n64 = func.CheckInteger64();
+        LuaInteger64 n64 = func.CheckInteger64();        
         Debugger.Log("int64 return from lua is: {0}", n64);
         func.EndPCall();
         func.Dispose();
@@ -79,7 +79,7 @@ public class TestInt64 : MonoBehaviour
     void OnDestroy()
     {
 #if UNITY_5		
-		Application.logMessageReceived -= ShowTips;
+        Application.logMessageReceived -= ShowTips;
 #else
         Application.RegisterLogCallback(null);
 #endif

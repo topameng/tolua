@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿//#define TEST_GC
+using UnityEngine;
 using System.Collections;
 using LuaInterface;
 using System;
@@ -16,9 +17,17 @@ public class CallLuaFunction : MonoBehaviour
 
     LuaFunction func = null;
     LuaState lua = null;
+    string tips = null;
 	
 	void Start () 
     {
+#if !TEST_GC
+    #if UNITY_5
+        Application.logMessageReceived += ShowTips;
+    #else
+        Application.RegisterLogCallback(ShowTips);
+    #endif
+#endif
         lua = new LuaState();
         lua.Start();
         lua.DoString(script);
@@ -30,15 +39,28 @@ public class CallLuaFunction : MonoBehaviour
         {
             //有gc alloc
             object[] r = func.Call(123456);
-            Debugger.Log(r[0]);
+            Debugger.Log("generic call return: {0}", r[0]);
 
             // no gc alloc
             int num = CallFunc();
-            Debugger.Log(num);
+            Debugger.Log("expansion call return: {0}", num);
         }
-
+                
         lua.CheckTop();
 	}
+
+    void ShowTips(string msg, string stackTrace, LogType type)
+    {
+        tips += msg;
+        tips += "\r\n";
+    }
+
+#if !TEST_GC
+    void OnGUI()
+    {
+        GUI.Label(new Rect(Screen.width / 2 - 200, Screen.height / 2 - 150, 400, 300), tips);
+    }
+#endif
 
     void OnDestroy()
     {
@@ -50,6 +72,14 @@ public class CallLuaFunction : MonoBehaviour
 
         lua.Dispose();
         lua = null;
+
+#if !TEST_GC
+    #if UNITY_5
+        Application.logMessageReceived -= ShowTips;
+    #else
+        Application.RegisterLogCallback(null);
+    #endif
+#endif
     }
 
     int CallFunc()
@@ -59,13 +89,15 @@ public class CallLuaFunction : MonoBehaviour
         func.PCall();        
         int num = (int)func.CheckNumber();                    
         func.EndPCall();
-        return (int)num;        
+        return num;                
     }
-		
-    //取消注释, 在profiler中查看gc alloc
-	//void Update () 
-    //{
-        //func.Call(123456);
+
+    //在profiler中查看gc alloc
+#if TEST_GC
+    void Update () 
+    {
+        func.Call(123456);
         //CallFunc();        
-	//}
+	}
+#endif
 }

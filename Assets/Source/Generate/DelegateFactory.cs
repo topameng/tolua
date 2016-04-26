@@ -5,8 +5,8 @@ using LuaInterface;
 
 public static class DelegateFactory
 {
-	delegate Delegate DelegateValue(LuaFunction func);
-	static Dictionary<Type, DelegateValue> dict = new Dictionary<Type, DelegateValue>();
+	public delegate Delegate DelegateValue(LuaFunction func);
+	public static Dictionary<Type, DelegateValue> dict = new Dictionary<Type, DelegateValue>();
 
 	static DelegateFactory()
 	{

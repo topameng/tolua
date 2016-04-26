@@ -1,4 +1,4 @@
-﻿-----------------------------------------------------------------------------
+-----------------------------------------------------------------------------
 -- Unified SMTP/FTP subsystem
 -- LuaSocket toolkit.
 -- Author: Diego Nehab
@@ -9,8 +9,8 @@
 -----------------------------------------------------------------------------
 local base = _G
 local string = require("string")
-local socket = require("socket.socket")
-local ltn12 = require("socket.ltn12")
+local socket = require("socket")
+local ltn12 = require("ltn12")
 
 socket.tp = {}
 local _M = socket.tp
@@ -46,6 +46,14 @@ end
 -- metatable for sock object
 local metat = { __index = {} }
 
+function metat.__index:getpeername()
+    return self.c:getpeername()
+end
+
+function metat.__index:getsockname()
+    return self.c:getpeername()
+end
+
 function metat.__index:check(ok)
     local code, reply = get_reply(self.c)
     if not code then return nil, reply end
@@ -74,7 +82,7 @@ function metat.__index:command(cmd, arg)
 end
 
 function metat.__index:sink(snk, pat)
-    local chunk, err = c:receive(pat)
+    local chunk, err = self.c:receive(pat)
     return snk(chunk, err)
 end
 

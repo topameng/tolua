@@ -34,7 +34,7 @@ public class UseDictionary : MonoBehaviour
 
 	void Awake () 
     {
-        map.Add(1, new TestAccount(2, "隔壁老王", 2));
+        map.Add(1, new TestAccount(2, "水水", 0));
         map.Add(2, new TestAccount(1, "王伟", 1));
         map.Add(3, new TestAccount(2, "王芳", 0));
         

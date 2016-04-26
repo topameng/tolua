@@ -19,6 +19,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
+#define MISS_WARNING
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -31,7 +33,8 @@ namespace LuaInterface
 {
     public class LuaState : IDisposable
     {
-        public ObjectTranslator translator = new ObjectTranslator();                 
+        public ObjectTranslator translator = new ObjectTranslator();
+        public LuaReflection reflection = new LuaReflection();
 
         public int ArrayMetatable { get; private set; }
         public int DelegateMetatable { get; private set; }
@@ -46,7 +49,7 @@ namespace LuaInterface
         public int UnpackBounds { get; private set; }
         public int PackRay { get; private set; }
         public int UnpackRay { get; private set; }
-        public int PackRaycastHit { get; private set; }
+        public int PackRaycastHit { get; private set; }        
         public int PackTouch { get; private set; }
 
         public bool LogGC 
@@ -70,7 +73,7 @@ namespace LuaInterface
         List<GCRef> gcList = new List<GCRef>();
         List<LuaFunction> subList = new List<LuaFunction>();
 
-        Dictionary<Type, int> metaMap = new Dictionary<Type, int>();
+        Dictionary<Type, int> metaMap = new Dictionary<Type, int>();        
         Dictionary<Enum, object> enumMap = new Dictionary<Enum, object>();
         Dictionary<Type, LuaCSFunction> preLoadMap = new Dictionary<Type, LuaCSFunction>();
 
@@ -82,33 +85,35 @@ namespace LuaInterface
         private int beginCount = 0;
         private bool beLogGC = false;
 
+#if UNITY_EDITOR
+        private bool beStart = false;
+#endif
+
+#if MISS_WARNING
+        HashSet<Type> missSet = new HashSet<Type>();
+#endif
+
         public LuaState()
         {
             if (mainState == null)
             {
                 mainState = this;
             }
-
-            LuaException.Init();     
-            L = LuaDLL.luaL_newstate();                                                                        
-            LuaDLL.tolua_openlibs(L);
-            LuaStatic.OpenLibs(L);                                                                                                  
-            stateMap.Add(L, this);                       
+            
+            LuaException.Init();            
+            L = LuaDLL.luaL_newstate();
+            stateMap.Add(L, this);            
+            LuaDLL.tolua_openlibs(L);                        
+            ToLua.OpenLibs(L);
             OpenBaseLibs();            
             LuaDLL.lua_settop(L, 0);
-
-#if UNITY_EDITOR
-            if (!LuaFileUtils.Instance.beZip)
-            {                
-                AddSearchPath(LuaConst.luaDir);
-                AddSearchPath(LuaConst.toluaDir);
-            }
-#endif
+            InitLuaPath();
         }
 
         void OpenBaseLibs()
         {            
             BeginModule(null);
+
             BeginModule("System");
             System_ObjectWrap.Register(this);
             System_NullObjectWrap.Register(this);            
@@ -116,20 +121,25 @@ namespace LuaInterface
             System_DelegateWrap.Register(this);
             System_EnumWrap.Register(this);
             System_ArrayWrap.Register(this);
-            System_TypeWrap.Register(this);
-            LuaInterface_LuaOutWrap.Register(this);
-            LuaInterface_EventObjectWrap.Register(this);
+            System_TypeWrap.Register(this);                                               
             BeginModule("Collections");
             System_Collections_IEnumeratorWrap.Register(this);
-            EndModule();
-            EndModule();
+            EndModule();     
+            EndModule();//end System
+
+            BeginModule("LuaInterface");
+            LuaInterface_LuaOutWrap.Register(this);
+            LuaInterface_EventObjectWrap.Register(this);
+            EndModule();//end LuaInterface
+
             BeginModule("UnityEngine");
             UnityEngine_ObjectWrap.Register(this);            
-            EndModule();
-            EndModule();
-            
-            ToLua.OpenLibs(L);
-            LuaUnityLibs.OpenLibs(L);
+            EndModule(); //end UnityEngine
+
+            EndModule(); //end global
+                        
+            LuaUnityLibs.OpenLibs(L);            
+            LuaReflection.OpenLibs(L);
             ArrayMetatable = metaMap[typeof(System.Array)];
             TypeMetatable = metaMap[typeof(System.Type)];
             DelegateMetatable = metaMap[typeof(System.Delegate)];
@@ -138,18 +148,50 @@ namespace LuaInterface
             EventMetatable = metaMap[typeof(EventObject)];
         }
 
-        void OpenBaseLuaLibs()
+        void InitLuaPath()
         {
-            DoFile("tolua.lua");
+            InitPackagePath();
+
+            if (!LuaFileUtils.Instance.beZip)
+            {
+#if UNITY_EDITOR
+                if (!Directory.Exists(LuaConst.luaDir))
+                {
+                    string msg = string.Format("luaDir path not exists: {0}, configer it in LuaConst.cs", LuaConst.luaDir);
+                    throw new LuaException(msg);
+                }
+
+                if (!Directory.Exists(LuaConst.toluaDir))
+                {
+                    string msg = string.Format("toluaDir path not exists: {0}, configer it in LuaConst.cs", LuaConst.luaDir);
+                    throw new LuaException(msg);
+                }
+
+                AddSearchPath(LuaConst.toluaDir);
+                AddSearchPath(LuaConst.luaDir);
+#endif
+                if (LuaFileUtils.Instance.GetType() == typeof(LuaFileUtils))
+                {
+                    AddSearchPath(LuaConst.luaResDir);
+                }
+            }
+        }
+
+        void OpenBaseLuaLibs()
+        {                        
+            DoFile("tolua.lua");            //tolua table名字已经存在了,不能用require
             LuaUnityLibs.OpenLuaLibs(L);
         }
 
         public void Start()
         {
+#if UNITY_EDITOR
+            beStart = true;
+#endif
             Debugger.Log("LuaState start");
             OpenBaseLuaLibs();
-            PackBounds = GetFuncRef("Bounds.New");           
-            UnpackBounds = GetFuncRef("Bounds.Get");            
+            PackBounds = GetFuncRef("Bounds.New");
+            UnpackBounds = GetFuncRef("Bounds.Get");
             PackRay = GetFuncRef("Ray.New");
             UnpackRay = GetFuncRef("Ray.Get");
             PackRaycastHit = GetFuncRef("RaycastHit.New");
@@ -168,6 +210,11 @@ namespace LuaInterface
             LuaGetField(-1, "preload");
         }
 
+        public void EndPreLoad()
+        {
+            LuaPop(2);
+        }
+
         public void AddPreLoad(string name, LuaCSFunction func, Type type)
         {            
             if (!preLoadMap.ContainsKey(type))
@@ -178,9 +225,10 @@ namespace LuaInterface
             }            
         }
 
-        public void EndPreLoad()
+        public void AddPreLoad(string name, LuaCSFunction func)
         {
-            LuaPop(2);
+            LuaDLL.tolua_pushcfunction(L, func);
+            LuaDLL.lua_setfield(L, -2, name);
         }
 
         public int BeginPreModule(string name)
@@ -216,6 +264,17 @@ namespace LuaInterface
 
         public bool BeginModule(string name)
         {
+#if UNITY_EDITOR
+            if (name != null)
+            {                
+                LuaTypes type = LuaDLL.lua_type(L, -1);
+
+                if (type != LuaTypes.LUA_TTABLE)
+                {                    
+                    throw new LuaException("open global module first");
+                }
+            }
+#endif
             if (LuaDLL.tolua_beginmodule(L, name))
             {
                 ++beginCount;
@@ -259,6 +318,24 @@ namespace LuaInterface
             return 0;
         }
 
+        string GetToLuaTypeName(Type t)
+        {
+            if (t.IsGenericType)
+            {
+                string str = t.Name;
+                int pos = str.IndexOf('`');
+
+                if (pos > 0)
+                {
+                    str = str.Substring(0, pos);
+                }
+
+                return str;
+            }
+
+            return t.Name;
+        }
+
         public int BeginClass(Type t, Type baseType, string name = null)
         {
             if (beginCount == 0)
@@ -271,7 +348,7 @@ namespace LuaInterface
 
             if (name == null)
             {
-                name = t.Name;
+                name = GetToLuaTypeName(t);
             }
 
             if (baseType != null && !metaMap.TryGetValue(baseType, out baseMetaRef))
@@ -337,7 +414,7 @@ namespace LuaInterface
         public void RegFunction(string name, LuaCSFunction func)
         {
             IntPtr fn = Marshal.GetFunctionPointerForDelegate(func);
-            LuaDLL.tolua_function(L, name, fn);
+            LuaDLL.tolua_function(L, name, fn);            
         }
 
         public void RegVar(string name, LuaCSFunction get, LuaCSFunction set)
@@ -411,26 +488,49 @@ namespace LuaInterface
 #endif
         }
 
+        public static LuaReflection GetReflection(IntPtr ptr)
+        {
+#if !MULTI_STATE
+            return mainState.reflection;
+#else
+            if (stateMap.Count <= 1)
+            {
+                return mainState.reflection;
+            }
+
+            return Get(ptr).reflection;
+#endif            
+        }
+
         public object[] DoString(string chunk, string chunkName = "LuaState.DoString")
         {
+#if UNITY_EDITOR
+            if (!beStart)
+            {
+                throw new LuaException("you must call Start() first to initialize LuaState");
+            }
+#endif
             byte[] buffer = Encoding.UTF8.GetBytes(chunk);
             return LuaLoadBuffer(buffer, chunkName);
         }        
 
         public object[] DoFile(string fileName)
         {
-            if (!Path.HasExtension(fileName))
+#if UNITY_EDITOR
+            if (!beStart)
             {
-                fileName += ".lua";
+                throw new LuaException("you must call Start() first to initialize LuaState");
             }
-
+#endif                        
             byte[] buffer = LuaFileUtils.Instance.ReadFile(fileName);
 
             if (buffer == null)
             {
-                throw new LuaException(string.Format("Load lua file failed: {0}", fileName));
+                string error = string.Format("cannot open {0}: No such file or directory", fileName);
+                error += LuaFileUtils.Instance.FindFileError(fileName);
+                throw new LuaException(error);
             }
-
+            
             return LuaLoadBuffer(buffer, fileName);
         }
 
@@ -438,46 +538,63 @@ namespace LuaInterface
         public void Require(string fileName)
         {
             int top = LuaDLL.lua_gettop(L);
-            string error = null;
+            int ret = LuaRequire(fileName);
 
-            if (LuaRequire(fileName) != 0)
-            {
-                error = LuaDLL.lua_tostring(L, -1);
+            if (ret != 0)
+            {                
+                string err = LuaDLL.lua_tostring(L, -1);
+                LuaDLL.lua_settop(L, top);
+                throw new LuaException(err, LuaException.GetLastError());
             }
 
-            LuaDLL.lua_settop(L, top);
+            LuaDLL.lua_settop(L, top);            
+        }
 
-            if (error != null)
+        public void InitPackagePath()
+        {
+            LuaDLL.lua_getglobal(L, "package");
+            LuaDLL.lua_getfield(L, -1, "path");
+            string current = LuaDLL.lua_tostring(L, -1);
+            string[] paths = current.Split(';');
+
+            for (int i = 0; i < paths.Length; i++)
             {
-                throw new LuaException(error);
+                if (!string.IsNullOrEmpty(paths[i]))
+                {
+                    string path = paths[i].Replace('\\', '/');
+                    LuaFileUtils.Instance.AddSearchPath(path);
+                }
             }
+
+            LuaDLL.lua_pushstring(L, "");
+            LuaDLL.lua_setfield(L, -3, "path");            
+            LuaDLL.lua_pop(L, 2);
+        }
+
+        string ToPackagePath(string path)
+        {
+            StringBuilder sb = StringBuilderCache.Acquire();
+            sb.Append(path);
+            sb.Replace('\\', '/');
+
+            if (sb.Length > 0 && sb[sb.Length - 1] != '/')
+            {
+                sb.Append('/');
+            }
+
+            sb.Append("?.lua");
+            return sb.ToString();
         }
 
         public void AddSearchPath(string fullPath)
         {
-            if (!Directory.Exists(fullPath))
-            {
-                string msg = string.Format("Lua config path not exists: {0}", fullPath);
-                throw new LuaException(msg, null, 1);
-            }
-
             if (!Path.IsPathRooted(fullPath))
             {
                 throw new LuaException(fullPath + " is not a full path");
             }
 
-            fullPath.Replace('\\', '/');
-
-            if (LuaFileUtils.Instance.AddSearchPath(fullPath))
-            {
-                LuaDLL.lua_getglobal(L, "package");
-                LuaDLL.lua_getfield(L, -1, "path");
-                string current = LuaDLL.lua_tostring(L, -1);
-                string str = string.Format("{0};{1}/?.lua", current, fullPath);
-                LuaDLL.lua_pushstring(L, str);
-                LuaDLL.lua_setfield(L, -3, "path");
-                LuaDLL.lua_pop(L, 2);
-            }
+            fullPath = ToPackagePath(fullPath);
+            LuaFileUtils.Instance.AddSearchPath(fullPath);        
         }
 
         public void RemoveSeachPath(string fullPath)
@@ -487,15 +604,8 @@ namespace LuaInterface
                 throw new LuaException(fullPath + " is not a full path");
             }
 
-            fullPath.Replace('\\', '/');
+            fullPath = ToPackagePath(fullPath);
             LuaFileUtils.Instance.RemoveSearchPath(fullPath);
-            LuaDLL.lua_getglobal(L, "package");
-            LuaDLL.lua_getfield(L, -1, "path");
-            string current = LuaDLL.lua_tostring(L, -1);
-            current = current.Replace(fullPath + "/?.lua", "");            
-            LuaDLL.lua_pushstring(L, current);
-            LuaDLL.lua_setfield(L, -3, "path");
-            LuaDLL.lua_pop(L, 2);
         }        
 
         public int BeginPCall(int reference)
@@ -507,11 +617,8 @@ namespace LuaInterface
         {            
             if (LuaDLL.lua_pcall(L, args, LuaDLL.LUA_MULTRET, oldTop) != 0)
             {
-                string error = LuaDLL.lua_tostring(L, -1);
-
-                Exception last = LuaException.luaStack;
-                LuaException.luaStack = null;
-                throw new LuaException(error, last);
+                string error = LuaDLL.lua_tostring(L, -1);                                
+                throw new LuaException(error, LuaException.GetLastError());
             }            
         }
 
@@ -528,6 +635,15 @@ namespace LuaInterface
             }
         }
 
+        void CheckNull(LuaBaseRef lbr, string fmt, object arg0)
+        {
+            if (lbr == null)
+            {
+                string error = string.Format(fmt, arg0);
+                throw new LuaException(error, null, 2);
+            }            
+        }
+
         //压入一个存在的或不存在的table, 但不增加引用计数
         bool PushLuaTable(string fullPath, bool checkMap = true)
         {
@@ -540,6 +656,7 @@ namespace LuaInterface
                     if (weak.IsAlive)
                     {
                         LuaTable table = weak.Target as LuaTable;
+                        CheckNull(table, "{0} not a lua table", fullPath);
                         Push(table);
                         return true;
                     }
@@ -569,6 +686,7 @@ namespace LuaInterface
                     if (weak.IsAlive)
                     {
                         LuaFunction func = weak.Target as LuaFunction;
+                        CheckNull(func, "{0} not a lua function", fullPath);
 
                         if (func.IsAlive())
                         {
@@ -605,18 +723,18 @@ namespace LuaInterface
                 }
 
                 LuaDLL.lua_settop(L, oldTop);
-                return false;              
+                return false;
             }
             else
             {
-                LuaDLL.lua_getglobal(L, fullPath);                
+                LuaDLL.lua_getglobal(L, fullPath);
                 LuaTypes type = LuaDLL.lua_type(L, -1);
 
                 if (type != LuaTypes.LUA_TFUNCTION)
                 {
-                    LuaDLL.lua_settop(L, oldTop);                    
+                    LuaDLL.lua_settop(L, oldTop);
                     return false;
-                }                
+                }
             }
 
             return true;
@@ -644,6 +762,7 @@ namespace LuaInterface
                 if (weak.IsAlive)
                 {
                     LuaFunction func = weak.Target as LuaFunction;
+                    CheckNull(func, "{0} not a lua function", name);
 
                     if (func.IsAlive())
                     {
@@ -665,6 +784,7 @@ namespace LuaInterface
                     if (weak.IsAlive)
                     {
                         LuaFunction func = weak.Target as LuaFunction;
+                        CheckNull(func, "{0} not a lua function", name);
 
                         if (func.IsAlive())
                         {
@@ -742,6 +862,7 @@ namespace LuaInterface
                 if (weak.IsAlive)
                 {
                     LuaTable table = weak.Target as LuaTable;
+                    CheckNull(table, "{0} not a lua table", fullPath);
 
                     if (table.IsAlive())
                     {
@@ -764,6 +885,7 @@ namespace LuaInterface
                     if (weak.IsAlive)
                     {
                         table = weak.Target as LuaTable;
+                        CheckNull(table, "{0} not a lua table", fullPath);
 
                         if (table.IsAlive())
                         {
@@ -847,7 +969,7 @@ namespace LuaInterface
 
         public void PushInt64(LuaInteger64 n)
         {
-            LuaDLL.tolua_pushint64(L, n);
+            LuaDLL.tolua_pushint64(L, (long)n);
         }
 
         public void Push(string str)
@@ -1262,6 +1384,11 @@ namespace LuaInterface
             return ToLua.CheckObject(L, stackPos, type);
         }
 
+        public object CheckVarObject(int stackPos, Type type)
+        {
+            return ToLua.CheckVarObject(L, stackPos, type);
+        }
+
         public object[] CheckObjects(int oldTop)
         {
             int newTop = LuaDLL.lua_gettop(L);
@@ -1481,8 +1608,40 @@ namespace LuaInterface
 
         public int GetMetaReference(Type t)
         {
-            int reference = 0;
+            int reference = -1;
             metaMap.TryGetValue(t, out reference);
+            return reference;
+        }
+
+        public int GetMissMetaReference(Type t)
+        {
+#if MISS_WARNING
+            if (!missSet.Contains(t))
+            {
+                Debugger.LogWarning("Type {0} not wrap to lua, the warning is only raised once", LuaMisc.GetTypeName(t));
+            }
+
+            missSet.Add(t);
+#endif            
+            int reference = -1;
+            Type type = t.BaseType;            
+
+            while (type != null)
+            {
+                if (metaMap.TryGetValue(type, out reference))
+                {                    
+                    return reference;                    
+                }
+
+                type = type.BaseType;
+            }            
+
+            if (reference <= 0)
+            {
+                type = typeof(object);
+                reference = LuaStatic.GetMetaReference(L, type);                
+            }
+
             return reference;
         }
 
@@ -1610,11 +1769,11 @@ namespace LuaInterface
 #if UNITY_EDITOR
             string str = Path.GetExtension(fileName);
 
-            if (!string.IsNullOrEmpty(str))
+            if (str == ".lua")
             {
                 throw new LuaException("Require not need file extension: " + str);
             }
-#endif
+#endif            
             return LuaDLL.tolua_require(L, fileName);
         }
 
@@ -1653,7 +1812,26 @@ namespace LuaInterface
             return LuaDLL.lua_topointer(L, idx);
         }
 
-        //适合Awake使用
+        public int LuaDoString(string chunk)
+        {
+            return LuaDLL.luaL_dostring(L, chunk);
+        }
+
+        public bool LuaDoFile(string fileName)
+        {
+            int top = LuaDLL.lua_gettop(L);
+
+            if (LuaDLL.luaL_dofile(L, fileName))
+            {
+                return true;
+            }
+
+            string err = LuaDLL.lua_tostring(L, -1);
+            LuaDLL.lua_settop(L, top);
+            throw new LuaException(err, LuaException.GetLastError());            
+        }
+
+        //适合Awake OnSendMsg使用
         public void ToLuaException(Exception e)
         {
             if (LuaException.InstantiateCount > 0 || LuaException.SendMsgCount > 0)
@@ -1728,7 +1906,7 @@ namespace LuaInterface
                 CloseBaseRef();
                 funcRefMap.Clear();
                 funcMap.Clear();
-                metaMap.Clear();
+                metaMap.Clear();                
                 typeMap.Clear();
                 enumMap.Clear();
                 preLoadMap.Clear();
@@ -1737,6 +1915,9 @@ namespace LuaInterface
                 translator.Dispose();
                 translator = null;
                 L = IntPtr.Zero;
+#if MISS_WARNING
+                missSet.Clear();
+#endif
                 Debugger.Log("LuaState quit");
             }
 
@@ -1744,14 +1925,18 @@ namespace LuaInterface
             {
                 mainState = null;
             }
-                        
+
+#if UNITY_EDITOR
+            beStart = false;
+#endif
+
             LuaFileUtils.Instance.Dispose();
             System.GC.SuppressFinalize(this);            
         }
 
-        public virtual void Dispose(bool dispose)
-        {
-        }
+        //public virtual void Dispose(bool dispose)
+        //{
+        //}
 
         public override int GetHashCode()
         {
@@ -1765,7 +1950,7 @@ namespace LuaInterface
             return state != null && state.L == L;
         }
 
-        public static bool operator ==(LuaState a, LuaState b)
+        public static bool operator == (LuaState a, LuaState b)
         {
             if (System.Object.ReferenceEquals(a, b))
             {
@@ -1788,7 +1973,7 @@ namespace LuaInterface
             return a.L == b.L;
         }
 
-        public static bool operator !=(LuaState a, LuaState b)
+        public static bool operator != (LuaState a, LuaState b)
         {
             return !(a == b);
         }
@@ -1835,7 +2020,8 @@ namespace LuaInterface
 
                     if (LogGC)
                     {
-                        Debugger.Log("collect lua reference name {0}, id {1} in thread", name, reference);
+                        string str = name == null ? "null" : name;
+                        Debugger.Log("collect lua reference name {0}, id {1} in thread", str, reference);
                     }
                 }
             }
@@ -1862,7 +2048,8 @@ namespace LuaInterface
 
                 if (LogGC)
                 {
-                    Debugger.Log("collect lua reference name {0}, id {1} in main", name, reference);
+                    string str = name == null ? "null" : name;
+                    Debugger.Log("collect lua reference name {0}, id {1} in main", str, reference);
                 }
             }
         }
@@ -1883,8 +2070,8 @@ namespace LuaInterface
             }
 
             string err = LuaDLL.lua_tostring(L, -1);
-            LuaDLL.lua_settop(L, oldTop - 1);
-            throw new LuaException(err);                        
+            LuaDLL.lua_settop(L, oldTop - 1);                        
+            throw new LuaException(err, LuaException.GetLastError());
         }
     }
 }

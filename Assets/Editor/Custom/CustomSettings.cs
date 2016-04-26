@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using LuaInterface;
 
 using BindType = ToLuaMenu.BindType;
+using System.Reflection;
 
 public static class CustomSettings
 {
@@ -25,35 +26,42 @@ public static class CustomSettings
         typeof(UnityEngine.Physics),
         typeof(UnityEngine.RenderSettings),
         typeof(UnityEngine.QualitySettings),
+        typeof(UnityEngine.GL),
     };
 
     //附加导出委托类型(在导出委托时, customTypeList 中牵扯的委托类型都会导出， 无需写在这里)
     public static DelegateType[] customDelegateList = 
     {        
         _DT(typeof(Action)),        
-        _DT(typeof(UnityEngine.Events.UnityAction)),       
-        
-        _DT(typeof(TestEventListener.OnClick)),
-        _DT(typeof(TestEventListener.VoidDelegate)),
+        _DT(typeof(UnityEngine.Events.UnityAction)),              
     };
 
     //在这里添加你要导出注册到lua的类型列表
     public static BindType[] customTypeList = 
     {                
         //------------------------为例子导出--------------------------------
-        //_GT(typeof(TestEventListener)),                
+        //_GT(typeof(TestEventListener)),
         //_GT(typeof(TestAccount)),
-        //_GT(typeof(Dictionary<int, TestAccount>)).SetLibName("AccountMap"),                
+        //_GT(typeof(Dictionary<int, TestAccount>)).SetLibName("AccountMap"),
         //_GT(typeof(KeyValuePair<int, TestAccount>)),    
+        //_GT(typeof(TestExport)),
+        //_GT(typeof(TestExport.Space)),
         //-------------------------------------------------------------------        
-                                       
-        _GT(typeof(Debugger)),                       
-                                       
+                  
+        //_GT(typeof(DG.Tweening.DOTween)),
+        //_GT(typeof(DG.Tweening.Tween)),
+        //_GT(typeof(DG.Tweening.Sequence)).AddExtendType(typeof(DG.Tweening.TweenSettingsExtensions)),        
+        //_GT(typeof(DG.Tweening.Tweener)),
+        //_GT(typeof(DG.Tweening.LoopType)),        
+        _GT(typeof(Debugger)),        
+        
+        _GT(typeof(Debug)),
+                
         _GT(typeof(Component)),
         _GT(typeof(Behaviour)),
         _GT(typeof(MonoBehaviour)),        
         _GT(typeof(GameObject)),
-        _GT(typeof(Transform)),
+        _GT(typeof(Transform)), //.AddExtendType(typeof(DG.Tweening.ShortcutExtensions)),
         _GT(typeof(TrackedReference)),
         _GT(typeof(Application)),
         _GT(typeof(Physics)),
@@ -105,8 +113,7 @@ public static class CustomSettings
         _GT(typeof(RenderSettings)),                                                   
         _GT(typeof(BlendWeights)),           
         _GT(typeof(RenderTexture)),
-        _GT(typeof(Rigidbody)),         
-          
+        _GT(typeof(Rigidbody)),
     };
 
     public static List<Type> dynamicList = new List<Type>()

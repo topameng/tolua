@@ -43,14 +43,6 @@ public class TestABLoader : MonoBehaviour
         OnBundleLoad();
     }
 
-#if UNITY_IPHONE
-	static string remoteFolder = "iOS/";
-#elif UNITY_ANDROID
-	static string remoteFolder = "Android/";
-#else
-    static string remoteFolder = "Win/";
-#endif
-
     public void LoadBundles()
     {
         List<string> list = new List<string>() { "Lua.unity3d", "Lua_math.unity3d", "Lua_system.unity3d", "Lua_u3d.unity3d", "Lua_protobuf.unity3d" };        
@@ -59,7 +51,7 @@ public class TestABLoader : MonoBehaviour
         for (int i = 0; i < list.Count; i++)
         {
             string str = list[i];            
-            string path = "file:///" + streamingPath + "/" + remoteFolder + str;
+            string path = "file:///" + streamingPath + "/" + LuaConst.osDir + "/" + str;
             string name = Path.GetFileNameWithoutExtension(str);
             StartCoroutine(CoLoadBundle(name, path));            
         }

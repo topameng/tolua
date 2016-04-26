@@ -1,4 +1,4 @@
-﻿-----------------------------------------------------------------------------
+-----------------------------------------------------------------------------
 -- SMTP client support for the Lua language.
 -- LuaSocket toolkit.
 -- Author: Diego Nehab
@@ -12,11 +12,11 @@ local coroutine = require("coroutine")
 local string = require("string")
 local math = require("math")
 local os = require("os")
-local socket = require("socket.socket")
+local socket = require("socket")
 local tp = require("socket.tp")
-local ltn12 = require("socket.ltn12")
+local ltn12 = require("ltn12")
 local headers = require("socket.headers")
-local mime = require("socket.mime")
+local mime = require("mime")
 
 socket.smtp = {}
 local _M = socket.smtp

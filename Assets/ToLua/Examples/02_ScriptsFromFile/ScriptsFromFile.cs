@@ -8,20 +8,20 @@ using System.IO;
 public class ScriptsFromFile : MonoBehaviour 
 {
     LuaState lua = null;
-    private string strLog = "";
+    private string strLog = "";    
 
 	void Start () 
     {
 #if UNITY_5		
-		Application.logMessageReceived += Log;
+        Application.logMessageReceived += Log;
 #else
         Application.RegisterLogCallback(Log);
-#endif 
+#endif         
         lua = new LuaState();
         lua.Start();
-        //移动了ToLua路径，自己手动修复吧，只是例子就不做配置了
-        string fullPath = Application.dataPath + "/ToLua/Examples/02_ScriptsFromFile";
-        lua.AddSearchPath(fullPath);
+        //如果移动了ToLua目录，自己手动修复吧，只是例子就不做配置了
+        string fullPath = Application.dataPath + "\\ToLua/Examples/02_ScriptsFromFile";
+        lua.AddSearchPath(fullPath);        
     }
 
     void Log(string msg, string stackTrace, LogType type)
@@ -32,18 +32,21 @@ public class ScriptsFromFile : MonoBehaviour
 
     void OnGUI()
     {
-        GUI.Label(new Rect(Screen.width / 2 - 200, Screen.height / 2 - 100, 400, 300), strLog);
+        GUI.Label(new Rect(100, Screen.height / 2 - 100, 600, 400), strLog);
 
         if (GUI.Button(new Rect(50, 50, 120, 45), "DoFile"))
         {
             strLog = "";
-            lua.DoFile("ScriptsFromFile.lua");            
+            lua.DoFile("ScriptsFromFile.lua");                        
         }
         else if (GUI.Button(new Rect(50, 150, 120, 45), "Require"))
         {
-            strLog = "";
-            lua.Require("ScriptsFromFile");
+            strLog = "";            
+            lua.Require("ScriptsFromFile");            
         }
+
+        lua.Collect();
+        lua.CheckTop();
     }
 
     void OnApplicationQuit()
@@ -52,7 +55,7 @@ public class ScriptsFromFile : MonoBehaviour
         lua = null;
 
 #if UNITY_5		
-		Application.logMessageReceived -= Log;
+        Application.logMessageReceived -= Log;
 #else
         Application.RegisterLogCallback(null);
 #endif 

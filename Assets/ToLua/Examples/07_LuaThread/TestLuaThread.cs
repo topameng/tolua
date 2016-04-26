@@ -41,12 +41,14 @@ public class TestLuaThread : MonoBehaviour
     {
         state = new LuaState();
         state.Start();
+        state.LogGC = true;
         state.DoString(script);
 
         LuaFunction func = state.GetFunction("Test");
         func.BeginPCall();
         func.PCall();
         thread = func.CheckLuaThread();
+        thread.name = "LuaThread";
         func.EndPCall();
         func.Dispose();
         func = null;
@@ -86,7 +88,7 @@ public class TestLuaThread : MonoBehaviour
         {
             if (thread != null)
             {                
-                thread.Dispose();
+                thread.Dispose();                
                 thread = null;
             }
         }

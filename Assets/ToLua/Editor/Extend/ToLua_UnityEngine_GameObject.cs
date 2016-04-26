@@ -21,7 +21,7 @@ public class ToLua_UnityEngine_GameObject
                 {
                     string error = LuaDLL.lua_tostring(L, -1);
                     LuaDLL.lua_pop(L, 1);
-                    throw new LuaException(error, LuaException.luaStack);
+                    throw new LuaException(error, LuaException.GetLastError());
                 }
                 
                 return 0;
@@ -38,7 +38,7 @@ public class ToLua_UnityEngine_GameObject
                 {
                     string error = LuaDLL.lua_tostring(L, -1);
                     LuaDLL.lua_pop(L, 1);
-                    throw new LuaException(error, LuaException.luaStack);
+                    throw new LuaException(error, LuaException.GetLastError());
                 }
 
                 return 0;
@@ -55,7 +55,7 @@ public class ToLua_UnityEngine_GameObject
                 {
                     string error = LuaDLL.lua_tostring(L, -1);
                     LuaDLL.lua_pop(L, 1);
-                    throw new LuaException(error, LuaException.luaStack);
+                    throw new LuaException(error, LuaException.GetLastError());
                 }
 
                 return 0;
@@ -73,7 +73,7 @@ public class ToLua_UnityEngine_GameObject
                 {
                     string error = LuaDLL.lua_tostring(L, -1);
                     LuaDLL.lua_pop(L, 1);
-                    throw new LuaException(error, LuaException.luaStack);
+                    throw new LuaException(error, LuaException.GetLastError());
                 }
 
                 return 0;

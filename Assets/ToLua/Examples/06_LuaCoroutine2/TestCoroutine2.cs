@@ -67,13 +67,13 @@ public class TestCoroutine2 : LuaClient
 
     void OnGUI()
     {
-        if (GUI.Button(new Rect(50, 50, 120, 45), "Start Coroutine"))
+        if (GUI.Button(new Rect(50, 50, 120, 45), "Start Counter"))
         {
             LuaFunction func = luaState.GetFunction("StartDelay");
             func.Call();
             func.Dispose();
         }
-        else if (GUI.Button(new Rect(50, 150, 120, 45), "Stop Coroutine"))
+        else if (GUI.Button(new Rect(50, 150, 120, 45), "Stop Counter"))
         {
             LuaFunction func = luaState.GetFunction("StopDelay");
             func.Call();

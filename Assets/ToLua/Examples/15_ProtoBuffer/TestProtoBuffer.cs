@@ -6,8 +6,8 @@ using System;
 public class TestProtoBuffer : LuaClient
 {
     private string script = @"      
-        local person_pb = require 'Protol/person_pb'
-
+        local person_pb = require 'Protol.person_pb'
+       
         function Decoder()  
             local msg = person_pb.Person()
             msg:ParseFromString(TestProtol.data)
@@ -18,7 +18,7 @@ public class TestProtoBuffer : LuaClient
             local msg = person_pb.Person()
             msg.id = 1024
             msg.name = 'foo'
-            msg.email = 'bar'
+            msg.email = 'bar'                                    
             local pb_data = msg:SerializeToString()
             TestProtol.data = pb_data
         end
@@ -58,7 +58,7 @@ public class TestProtoBuffer : LuaClient
     protected override void CallMain() { }
 
     protected override void OnLoadFinished()
-    {
+    {                
         base.OnLoadFinished();
 
         luaState.DoString(script);
@@ -86,7 +86,7 @@ public class TestProtoBuffer : LuaClient
     {
         base.Destroy();
 #if UNITY_5		
-		Application.logMessageReceived -= ShowTips;
+        Application.logMessageReceived -= ShowTips;
 #else
         Application.RegisterLogCallback(null);
 #endif        

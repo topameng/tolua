@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 using LuaInterface;
+using System;
+using System.Reflection;
 
 public class TestString : LuaClient
 {
@@ -15,9 +17,21 @@ public class TestString : LuaClient
         local luastr = tolua.tolstring(buffer)
         print('lua string is: '..luastr..' type is: '..type(luastr))
         luastr = tolua.tolstring(str)
-        print('lua string is: '..luastr)
+        print('lua string is: '..luastr)                      
     end
 ";
+
+    public abstract class Test1
+    {
+        public virtual void Add() { }
+    }
+
+    public class Test2: Test1
+    {
+        public void Add(int i)
+        {
+        }
+    }
 
     protected override LuaFileUtils InitLoader()
     {
@@ -28,7 +42,7 @@ public class TestString : LuaClient
     protected override void CallMain() { }
 
     protected override void OnLoadFinished()
-    {
+    {                        
         base.OnLoadFinished();
         luaState.DoString(script);
         LuaFunction func = luaState.GetFunction("Test");

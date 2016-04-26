@@ -27,10 +27,10 @@ namespace LuaInterface
 {
     public class LuaFunction : LuaBaseRef
     {
-        protected class FuncData
+        protected struct FuncData
         {
-            public int oldTop = -1;
-            public int stackPos = -1;
+            public int oldTop;
+            public int stackPos;
 
             public FuncData(int top, int stack)
             {

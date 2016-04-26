@@ -29,17 +29,17 @@ local tostring = tostring
 local type = type
 
 local pb = require "pb"
-local wire_format = require "protobuf/wire_format"
-local type_checkers = require "protobuf/type_checkers"
-local encoder = require "protobuf/encoder"
-local decoder = require "protobuf/decoder"
-local listener_mod = require "protobuf/listener"
-local containers = require "protobuf/containers"
-local descriptor = require "protobuf/descriptor"
+local wire_format = require "protobuf.wire_format"
+local type_checkers = require "protobuf.type_checkers"
+local encoder = require "protobuf.encoder"
+local decoder = require "protobuf.decoder"
+local listener_mod = require "protobuf.listener"
+local containers = require "protobuf.containers"
+local descriptor = require "protobuf.descriptor"
 local FieldDescriptor = descriptor.FieldDescriptor
-local text_format = require "protobuf/text_format"
+local text_format = require "protobuf.text_format"
 
-module("protobuf/protobuf")
+module("protobuf.protobuf")
 
 local function make_descriptor(name, descriptor, usable_key)
     local meta = {
