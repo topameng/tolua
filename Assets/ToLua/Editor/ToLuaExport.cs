@@ -280,19 +280,6 @@ public static class ToLuaExport
 
         list.AddRange(type.GetMethods(BindingFlags.Instance | binding));
 
-        /*if (flag)
-        {
-            MethodInfo[] mbs = type.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.IgnoreCase);
-
-            for (int i = 0; i < mbs.Length; i++)
-            {
-                if (mbs[i].DeclaringType != type && list.Find((p) => { return p.Name == mbs[i].Name; }) != null)
-                {
-                    list.Add(mbs[i]);                 
-                }
-            }
-        }*/
-
         for (int i = list.Count - 1; i >= 0; --i)
         {           
             //去掉操作符函数
@@ -361,6 +348,34 @@ public static class ToLuaExport
                     }
                 }
             }
+        }
+
+        if (flag)
+        {
+            List<MethodInfo> baseList = new List<MethodInfo>(type.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.IgnoreCase));
+
+            for (int i = baseList.Count - 1; i >= 0; i--)
+            {
+                if (baseList[i].DeclaringType == type)
+                {
+                    baseList.RemoveAt(i);
+                }
+            }
+
+            HashSet<MethodInfo> addList = new HashSet<MethodInfo>();
+
+            for (int i = 0; i < list.Count; i++)
+            {
+                List<MethodInfo> mds = baseList.FindAll((p) => { return p.Name == list[i].Name; });
+            
+                for(int j = 0; j < mds.Count; j++)
+                {
+                    addList.Add(mds[j]);
+                    baseList.Remove(mds[j]);
+                }
+            }
+
+            list.AddRange(addList);
         }
 
         for (int i = 0; i < list.Count; i++)

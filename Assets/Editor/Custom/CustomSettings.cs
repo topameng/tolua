@@ -54,9 +54,7 @@ public static class CustomSettings
         //_GT(typeof(DG.Tweening.Tweener)),
         //_GT(typeof(DG.Tweening.LoopType)),        
         _GT(typeof(Debugger)),        
-        
-        _GT(typeof(Debug)),
-                
+                        
         _GT(typeof(Component)),
         _GT(typeof(Behaviour)),
         _GT(typeof(MonoBehaviour)),        
@@ -118,7 +116,7 @@ public static class CustomSettings
 
     public static List<Type> dynamicList = new List<Type>()
     {        
-        typeof(MeshRenderer),
+        /*typeof(MeshRenderer),
         typeof(ParticleEmitter),
         typeof(ParticleRenderer),
         typeof(ParticleAnimator),
@@ -135,7 +133,7 @@ public static class CustomSettings
 
         typeof(BlendWeights),
         typeof(RenderTexture),
-        typeof(Rigidbody),
+        typeof(Rigidbody),*/
     };
 
     //重载函数，相同参数个数，相同位置out参数匹配出问题时, 需要强制匹配解决
