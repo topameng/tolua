@@ -29,7 +29,7 @@ public class TestExport
 
     public int field = 1024;
 
-    public delegate System.Action OnClick = delegate { };
+    public System.Action OnClick = delegate { };
 
     public delegate void TestRefEvent(ref GameObject go);
 

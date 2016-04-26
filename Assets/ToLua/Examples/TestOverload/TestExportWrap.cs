@@ -24,10 +24,10 @@ public class TestExportWrap
 		L.RegVar("this", _this, null);
 		L.RegFunction("__tostring", Lua_ToString);
 		L.RegVar("field", get_field, set_field);
+		L.RegVar("OnClick", get_OnClick, set_OnClick);
 		L.RegVar("OnRefEvent", get_OnRefEvent, set_OnRefEvent);
 		L.RegVar("buffer", get_buffer, set_buffer);
 		L.RegVar("Number", get_Number, set_Number);
-		L.RegVar("OnClick", get_OnClick, set_OnClick);
 		L.RegFunction("TestBuffer", TestExport_TestBuffer);
 		L.RegFunction("TestRefEvent", TestExport_TestRefEvent);
 		L.EndClass();
@@ -549,6 +549,25 @@ public class TestExportWrap
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int get_OnClick(IntPtr L)
+	{
+		object o = null;
+
+		try
+		{
+			o = ToLua.ToObject(L, 1);
+			TestExport obj = (TestExport)o;
+			System.Action ret = obj.OnClick;
+			ToLua.Push(L, ret);
+			return 1;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index OnClick on a nil value" : e.Message);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	static int get_OnRefEvent(IntPtr L)
 	{
 		object o = null;
@@ -606,13 +625,6 @@ public class TestExportWrap
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int get_OnClick(IntPtr L)
-	{
-		ToLua.Push(L, new EventObject("TestExport.OnClick"));
-		return 1;
-	}
-
-	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	static int set_field(IntPtr L)
 	{
 		object o = null;
@@ -628,6 +640,37 @@ public class TestExportWrap
 		catch(Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index field on a nil value" : e.Message);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int set_OnClick(IntPtr L)
+	{
+		object o = null;
+
+		try
+		{
+			o = ToLua.ToObject(L, 1);
+			TestExport obj = (TestExport)o;
+			System.Action arg0 = null;
+			LuaTypes funcType2 = LuaDLL.lua_type(L, 2);
+
+			if (funcType2 != LuaTypes.LUA_TFUNCTION)
+			{
+				 arg0 = (System.Action)ToLua.CheckObject(L, 2, typeof(System.Action));
+			}
+			else
+			{
+				LuaFunction func = ToLua.ToLuaFunction(L, 2);
+				arg0 = DelegateFactory.CreateDelegate(typeof(System.Action), func) as System.Action;
+			}
+
+			obj.OnClick = arg0;
+			return 0;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index OnClick on a nil value" : e.Message);
 		}
 	}
 
@@ -697,58 +740,6 @@ public class TestExportWrap
 		catch(Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index Number on a nil value" : e.Message);
-		}
-	}
-
-	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int set_OnClick(IntPtr L)
-	{
-		try
-		{
-			TestExport obj = (TestExport)ToLua.CheckObject(L, 1, typeof(TestExport));
-			EventObject arg0 = null;
-
-			if (LuaDLL.lua_isuserdata(L, 2) != 0)
-			{
-				arg0 = (EventObject)ToLua.ToObject(L, 2);
-			}
-			else
-			{
-				return LuaDLL.luaL_throw(L, "The event 'TestExport.OnClick' can only appear on the left hand side of += or -= when used outside of the type 'TestExport'");
-			}
-
-			if (arg0.op == EventOp.Add)
-			{
-				System.Action ev = (System.Action)DelegateFactory.CreateDelegate(typeof(System.Action), arg0.func);
-				obj.OnClick += ev;
-			}
-			else if (arg0.op == EventOp.Sub)
-			{
-				System.Action ev = (System.Action)LuaMisc.GetEventHandler(obj, typeof(TestExport), "OnClick");
-				Delegate[] ds = ev.GetInvocationList();
-				LuaState state = LuaState.Get(L);
-
-				for (int i = 0; i < ds.Length; i++)
-				{
-					ev = (System.Action)ds[i];
-					LuaDelegate ld = ev.Target as LuaDelegate;
-
-					if (ld != null && ld.func == arg0.func)
-					{
-						obj.OnClick -= ev;
-						state.DelayDispose(ld.func);
-						break;
-					}
-				}
-
-				arg0.func.Dispose();
-			}
-
-			return 0;
-		}
-		catch(Exception e)
-		{
-			return LuaDLL.toluaL_exception(L, e);
 		}
 	}
 

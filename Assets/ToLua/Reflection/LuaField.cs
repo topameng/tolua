@@ -45,8 +45,25 @@ namespace LuaInterface
             {
                 ToLua.CheckArgsCount(L, 2);                
                 object arg0 = ToLua.CheckObject(L, 2, kclass);
-                object o = field.GetValue(arg0);                
-                ToLua.Push(L, o);
+                object o = field.GetValue(arg0);
+
+                if (o == null)
+                {
+                    if (typeof(System.MulticastDelegate).IsAssignableFrom(field.FieldType))
+                    {
+                        o = DelegateFactory.CreateDelegate(field.FieldType, null);
+                        ToLua.Push(L, (Delegate)o);
+                    }
+                    else
+                    {
+                        LuaDLL.lua_pushnil(L);
+                    }
+                }
+                else
+                {
+                    ToLua.Push(L, o);
+                }
+
                 return 1;
             }
             catch (Exception e)

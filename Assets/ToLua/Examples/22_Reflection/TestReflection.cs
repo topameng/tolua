@@ -36,13 +36,13 @@ public class TestReflection : LuaClient
         print(r..':'..o)
         func:Destroy()
 
-        --[[local property = tolua.getproperty(t, 'Number')
+        local property = tolua.getproperty(t, 'Number')
         local num = property:Get(obj, null)
         print('object Number: '..num)
         property:Set(obj, 456, null)
         num = property:Get(obj, null)
         property:Destroy()
-        print('object Number: '..num)]]
+        print('object Number: '..num)
 
         local field = tolua.getfield(t, 'field')
         num = field:Get(obj)
@@ -50,15 +50,15 @@ public class TestReflection : LuaClient
         field:Set(obj, 2048)
         num = field:Get(obj)
         field:Destroy()
-        print('object field: '.. num)        
-
+        print('object field: '.. num)       
+        
         field = tolua.getfield(t, 'OnClick')
-        local onClick = field:Get(obj)
-        onClick = onClick + DoClick
-        field:Set(obj, onClick)
-        field:Destroy()
+        local onClick = field:Get(obj)        
+        onClick = onClick + DoClick        
+        field:Set(obj, onClick)        
         local click = field:Get(obj)
         click:DynamicInvoke()
+        field:Destroy()
         click:Destroy()
     end  
 ";
