@@ -280,7 +280,7 @@ public static class ToLuaExport
 
         list.AddRange(type.GetMethods(BindingFlags.Instance | binding));
 
-        if (flag)
+        /*if (flag)
         {
             MethodInfo[] mbs = type.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.IgnoreCase);
 
@@ -291,7 +291,7 @@ public static class ToLuaExport
                     list.Add(mbs[i]);                 
                 }
             }
-        }
+        }*/
 
         for (int i = list.Count - 1; i >= 0; --i)
         {           
