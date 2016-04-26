@@ -211,6 +211,15 @@ namespace LuaInterface
             }
 
             sb = sb.Replace("?", fileName);
+
+            if (beZip)
+            {
+                foreach(string key in zipMap.Keys)
+                {
+                    sb.AppendFormat("\n\tno file '{0}' in {1}", fileName, key);
+                }
+            }
+
             return sb.ToString();
         }
 

@@ -42,7 +42,7 @@ namespace LuaInterface
         {
             int count = LuaDLL.lua_gettop(L);
 
-            if (count == 3 && TypeChecker.CheckTypes(L, 1, kclass, typeof(object[])))
+            if (count == 3 && TypeChecker.CheckTypes(L, 2, kclass, typeof(object[])))
             {
                 object arg0 = ToLua.ToVarObject(L, 2);
                 object[] arg1 = ToLua.CheckObjectArray(L, 3);
@@ -50,7 +50,7 @@ namespace LuaInterface
                 ToLua.Push(L, o);
                 return 1;
             }
-            else if (count == 6 && TypeChecker.CheckTypes(L, 1, kclass, typeof(uint), typeof(Binder), typeof(object[]), typeof(CultureInfo)))
+            else if (count == 6 && TypeChecker.CheckTypes(L, 2, kclass, typeof(uint), typeof(Binder), typeof(object[]), typeof(CultureInfo)))
             {
                 object arg0 = ToLua.ToVarObject(L, 2);
                 BindingFlags arg1 = (BindingFlags)LuaDLL.lua_tonumber(L, 3);
@@ -71,7 +71,7 @@ namespace LuaInterface
         {
             int count = LuaDLL.lua_gettop(L);
 
-            if (count == 4 && TypeChecker.CheckTypes(L, 1, kclass, typeof(object), typeof(object[])))
+            if (count == 4 && TypeChecker.CheckTypes(L, 2, kclass, typeof(object), typeof(object[])))
             {
                 object arg0 = ToLua.ToVarObject(L, 2);
                 object arg1 = ToLua.ToVarObject(L, 3);
@@ -80,7 +80,7 @@ namespace LuaInterface
                 property.SetValue(arg0, arg1, arg2);
                 return 0;
             }
-            else if (count == 7 && TypeChecker.CheckTypes(L, 1, kclass, typeof(object), typeof(uint), typeof(Binder), typeof(object[]), typeof(CultureInfo)))
+            else if (count == 7 && TypeChecker.CheckTypes(L, 2, kclass, typeof(object), typeof(uint), typeof(Binder), typeof(object[]), typeof(CultureInfo)))
             {
                 object arg0 = ToLua.ToVarObject(L, 2);
                 object arg1 = ToLua.ToVarObject(L, 3);

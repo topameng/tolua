@@ -122,7 +122,7 @@ namespace LuaInterface
             return objects.TryGetValue(udata);         
         }
 
-        //删除，但不移除一个lua对象(移除id只能由gc完成)
+        //预删除，但不移除一个lua对象(移除id只能由gc完成)
         public void Destroy(int udata)
         {            
             object o = objects.Destroy(udata);
