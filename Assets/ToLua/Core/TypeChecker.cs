@@ -131,7 +131,7 @@ namespace LuaInterface
             switch (luaType)
             {
                 case LuaTypes.LUA_TNUMBER:
-                    return t.IsPrimitive;
+                    return IsNumberType(t);
                 case LuaTypes.LUA_TSTRING:
                     return t == typeof(string) || t == typeof(byte[]) || t == typeof(char[]);
                 case LuaTypes.LUA_TUSERDATA:
@@ -141,9 +141,9 @@ namespace LuaInterface
                 case LuaTypes.LUA_TFUNCTION:
                     return t == typeof(LuaFunction);                            
                 case LuaTypes.LUA_TTABLE:
-                    return lua_isusertable(L, t, pos);
+                    return IsUserTable(L, t, pos);
                 case LuaTypes.LUA_TLIGHTUSERDATA:
-                    return t == typeof(IntPtr);
+                    return t == typeof(IntPtr) || t == typeof(UIntPtr);
                 case LuaTypes.LUA_TNIL:
                     return t == null || t.IsEnum || !t.IsValueType;
                 default:
@@ -186,7 +186,22 @@ namespace LuaInterface
             return false;
         }
 
-        static bool lua_isusertable(IntPtr L, Type t, int pos)
+        static bool IsNumberType(Type t)
+        {
+            if (t.IsPrimitive)
+            {
+                if (t == typeof(bool) || t == typeof(IntPtr) || t == typeof(UIntPtr))
+                {
+                    return false;
+                }
+
+                return true;
+            }
+
+            return false;
+        }
+
+        static bool IsUserTable(IntPtr L, Type t, int pos)
         {
             if (t.IsArray)
             {

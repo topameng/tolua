@@ -214,10 +214,21 @@ namespace LuaInterface
 
             if (beZip)
             {
-                foreach(string key in zipMap.Keys)
+                int pos = fileName.LastIndexOf('/');
+                string bundle = "";
+
+                if (pos > 0)
                 {
-                    sb.AppendFormat("\n\tno file '{0}' in {1}", fileName, key);
+                    bundle = fileName.Substring(0, pos);
+                    bundle = bundle.Replace('/', '_');
+                    bundle = string.Format("Lua_{0}.unity3d", bundle);
                 }
+                else
+                {
+                    bundle = "Lua.unity3d";
+                }
+
+                sb.AppendFormat("\n\tno file '{0}' in {1}", fileName, bundle);
             }
 
             return sb.ToString();
@@ -233,9 +244,14 @@ namespace LuaInterface
             if (pos > 0)
             {
                 zipName = fileName.Substring(0, pos);
-                zipName.Replace('/', '_');
+                zipName = zipName.Replace('/', '_');
                 zipName = string.Format("Lua_{0}", zipName);
                 fileName = fileName.Substring(pos + 1);
+            }
+
+            if (!fileName.EndsWith(".lua"))
+            {
+                fileName += ".lua";
             }
 
             zipMap.TryGetValue(zipName, out zipFile);

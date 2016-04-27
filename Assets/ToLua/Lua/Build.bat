@@ -4,16 +4,22 @@ mkdir jit
 xcopy /Y /D ..\..\..\Luajit\jit jit
 
 mkdir out
-mkdir out\system
-mkdir out\math
-mkdir out\u3d
+mkdir out\System
+mkdir out\System\Reflection
+mkdir out\socket
+mkdir out\UnityEngine
 mkdir out\protobuf
+mkdir out\misc
+mkdir out\cjson
 
 for %%i in (*.lua) do ..\..\..\Luajit\luajit.exe -b -g %%i out\%%i.bytes
-for %%i in (system\*.lua) do ..\..\..\Luajit\luajit.exe -b -g %%i out\%%i.bytes
-for %%i in (math\*.lua) do ..\..\..\Luajit\luajit.exe -b -g %%i out\%%i.bytes
-for %%i in (u3d\*.lua) do ..\..\..\Luajit\luajit.exe -b -g %%i out\%%i.bytes
+for %%i in (System\*.lua) do ..\..\..\Luajit\luajit.exe -b -g %%i out\%%i.bytes
+for %%i in (System\Reflection\*.lua) do ..\..\..\Luajit\luajit.exe -b -g %%i out\%%i.bytes
+for %%i in (socket\*.lua) do ..\..\..\Luajit\luajit.exe -b -g %%i out\%%i.bytes
+for %%i in (UnityEngine\*.lua) do ..\..\..\Luajit\luajit.exe -b -g %%i out\%%i.bytes
 for %%i in (protobuf\*.lua) do ..\..\..\Luajit\luajit.exe -b -g %%i out\%%i.bytes
+for %%i in (misc\*.lua) do ..\..\..\Luajit\luajit.exe -b -g %%i out\%%i.bytes
+for %%i in (cjson\*.lua) do ..\..\..\Luajit\luajit.exe -b -g %%i out\%%i.bytes
 
 xcopy /Y /D /S out ..\..\StreamingAssets\Lua
 rd /s/q jit

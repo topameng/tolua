@@ -45,7 +45,8 @@ public class TestABLoader : MonoBehaviour
 
     public void LoadBundles()
     {
-        List<string> list = new List<string>() { "Lua.unity3d", "Lua_math.unity3d", "Lua_system.unity3d", "Lua_u3d.unity3d", "Lua_protobuf.unity3d" };        
+        //此处应该配表获取
+        List<string> list = new List<string>() { "Lua.unity3d", "Lua_cjson.unity3d", "Lua_System.unity3d", "Lua_UnityEngine.unity3d", "Lua_protobuf.unity3d", "Lua_misc.unity3d", "Lua_socket.unity3d", "Lua_System_Reflection.unity3d" };        
         string streamingPath = Application.streamingAssetsPath.Replace('\\', '/');
 
         for (int i = 0; i < list.Count; i++)
@@ -71,7 +72,7 @@ public class TestABLoader : MonoBehaviour
         LuaState state = new LuaState();
         state.Start();
 
-        state.DoString("print('hello world')");
+        state.DoString("print('hello tolua#:'..tostring(Vector3.zero))");
 
         state.Dispose();
         state = null;
