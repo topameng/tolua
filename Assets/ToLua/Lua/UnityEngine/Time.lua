@@ -43,6 +43,10 @@ function _set.captureFramerate(v)
 	uTime.captureFramerate = v
 end
 
+function _set.timeSinceLevelLoad(v)
+	_Time.timeSinceLevelLoad = v
+end
+
 _Time.__index = function(t, k)
 	local var = rawget(_Time, k)
 	

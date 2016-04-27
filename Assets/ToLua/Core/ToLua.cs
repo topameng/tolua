@@ -1716,8 +1716,17 @@ namespace LuaInterface
             }
             else
             {                
-                int iterMetatable = LuaStatic.GetIterMetatable(L);
-                PushUserData(L, iter, iterMetatable);                
+                int reference = LuaStatic.GetMetaReference(L, iter.GetType());
+
+                if (reference > 0)
+                {
+                    PushUserData(L, iter, reference);
+                }
+                else
+                {
+                    int iterMetatable = LuaStatic.GetIterMetatable(L);
+                    PushUserData(L, iter, iterMetatable);
+                }            
             }
         }
 
