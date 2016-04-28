@@ -19,7 +19,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-//打开开关没有写如导出列表的纯虚类自动跳过
+//打开开关没有写入导出列表的纯虚类自动跳过
 //#define JUMP_NODEFINED_ABSTRACT         
 
 using UnityEngine;
@@ -298,6 +298,7 @@ public static class ToLuaMenu
 
         allTypes.Clear();
         BindType[] list = GenBindTypes(CustomSettings.customTypeList);
+        ToLuaExport.allTypes.AddRange(baseType);
 
         for (int i = 0; i < list.Length; i++)
         {

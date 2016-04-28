@@ -848,7 +848,7 @@ public static class ToLuaExport
             {
                 ParameterInfo p = list.Find((iter) => { return iter.ParameterType == gts[i]; });
 
-                if (p == null || p.ParameterType.BaseType == null)
+                if (p == null || p.ParameterType.BaseType == null || p.ParameterType.BaseType.IsGenericType) 
                 {
                     return true;
                 }
@@ -969,7 +969,7 @@ public static class ToLuaExport
 
     static void InitCtorList()
     {
-        if (type.IsAbstract || typeof(MonoBehaviour).IsAssignableFrom(type))
+        if (isStaticClass || type.IsAbstract || typeof(MonoBehaviour).IsAssignableFrom(type))
         {
             return;
         }
