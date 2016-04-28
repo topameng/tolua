@@ -224,20 +224,23 @@ public static class ToLuaExport
 
         while (baseType != null)
         {
-            MethodInfo[] methods = baseType.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.Static | BindingFlags.IgnoreCase);
-
-            for (int i = 0; i < methods.Length; i++)
+            if (allTypes.IndexOf(baseType) >= 0)
             {
-                MetaOp baseOp = GetOp(methods[i].Name);
+                MethodInfo[] methods = baseType.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.Static | BindingFlags.IgnoreCase);
 
-                if (baseOp != MetaOp.None && (op & baseOp) == 0)
+                for (int i = 0; i < methods.Length; i++)
                 {
-                    if (baseOp != MetaOp.ToStr)
-                    {
-                        list.Add(methods[i]);
-                    }
+                    MetaOp baseOp = GetOp(methods[i].Name);
 
-                    op |= baseOp;
+                    if (baseOp != MetaOp.None && (op & baseOp) == 0)
+                    {
+                        if (baseOp != MetaOp.ToStr)
+                        {
+                            list.Add(methods[i]);
+                        }
+
+                        op |= baseOp;
+                    }
                 }
             }
 
@@ -356,7 +359,7 @@ public static class ToLuaExport
 
             for (int i = baseList.Count - 1; i >= 0; i--)
             {
-                if (baseList[i].DeclaringType == type)
+                if (BeDropMethodType(baseList[i]))
                 {
                     baseList.RemoveAt(i);
                 }
@@ -404,6 +407,20 @@ public static class ToLuaExport
 
         sb.AppendLineEx("}\r\n");                 
         SaveFile(dir + wrapClassName + "Wrap.cs");
+    }
+
+    public static List<Type> allTypes = new List<Type>();
+
+    static bool BeDropMethodType(MethodInfo md)
+    {
+        Type t = md.DeclaringType;
+
+        if (t == type)
+        {
+            return true;
+        }
+
+        return allTypes.IndexOf(t) < 0;        
     }
 
     static void InitPropertyList()
@@ -851,7 +868,7 @@ public static class ToLuaExport
 
             if (IsGenericMethod(m))
             {
-                Debugger.LogWarning("Generic Method {0} cannot be export to lua", m.Name);
+                Debugger.Log("Generic Method {0} cannot be export to lua", m.Name);
                 continue;
             }
 
@@ -952,7 +969,7 @@ public static class ToLuaExport
 
     static void InitCtorList()
     {
-        if (isStaticClass || typeof(MonoBehaviour).IsAssignableFrom(type))
+        if (type.IsAbstract || typeof(MonoBehaviour).IsAssignableFrom(type))
         {
             return;
         }
@@ -2039,7 +2056,7 @@ public static class ToLuaExport
                     names[i] = GetTypeStr(pis[i].ParameterType);
                 }
 
-                Debugger.LogWarning("{0}:{1}({2}) has been dropped as other overload function more match lua", className, r.Name, string.Join(", ", names));
+                Debugger.Log("{0}:{1}({2}) has been dropped as other overload function more match lua", className, r.Name, string.Join(", ", names));
 
                 list.RemoveAt(index);
                 list.Add(r);
@@ -2055,7 +2072,7 @@ public static class ToLuaExport
                     names[i] = GetTypeStr(pis[i].ParameterType);
                 }
 
-                Debugger.LogWarning("{0}:{1}({2}) has been dropped as other overload function more match lua", className, r.Name, string.Join(", ", names));
+                Debugger.Log("{0}:{1}({2}) has been dropped as other overload function more match lua", className, r.Name, string.Join(", ", names));
                 return;
             }
         }

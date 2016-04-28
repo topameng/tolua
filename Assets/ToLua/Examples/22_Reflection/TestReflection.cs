@@ -11,7 +11,7 @@ public class TestReflection : LuaClient
     require 'tolua.reflection'          
     tolua.loadassembly('Assembly-CSharp')
     tolua.loadassembly('mscorlib')         
-    local BindingFlags = require 'System/Reflection/BindingFlags'
+    local BindingFlags = require 'System.Reflection.BindingFlags'
 
     function DoClick()
         print('do click')        
@@ -84,7 +84,7 @@ public class TestReflection : LuaClient
     }
 
     protected override void OnLoadFinished()
-    {
+    {        
         base.OnLoadFinished();
 
         /*Type t = typeof(TestExport);
