@@ -7,8 +7,6 @@ public class TestOutArg : MonoBehaviour
     string script =
         @"                                                                        
             function TestPick(ray)                                     
-                require 'UnityEngine.BoxCollider'   -- BoxCollider 是preload类型，需要require一下
-
                 local _layer = 2 ^ LayerMask.NameToLayer('Default')
                 local flag, hit = UnityEngine.Physics.Raycast(ray, nil, 5000, _layer)                
                 --local flag, hit = UnityEngine.Physics.Raycast(ray, RaycastHit.out, 5000, _layer)
