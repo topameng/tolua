@@ -299,8 +299,16 @@ namespace LuaInterface
 
         public void Push(LuaByteBuffer buffer)
         {
-            luaState.Push(buffer);
-            ++argCount;
+            try
+            {
+                luaState.Push(buffer);
+                ++argCount;
+            }
+            catch (Exception e)
+            {
+                EndPCall();
+                throw e;
+            }            
         }
 
         public void PushValue(ValueType value)
@@ -328,8 +336,16 @@ namespace LuaInterface
 
         public void PushByteBuffer(byte[] buffer)
         {
-            luaState.PushByteBuffer(buffer);
-            ++argCount;
+            try
+            {
+                luaState.PushByteBuffer(buffer);
+                ++argCount;
+            }
+            catch(Exception e)
+            {
+                EndPCall();
+                throw e;
+            }
         }
 
         public double CheckNumber()

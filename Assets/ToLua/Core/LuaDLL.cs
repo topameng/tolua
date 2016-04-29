@@ -179,7 +179,7 @@ namespace LuaInterface
 
     public class LuaDLL
     {
-        public static string version = "1.0.5.143";
+        public static string version = "1.0.5.147";
         public static int LUA_MULTRET = -1;
         public static string[] LuaTypeName = { "none", "nil", "boolean", "lightuserdata", "number", "string", "table", "function", "userdata", "thread" };        
 
@@ -332,7 +332,7 @@ namespace LuaInterface
 
         public static void lua_pushlstring(IntPtr luaState, byte[] str, int size)                   //[-0, +1, m]
         {
-            if (size >= 0x7fffff00 || size <= 0)
+            if (size >= 0x7fffff00)
             {
                 throw new LuaException("string length overflow");
             }
