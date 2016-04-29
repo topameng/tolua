@@ -930,43 +930,85 @@ public class System_TypeWrap
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	static int get_Delimiter(IntPtr L)
 	{
-		LuaDLL.lua_pushnumber(L, System.Type.Delimiter);
-		return 1;
+		try
+		{
+			LuaDLL.lua_pushnumber(L, System.Type.Delimiter);
+			return 1;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	static int get_EmptyTypes(IntPtr L)
 	{
-		ToLua.Push(L, System.Type.EmptyTypes);
-		return 1;
+		try
+		{
+			ToLua.Push(L, System.Type.EmptyTypes);
+			return 1;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	static int get_FilterAttribute(IntPtr L)
 	{
-		ToLua.Push(L, System.Type.FilterAttribute);
-		return 1;
+		try
+		{
+			ToLua.Push(L, System.Type.FilterAttribute);
+			return 1;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	static int get_FilterName(IntPtr L)
 	{
-		ToLua.Push(L, System.Type.FilterName);
-		return 1;
+		try
+		{
+			ToLua.Push(L, System.Type.FilterName);
+			return 1;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	static int get_FilterNameIgnoreCase(IntPtr L)
 	{
-		ToLua.Push(L, System.Type.FilterNameIgnoreCase);
-		return 1;
+		try
+		{
+			ToLua.Push(L, System.Type.FilterNameIgnoreCase);
+			return 1;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	static int get_Missing(IntPtr L)
 	{
-		ToLua.Push(L, System.Type.Missing);
-		return 1;
+		try
+		{
+			ToLua.Push(L, System.Type.Missing);
+			return 1;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
@@ -1067,8 +1109,15 @@ public class System_TypeWrap
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	static int get_DefaultBinder(IntPtr L)
 	{
-		ToLua.PushObject(L, System.Type.DefaultBinder);
-		return 1;
+		try
+		{
+			ToLua.PushObject(L, System.Type.DefaultBinder);
+			return 1;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]

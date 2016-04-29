@@ -2320,8 +2320,10 @@ public static class ToLuaExport
         if (isStatic)
         {
             string arg = string.Format("{0}.{1}", className, varName);
-            GenPushStr(varType, arg, "\t\t", isByteBuffer);
-            sb.AppendLineEx("\t\treturn 1;");
+            BeginTry();
+            GenPushStr(varType, arg, "\t\t\t", isByteBuffer);
+            sb.AppendLineEx("\t\t\treturn 1;");
+            EndTry();
         }
         else
         {

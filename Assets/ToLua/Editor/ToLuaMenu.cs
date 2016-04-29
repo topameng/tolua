@@ -163,17 +163,17 @@ public static class ToLuaMenu
                 wrapName = ToLuaExport.ConvertToLibSign(wrapName);
             }
 
-            if (t.BaseType != null && t.BaseType != typeof(ValueType))
-            {                
-                baseType = t.BaseType;
+            if (type.BaseType != null && type.BaseType != typeof(ValueType))
+            {
+                baseType = type.BaseType;
             }
-            
-            int index = CustomSettings.staticClassTypes.IndexOf(t);
 
-            if (index >= 0 || (t.GetConstructor(Type.EmptyTypes) == null && t.IsAbstract && t.IsSealed))
-            {                         
+            int index = CustomSettings.staticClassTypes.IndexOf(type);
+
+            if (index >= 0 || (type.GetConstructor(Type.EmptyTypes) == null && type.IsAbstract && type.IsSealed))
+            {
                 IsStatic = true;
-                baseType = baseType == typeof(object) ?  null : baseType;
+                baseType = baseType == typeof(object) ? null : baseType;
             }
         }
 
@@ -212,6 +212,62 @@ public static class ToLuaMenu
         }
     }
 
+    static void AutoAddBaseType(BindType bt, bool beDropBaseType)
+    {
+        Type t = bt.baseType;
+
+        if (t == null)
+        {
+            return;
+        }
+
+        if (t.IsInterface)
+        {
+            Debugger.LogWarning("{0} has a base type {1} is Interface, use SetBaseType to jump it", bt.name, t.FullName);
+            bt.baseType = t.BaseType;
+        }
+        else if (dropType.IndexOf(t) >= 0)
+        {
+            Debugger.LogWarning("{0} has a base type {1} is a drop type", bt.name, t.FullName);
+            bt.baseType = t.BaseType;
+        }
+        else if (!beDropBaseType || baseType.IndexOf(t) < 0)
+        {
+            int index = allTypes.FindIndex((iter) => { return iter.type == t; });
+
+            if (index < 0)
+            {
+#if JUMP_NODEFINED_ABSTRACT
+                if (t.IsAbstract && !t.IsSealed)
+                {
+                    Debugger.LogWarning("not defined bindtype for {0}, it is abstract class, jump it, child class is {1}", t.FullName, bt.name);
+                    bt.baseType = t.BaseType;
+                }
+                else
+                {
+                    Debugger.LogWarning("not defined bindtype for {0}, autogen it, child class is {1}", t.FullName, bt.name);
+                    bt = new BindType(t);
+                    allTypes.Add(bt);
+                }
+#else
+                Debugger.LogWarning("not defined bindtype for {0}, autogen it, child class is {1}", t.FullName, bt.name);                        
+                bt = new BindType(t);
+                allTypes.Add(bt);
+#endif
+            }
+            else
+            {
+                return;
+            }
+        }
+        else
+        {
+            return;
+        }
+
+        AutoAddBaseType(bt, beDropBaseType);
+    }
+
     static BindType[] GenBindTypes(BindType[] list, bool beDropBaseType = true)
     {                
         allTypes = new List<BindType>(list);
@@ -234,49 +290,8 @@ public static class ToLuaMenu
             {
                 continue;
             }
-
-            Type t = list[i].baseType;
-
-            while (t != null)
-            {
-                if (t.IsInterface)
-                {
-                    Debugger.LogWarning("{0} has a base type {1} is Interface, use SetBaseType to jump it", list[i].name, t.FullName);
-                    list[i].baseType = t.BaseType;       
-                }
-                else if (dropType.IndexOf(t) >= 0)
-                {
-                    Debugger.LogWarning("{0} has a base type {1} is a drop type", list[i].name, t.FullName);
-                    list[i].baseType = t.BaseType;                    
-                }
-                else if (!beDropBaseType || baseType.IndexOf(t) < 0)
-                {
-                    int index = allTypes.FindIndex((bt) => { return bt.type == t; });
-
-                    if (index < 0)
-                    {
-#if JUMP_NODEFINED_ABSTRACT
-                        if (t.IsAbstract && !t.IsSealed)
-                        {
-                            Debugger.LogWarning("not defined bindtype for {0}, it is abstract class, jump it, child class is {1}, set customTypeList need restart unity editor", t.FullName, list[i].name);
-                            list[i].baseType = t.BaseType;
-                        }
-                        else
-                        {
-                            Debugger.LogWarning("not defined bindtype for {0}, autogen it, child class is {1}", t.FullName, list[i].name);
-                            BindType bt = new BindType(t);
-                            allTypes.Add(bt);
-                        }
-#else
-                        Debugger.LogWarning("not defined bindtype for {0}, autogen it, child class is {1}", t.FullName, list[i].name);
-                        BindType bt = new BindType(t);
-                        allTypes.Add(bt);
-#endif
-                    }                    
-                }
-
-                t = t.BaseType;
-            }
+            
+            AutoAddBaseType(list[i], beDropBaseType);
         }
 
         return allTypes.ToArray();
@@ -297,11 +312,13 @@ public static class ToLuaMenu
         }
 
         allTypes.Clear();
-        BindType[] list = GenBindTypes(CustomSettings.customTypeList);
+        BindType[] typeList = CustomSettings.customTypeList;
+
+        BindType[] list = GenBindTypes(typeList);
         ToLuaExport.allTypes.AddRange(baseType);
 
         for (int i = 0; i < list.Length; i++)
-        {
+        {            
             ToLuaExport.allTypes.Add(list[i].type);
         }
 
@@ -1028,6 +1045,7 @@ public static class ToLuaMenu
         }
 
         allTypes.Clear();
+        ToLuaExport.allTypes.AddRange(baseType);
         List<BindType> btList = new List<BindType>();
         
         for (int i = 0; i < baseType.Count; i++)
