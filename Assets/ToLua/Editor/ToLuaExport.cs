@@ -286,7 +286,7 @@ public static class ToLuaExport
         for (int i = list.Count - 1; i >= 0; --i)
         {           
             //去掉操作符函数
-            if (list[i].Name.Contains("op_") || list[i].Name.Contains("add_") || list[i].Name.Contains("remove_"))
+            if (list[i].Name.StartsWith("op_") || list[i].Name.StartsWith("add_") || list[i].Name.StartsWith("remove_"))
             {
                 if (!IsNeedOp(list[i].Name))
                 {
@@ -353,7 +353,7 @@ public static class ToLuaExport
             }
         }
 
-        if (flag)
+        if (flag && !isStaticClass)
         {
             List<MethodInfo> baseList = new List<MethodInfo>(type.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.IgnoreCase));
 
@@ -536,7 +536,7 @@ public static class ToLuaExport
 
     static string GetMethodName(MethodInfo md)
     {
-        if (md.Name.Contains("op_"))
+        if (md.Name.StartsWith("op_"))
         {
             return md.Name;
         }
@@ -572,7 +572,7 @@ public static class ToLuaExport
 
             if (!nameCounter.TryGetValue(name, out count))
             {
-                if (!name.Contains("op_"))
+                if (!name.StartsWith("op_"))
                 {
                     sb.AppendFormat("\t\tL.RegFunction(\"{0}\", {1});\r\n", name, name == "Register" ? "_Register" : name);
                 }
@@ -1830,7 +1830,7 @@ public static class ToLuaExport
             Type retType = GetGenericBaseType(md, m.ReturnType);
             string ret = GetTypeStr(retType);                   
 
-            if (md.Name.Contains("op_"))
+            if (md.Name.StartsWith("op_"))
             {
                 CallOpFunction(md.Name, tab, ret);
             }
@@ -3206,7 +3206,7 @@ public static class ToLuaExport
 
             for (int i = list2.Count - 1; i >= 0; i--)
             {
-                if (list2[i].Name.Contains("op_") || list2[i].Name.Contains("add_") || list2[i].Name.Contains("remove_"))
+                if (list2[i].Name.StartsWith("op_") || list2[i].Name.StartsWith("add_") || list2[i].Name.StartsWith("remove_"))
                 {
                     if (!IsNeedOp(list2[i].Name))
                     {

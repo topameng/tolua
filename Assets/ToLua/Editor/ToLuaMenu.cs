@@ -258,7 +258,7 @@ public static class ToLuaMenu
 #if JUMP_NODEFINED_ABSTRACT
                         if (t.IsAbstract && !t.IsSealed)
                         {
-                            Debugger.LogWarning("not defined bindtype for {0}, it is abstract class, jump it, child class is {1}", t.FullName, list[i].name);
+                            Debugger.LogWarning("not defined bindtype for {0}, it is abstract class, jump it, child class is {1}, set customTypeList need restart unity editor", t.FullName, list[i].name);
                             list[i].baseType = t.BaseType;
                         }
                         else
@@ -272,7 +272,7 @@ public static class ToLuaMenu
                         BindType bt = new BindType(t);
                         allTypes.Add(bt);
 #endif
-                    }
+                    }                    
                 }
 
                 t = t.BaseType;
