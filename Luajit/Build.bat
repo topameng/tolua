@@ -1,8 +1,8 @@
 @echo off
 cd /d %~dp0
-rd /s/q Out
-mkdir jit
-mkdir Out
+
+if not exist dir (mkdir jit)
+if not exist Out (mkdir Out)
 
 xcopy /Y /D ..\..\..\Luajit\jit jit
 setlocal enabledelayedexpansion
@@ -23,9 +23,9 @@ for /r %%i in (*.lua) do (
 
 rd /s/q jit
 rd /s/q .\Out\jit\
-xcopy /Y /D /S Out ..\..\StreamingAssets\Lua
 setlocal disabledelayedexpansion
 
 :loop 
 if "!v:~-1!"==" " set "v=!v:~0,-1!" & goto loop 
+
 
