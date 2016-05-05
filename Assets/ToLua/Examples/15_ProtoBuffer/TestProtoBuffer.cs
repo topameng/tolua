@@ -1,7 +1,27 @@
-﻿using UnityEngine;
+﻿//#define USE_PROTOBUF_NET
+using UnityEngine;
 using System.Collections;
 using LuaInterface;
 using System;
+using System.IO;
+
+#if USE_PROTOBUF_NET
+using ProtoBuf;
+
+[ProtoContract]
+class Person
+{
+    [ProtoMember(1, IsRequired = true)]
+    public int id { get; set; }
+
+    [ProtoMember(2, IsRequired = true)]
+    public string name { get; set; }
+
+    [ProtoMember(3, IsRequired = false)]
+    public string email { get; set; }
+}
+
+#endif
 
 public class TestProtoBuffer : LuaClient
 {
@@ -60,8 +80,9 @@ public class TestProtoBuffer : LuaClient
     protected override void OnLoadFinished()
     {                
         base.OnLoadFinished();
-
         luaState.DoString(script);
+
+#if !USE_PROTOBUF_NET
         LuaFunction func = luaState.GetFunction("Encoder");
         func.Call();
         func.Dispose();        
@@ -70,6 +91,31 @@ public class TestProtoBuffer : LuaClient
         func.Call();
         func.Dispose();
         func = null;
+#else
+        Person data = new Person();
+        data.id = 2048;
+        data.name = "foo";
+        data.email = "bar";
+        MemoryStream stream = new MemoryStream();
+        Serializer.Serialize<Person>(stream, data);
+        byte[] buffer = stream.ToArray();
+
+        TestProtol.data = new LuaByteBuffer(buffer);
+
+        LuaFunction func = luaState.GetFunction("Decoder");
+        func.Call();
+        func.Dispose();
+        func = null;
+
+        func = luaState.GetFunction("Encoder");
+        func.Call();
+        func.Dispose();
+        func = null;
+
+        stream = new MemoryStream(TestProtol.data.buffer);
+        data = Serializer.Deserialize<Person>(stream);
+        Debugger.Log("Decoder from lua fixed64 is: {0}", data.id);
+#endif
     }
 
     void ShowTips(string msg, string stackTrace, LogType type)
@@ -85,10 +131,10 @@ public class TestProtoBuffer : LuaClient
     new void OnApplicationQuit()
     {
         base.Destroy();
-#if UNITY_5		
+#if UNITY_5
         Application.logMessageReceived -= ShowTips;
 #else
         Application.RegisterLogCallback(null);
-#endif        
+#endif
     }
 }

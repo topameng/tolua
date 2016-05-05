@@ -91,9 +91,7 @@ public class LuaResLoader : LuaFileUtils
 
     byte[] ReadResourceFile(string fileName)
     {
-        string ext = Path.GetExtension(fileName);
-
-        if (ext != ".lua")
+        if (!fileName.EndsWith(".lua"))
         {
             fileName += ".lua";
         }
@@ -105,7 +103,7 @@ public class LuaResLoader : LuaFileUtils
         if (text != null)
         {
             buffer = text.bytes;
-            Resources.UnloadAsset(text);            
+            Resources.UnloadAsset(text);
         }
 
         return buffer;
@@ -113,9 +111,7 @@ public class LuaResLoader : LuaFileUtils
 
     byte[] ReadDownLoadFile(string fileName)
     {
-        string ext = Path.GetExtension(fileName);
-
-        if (ext != ".lua")
+        if (!fileName.EndsWith(".lua"))
         {
             fileName += ".lua";
         }

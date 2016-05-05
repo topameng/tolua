@@ -78,6 +78,12 @@ public class LuaClient : MonoBehaviour
 
     public void OpenZbsDebugger(string ip = "localhost")
     {
+        if (!Directory.Exists(LuaConst.zbsDir))
+        {
+            Debugger.LogWarning("ZeroBraneStudio not install or LuaConst.zbsDir not right");
+            return;
+        }
+
         if (!LuaConst.openLuaSocket)
         {                            
             OpenLuaSocket();
@@ -147,7 +153,8 @@ public class LuaClient : MonoBehaviour
 
     protected virtual void Bind()
     {        
-        LuaBinder.Bind(luaState);      
+        LuaBinder.Bind(luaState);
+        LuaCoroutine.Register(luaState, this);
     }
 
     protected void Init()
@@ -168,8 +175,7 @@ public class LuaClient : MonoBehaviour
 
     protected virtual void OnLoadFinished()
     {
-        luaState.Start();        
-        LuaCoroutine.Register(luaState, this);
+        luaState.Start();                
         StartLooper();
         StartMain();
     }

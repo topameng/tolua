@@ -106,7 +106,7 @@ public static class LuaCoroutine
         state.RegFunction("Yield", Yield);                
         state.EndModule();        
 
-        state.DoString(strCo, "LuaCoroutine");
+        state.LuaDoString(strCo);
         mb = behaviour;                       
     }
 

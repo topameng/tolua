@@ -705,7 +705,7 @@ public static class ToLuaMenu
         return LuaConst.osDir;
     }
 
-    static void CreateStreamDir(string dir)
+    static string CreateStreamDir(string dir)
     {
         dir = Application.streamingAssetsPath + "/" + dir;
 
@@ -713,15 +713,29 @@ public static class ToLuaMenu
         {
             Directory.CreateDirectory(dir);
         }
+
+        return dir;
     }
 
-    static void BuildLuaBundle(string dir)
+    static void BuildLuaBundle(string subDir, string sourceDir)
     {
-        BuildAssetBundleOptions options = BuildAssetBundleOptions.CollectDependencies | BuildAssetBundleOptions.CompleteAssets | BuildAssetBundleOptions.DeterministicAssetBundle;
+        string[] files = Directory.GetFiles(sourceDir + subDir, "*.bytes");
+        string bundleName = subDir == null ? "lua.unity3d" : "lua" + subDir.Replace('/', '_') + ".unity3d";
+        bundleName = bundleName.ToLower();
 
-        string[] files = Directory.GetFiles("Assets/StreamingAssets/Lua/" + dir, "*.lua.bytes");
+#if UNITY_5        
+        for (int i = 0; i < files.Length; i++)
+        {
+            AssetImporter importer = AssetImporter.GetAtPath(files[i]);            
+
+            if (importer)
+            {
+                importer.assetBundleName = bundleName;
+                importer.assetBundleVariant = null;                
+            }
+        }
+#else        
         List<Object> list = new List<Object>();
-        string bundleName = dir == null ? "Lua.unity3d" : "Lua_" + dir.Replace('/', '_') + ".unity3d";        
 
         for (int i = 0; i < files.Length; i++)
         {
@@ -729,33 +743,17 @@ public static class ToLuaMenu
             list.Add(obj);
         }
 
+        BuildAssetBundleOptions options = BuildAssetBundleOptions.CollectDependencies | BuildAssetBundleOptions.CompleteAssets | BuildAssetBundleOptions.DeterministicAssetBundle;
+
         if (files.Length > 0)
-        {            
+        {
             string output = string.Format("{0}/{1}/" + bundleName, Application.streamingAssetsPath, GetOS());
             File.Delete(output);
-            BuildPipeline.BuildAssetBundle(null, list.ToArray(), output, options, EditorUserBuildSettings.activeBuildTarget);
-            string output1 = string.Format("{0}/{1}/" + bundleName, Application.persistentDataPath, GetOS());
-            File.Copy(output, output1, true);
-            AssetDatabase.Refresh();
+            BuildPipeline.BuildAssetBundle(null, list.ToArray(), output, options, EditorUserBuildSettings.activeBuildTarget);            
         }
-    }
+#endif
 
-    static void CopyLuaFiles()
-    {
-        string sourceDir = Application.streamingAssetsPath + "/Lua";
-        string destDir = Application.streamingAssetsPath + "/" + GetOS() + "/Lua";
-        string[] files = Directory.GetFiles(sourceDir, "*.*", SearchOption.AllDirectories);
-        
-        for (int i = 0; i < files.Length; i++)
-        {
-            string str = files[i].Remove(0, sourceDir.Length);
-            string dest = destDir + str;
-            string dir = Path.GetDirectoryName(dest);
-            Directory.CreateDirectory(dir);
-            File.Copy(files[i], dest, true);            
-        }
-
-        Directory.Delete(sourceDir, true);
+        AssetDatabase.Refresh();
     }
 
     static void ClearAllLuaFiles()
@@ -773,6 +771,20 @@ public static class ToLuaMenu
         }
 
         string path = osPath + "/Lua";
+
+        if (Directory.Exists(path))
+        {
+            Directory.Delete(path, true);
+        }
+
+        path = Application.streamingAssetsPath + "/Lua";
+
+        if (Directory.Exists(path))
+        {
+            Directory.Delete(path, true);
+        }
+
+        path = Application.dataPath + "/temp";
 
         if (Directory.Exists(path))
         {
@@ -866,6 +878,32 @@ public static class ToLuaMenu
         AssetDatabase.Refresh();
     }
 
+    static void CopyLuaBytesFiles(string sourceDir, string destDir, bool appendext = true, string searchPattern = "*.lua", SearchOption option = SearchOption.AllDirectories)
+    {
+        if (!Directory.Exists(sourceDir))
+        {
+            return;
+        }
+
+        string[] files = Directory.GetFiles(sourceDir, searchPattern, option);
+        int len = sourceDir.Length;
+
+        if (sourceDir[len - 1] == '/' || sourceDir[len - 1] == '\\')
+        {
+            --len;
+        }         
+
+        for (int i = 0; i < files.Length; i++)
+        {
+            string str = files[i].Remove(0, len);
+            string dest = destDir + "/" + str;
+            if (appendext) dest += ".bytes";
+            string dir = Path.GetDirectoryName(dest);
+            Directory.CreateDirectory(dir);
+            File.Copy(files[i], dest, true);
+        }
+    }
+
 
     [MenuItem("Lua/Copy Lua  files to Resources", false, 51)]
     public static void CopyLuaFilesToRes()
@@ -900,131 +938,182 @@ public static class ToLuaMenu
         }
     }
 
-    [MenuItem("Lua/Build bundle files not jit", false, 53)]
+    static void CopyDirectory(string source, string dest, string searchPattern = "*.lua", SearchOption option = SearchOption.AllDirectories)
+    {                
+        string[] files = Directory.GetFiles(source, searchPattern, option);
+
+        for (int i = 0; i < files.Length; i++)
+        {
+            string str = files[i].Remove(0, source.Length);
+            string path = dest + "/" + str;
+            string dir = Path.GetDirectoryName(path);
+            Directory.CreateDirectory(dir);
+            File.Copy(files[i], path, true);
+        }        
+    }
+
+    [MenuItem("Lua/Build Lua files to Resources (PC)", false, 53)]
+    public static void BuildLuaToResources()
+    {
+        ClearAllLuaFiles();
+        string tempDir = CreateStreamDir("Lua");
+        string destDir = Application.dataPath + "/Resources" + "/Lua";        
+
+        string path = Application.dataPath.Replace('\\', '/');
+        path = path.Substring(0, path.LastIndexOf('/'));
+        File.Copy(path + "/Luajit/Build.bat", tempDir +  "/Build.bat", true);
+        CopyLuaBytesFiles(CustomSettings.luaDir, tempDir, false);
+        Process proc = Process.Start(tempDir + "/Build.bat");
+        proc.WaitForExit();
+        CopyLuaBytesFiles(tempDir + "/Out/", destDir, false, "*.lua.bytes");
+        CopyLuaBytesFiles(CustomSettings.toluaLuaDir, destDir);
+        
+        Directory.Delete(tempDir, true);        
+        AssetDatabase.Refresh();
+    }
+
+    [MenuItem("Lua/Build Lua files to Persistent (PC)", false, 54)]
+    public static void BuildLuaToPersistent()
+    {
+        ClearAllLuaFiles();
+        string tempDir = CreateStreamDir("Lua");        
+        string destDir = Application.persistentDataPath + "/" + GetOS() + "/Lua/";
+
+        string path = Application.dataPath.Replace('\\', '/');
+        path = path.Substring(0, path.LastIndexOf('/'));
+        File.Copy(path + "/Luajit/Build.bat", tempDir + "/Build.bat", true);
+        CopyLuaBytesFiles(CustomSettings.luaDir, tempDir, false);
+        Process proc = Process.Start(tempDir + "/Build.bat");
+        proc.WaitForExit();        
+        CopyLuaBytesFiles(CustomSettings.toluaLuaDir, destDir, false);
+
+        path = tempDir + "/Out/";
+        string[] files = Directory.GetFiles(path, "*.lua.bytes");
+        int len = path.Length;
+
+        for (int i = 0; i < files.Length; i++)
+        {
+            path = files[i].Remove(0, len);
+            path = path.Substring(0, path.Length - 6);
+            path = destDir + path;
+
+            File.Copy(files[i], path, true);
+        }
+
+        Directory.Delete(tempDir, true);
+        AssetDatabase.Refresh();
+    }
+
+    [MenuItem("Lua/Build bundle files not jit", false, 55)]
     public static void BuildNotJitBundles()
     {
         ClearAllLuaFiles();
         CreateStreamDir(GetOS());
-        CreateStreamDir("Lua/");
-        string dir = Application.persistentDataPath + "/" + GetOS();
 
-        if (!File.Exists(dir))
+#if !UNITY_5
+        string tempDir = CreateStreamDir("Lua");
+#else
+        string tempDir = Application.dataPath + "/temp/Lua";
+
+        if (!File.Exists(tempDir))
         {
-            Directory.CreateDirectory(dir);
-        }
-
-        string streamDir = Application.streamingAssetsPath + "/Lua";
-        CopyLuaBytesFiles(CustomSettings.luaDir, streamDir);
-        CopyLuaBytesFiles(Application.dataPath + "/ToLua/Lua", streamDir);
+            Directory.CreateDirectory(tempDir);
+        }        
+#endif
+        CopyLuaBytesFiles(CustomSettings.luaDir, tempDir);
+        CopyLuaBytesFiles(CustomSettings.toluaLuaDir, tempDir);
 
         AssetDatabase.Refresh();
         List<string> dirs = new List<string>();
-        GetAllDirs(streamDir, dirs);
+        GetAllDirs(tempDir, dirs);
 
+#if UNITY_5
         for (int i = 0; i < dirs.Count; i++)
         {
-            string str = dirs[i].Remove(0, streamDir.Length + 1);
-            BuildLuaBundle(str.Replace('\\', '/'));
+            string str = dirs[i].Remove(0, tempDir.Length);
+            BuildLuaBundle(str.Replace('\\', '/'), "Assets/temp/Lua");
         }
 
-        BuildLuaBundle(null);
-        Directory.Delete(streamDir, true);
+        BuildLuaBundle(null, "Assets/temp/Lua");
+
         AssetDatabase.Refresh();
-    }
-
-    [MenuItem("Lua/Build Lua files  (PC运行)", false, 54)]
-    public static void BuildLua()
-    {
-        ClearAllLuaFiles();
-        CreateStreamDir(GetOS());
-        CreateStreamDir("Lua/Out/");
-
-        Process proc = Process.Start(Application.dataPath + "/ToLua/Lua/Build.bat");
-        proc.WaitForExit();
-        UnityEngine.Debug.Log("build tolua fils over");
-
-        if (File.Exists(CustomSettings.luaDir + "/Build.bat"))
+        string output = string.Format("{0}/{1}", Application.streamingAssetsPath, GetOS());
+        BuildPipeline.BuildAssetBundles(output, BuildAssetBundleOptions.DeterministicAssetBundle, EditorUserBuildSettings.activeBuildTarget);
+        Directory.Delete(Application.dataPath + "/temp/", true);
+#else
+        for (int i = 0; i < dirs.Count; i++)
         {
-            proc = Process.Start(CustomSettings.luaDir + "/Build.bat");
-            UnityEngine.Debug.Log("build lua files over");
-            proc.WaitForExit();
+            string str = dirs[i].Remove(0, tempDir.Length);
+            BuildLuaBundle(str.Replace('\\', '/'), "Assets/StreamingAssets/Lua");
         }
 
-        CreateStreamDir(GetOS() + "/Lua");
-        CopyLuaFiles();
+        BuildLuaBundle(null, "Assets/StreamingAssets/Lua");
+        Directory.Delete(Application.streamingAssetsPath + "/Lua/", true);
+#endif            
         AssetDatabase.Refresh();
     }
 
-    [MenuItem("Lua/Build Luajit bundle files   (PC运行)", false, 55)]
+    [MenuItem("Lua/Build Luajit bundle files   (PC)", false, 56)]
     public static void BuildLuaBundles()
     {
-        ClearAllLuaFiles();
+        ClearAllLuaFiles();                
         CreateStreamDir(GetOS());
-        CreateStreamDir("Lua/Out/");
-        string dir = Application.persistentDataPath + "/" + GetOS();
 
-        if (!File.Exists(dir))
+#if !UNITY_5
+        string tempDir = CreateStreamDir("Lua");
+#else
+        string tempDir = Application.dataPath + "/temp/Lua";
+
+        if (!File.Exists(tempDir))
         {
-            Directory.CreateDirectory(dir);
+            Directory.CreateDirectory(tempDir);
         }
+#endif
 
-        Process proc = Process.Start(Application.dataPath + "/ToLua/Lua/Build.bat");
+        string path = Application.dataPath.Replace('\\', '/');
+        path = path.Substring(0, path.LastIndexOf('/'));
+        File.Copy(path + "/Luajit/Build.bat", tempDir + "/Build.bat", true);
+        CopyLuaBytesFiles(CustomSettings.luaDir, tempDir, false);
+        Process proc = Process.Start(tempDir + "/Build.bat");
         proc.WaitForExit();
-        UnityEngine.Debug.Log("build tolua fils over");
-
-        if (File.Exists(CustomSettings.luaDir + "/Build.bat"))
-        {
-            proc = Process.Start(CustomSettings.luaDir + "/Build.bat");
-            UnityEngine.Debug.Log("build lua files over");
-            proc.WaitForExit();
-        }
+        CopyLuaBytesFiles(CustomSettings.toluaLuaDir, tempDir + "/Out");
 
         AssetDatabase.Refresh();
-        string sourceDir = Application.streamingAssetsPath + "/Lua";
-        string[] dirs = Directory.GetDirectories(sourceDir);
 
-        for (int i = 0; i < dirs.Length; i++)
+        string sourceDir = tempDir + "/Out";
+        List<string> dirs = new List<string>();        
+        GetAllDirs(sourceDir, dirs);
+
+#if UNITY_5
+        for (int i = 0; i < dirs.Count; i++)
         {
-            string str = dirs[i].Remove(0, sourceDir.Length + 1);
-            BuildLuaBundle(str);
+            string str = dirs[i].Remove(0, sourceDir.Length);
+            BuildLuaBundle(str.Replace('\\', '/'), "Assets/temp/Lua/Out");
         }
 
-        BuildLuaBundle(null);
-        Directory.Delete(sourceDir, true);
+        BuildLuaBundle(null, "Assets/temp/Lua/Out");
+
+        AssetDatabase.Refresh();
+        string output = string.Format("{0}/{1}", Application.streamingAssetsPath, GetOS());
+        BuildPipeline.BuildAssetBundles(output, BuildAssetBundleOptions.DeterministicAssetBundle, EditorUserBuildSettings.activeBuildTarget);
+        Directory.Delete(Application.dataPath + "/temp/", true);
+#else
+        for (int i = 0; i < dirs.Count; i++)
+        {
+            string str = dirs[i].Remove(0, sourceDir.Length);
+            BuildLuaBundle(str.Replace('\\', '/'), "Assets/StreamingAssets/Lua/Out");
+        }
+
+        BuildLuaBundle(null, "Assets/StreamingAssets/Lua/Out/");
+        Directory.Delete(tempDir, true);
+#endif
         AssetDatabase.Refresh();
     }
 
-    [MenuItem("Lua/Clear all Lua files", false, 55)]
+    [MenuItem("Lua/Clear all Lua files", false, 57)]
     public static void ClearLuaFiles()
     {
         ClearAllLuaFiles();
-    }
-
-
-    static void CopyLuaBytesFiles(string sourceDir, string destDir, bool appendext = true)
-    {
-        if (!Directory.Exists(sourceDir))
-        {
-            return;
-        }
-
-        string[] files = Directory.GetFiles(sourceDir, "*.lua", SearchOption.AllDirectories);
-        int len = sourceDir.Length;
-
-        if (sourceDir[len - 1] == '/' || sourceDir[len - 1] == '\\')
-        {
-            --len;
-        }        
-
-        for (int i = 0; i < files.Length; i++)
-        {            
-            string str = files[i].Remove(0, len);
-            string dest = destDir + str;
-            if (appendext) dest += ".bytes";
-            string dir = Path.GetDirectoryName(dest);
-            Directory.CreateDirectory(dir);
-            File.Copy(files[i], dest, true);
-        }        
     }
 
 

@@ -1,27 +1,31 @@
+@echo off
 cd /d %~dp0
-
+rd /s/q Out
 mkdir jit
+mkdir Out
+
 xcopy /Y /D ..\..\..\Luajit\jit jit
+setlocal enabledelayedexpansion
 
-mkdir out
-mkdir out\System
-mkdir out\System\Reflection
-mkdir out\socket
-mkdir out\UnityEngine
-mkdir out\protobuf
-mkdir out\misc
-mkdir out\cjson
+for /r %%i in (*.lua) do (
+ set v=%%~dpi  
+ call :loop
+ set v=!v:%~dp0=!
+ if not exist %~dp0out\!v! (mkdir %~dp0Out\!v!)
+ )
 
-for %%i in (*.lua) do ..\..\..\Luajit\luajit.exe -b -g %%i out\%%i.bytes
-for %%i in (System\*.lua) do ..\..\..\Luajit\luajit.exe -b -g %%i out\%%i.bytes
-for %%i in (System\Reflection\*.lua) do ..\..\..\Luajit\luajit.exe -b -g %%i out\%%i.bytes
-for %%i in (socket\*.lua) do ..\..\..\Luajit\luajit.exe -b -g %%i out\%%i.bytes
-for %%i in (UnityEngine\*.lua) do ..\..\..\Luajit\luajit.exe -b -g %%i out\%%i.bytes
-for %%i in (protobuf\*.lua) do ..\..\..\Luajit\luajit.exe -b -g %%i out\%%i.bytes
-for %%i in (misc\*.lua) do ..\..\..\Luajit\luajit.exe -b -g %%i out\%%i.bytes
-for %%i in (cjson\*.lua) do ..\..\..\Luajit\luajit.exe -b -g %%i out\%%i.bytes
+for /r %%i in (*.lua) do (
+ set v=%%i 
+ set v=!v:%~dp0=! 
+ call :loop
+ ..\..\..\Luajit\luajit.exe -b -g !v! Out\!v!.bytes 
+)
 
-xcopy /Y /D /S out ..\..\StreamingAssets\Lua
 rd /s/q jit
-rd /s/q out
+rd /s/q .\Out\jit\
+xcopy /Y /D /S Out ..\..\StreamingAssets\Lua
+setlocal disabledelayedexpansion
+
+:loop 
+if "!v:~-1!"==" " set "v=!v:~0,-1!" & goto loop 
 

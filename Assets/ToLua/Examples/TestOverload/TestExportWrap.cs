@@ -265,14 +265,6 @@ public class TestExportWrap
 				LuaDLL.lua_pushinteger(L, o);
 				return 1;
 			}
-			else if (count == 2 && TypeChecker.CheckTypes(L, 1, typeof(TestExport), typeof(double)))
-			{
-				TestExport obj = (TestExport)ToLua.ToObject(L, 1);
-				double arg0 = (double)LuaDLL.lua_tonumber(L, 2);
-				int o = obj.Test(arg0);
-				LuaDLL.lua_pushinteger(L, o);
-				return 1;
-			}
 			else if (count == 2 && TypeChecker.CheckTypes(L, 1, typeof(TestExport), typeof(LuaInterface.LuaOut<int>)))
 			{
 				TestExport obj = (TestExport)ToLua.ToObject(L, 1);
@@ -281,6 +273,22 @@ public class TestExportWrap
 				LuaDLL.lua_pushinteger(L, o);
 				LuaDLL.lua_pushinteger(L, arg0);
 				return 2;
+			}
+			else if (count == 2 && TypeChecker.CheckTypes(L, 1, typeof(TestExport), typeof(bool)))
+			{
+				TestExport obj = (TestExport)ToLua.ToObject(L, 1);
+				bool arg0 = LuaDLL.lua_toboolean(L, 2);
+				int o = obj.Test(arg0);
+				LuaDLL.lua_pushinteger(L, o);
+				return 1;
+			}
+			else if (count == 2 && TypeChecker.CheckTypes(L, 1, typeof(TestExport), typeof(double)))
+			{
+				TestExport obj = (TestExport)ToLua.ToObject(L, 1);
+				double arg0 = (double)LuaDLL.lua_tonumber(L, 2);
+				int o = obj.Test(arg0);
+				LuaDLL.lua_pushinteger(L, o);
+				return 1;
 			}
 			else if (count == 2 && TypeChecker.CheckTypes(L, 1, typeof(TestExport), typeof(object)))
 			{

@@ -5,6 +5,7 @@
 --------------------------------------------------------------------------------
 local rawget = rawget
 local uTime = UnityEngine.Time
+local gettime = tolua.gettime
 
 local _Time = 
 {	
@@ -68,14 +69,27 @@ _Time.__newindex = function(t, k, v)
 end
 
 local Time = {}
+local counter = 1
 
 function Time:SetDeltaTime(deltaTime, unscaledDeltaTime)	
+	local _Time = _Time
 	_Time.deltaTime = deltaTime	
 	_Time.unscaledDeltaTime = unscaledDeltaTime
+	counter = counter - 1
 
-	_Time.time = _Time.time + deltaTime
-	_Time.timeSinceLevelLoad = _Time.timeSinceLevelLoad + deltaTime	
-	_Time.unscaledTime = _Time.unscaledTime + unscaledDeltaTime 	
+	if counter == 0 and uTime then	
+		_Time.time = uTime.time
+		_Time.timeSinceLevelLoad = uTime.timeSinceLevelLoad
+		_Time.unscaledTime = uTime.unscaledTime
+		_Time.realtimeSinceStartup = uTime.realtimeSinceStartup
+		_Time.frameCount = uTime.frameCount
+		counter = 1000000
+	else
+		_Time.time = _Time.time + deltaTime
+		_Time.realtimeSinceStartup = _Time.realtimeSinceStartup + deltaTime
+		_Time.timeSinceLevelLoad = _Time.timeSinceLevelLoad + deltaTime	
+		_Time.unscaledTime = _Time.unscaledTime + unscaledDeltaTime 
+	end		
 end
 
 function Time:SetFixedDelta(fixedDeltaTime)	
@@ -96,6 +110,17 @@ function Time:SetTimeScale(scale)
 	return last
 end
 
+function Time:GetTimestamp()
+	return gettime()
+end
+
 UnityEngine.Time = Time
 setmetatable(Time, _Time)
+
+if uTime ~= nil then
+	_Time.maximumDeltaTime = uTime.maximumDeltaTime	
+	_Time.timeScale = uTime.timeScale	
+end
+
+
 return Time

@@ -65,6 +65,7 @@ bug 反馈群: 286510803
 - NEW: 导出支持增加扩展类型导出相应的扩展函数，支持可预知参数类型的模版函数导出。通过配置CustomSetting即可导出DoTween类库
 - NEW: 支持ZeroBrandStudio调试
 - NEW: luajit2.1 beta1 升级为 luajit2.1 beta2
+- New: 打包lua文件名小写和u5.x一致，加入u5.x打包代码。
 - FIX: 修改LuaSocket使用 git 上最新的LuaSocket版本，而不是之前的修改版
 - FIX: 导出的数组支持c#所有数组函数，而不是只有[]和length
 - FIX: 去掉Type类一些无法使用的函数，使用静态反射方案替代

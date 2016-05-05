@@ -82,6 +82,12 @@ public class TestExport
         return 2;
     }
 
+    public int Test(bool b)
+    {
+        Debugger.Log("call Test(bool b)");
+        return 15;
+    }
+
     public int Test(int i)
     {
         Debugger.Log("call Test(int i)");
@@ -155,7 +161,7 @@ public class TestExport
     public int Test33(ref System.Action<int> action)
     {
         Debugger.Log("ref System.Action action");
-        return 13;
+        return 14;
     }
 
     public int TestGeneric<T> (T t) where T : Component
@@ -242,9 +248,10 @@ public class TestOverload : MonoBehaviour
         function Test(to)            
             assert(to:Test(1) == 4)            
             local flag, num = to:Test(out.int)
-            assert(flag == 3 and num == 1024)
-            assert(to:Test('hello') == 6)
-            assert(to:Test(System.Object.New()) == 8)
+            assert(flag == 3 and num == 1024, 'Test(out)')
+            assert(to:Test('hello') == 6, 'Test(string)')
+            assert(to:Test(System.Object.New()) == 8)            
+            assert(to:Test(true) == 15)
             assert(to:Test(123, 456) == 5)            
             assert(to:Test('123', '456') == 1)
             assert(to:Test(System.Object.New(), '456') == 1)
@@ -256,13 +263,7 @@ public class TestOverload : MonoBehaviour
             assert(to:TestCheckParamString('1', '2', '3') == '123')
             --assert(to:Test(TestExport.Space.World) == 10)        
             print(to.this:get(123))
-            to.this:set(1, 456)
-            
-            --local go = GameObject.New('go')
-            --local sequence = DG.Tweening.DOTween.Sequence()
-            --sequence:Append(go.transform:DOLocalMove(Vector3.New(100, 100, 0), 2, false))
-            --sequence:SetLoops(1, DG.Tweening.LoopType.Restart)
-            --sequence:OnComplete(function () print('hello!--------------') end)
+            to.this:set(1, 456)           
         end
     ";
     
@@ -276,7 +277,7 @@ public class TestOverload : MonoBehaviour
 
         TestExport to = new TestExport();
         LuaFunction func = state.GetFunction("Test");
-        func.Call(to);
+        func.Call(to);                               
     }
 
     void Bind(LuaState state)
@@ -287,9 +288,5 @@ public class TestOverload : MonoBehaviour
         //TestExport_SpaceWrap.Register(state);
         state.EndModule();
         state.EndModule();
-
-        //DG.Tweening.Sequence seq = DG.Tweening.DOTween.Sequence();
-        //seq.Append(transform.DOLocalMove(new Vector3(100, 100, 0), 5, false));
-        //seq.SetLoops(1, DG.Tweening.LoopType.Restart);
     }
 }

@@ -3,11 +3,12 @@ using System.Collections;
 using LuaInterface;
 using System;
 using System.Reflection;
+using System.Text;
 
 public class TestString : LuaClient
 {
     string script =
-@"
+@"           
     function Test()
         local str = System.String.New('男儿当自强')
         local index = str:IndexOfAny('儿自')
@@ -17,7 +18,7 @@ public class TestString : LuaClient
         local luastr = tolua.tolstring(buffer)
         print('lua string is: '..luastr..' type is: '..type(luastr))
         luastr = tolua.tolstring(str)
-        print('lua string is: '..luastr)                      
+        print('lua string is: '..luastr)                    
     end
 ";
 
@@ -42,7 +43,7 @@ public class TestString : LuaClient
     protected override void CallMain() { }
 
     protected override void OnLoadFinished()
-    {                        
+    {
         base.OnLoadFinished();
         luaState.DoString(script);
         LuaFunction func = luaState.GetFunction("Test");
