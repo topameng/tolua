@@ -214,7 +214,6 @@ public static class ToLuaMenu
 
     static void AutoAddBaseType(BindType bt, bool beDropBaseType)
     {
-
         Type t = bt.baseType;
 
         if (t == null)
