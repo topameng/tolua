@@ -214,13 +214,14 @@ public static class ToLuaMenu
 
     static void AutoAddBaseType(BindType bt, bool beDropBaseType)
     {
+
         Type t = bt.baseType;
 
         if (t == null)
         {
             return;
         }
-
+       
         if (t.IsInterface)
         {
             Debugger.LogWarning("{0} has a base type {1} is Interface, use SetBaseType to jump it", bt.name, t.FullName);
@@ -271,7 +272,6 @@ public static class ToLuaMenu
     static BindType[] GenBindTypes(BindType[] list, bool beDropBaseType = true)
     {                
         allTypes = new List<BindType>(list);
-
         for (int i = 0; i < list.Length; i++)
         {            
             if (dropType.IndexOf(list[i].type) >= 0)
@@ -292,6 +292,18 @@ public static class ToLuaMenu
             }
             
             AutoAddBaseType(list[i], beDropBaseType);
+        }
+
+        for (int i = 0; i < allTypes.Count; i++)
+        {
+            var cur = allTypes[i];
+            for (int j = i + 1; j < allTypes.Count; j++)
+            {
+                if (cur.type == allTypes[j].type)
+                {
+                    allTypes.RemoveAt(j--);
+                }
+            }
         }
 
         return allTypes.ToArray();
