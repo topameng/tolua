@@ -66,9 +66,9 @@ tolua#提供的替换方法是:<br>
 | Android   |   0.26:1.03  | 0.39:1.15 |0.2:0.0049   |0.43:0.5|0.27:0.02|0.49:0.16|
 | iOS       |   待测       | 待测      |   待测      |待测|待测|待测|
 
-测试结果为C#:Lua. 环境不同会略有差异。可用数字倍率做参考, 加了peer表略降了些
-PC: Intel(R) Core(TM) i5-4590 CPU@3.3GHz + 8GB + 64 位win7
-Android: 中兴nubia z9 max(NX512J) + Adnroid5.0.2
+测试结果为C#:Lua. 环境不同会略有差异。可用数字倍率做参考, 加了peer表略降了些<br>
+PC: Intel(R) Core(TM) i5-4590 CPU@3.3GHz + 8GB + 64 位win7<br>
+Android: 中兴nubia z9 max(NX512J) + Adnroid5.0.2<br>
 #Examples
 参考包内1-20例子
 
