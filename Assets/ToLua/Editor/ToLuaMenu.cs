@@ -293,18 +293,6 @@ public static class ToLuaMenu
             AutoAddBaseType(list[i], beDropBaseType);
         }
 
-        for (int i = 0; i < allTypes.Count; i++)
-        {
-            var cur = allTypes[i];
-            for (int j = i + 1; j < allTypes.Count; j++)
-            {
-                if (cur.type == allTypes[j].type)
-                {
-                    allTypes.RemoveAt(j--);
-                }
-            }
-        }
-
         return allTypes.ToArray();
     }
 
