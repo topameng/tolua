@@ -220,7 +220,7 @@ public static class ToLuaMenu
         {
             return;
         }
-
+       
         if (t.IsInterface)
         {
             Debugger.LogWarning("{0} has a base type {1} is Interface, use SetBaseType to jump it", bt.name, t.FullName);
@@ -271,7 +271,6 @@ public static class ToLuaMenu
     static BindType[] GenBindTypes(BindType[] list, bool beDropBaseType = true)
     {                
         allTypes = new List<BindType>(list);
-
         for (int i = 0; i < list.Length; i++)
         {            
             if (dropType.IndexOf(list[i].type) >= 0)
@@ -292,6 +291,18 @@ public static class ToLuaMenu
             }
             
             AutoAddBaseType(list[i], beDropBaseType);
+        }
+
+        for (int i = 0; i < allTypes.Count; i++)
+        {
+            var cur = allTypes[i];
+            for (int j = i + 1; j < allTypes.Count; j++)
+            {
+                if (cur.type == allTypes[j].type)
+                {
+                    allTypes.RemoveAt(j--);
+                }
+            }
         }
 
         return allTypes.ToArray();
@@ -475,22 +486,52 @@ public static class ToLuaMenu
 
         for (int j = 0; j < ns.Length; j++)
         {
-            //pos变量
-            ToLuaNode<string> node = tree.Find((_t) => { return _t == ns[j]; }, j);
+            var nodes = tree.Find((_t) => { return _t == ns[j]; }, j);
 
-            if (node == null)
+            if (nodes.Count == 0)
             {
-                node = new ToLuaNode<string>();
+                var node = new ToLuaNode<string>();
                 node.value = ns[j];
                 parent.childs.Add(node);
                 node.parent = parent;
-                //加入pos跟root里的pos比较，只有位置相同才是统一命名空间节点
                 node.layer = j;
                 parent = node;
             }
             else
             {
-                parent = node;
+                var flag = false;
+                for (int i = 0; i < nodes.Count; i++)
+                {
+                    var count = j;
+                    var nodecopy = nodes[i];
+                    while (nodecopy.parent != null)
+                    {
+                        nodecopy = nodecopy.parent;
+                        if (nodecopy.value != null && nodecopy.value != ns[--count])
+                        {
+                            break;
+                        }
+                    }
+                    if (count == 0)
+                    {
+                        flag = true;
+                        break;
+                    }
+                }
+
+                if (!flag)
+                {
+                    var nnode = new ToLuaNode<string>();
+                    nnode.value = ns[j];
+                    nnode.layer = j;
+                    nnode.parent = parent;
+                    parent.childs.Add(nnode);
+                    parent = nnode;
+                }
+                else
+                {
+                    parent = nodes[0];
+                }
             }
         }
     }
