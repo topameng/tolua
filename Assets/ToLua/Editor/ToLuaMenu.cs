@@ -462,7 +462,7 @@ public static class ToLuaMenu
         return tree;
     }
 
-    static void AddSpaceNameToTree(ToLuaTree<string> tree, ToLuaNode<string> root, string space)
+    static void AddSpaceNameToTree(ToLuaTree<string> tree, ToLuaNode<string> parent, string space)
     {
         if (space == null || space == string.Empty)
         {
@@ -470,7 +470,6 @@ public static class ToLuaMenu
         }
 
         string[] ns = space.Split(new char[] { '.' });
-        ToLuaNode<string> parent = root;
 
         for (int j = 0; j < ns.Length; j++)
         {
@@ -488,20 +487,23 @@ public static class ToLuaMenu
             else
             {
                 var flag = false;
+                var index = 0;
                 for (int i = 0; i < nodes.Count; i++)
                 {
                     var count = j;
+                    var size = j;
                     var nodecopy = nodes[i];
                     while (nodecopy.parent != null)
                     {
                         nodecopy = nodecopy.parent;
-                        if (nodecopy.value != null && nodecopy.value != ns[--count])
+                        if (nodecopy.value != null && nodecopy.value == ns[--count])
                         {
-                            break;
+                            size--;
                         }
                     }
-                    if (count == 0)
+                    if (size == 0)
                     {
+                        index = i;
                         flag = true;
                         break;
                     }
@@ -518,7 +520,7 @@ public static class ToLuaMenu
                 }
                 else
                 {
-                    parent = nodes[0];
+                    parent = nodes[index];
                 }
             }
         }
