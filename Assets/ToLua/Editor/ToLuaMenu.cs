@@ -272,7 +272,13 @@ public static class ToLuaMenu
     {                
         allTypes = new List<BindType>(list);
         for (int i = 0; i < list.Length; i++)
-        {            
+        {
+            for (int j = i + 1; j < list.Length; j++)
+            {
+                if (list[i].type == list[j].type)
+                    throw new NotSupportedException("Repeat BindType:"+list[i].type);
+            }
+
             if (dropType.IndexOf(list[i].type) >= 0)
             {
                 Debug.LogWarning(list[i].type.FullName + " in dropType table, not need to export");
@@ -462,7 +468,7 @@ public static class ToLuaMenu
         return tree;
     }
 
-    static void AddSpaceNameToTree(ToLuaTree<string> tree, ToLuaNode<string> parent, string space)
+   static void AddSpaceNameToTree(ToLuaTree<string> tree, ToLuaNode<string> parent, string space)
     {
         if (space == null || space == string.Empty)
         {
