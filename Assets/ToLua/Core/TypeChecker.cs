@@ -218,25 +218,25 @@ namespace LuaInterface
                 switch (vt)
                 {
                     case LuaValueType.Vector3:
-                        return typeof(Vector3) == t;
+                        return typeof(Vector3) == t || typeof(Nullable<Vector3>) == t;
                     case LuaValueType.Quaternion:
-                        return typeof(Quaternion) == t;
+                        return typeof(Quaternion) == t || typeof(Nullable<Quaternion>) == t;
                     case LuaValueType.Color:
-                        return typeof(Color) == t;
+                        return typeof(Color) == t || typeof(Nullable<Color>) == t;
                     case LuaValueType.Ray:
-                        return typeof(Ray) == t;
+                        return typeof(Ray) == t || typeof(Nullable<Ray>) == t;
                     case LuaValueType.Bounds:
-                        return typeof(Bounds) == t;
+                        return typeof(Bounds) == t || typeof(Nullable<Bounds>) == t;
                     case LuaValueType.Vector2:
-                        return typeof(Vector2) == t;
+                        return typeof(Vector2) == t || typeof(Nullable<Vector2>) == t;
                     case LuaValueType.Vector4:
-                        return typeof(Vector4) == t;
+                        return typeof(Vector4) == t || typeof(Nullable<Vector4>) == t;
                     case LuaValueType.Touch:
-                        return typeof(Touch) == t;
+                        return typeof(Touch) == t || typeof(Nullable<Touch>) == t;
                     case LuaValueType.LayerMask:
-                        return typeof(LayerMask) == t;
+                        return typeof(LayerMask) == t || typeof(Nullable<LayerMask>) == t;
                     case LuaValueType.RaycastHit:
-                        return typeof(RaycastHit) == t;
+                        return typeof(RaycastHit) == t || typeof(Nullable<RaycastHit>) == t;
                     default:
                         break;
                 }
