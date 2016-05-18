@@ -31,7 +31,6 @@ namespace LuaInterface
             return !t.IsEnum && t.IsValueType;
         }
 
-
         public static bool CheckTypes(IntPtr L, int begin, Type type0)
         {
             return CheckType(L, type0, begin);
