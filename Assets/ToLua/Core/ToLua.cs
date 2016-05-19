@@ -181,6 +181,11 @@ namespace LuaInterface
                     return 1;
                 }
 
+                if (LuaConst.openZbsDebugger)
+                {
+                    fileName = LuaFileUtils.Instance.FindFile(fileName);
+                }
+
                 LuaDLL.luaL_loadbuffer(L, buffer, buffer.Length, fileName);
                 return 1;
             }
@@ -963,6 +968,7 @@ namespace LuaInterface
                     LuaDLL.luaL_argerror(L, stackPos, string.Format("{0} expected, got {1}", type.FullName, objType.FullName));
                 }
 
+                //传递了tolua.null过来
                 return null;
             }
             else if (LuaDLL.lua_isnil(L, stackPos))

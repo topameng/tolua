@@ -3,16 +3,17 @@
 --      All rights reserved.
 --      Use, modification and distribution are subject to the "MIT License"
 --------------------------------------------------------------------------------
-if DebugServerIp then  
-  require("mobdebug").start(DebugServerIp)
-end
-
 if jit then		
 	if jit.opt then
 		jit.opt.start(3)			
 	end
 	print("jit", jit.status())
 	print(string.format("os: %s, arch: %s", jit.os, jit.arch))
+end
+
+--mobdebug 会调整jit
+if DebugServerIp then  
+  require("mobdebug").start(DebugServerIp)
 end
 
 Mathf		= require "UnityEngine.Mathf"

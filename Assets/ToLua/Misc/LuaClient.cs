@@ -195,6 +195,9 @@ public class LuaClient : MonoBehaviour
     {
         if (luaState != null)
         {
+            LuaState state = luaState;
+            luaState = null;
+
             if (levelLoaded != null)
             {
                 levelLoaded.Dispose();
@@ -207,12 +210,7 @@ public class LuaClient : MonoBehaviour
                 loop = null;
             }
 
-            if (luaState != null)
-            {
-                luaState.Dispose();
-                luaState = null;
-            }
-
+            state.Dispose();            
             Instance = null;
         }
     }
