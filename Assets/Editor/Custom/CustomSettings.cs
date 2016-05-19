@@ -47,19 +47,37 @@ public static class CustomSettings
         //_GT(typeof(TestExport)),
         //_GT(typeof(TestExport.Space)),
         //-------------------------------------------------------------------        
-                  
-        //_GT(typeof(DG.Tweening.DOTween)),
-        //_GT(typeof(DG.Tweening.Tween)),
-        //_GT(typeof(DG.Tweening.Sequence)).AddExtendType(typeof(DG.Tweening.TweenSettingsExtensions)),        
-        //_GT(typeof(DG.Tweening.Tweener)),
-        //_GT(typeof(DG.Tweening.LoopType)),        
-        _GT(typeof(Debugger)),        
-                        
+        _GT(typeof(Debugger)),                      
+
+        /*_GT(typeof(DG.Tweening.DOTween)),
+        _GT(typeof(DG.Tweening.Tween)).SetBaseType(typeof(System.Object)),
+        _GT(typeof(DG.Tweening.Sequence)).AddExtendType(typeof(DG.Tweening.TweenSettingsExtensions)),
+        _GT(typeof(DG.Tweening.Tweener)),
+        _GT(typeof(DG.Tweening.LoopType)),
+        _GT(typeof(DG.Tweening.PathMode)),
+        _GT(typeof(DG.Tweening.PathType)),
+        _GT(typeof(Component)).AddExtendType(typeof(DG.Tweening.ShortcutExtensions)),
+        _GT(typeof(Transform)).AddExtendType(typeof(DG.Tweening.ShortcutExtensions)),
+        _GT(typeof(Light)).AddExtendType(typeof(DG.Tweening.ShortcutExtensions)),
+        _GT(typeof(Material)).AddExtendType(typeof(DG.Tweening.ShortcutExtensions)),
+        _GT(typeof(Rigidbody)).AddExtendType(typeof(DG.Tweening.ShortcutExtensions)),
+        _GT(typeof(Camera)).AddExtendType(typeof(DG.Tweening.ShortcutExtensions)),
+        _GT(typeof(AudioSource)).AddExtendType(typeof(DG.Tweening.ShortcutExtensions)),        
+        _GT(typeof(LineRenderer)).AddExtendType(typeof(DG.Tweening.ShortcutExtensions)),
+        _GT(typeof(TrailRenderer)).AddExtendType(typeof(DG.Tweening.ShortcutExtensions)),  */ 
+                                  
+                
         _GT(typeof(Component)),
+        _GT(typeof(Transform)),
+        _GT(typeof(Material)),
+        _GT(typeof(Light)),
+        _GT(typeof(Rigidbody)),
+        _GT(typeof(Camera)),
+        _GT(typeof(AudioSource)),     
+                        
         _GT(typeof(Behaviour)),
         _GT(typeof(MonoBehaviour)),        
         _GT(typeof(GameObject)),
-        _GT(typeof(Transform)), //.AddExtendType(typeof(DG.Tweening.ShortcutExtensions)),
         _GT(typeof(TrackedReference)),
         _GT(typeof(Application)),
         _GT(typeof(Physics)),
@@ -68,18 +86,14 @@ public static class CustomSettings
         _GT(typeof(Texture)),
         _GT(typeof(Texture2D)),
         _GT(typeof(Shader)),
-        _GT(typeof(Material)),
         _GT(typeof(Renderer)),
         _GT(typeof(WWW)),
         _GT(typeof(Screen)),
-        _GT(typeof(Camera)),
         _GT(typeof(CameraClearFlags)),
         _GT(typeof(AudioClip)),
-        _GT(typeof(AudioSource)),
         _GT(typeof(AssetBundle)),
         _GT(typeof(ParticleSystem)),
         _GT(typeof(AsyncOperation)).SetBaseType(typeof(System.Object)),
-        _GT(typeof(Light)),
         _GT(typeof(LightType)),
         _GT(typeof(SleepTimeout)),
         _GT(typeof(Animator)),
@@ -111,7 +125,6 @@ public static class CustomSettings
         _GT(typeof(RenderSettings)),                                                   
         _GT(typeof(BlendWeights)),           
         _GT(typeof(RenderTexture)),
-        _GT(typeof(Rigidbody)),
     };
 
     public static List<Type> dynamicList = new List<Type>()
