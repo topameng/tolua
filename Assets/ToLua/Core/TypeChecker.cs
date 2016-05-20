@@ -125,6 +125,16 @@ namespace LuaInterface
                 return true;
             }
 
+            if (IsNullable(t))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public static bool IsNullable(Type t)
+        {
             if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Nullable<>))
             {
                 return true;

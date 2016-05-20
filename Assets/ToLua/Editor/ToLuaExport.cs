@@ -19,6 +19,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
+
 using UnityEngine;
 using System;
 using System.Collections;
@@ -1684,6 +1685,10 @@ public static class ToLuaExport
             else if (typeof(UnityEngine.Object).IsAssignableFrom(varType))
             {
                 sb.AppendFormat("{3}{0} {1} = ({0})ToLua.CheckUnityObject(L, {2}, typeof({0}));\r\n", str, arg, stackPos, head);
+            }
+            else if (varType.IsGenericType && varType.GetGenericTypeDefinition() == typeof(Nullable<>))
+            {           
+                sb.AppendFormat("{0}{1} {2} = ({1})ToLua.CheckVarObject(L, {3}, typeof({1}));\r\n", head, str, arg, stackPos);
             }
             else
             {

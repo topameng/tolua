@@ -874,44 +874,56 @@ namespace LuaInterface
                 {
                     return LuaDLL.luaL_checknumber(L, stackPos);
                 }
-                else if (t == typeof(Vector3))
+                else if (t == typeof(Vector3) || t == typeof(Nullable<Vector3>))
                 {
                     return CheckVector3(L, stackPos);
                 }
-                else if (t == typeof(Quaternion))
+                else if (t == typeof(Quaternion) || t == typeof(Nullable<Quaternion>))
                 {
                     return CheckQuaternion(L, stackPos);
                 }
-                else if (t == typeof(Vector2))
+                else if (t == typeof(Vector2) || t == typeof(Nullable<Vector2>))
                 {
                     return CheckVector2(L, stackPos);
                 }
-                else if (t == typeof(Vector4))
+                else if (t == typeof(Vector4) || t == typeof(Nullable<Vector4>))
                 {
                     return CheckVector4(L, stackPos);
                 }
-                else if (t == typeof(Color))
+                else if (t == typeof(Color) || t == typeof(Nullable<Color>))
                 {
                     return CheckColor(L, stackPos);
                 }
-                else if (t == typeof(Ray))
+                else if (t == typeof(Ray) || t == typeof(Nullable<Ray>))
                 {
                     return CheckRay(L, stackPos);
                 }
-                else if (t == typeof(Bounds))
+                else if (t == typeof(Bounds) || t == typeof(Nullable<Bounds>))
                 {
                     return CheckBounds(L, stackPos);
                 }
-                else if (t == typeof(LayerMask))
+                else if (t == typeof(LayerMask) || t == typeof(Nullable<LayerMask>))
                 {
                     return CheckLayerMask(L, stackPos);
                 }
-                else if (t == typeof(LuaInteger64))
+                else if (t == typeof(LuaInteger64) || t == typeof(Nullable<LuaInteger64>))
                 {
                     return LuaDLL.tolua_toint64(L, stackPos);
                 }
                 else
                 {
+                    if (TypeChecker.IsNullable(t))
+                    {
+                        if (LuaDLL.lua_isnil(L, stackPos))
+                        {
+                            return null;
+                        }
+
+                        Type[] ts = t.GetGenericArguments();
+                        t = ts[0];
+                    }
+
+                    
                     return CheckObject(L, stackPos, t);
                 }
             }
