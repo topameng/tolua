@@ -31,6 +31,7 @@ namespace LuaInterface
             return !t.IsEnum && t.IsValueType;
         }
 
+
         public static bool CheckTypes(IntPtr L, int begin, Type type0)
         {
             return CheckType(L, type0, begin);
@@ -117,6 +118,21 @@ namespace LuaInterface
             return true;
         }
 
+        static bool IsNilType(Type t)
+        {
+            if (t == null || !IsValueType(t))
+            {
+                return true;
+            }
+
+            if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Nullable<>))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
         public static bool CheckType(IntPtr L, Type t, int pos)
         {
             //默认都可以转 object
@@ -144,7 +160,7 @@ namespace LuaInterface
                 case LuaTypes.LUA_TLIGHTUSERDATA:
                     return t == typeof(IntPtr) || t == typeof(UIntPtr);
                 case LuaTypes.LUA_TNIL:
-                    return t == null || t.IsEnum || !t.IsValueType;
+                    return IsNilType(t);
                 default:
                     break;
             }

@@ -145,7 +145,7 @@ public class System_ArrayWrap
             {
                 object val = obj.GetValue(i);
                 ToLua.Push(L, val);
-                LuaDLL.lua_rawseti(L, -2, i);
+                LuaDLL.lua_rawseti(L, -2, i + 1);
             }
 
             return 1;
