@@ -220,7 +220,7 @@ public static class ToLuaMenu
         {
             return;
         }
-       
+
         if (t.IsInterface)
         {
             Debugger.LogWarning("{0} has a base type {1} is Interface, use SetBaseType to jump it", bt.name, t.FullName);
@@ -272,7 +272,7 @@ public static class ToLuaMenu
     {                
         allTypes = new List<BindType>(list);
         for (int i = 0; i < list.Length; i++)
-        {
+        {            
             for (int j = i + 1; j < list.Length; j++)
             {
                 if (list[i].type == list[j].type)
@@ -372,7 +372,7 @@ public static class ToLuaMenu
             {
                 Type t = fields[j].FieldType;
 
-                if (typeof(System.Delegate).IsAssignableFrom(t))
+                if (ToLuaExport.IsDelegateType(t))
                 {
                     set.Add(t);
                 }
@@ -382,7 +382,7 @@ public static class ToLuaMenu
             {
                 Type t = props[j].PropertyType;
 
-                if (typeof(System.Delegate).IsAssignableFrom(t))
+                if (ToLuaExport.IsDelegateType(t))
                 {
                     set.Add(t);
                 }
@@ -404,7 +404,7 @@ public static class ToLuaMenu
                     Type t = pifs[k].ParameterType;
                     if (t.IsByRef) t = t.GetElementType();
 
-                    if (typeof(System.MulticastDelegate).IsAssignableFrom(t))
+                    if (ToLuaExport.IsDelegateType(t))
                     {
                         set.Add(t);
                     }
@@ -505,14 +505,14 @@ public static class ToLuaMenu
                         if (nodecopy.value != null && nodecopy.value == ns[--count])
                         {
                             size--;
-                        }
-                    }
+            }
+        }
                     if (size == 0)
                     {
                         index = i;
                         flag = true;
                         break;
-                    }
+    }
                 }
 
                 if (!flag)
@@ -947,8 +947,8 @@ public static class ToLuaMenu
     {
         ClearAllLuaFiles();
         string destDir = Application.dataPath + "/Resources" + "/Lua";
-        CopyLuaBytesFiles(CustomSettings.luaDir, destDir);
-        CopyLuaBytesFiles(CustomSettings.toluaLuaDir, destDir);
+        CopyLuaBytesFiles(LuaConst.luaDir, destDir);
+        CopyLuaBytesFiles(LuaConst.toluaDir, destDir);
         AssetDatabase.Refresh();
         Debug.Log("Copy lua files over");
     }
@@ -958,8 +958,8 @@ public static class ToLuaMenu
     {
         ClearAllLuaFiles();
         string destDir = Application.persistentDataPath + "/" + GetOS() + "/Lua";
-        CopyLuaBytesFiles(CustomSettings.luaDir, destDir, false);
-        CopyLuaBytesFiles(CustomSettings.toluaLuaDir, destDir, false);
+        CopyLuaBytesFiles(LuaConst.luaDir, destDir, false);
+        CopyLuaBytesFiles(LuaConst.toluaDir, destDir, false);
         AssetDatabase.Refresh();
         Debug.Log("Copy lua files over");
     }
@@ -999,11 +999,11 @@ public static class ToLuaMenu
         string path = Application.dataPath.Replace('\\', '/');
         path = path.Substring(0, path.LastIndexOf('/'));
         File.Copy(path + "/Luajit/Build.bat", tempDir +  "/Build.bat", true);
-        CopyLuaBytesFiles(CustomSettings.luaDir, tempDir, false);
+        CopyLuaBytesFiles(LuaConst.luaDir, tempDir, false);
         Process proc = Process.Start(tempDir + "/Build.bat");
         proc.WaitForExit();
         CopyLuaBytesFiles(tempDir + "/Out/", destDir, false, "*.lua.bytes");
-        CopyLuaBytesFiles(CustomSettings.toluaLuaDir, destDir);
+        CopyLuaBytesFiles(LuaConst.toluaDir, destDir);
         
         Directory.Delete(tempDir, true);        
         AssetDatabase.Refresh();
@@ -1019,10 +1019,10 @@ public static class ToLuaMenu
         string path = Application.dataPath.Replace('\\', '/');
         path = path.Substring(0, path.LastIndexOf('/'));
         File.Copy(path + "/Luajit/Build.bat", tempDir + "/Build.bat", true);
-        CopyLuaBytesFiles(CustomSettings.luaDir, tempDir, false);
+        CopyLuaBytesFiles(LuaConst.luaDir, tempDir, false);
         Process proc = Process.Start(tempDir + "/Build.bat");
         proc.WaitForExit();        
-        CopyLuaBytesFiles(CustomSettings.toluaLuaDir, destDir, false);
+        CopyLuaBytesFiles(LuaConst.toluaDir, destDir, false);
 
         path = tempDir + "/Out/";
         string[] files = Directory.GetFiles(path, "*.lua.bytes");
@@ -1057,8 +1057,8 @@ public static class ToLuaMenu
             Directory.CreateDirectory(tempDir);
         }        
 #endif
-        CopyLuaBytesFiles(CustomSettings.luaDir, tempDir);
-        CopyLuaBytesFiles(CustomSettings.toluaLuaDir, tempDir);
+        CopyLuaBytesFiles(LuaConst.luaDir, tempDir);
+        CopyLuaBytesFiles(LuaConst.toluaDir, tempDir);
 
         AssetDatabase.Refresh();
         List<string> dirs = new List<string>();
@@ -1110,10 +1110,10 @@ public static class ToLuaMenu
         string path = Application.dataPath.Replace('\\', '/');
         path = path.Substring(0, path.LastIndexOf('/'));
         File.Copy(path + "/Luajit/Build.bat", tempDir + "/Build.bat", true);
-        CopyLuaBytesFiles(CustomSettings.luaDir, tempDir, false);
+        CopyLuaBytesFiles(LuaConst.luaDir, tempDir, false);
         Process proc = Process.Start(tempDir + "/Build.bat");
         proc.WaitForExit();
-        CopyLuaBytesFiles(CustomSettings.toluaLuaDir, tempDir + "/Out");
+        CopyLuaBytesFiles(LuaConst.toluaDir, tempDir + "/Out");
 
         AssetDatabase.Refresh();
 

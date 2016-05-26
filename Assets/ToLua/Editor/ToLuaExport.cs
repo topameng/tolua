@@ -144,12 +144,20 @@ public static class ToLuaExport
         "Input.IsJoystickPreconfigured",    
         "UIDrawCall.isActive",    
         "Handheld.SetActivityIndicatorStyle",
+        "CanvasRenderer.OnRequestRebuild",
+        "CanvasRenderer.onRequestRebuild",
     };
 
     public static bool IsMemberFilter(MemberInfo mi)
     {
         return memberFilter.Contains(type.Name + "." + mi.Name);
     }
+    public static bool IsMemberFilter(Type t)
+    {
+        string name = LuaMisc.GetTypeName(t);
+        return memberFilter.Find((p) => { return name.Contains(p); }) != null;
+    }
+
 
     static ToLuaExport()
     {
@@ -424,6 +432,22 @@ public static class ToLuaExport
         return allTypes.IndexOf(t) < 0;        
     }
 
+    //是否为委托类型，没处理废弃
+    public static bool IsDelegateType(Type t)
+    {
+        if (!typeof(System.Delegate).IsAssignableFrom(t))
+        {
+            return false;
+        }        
+
+        if (IsMemberFilter(t))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
     static void InitPropertyList()
     {
         props = type.GetProperties(BindingFlags.GetProperty | BindingFlags.SetProperty | BindingFlags.Instance | binding);
@@ -441,7 +465,7 @@ public static class ToLuaExport
             {
                 fieldList.RemoveAt(i);
             }
-            else if (typeof(System.Delegate).IsAssignableFrom(fieldList[i].FieldType))
+            else if (IsDelegateType(fieldList[i].FieldType))
             {
                 eventSet.Add(fieldList[i].FieldType);
             }
@@ -462,7 +486,7 @@ public static class ToLuaExport
             {
                 piList.RemoveAt(i);
             }
-            else if (typeof(System.Delegate).IsAssignableFrom(piList[i].PropertyType))
+            else if (IsDelegateType(piList[i].PropertyType))
             {
                 eventSet.Add(piList[i].PropertyType);
             }
@@ -490,7 +514,7 @@ public static class ToLuaExport
             {
                 evList.RemoveAt(i);
             }
-            else if (typeof(System.Delegate).IsAssignableFrom(evList[i].EventHandlerType))
+            else if (IsDelegateType(evList[i].EventHandlerType))
             {
                 eventSet.Add(evList[i].EventHandlerType);
             }
@@ -1687,7 +1711,7 @@ public static class ToLuaExport
                 sb.AppendFormat("{3}{0} {1} = ({0})ToLua.CheckUnityObject(L, {2}, typeof({0}));\r\n", str, arg, stackPos, head);
             }
             else if (varType.IsGenericType && varType.GetGenericTypeDefinition() == typeof(Nullable<>))
-            {           
+            {          
                 sb.AppendFormat("{0}{1} {2} = ({1})ToLua.CheckVarObject(L, {3}, typeof({1}));\r\n", head, str, arg, stackPos);
             }
             else
@@ -3399,7 +3423,7 @@ public static class ToLuaExport
         {
             Type t = pifs[k].ParameterType;
 
-            if (typeof(System.MulticastDelegate).IsAssignableFrom(t))
+            if (IsDelegateType(t))
             {
                 eventSet.Add(t);
             }
