@@ -186,7 +186,12 @@ namespace LuaInterface
                     fileName = LuaFileUtils.Instance.FindFile(fileName);
                 }
 
-                LuaDLL.luaL_loadbuffer(L, buffer, buffer.Length, fileName);
+                if (LuaDLL.luaL_loadbuffer(L, buffer, buffer.Length, fileName) != 0)
+                {
+                    string err = LuaDLL.lua_tostring(L, -1);
+                    throw new LuaException(err, LuaException.GetLastError());
+                }
+
                 return 1;
             }
             catch (Exception e)
