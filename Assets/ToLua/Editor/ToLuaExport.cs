@@ -435,7 +435,7 @@ public static class ToLuaExport
     //是否为委托类型，没处理废弃
     public static bool IsDelegateType(Type t)
     {
-        if (!typeof(System.Delegate).IsAssignableFrom(t))
+        if (!typeof(System.MulticastDelegate).IsAssignableFrom(t) || t == typeof(System.MulticastDelegate))
         {
             return false;
         }        
