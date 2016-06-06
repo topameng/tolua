@@ -55,7 +55,7 @@ namespace LuaInterface
 #if UNITY_EDITOR
             if (oldTop != -1 && count <= 1)
             {
-                Debugger.LogError("You muse call EndPCall before calling Dispose");
+                Debugger.LogError("You must call EndPCall before calling Dispose");
             }
 #endif
                 base.Dispose();
