@@ -96,8 +96,9 @@ public static class ToLuaExport
     static EventInfo[] events = null;
     static List<EventInfo> eventList = new List<EventInfo>();
     static List<ConstructorInfo> ctorList = new List<ConstructorInfo>();
-    static List<ConstructorInfo> ctorExtList = new List<ConstructorInfo>();
-    static PropertyInfo ItemProperty = null;   //特殊属性
+    static List<ConstructorInfo> ctorExtList = new List<ConstructorInfo>();    
+    static List<MethodInfo> getItems = new List<MethodInfo>();   //特殊属性
+    static List<MethodInfo> setItems = new List<MethodInfo>();
 
     static BindingFlags binding = BindingFlags.Public | BindingFlags.Static | BindingFlags.IgnoreCase;
         
@@ -189,7 +190,8 @@ public static class ToLuaExport
         extendType = null;
         nameCounter.Clear();
         events = null;
-        ItemProperty = null;
+        getItems.Clear();
+        setItems.Clear();
     }
 
     private static MetaOp GetOp(string name)
@@ -336,7 +338,7 @@ public static class ToLuaExport
                         }
                         else if (md.Name == "get_Item")
                         {
-                            ItemProperty = ps[i];
+                            getItems.Add(md);                            
                         }
                     }
                 }
@@ -355,7 +357,7 @@ public static class ToLuaExport
                         }
                         else if (md.Name == "set_Item")
                         {
-                            ItemProperty = ps[i];
+                            setItems.Add(md);                            
                         }
                     }
                 }
@@ -615,7 +617,7 @@ public static class ToLuaExport
             sb.AppendFormat("\t\tL.RegFunction(\"New\", _Create{0});\r\n", wrapClassName);            
         }
 
-        if (ItemProperty != null)
+        if (getItems.Count > 0 || setItems.Count > 0)
         {            
             sb.AppendLineEx("\t\tL.RegVar(\"this\", _this, null);");
         }
@@ -1250,44 +1252,83 @@ public static class ToLuaExport
         sb.AppendLineEx("\t}");
     }
 
-
     //this[] 非静态函数
     static void GenItemPropertyFunction()
     {
-        if (ItemProperty == null)
-        {
-            return;
-        }
-
         int flag = 0;
 
-        if (ItemProperty.CanRead)
+        if (getItems.Count > 0)
         {
-            MethodInfo m = ItemProperty.GetGetMethod();
             sb.AppendLineEx("\r\n\t[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]");
             sb.AppendLineEx("\tstatic int _get_this(IntPtr L)");
             sb.AppendLineEx("\t{");
             BeginTry();
-            int count = m.GetParameters().Length + 1;
-            sb.AppendFormat("\t\t\tToLua.CheckArgsCount(L, {0});\r\n", count);                        
-            ProcessParams(m, 3, false, false);
-            sb.AppendLineEx("\t\t\treturn 1;\r\n");
+
+            if (getItems.Count == 1)
+            {
+                MethodInfo m = getItems[0];
+                int count = m.GetParameters().Length + 1;
+                sb.AppendFormat("\t\t\tToLua.CheckArgsCount(L, {0});\r\n", count);
+                ProcessParams(m, 3, false, false);
+                sb.AppendLineEx("\t\t\treturn 1;\r\n");
+            }
+            else
+            {
+                getItems.Sort(Compare);
+
+                sb.AppendLineEx("\t\t\tint count = LuaDLL.lua_gettop(L);");
+                sb.AppendLineEx();
+
+                for (int i = 0; i < getItems.Count; i++)
+                {
+                    GenOverrideFuncBody(getItems[i], i == 0);
+                }
+
+                sb.AppendLineEx("\t\t\telse");
+                sb.AppendLineEx("\t\t\t{");                
+                sb.AppendFormat("\t\t\t\treturn LuaDLL.luaL_throw(L, \"invalid arguments to operator method: {0}.this\");\r\n", className);
+                sb.AppendLineEx("\t\t\t}");
+            }            
+            
             EndTry();
             sb.AppendLineEx("\t}");
             flag |= 1;
         }
 
-        if (ItemProperty.CanWrite)
-        {
-            MethodInfo m = ItemProperty.GetSetMethod();
+        if (setItems.Count > 0)
+        {            
             sb.AppendLineEx("\r\n\t[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]");
             sb.AppendLineEx("\tstatic int _set_this(IntPtr L)");
             sb.AppendLineEx("\t{");
             BeginTry();
-            int count = m.GetParameters().Length + 1;
-            sb.AppendFormat("\t\t\tToLua.CheckArgsCount(L, {0});\r\n", count);
-            ProcessParams(m, 3, false, false);
-            sb.AppendLineEx("\t\t\treturn 0;\r\n");
+
+            if (setItems.Count == 1)
+            {
+                MethodInfo m = setItems[0];
+                int count = m.GetParameters().Length + 1;
+                sb.AppendFormat("\t\t\tToLua.CheckArgsCount(L, {0});\r\n", count);
+                ProcessParams(m, 3, false, false);
+                sb.AppendLineEx("\t\t\treturn 0;\r\n");
+            }
+            else
+            {
+                setItems.Sort(Compare);
+
+                sb.AppendLineEx("\t\t\tint count = LuaDLL.lua_gettop(L);");
+                sb.AppendLineEx();
+
+                for (int i = 0; i < setItems.Count; i++)
+                {
+                    GenOverrideFuncBody(setItems[i], i == 0);
+                }
+
+                sb.AppendLineEx("\t\t\telse");
+                sb.AppendLineEx("\t\t\t{");
+                sb.AppendFormat("\t\t\t\treturn LuaDLL.luaL_throw(L, \"invalid arguments to operator method: {0}.this\");\r\n", className);
+                sb.AppendLineEx("\t\t\t}");
+            }
+
+
             EndTry();
             sb.AppendLineEx("\t}");
             flag |= 2;
@@ -1899,7 +1940,11 @@ public static class ToLuaExport
             {
                 if (methodType == 2)
                 {
-                    sb.AppendFormat("{0}{1}[arg0] = arg1;\r\n", head, obj);
+                    string str = sbArgs.ToString();
+                    string[] ss = str.Split(',');
+                    str = string.Join(",", ss, 0, ss.Length - 1);
+
+                    sb.AppendFormat("{0}{1}[{2}] ={3};\r\n", head, obj, str, ss[ss.Length - 1]);                    
                 }
                 else if (methodType == 1)
                 {
