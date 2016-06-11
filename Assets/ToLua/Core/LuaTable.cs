@@ -1,4 +1,4 @@
-﻿/*
+/*
 Copyright (c) 2015-2016 topameng(topameng@qq.com)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -27,24 +27,46 @@ namespace LuaInterface
 {
     public class LuaTable : LuaBaseRef
     {        
+
+        const char SplitKey ='.';
+
         public LuaTable(int reference, LuaState state)
         {
             this.reference = reference;
             this.luaState = state;            
         }
+        /// <summary>
+        /// Gets or sets a value indicating whether ignore point .
+        /// </summary>
+        /// <value><c>true</c> if ignore point; otherwise, <c>false</c>.</value>
+        public bool ignorePoint {get;set;}
 
         public object this[string key]
         {
             get
             {
+                if(string.IsNullOrEmpty(key)) return null;
+
                 int oldTop = luaState.LuaGetTop();
+
+                object ret  = null;
 
                 try
                 {
-                    luaState.Push(this);
-                    luaState.Push(key);
-                    luaState.LuaGetTable(-2);
-                    object ret = luaState.ToVariant(-1);
+                    if(ignorePoint)
+                    {
+                        ret = GetTableVal(key);
+                    }
+                    else
+                    {
+                        string[] tableskey= key.Split(SplitKey);
+
+                        if(tableskey != null && tableskey.Length >1)
+                            ret = GetMultiTableVal(tableskey);
+                        else
+                            ret = GetTableVal(key);
+                    }
+
                     luaState.LuaSetTop(oldTop);
                     return ret;
                 }
@@ -61,10 +83,20 @@ namespace LuaInterface
 
                 try
                 {
-                    luaState.Push(this);
-                    luaState.Push(key);
-                    luaState.Push(value);
-                    luaState.LuaSetTable(-3);
+                    if(ignorePoint)
+                    {
+                        SetTable(key,value);
+                    }
+                    else
+                    {
+                        string[] tableskey= key.Split(SplitKey);
+
+                        if(tableskey != null && tableskey.Length >1)
+                            SetMultiTableVal(tableskey,value);
+                        else
+                            SetTable(key,value);
+                    }
+
                     luaState.LuaSetTop(oldTop);
                 }
                 catch (Exception e)
@@ -124,6 +156,150 @@ namespace LuaInterface
                 luaState.LuaPop(1);
                 return n;
             }
+        }
+
+        private void SetTable(string key,object value)
+        {
+            luaState.Push(this);
+            luaState.Push(key);
+            luaState.Push(value);
+            luaState.LuaSetTable(-3);
+        }
+
+        private void SetMultiTableVal(string[] tableskey,object value)
+        {
+
+            LuaTable subTable =  null ;
+            LuaState targetState =luaState;
+            LuaBaseRef lbr = this;
+
+            for(int i =0; i < tableskey.Length ;++i)
+            {
+                string subKey = tableskey[i];
+
+                targetState.Push(lbr);
+                targetState.Push(subKey);
+                targetState.LuaGetTable(-2);
+
+                int top = targetState.LuaGetTop();
+
+                if(targetState.LuaType(top) == LuaTypes.LUA_TTABLE)
+                {
+                    object target =targetState.ToVariant(-1);
+
+                    subTable= target as LuaTable;
+
+                    targetState = subTable.luaState;
+                    lbr = subTable;
+
+                    if(subTable.ignorePoint)
+                    {
+                        targetState.Push(lbr);
+                        targetState.Push(GetLeftKey(tableskey,i+1));
+                        targetState.Push(value);
+
+                        targetState.LuaSetTable(-3);
+
+                        break;
+                    }
+                }
+                else
+                {
+
+                    targetState.Push(lbr);
+                    targetState.Push(subKey);
+                    targetState.Push(value);
+
+                    targetState.LuaSetTable(-3);
+
+                    if(i != tableskey.Length-1)
+                    {
+                        Debugger.LogWarning("it's not an full table path,So return value earlierly");
+                    }
+
+                    break;
+                }
+
+
+            }
+        }
+
+        private string GetLeftKey(string[] tablekeys,int index)
+        {
+            System.Text.StringBuilder sb= StringBuilderCache.Acquire();
+
+            for(int i =index; i < tablekeys.Length;++i)
+            {
+                sb.Append(tablekeys[i]);
+                if(i != tablekeys.Length -1)
+                    sb.Append(SplitKey);
+            }
+
+            return sb.ToString();
+        }
+
+        private object GetTableVal(string key)
+        {
+            luaState.Push(this);
+            luaState.Push(key);
+            luaState.LuaGetTable(-2);
+            return luaState.ToVariant(-1);
+        }
+
+        private object GetMultiTableVal(string[] tableskey)
+        {
+            if(tableskey.Length < 1)
+                return null;
+
+            LuaTable subTable =  null ;
+            LuaState targetState =luaState;
+            LuaBaseRef lbr = this;
+
+            string subKey = tableskey[0];
+
+            for(int i =0; i < tableskey.Length ;++i)
+            {
+
+                targetState.Push(lbr);
+                targetState.Push(subKey);
+                targetState.LuaGetTable(-2);
+
+                int top = targetState.LuaGetTop();
+
+                object target =targetState.ToVariant(-1);
+
+                if(targetState.LuaType(top) == LuaTypes.LUA_TTABLE)
+                {
+                   
+                    subTable= target as LuaTable;
+
+                    targetState = subTable.luaState;
+                    lbr = subTable;
+
+                    if(!subTable.ignorePoint)
+                    {
+                        if(i+1 < tableskey.Length )
+                            subKey =tableskey[i+1];
+                    }
+                    else
+                    {
+                        subKey = GetLeftKey(tableskey,i+1);
+                        i = tableskey.Length -2;
+                    }
+                }
+                else
+                {
+ 
+                    if(i != tableskey.Length-1)
+                    {
+                        Debugger.LogWarning("it's not an full table path,So return value earlierly");
+                    }
+                    return target;
+                }
+                    
+            }
+
+            return null;
         }
 
         public LuaFunction RawGetLuaFunction(string key)
