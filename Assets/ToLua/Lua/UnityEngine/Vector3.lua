@@ -393,14 +393,20 @@ function Vector3.Slerp(from, to, t)
 	local len 	= (len2 - len1) * t + len1
 	local cosom = dot(v1, v2)
 	
-	if 1 - cosom > 1e-6 then
+	if cosom > 1 - 1e-6 then
+		scale0 = 1 - t
+		scale1 = t
+	elseif cosom < -1 + 1e-6 then		
+		local axis = OrthoNormalVector(from)		
+		local q = Quaternion.AngleAxis(180.0 * t, axis)		
+		local v = q:MulVec3(from)
+		v:Mul(len)				
+		return v
+	else
 		omega 	= acos(cosom)
 		sinom 	= sin(omega)
 		scale0 	= sin((1 - t) * omega) / sinom
-		scale1 	= sin(t * omega) / sinom
-	else 
-		scale0 = 1 - t
-		scale1 = t
+		scale1 	= sin(t * omega) / sinom	
 	end
 
 	v1:Mul(scale0)

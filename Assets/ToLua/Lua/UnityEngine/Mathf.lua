@@ -131,6 +131,10 @@ function Mathf.LerpAngle(a, b, t)
 	return a + num * Mathf.Clamp01(t)
 end
 
+function Mathf.LerpUnclamped(a, b, t)
+    return a + (b - a) * t;
+end
+
 function Mathf.MoveTowards(current, target, maxDelta)
 	if abs(target - current) <= maxDelta then
 		return target
