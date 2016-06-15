@@ -23,6 +23,7 @@ using System;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Text;
 
 namespace LuaInterface
 {
@@ -127,13 +128,33 @@ namespace LuaInterface
     [NoToLuaAttribute]
     public static class LuaMisc
     {
+        public static string GetArrayRank(Type t)
+        {
+            int count = t.GetArrayRank();
+
+            if (count == 1)
+            {
+                return "[]";
+            }
+
+            StringBuilder sb = StringBuilderCache.Acquire();
+            sb.Append('[');
+
+            for (int i = 1; i < count; i++)
+            {
+                sb.Append(',');
+            }
+
+            sb.Append(']');
+            return sb.ToString();
+        }
+
         public static string GetTypeName(Type t)
         {
             if (t.IsArray)
-            {
-                t = t.GetElementType();
-                string str = GetTypeName(t);
-                str += "[]";
+            {                
+                string str = GetTypeName(t.GetElementType());
+                str += GetArrayRank(t);
                 return str;
             }
             else if (t.IsByRef)
@@ -152,7 +173,7 @@ namespace LuaInterface
             else
             {
                 string name = GetPrimitiveStr(t);
-                return name.Replace('+', '.');                
+                return name.Replace('+', '.');
             }
         }
 
@@ -254,9 +275,17 @@ namespace LuaInterface
             {
                 return "int";
             }
-            else if (t == typeof(System.Int64))
+            else if (t == typeof(System.Double))
             {
-                return "long";
+                return "double";
+            }
+            else if (t == typeof(System.Boolean))
+            {
+                return "bool";
+            }
+            else if (t == typeof(System.UInt32))
+            {
+                return "uint";
             }
             else if (t == typeof(System.SByte))
             {
@@ -278,9 +307,9 @@ namespace LuaInterface
             {
                 return "char";
             }
-            else if (t == typeof(System.UInt32))
+            else if (t == typeof(System.Int64))
             {
-                return "uint";
+                return "long";
             }
             else if (t == typeof(System.UInt64))
             {
@@ -289,14 +318,6 @@ namespace LuaInterface
             else if (t == typeof(System.Decimal))
             {
                 return "decimal";
-            }
-            else if (t == typeof(System.Double))
-            {
-                return "double";
-            }
-            else if (t == typeof(System.Boolean))
-            {
-                return "bool";
             }
             else if (t == typeof(System.Object))
             {

@@ -1630,7 +1630,7 @@ public static class ToLuaExport
         {
             sb.AppendFormat("{0}LuaByteBuffer {1} = new LuaByteBuffer(ToLua.{2}ByteBuffer(L, {3}));\r\n", head, arg, checkStr, stackPos);
         }
-        else if (varType.IsArray)
+        else if (varType.IsArray && varType.GetArrayRank() == 1)
         {
             Type et = varType.GetElementType();
             string atstr = GetTypeStr(et);
@@ -2356,9 +2356,8 @@ public static class ToLuaExport
         }
         else if (t.IsArray)
         {
-            t = t.GetElementType();
-            string str = GetTypeStr(t);
-            str += "[]";
+            string str = GetTypeStr(t.GetElementType());
+            str += LuaMisc.GetArrayRank(t);
             return str;
         }
         else if(t == extendType)
