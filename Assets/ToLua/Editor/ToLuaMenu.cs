@@ -580,12 +580,15 @@ public static class ToLuaMenu
 
         List<BindType> backupList = new List<BindType>();
         backupList.AddRange(allTypes);
+        ToLuaNode<string> root = tree.GetRoot();
 
         foreach (Type t in set)
         {
             if (null == list.Find((p) => { return p.type == t; }))
             {
-                list.Add(new DelegateType(t));
+                DelegateType dt = new DelegateType(t);                
+                AddSpaceNameToTree(tree, root, dt.type.Namespace);
+                list.Add(dt);
             }
         }
 
