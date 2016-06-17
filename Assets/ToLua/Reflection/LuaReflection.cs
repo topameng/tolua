@@ -37,6 +37,9 @@ namespace LuaInterface
 #if !MULTI_STATE
             _reflection = this;
 #endif
+            LoadAssembly("mscorlib");
+            LoadAssembly("UnityEngine");
+            LoadAssembly("Assembly-CSharp");
         }
 
         public static void OpenLibs(IntPtr L)
