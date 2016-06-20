@@ -1359,8 +1359,8 @@ namespace LuaInterface
 
             while (pos < count)
             {
-                object temp = ToVarObject(L, stackPos++);
-                list[pos++] = (T)Convert.ChangeType(temp, type);                                                
+                object temp = ToVarObject(L, stackPos++);                
+                list[pos++] = TypeChecker.ChangeType<T>(temp, type);
             }
 
             return list;
@@ -1509,8 +1509,8 @@ namespace LuaInterface
 
             while (pos < count)
             {
-                object temp = CheckVarObject(L, stackPos++, type);
-                list[pos++] = (T)Convert.ChangeType(temp, type);                                
+                object temp = CheckVarObject(L, stackPos++, type);                
+                list[pos++] = TypeChecker.ChangeType<T>(temp, type);
             }
 
             return list;
