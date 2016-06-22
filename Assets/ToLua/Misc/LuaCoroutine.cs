@@ -31,15 +31,27 @@ public static class LuaCoroutine
     static string strCo =
         @"
         local _WaitForSeconds, _WaitForFixedUpdate, _WaitForEndOfFrame, _Yield = WaitForSeconds, WaitForFixedUpdate, WaitForEndOfFrame, Yield        
+        local error = error
+        local debug = debug
+        local coroutine = coroutine
         local comap = {}
         setmetatable(comap, {__mode = 'kv'})
+
+        function _resume(co)
+            if comap[co] then
+                local flag, msg = coroutine.resume(co)
+                    
+                if not flag then
+                    msg = debug.traceback(co, msg)
+                    error(msg)
+                end
+            end        
+        end
 
         function WaitForSeconds(t)
             local co = coroutine.running()
             local resume = function()    
-                if comap[co] then
-                    return coroutine.resume(co)
-                end                            
+                _resume(co)                     
             end
             
             comap[co] = true
@@ -50,9 +62,7 @@ public static class LuaCoroutine
         function WaitForFixedUpdate()
             local co = coroutine.running()
             local resume = function()          
-                if comap[co] then      
-                    return coroutine.resume(co)
-                end
+                _resume(co)     
             end
         
             comap[co] = true
@@ -63,9 +73,7 @@ public static class LuaCoroutine
         function WaitForEndOfFrame()
             local co = coroutine.running()
             local resume = function()        
-                if comap[co] then        
-                    return coroutine.resume(co)
-                end
+                _resume(co)     
             end
         
             comap[co] = true
@@ -76,9 +84,7 @@ public static class LuaCoroutine
         function Yield(o)
             local co = coroutine.running()
             local resume = function()        
-                if comap[co] then        
-                    return coroutine.resume(co)
-                end
+                _resume(co)     
             end
         
             comap[co] = true
