@@ -142,6 +142,11 @@ public static class ToLuaMenu
 
         public BindType(Type t)
         {
+            if (typeof(System.MulticastDelegate).IsAssignableFrom(t))
+            {
+                throw new NotSupportedException(string.Format("\nDon't export Delegate {0} as a class, register it in customDelegateList", LuaMisc.GetTypeName(t)));
+            }
+
             type = t;                        
             nameSpace = ToLuaExport.GetNameSpace(t, out libName);
             name = ToLuaExport.CombineTypeStr(nameSpace, libName);            
@@ -468,7 +473,7 @@ public static class ToLuaMenu
         return tree;
     }
 
-   static void AddSpaceNameToTree(ToLuaTree<string> tree, ToLuaNode<string> parent, string space)
+    static void AddSpaceNameToTree(ToLuaTree<string> tree, ToLuaNode<string> parent, string space)
     {
         if (space == null || space == string.Empty)
         {
@@ -479,11 +484,11 @@ public static class ToLuaMenu
 
         for (int j = 0; j < ns.Length; j++)
         {
-            var nodes = tree.Find((_t) => { return _t == ns[j]; }, j);
+            List<ToLuaNode<string>> nodes = tree.Find((_t) => { return _t == ns[j]; }, j);
 
             if (nodes.Count == 0)
             {
-                var node = new ToLuaNode<string>();
+                ToLuaNode<string> node = new ToLuaNode<string>();
                 node.value = ns[j];
                 parent.childs.Add(node);
                 node.parent = parent;
@@ -492,32 +497,35 @@ public static class ToLuaMenu
             }
             else
             {
-                var flag = false;
-                var index = 0;
+                bool flag = false;
+                int index = 0;
+
                 for (int i = 0; i < nodes.Count; i++)
                 {
-                    var count = j;
-                    var size = j;
-                    var nodecopy = nodes[i];
+                    int count = j;
+                    int size = j;
+                    ToLuaNode<string> nodecopy = nodes[i];
+
                     while (nodecopy.parent != null)
                     {
                         nodecopy = nodecopy.parent;
                         if (nodecopy.value != null && nodecopy.value == ns[--count])
                         {
                             size--;
-            }
-        }
+                        }
+                    }
+
                     if (size == 0)
                     {
                         index = i;
                         flag = true;
                         break;
-    }
+                    }
                 }
 
                 if (!flag)
                 {
-                    var nnode = new ToLuaNode<string>();
+                    ToLuaNode<string> nnode = new ToLuaNode<string>();
                     nnode.value = ns[j];
                     nnode.layer = j;
                     nnode.parent = parent;
