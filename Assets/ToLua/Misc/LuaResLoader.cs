@@ -86,7 +86,7 @@ public class LuaResLoader : LuaFileUtils
 
         sb.AppendFormat("\n\tno file ./Resources/?.lua");
         sb = sb.Replace("?", fileName);
-        return sb.ToString();
+        return StringBuilderCache.GetStringAndRelease(sb);
     }
 
     byte[] ReadResourceFile(string fileName)

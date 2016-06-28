@@ -146,7 +146,7 @@ namespace LuaInterface
             }
 
             sb.Append(']');
-            return sb.ToString();
+            return StringBuilderCache.GetStringAndRelease(sb);
         }
 
         public static string GetTypeName(Type t)
