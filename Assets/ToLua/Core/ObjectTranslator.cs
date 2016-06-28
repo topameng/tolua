@@ -182,8 +182,14 @@ namespace LuaInterface
 
             if (object.ReferenceEquals(o, obj))
             {
-				//一定不能Remove, 因为GC还可能再来一次
-				Destroy(udata);
+                objectsBackMap.Remove(o);
+                //一定不能Remove, 因为GC还可能再来一次
+                objects.Destroy(udata);     
+
+                if (LogGC)
+                {
+                    Debugger.Log("destroy object {0}, id {1}", o, udata);
+                }
             }
 
             UnityEngine.Object.Destroy(obj);
