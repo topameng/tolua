@@ -2839,10 +2839,13 @@ public static class ToLuaExport
             }
             else
             {
-                sb.AppendFormat("{0}{{\r\n{0}\tfunc.Call();\r\n", head);
+                sb.AppendFormat("{0}{{\r\n{0}", head);
+                sb.AppendLineEx("\tfunc.BeginPCall();");
+                sb.AppendFormat("{0}\tfunc.PCall();\r\n\t", head);
                 GenLuaFunctionRetValue(sb, mi.ReturnType, head, "ret");
-                sb.AppendLineEx(head + "\treturn ret;");            
-                sb.AppendFormat("{0}}};\r\n", head);
+                sb.AppendFormat("{0}\tfunc.EndPCall();\r\n", head);
+                sb.AppendLineEx(head + "\treturn ret;");
+                sb.AppendFormat("{0}}}\r\n", head);
             }
 
             return;
@@ -2930,8 +2933,11 @@ public static class ToLuaExport
             }
             else
             {
-                sb.AppendFormat("{0}{{\r\n{0}\tfunc.Call();\r\n", head);
+                sb.AppendFormat("{0}{{\r\n{0}", head);
+                sb.AppendLineEx("\tfunc.BeginPCall();");
+                sb.AppendFormat("{0}\tfunc.PCall();\r\n\t", head);
                 GenLuaFunctionRetValue(sb, mi.ReturnType, head, "ret");
+                sb.AppendFormat("{0}\tfunc.EndPCall();\r\n", head);
                 sb.AppendLineEx(head + "\treturn ret;");
                 sb.AppendFormat("{0}}}\r\n", head);
             }
