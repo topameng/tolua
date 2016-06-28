@@ -31,6 +31,7 @@ using System.Reflection;
 using System.Text;
 using System.IO;
 using System.Diagnostics;
+using LuaInterface;
 
 using Object = UnityEngine.Object;
 using Debug = UnityEngine.Debug;
