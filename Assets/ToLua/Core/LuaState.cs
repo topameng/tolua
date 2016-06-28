@@ -583,7 +583,7 @@ namespace LuaInterface
             }
 
             sb.Append("?.lua");
-            return sb.ToString();
+            return StringBuilderCache.GetStringAndRelease(sb);
         }
 
         public void AddSearchPath(string fullPath)
