@@ -24,6 +24,7 @@ SOFTWARE.
 using UnityEngine;
 using LuaInterface;
 using System.IO;
+using System.Text;
 
 public class LuaResLoader : LuaFileUtils
 {
@@ -34,8 +35,8 @@ public class LuaResLoader : LuaFileUtils
     }
 
     public override byte[] ReadFile(string fileName)
-    {        
-#if !UNITY_EDITOR        
+    {
+#if !UNITY_EDITOR
         byte[] buffer = ReadDownLoadFile(fileName);
 
         if (buffer == null)
@@ -64,8 +65,37 @@ public class LuaResLoader : LuaFileUtils
         return buffer;
     }
 
+    public override string FindFileError(string fileName)
+    {
+        if (Path.IsPathRooted(fileName))
+        {
+            return fileName;
+        }
+
+        StringBuilder sb = StringBuilderCache.Acquire();
+
+        if (Path.GetExtension(fileName) == ".lua")
+        {
+            fileName = fileName.Substring(0, fileName.Length - 4);
+        }
+
+        for (int i = 0; i < searchPaths.Count; i++)
+        {
+            sb.AppendFormat("\n\tno file '{0}'", searchPaths[i]);
+        }
+
+        sb.AppendFormat("\n\tno file ./Resources/?.lua");
+        sb = sb.Replace("?", fileName);
+        return sb.ToString();
+    }
+
     byte[] ReadResourceFile(string fileName)
     {
+        if (!fileName.EndsWith(".lua"))
+        {
+            fileName += ".lua";
+        }
+
         byte[] buffer = null;
         string path = "Lua/" + fileName;
         TextAsset text = Resources.Load(path, typeof(TextAsset)) as TextAsset;
@@ -73,7 +103,7 @@ public class LuaResLoader : LuaFileUtils
         if (text != null)
         {
             buffer = text.bytes;
-            Resources.UnloadAsset(text);            
+            Resources.UnloadAsset(text);
         }
 
         return buffer;
@@ -81,12 +111,16 @@ public class LuaResLoader : LuaFileUtils
 
     byte[] ReadDownLoadFile(string fileName)
     {
+        if (!fileName.EndsWith(".lua"))
+        {
+            fileName += ".lua";
+        }
+
         string path = fileName;
 
         if (!Path.IsPathRooted(fileName))
-        {
-            string dir = Application.persistentDataPath.Replace('\\', '/');
-            path = string.Format("{0}/{1}/Lua/{2}", dir, GetOSDir(), fileName);
+        {            
+            path = string.Format("{0}/{1}", LuaConst.luaResDir, fileName);            
         }
 
         if (File.Exists(path))

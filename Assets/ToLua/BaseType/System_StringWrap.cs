@@ -1676,8 +1676,15 @@ public class System_StringWrap
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	static int get_Empty(IntPtr L)
 	{
-		LuaDLL.lua_pushstring(L, System.String.Empty);
-		return 1;
+		try
+		{
+			LuaDLL.lua_pushstring(L, System.String.Empty);
+			return 1;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]

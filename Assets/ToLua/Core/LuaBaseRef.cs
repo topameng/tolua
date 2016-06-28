@@ -28,7 +28,7 @@ namespace LuaInterface
     public abstract class LuaBaseRef : IDisposable
     {
         public string name = null;
-        protected int reference = 0;
+        protected int reference = -1;
         protected LuaState luaState;
         protected ObjectTranslator translator = null;
 
@@ -73,7 +73,7 @@ namespace LuaInterface
                     luaState.CollectRef(reference, name, !disposeManagedResources);
                 }
                 
-                reference = 0;
+                reference = -1;
                 luaState = null;                             
             }            
         }
@@ -117,12 +117,12 @@ namespace LuaInterface
 
             if (l == null)
             {
-                return r == null || b.reference == 0;
+                return r == null || b.reference <= 0;
             }
 
             if (r == null)
             {
-                return a.reference == 0;
+                return a.reference <= 0;
             }
 
             return r != null && a.reference == b.reference;

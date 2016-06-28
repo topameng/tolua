@@ -16,7 +16,7 @@
 --
 
 local pb = require "pb"
-module "protobuf/wire_format"
+module "protobuf.wire_format"
 
 WIRETYPE_VARINT = 0
 WIRETYPE_FIXED64 = 1

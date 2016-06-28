@@ -9,9 +9,9 @@ public class TestPerformance : MonoBehaviour
     private string tips = "";
 
 	void Start () 
-    {        
-#if UNITY_5		
-		Application.logMessageReceived += ShowTips;
+    {
+#if UNITY_5
+        Application.logMessageReceived += ShowTips;
 #else
         Application.RegisterLogCallback(ShowTips);
 #endif         
@@ -21,8 +21,8 @@ public class TestPerformance : MonoBehaviour
         LuaBinder.Bind(state);                       
         state.DoFile("TestPerf.lua");        
         state.LuaGC(LuaGCOptions.LUA_GCCOLLECT);
-        state.LogGC = false;        
-	}
+        state.LogGC = false;
+    }
 
     void ShowTips(string msg, string stackTrace, LogType type)
     {
@@ -33,7 +33,7 @@ public class TestPerformance : MonoBehaviour
     void OnDestroy()
     {
 #if UNITY_5		
-		Application.logMessageReceived -= ShowTips;
+        Application.logMessageReceived -= ShowTips;
 #else
         Application.RegisterLogCallback(null);
 #endif

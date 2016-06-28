@@ -1,4 +1,4 @@
-﻿-----------------------------------------------------------------------------
+-----------------------------------------------------------------------------
 -- URI parsing, composition and relative URL resolution
 -- LuaSocket toolkit.
 -- Author: Diego Nehab
@@ -10,7 +10,7 @@
 local string = require("string")
 local base = _G
 local table = require("table")
-local socket = require("socket.socket")
+local socket = require("socket")
 
 socket.url = {}
 local _M = socket.url
@@ -162,9 +162,9 @@ function _M.parse(url, default)
         function(u) parsed.userinfo = u; return "" end)
     authority = string.gsub(authority, ":([^:%]]*)$",
         function(p) parsed.port = p; return "" end)
-    if authority ~= "" then
+    if authority ~= "" then 
         -- IPv6?
-        parsed.host = string.match(authority, "^%[(.+)%]$") or authority
+        parsed.host = string.match(authority, "^%[(.+)%]$") or authority 
     end
     local userinfo = parsed.userinfo
     if not userinfo then return parsed end
@@ -219,6 +219,7 @@ end
 --   corresponding absolute url
 -----------------------------------------------------------------------------
 function _M.absolute(base_url, relative_url)
+    local base_parsed
     if base.type(base_url) == "table" then
         base_parsed = base_url
         base_url = _M.build(base_parsed)
@@ -241,7 +242,7 @@ function _M.absolute(base_url, relative_url)
                         relative_parsed.query = base_parsed.query
                     end
                 end
-            else
+            else    
                 relative_parsed.path = absolute_path(base_parsed.path or "",
                     relative_parsed.path)
             end

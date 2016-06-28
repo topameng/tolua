@@ -53,3 +53,25 @@ bug 反馈群: 286510803
 - NEW: this操作符增加this属性，可以通过get和set操作, 在get_Item有重载函数，并且重载函数折叠掉this属性函数可以使用
 - NEW: 增加LuaByteBufferAttribute, 加上这个标记的委托类型，在压入byte[]时作为lua string压入，而不是System.Array
 - Opt: 优化update系列函数速度
+
+1.0.5 (需要重新生成库文件，重新导出wrap文件)
+- NEW: loader 遵从 lua 方式，c# loader 兼容package path路径方式
+- NEW: 加入静态反射，使用方法见例子22_Reflection
+- NEW: 修改require, module 对于使用.和/不会作为不同文件加载。推荐用.
+- NEW: 支持c# 基础类型out修饰符。需要require 'tolua.out' 来加载。
+- NEW: 加入LuaRenameAttribute元属性， 对于重载折叠掉的函数，可以使用这个属性设置一个新的函数名字从而实现单独导出
+- NEW: 使用一个没有require的preloading库会触发一次警告，push 没有wrap的类型，做为注册过的基类类型存入（最差是System.Object）
+- NEW: 补齐一些极少用到的数组类型(如bool[]极少见)或者param数组(param string[](一般用param object[]))类型参数
+- NEW: 导出支持增加扩展类型导出相应的扩展函数，支持可预知参数类型的模版函数导出。通过配置CustomSetting即可导出DoTween类库
+- NEW: 支持ZeroBrandStudio调试
+- NEW: luajit2.1 beta1 升级为 luajit2.1 beta2
+- New: 打包lua文件名小写和u5.x一致，加入u5.x打包代码。
+- FIX: 修改LuaSocket使用 git 上最新的LuaSocket版本，而不是之前的修改版
+- FIX: 导出的数组支持c#所有数组函数，而不是只有[]和length
+- FIX: 去掉Type类一些无法使用的函数，使用静态反射方案替代
+- FIX: luaref 默认值设置为-1，调用不存在或者未初始化的的函数出错信息同lua一致
+- FIX: 修改AddSearchPath方式，c#查找文件方式与lua相同，并且兼容lua修改package.path，c#与c loader搜索目录不在重叠
+- FIX: 清除LuaFunction 记录堆栈数据的gc alloc
+- FIX: int64作为object push check 问题
+- FIX: LuaTable int key c#不做判断，按照lua标准执行或者报错
+- FIX: 一些小的导出问题

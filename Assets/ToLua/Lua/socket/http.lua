@@ -1,4 +1,4 @@
-﻿-----------------------------------------------------------------------------
+-----------------------------------------------------------------------------
 -- HTTP/1.1 client support for the Lua language.
 -- LuaSocket toolkit.
 -- Author: Diego Nehab
@@ -7,10 +7,10 @@
 -----------------------------------------------------------------------------
 -- Declare module and import dependencies
 -------------------------------------------------------------------------------
-local socket = require("socket.socket")
+local socket = require("socket")
 local url = require("socket.url")
-local ltn12 = require("socket.ltn12")
-local mime = require("socket.mime")
+local ltn12 = require("ltn12")
+local mime = require("mime")
 local string = require("string")
 local headers = require("socket.headers")
 local base = _G
@@ -22,11 +22,14 @@ local _M = socket.http
 -- Program constants
 -----------------------------------------------------------------------------
 -- connection timeout in seconds
-TIMEOUT = 60
--- default port for document retrieval
-_M.PORT = 80
+_M.TIMEOUT = 60
 -- user agent field sent in request
 _M.USERAGENT = socket._VERSION
+
+-- supported schemes
+local SCHEMES = { ["http"] = true }
+-- default port for document retrieval
+local PORT = 80
 
 -----------------------------------------------------------------------------
 -- Reads MIME headers from a connection, unfolding where needed
@@ -114,7 +117,7 @@ function _M.open(host, port, create)
     h.try = socket.newtry(function() h:close() end)
     -- set timeout before connecting
     h.try(c:settimeout(_M.TIMEOUT))
-    h.try(c:connect(host, port or _M.PORT))
+    h.try(c:connect(host, port or PORT))
     -- here everything worked
     return h
 end
@@ -186,7 +189,7 @@ end
 local function adjusturi(reqt)
     local u = reqt
     -- if there is a proxy, we need the full url. otherwise, just a part.
-    if not reqt.proxy and not PROXY then
+    if not reqt.proxy and not _M.PROXY then
         u = {
            path = socket.try(reqt.path, "invalid path 'nil'"),
            params = reqt.params,
@@ -198,7 +201,7 @@ local function adjusturi(reqt)
 end
 
 local function adjustproxy(reqt)
-    local proxy = reqt.proxy or PROXY
+    local proxy = reqt.proxy or _M.PROXY
     if proxy then
         proxy = url.parse(proxy)
         return proxy.host, proxy.port or 3128
@@ -209,9 +212,10 @@ end
 
 local function adjustheaders(reqt)
     -- default headers
+    local host = string.gsub(reqt.authority, "^.-@", "")
     local lower = {
         ["user-agent"] = _M.USERAGENT,
-        ["host"] = reqt.host,
+        ["host"] = host,
         ["connection"] = "close, TE",
         ["te"] = "trailers"
     }
@@ -219,6 +223,15 @@ local function adjustheaders(reqt)
     if reqt.user and reqt.password then
         lower["authorization"] =
             "Basic " ..  (mime.b64(reqt.user .. ":" .. reqt.password))
+    end
+    -- if we have proxy authentication information, pass it along
+    local proxy = reqt.proxy or _M.PROXY
+    if proxy then
+        proxy = url.parse(proxy)
+        if proxy.user and proxy.password then
+            lower["proxy-authorization"] =
+                "Basic " ..  (mime.b64(proxy.user .. ":" .. proxy.password))
+        end
     end
     -- override with user headers
     for i,v in base.pairs(reqt.headers or lower) do
@@ -230,7 +243,7 @@ end
 -- default url parts
 local default = {
     host = "",
-    port = _M.PORT,
+    port = PORT,
     path ="/",
     scheme = "http"
 }
@@ -240,22 +253,27 @@ local function adjustrequest(reqt)
     local nreqt = reqt.url and url.parse(reqt.url, default) or {}
     -- explicit components override url
     for i,v in base.pairs(reqt) do nreqt[i] = v end
-    if nreqt.port == "" then nreqt.port = 80 end
-    socket.try(nreqt.host and nreqt.host ~= "",
-        "invalid host '" .. base.tostring(nreqt.host) .. "'")
+    if nreqt.port == "" then nreqt.port = PORT end
+    if not (nreqt.host and nreqt.host ~= "") then
+        socket.try(nil, "invalid host '" .. base.tostring(nreqt.host) .. "'")
+    end
     -- compute uri if user hasn't overriden
     nreqt.uri = reqt.uri or adjusturi(nreqt)
-    -- ajust host and port if there is a proxy
-    nreqt.host, nreqt.port = adjustproxy(nreqt)
     -- adjust headers in request
     nreqt.headers = adjustheaders(nreqt)
+    -- ajust host and port if there is a proxy
+    nreqt.host, nreqt.port = adjustproxy(nreqt)
     return nreqt
 end
 
 local function shouldredirect(reqt, code, headers)
-    return headers.location and
-           string.gsub(headers.location, "%s", "") ~= "" and
-           (reqt.redirect ~= false) and
+    local location = headers.location
+    if not location then return false end
+    location = string.gsub(location, "%s", "")
+    if location == "" then return false end
+    local scheme = string.match(location, "^([%w][%w%+%-%.]*)%:")
+    if scheme and not SCHEMES[scheme] then return false end
+    return (reqt.redirect ~= false) and
            (code == 301 or code == 302 or code == 303 or code == 307) and
            (not reqt.method or reqt.method == "GET" or reqt.method == "HEAD")
            and (not reqt.nredirects or reqt.nredirects < 5)
@@ -328,11 +346,13 @@ end
     return 1, code, headers, status
 end
 
-local function srequest(u, b)
+-- turns an url and a body into a generic request
+local function genericform(u, b)
     local t = {}
     local reqt = {
         url = u,
-        sink = ltn12.sink.table(t)
+        sink = ltn12.sink.table(t),
+        target = t
     }
     if b then
         reqt.source = ltn12.source.string(b)
@@ -342,8 +362,15 @@ local function srequest(u, b)
         }
         reqt.method = "POST"
     end
-    local code, headers, status = socket.skip(1, trequest(reqt))
-    return table.concat(t), code, headers, status
+    return reqt
+end
+
+_M.genericform = genericform
+
+local function srequest(u, b)
+    local reqt = genericform(u, b)
+    local _, code, headers, status = trequest(reqt)
+    return table.concat(reqt.target), code, headers, status
 end
 
 _M.request = socket.protect(function(reqt, body)

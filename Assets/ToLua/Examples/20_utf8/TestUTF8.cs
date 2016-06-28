@@ -7,7 +7,7 @@ public class TestUTF8 : LuaClient
 @"
     local utf8 = utf8
 
-    function Test()
+    function Test()        
 	    local l1 = utf8.len('你好')
         local l2 = utf8.len('こんにちは')
         print('chinese string len is: '..l1..' japanese len: '..l2)     
@@ -18,12 +18,6 @@ public class TestUTF8 : LuaClient
             local next = utf8.next(s, i)                   
             print(s:sub(i, next and next -1))
         end   
-
-        local len = utf8.len(s)                               
-
-        for i = 2, len + 1 do
-            print(utf8.sub(s, 1, i)..'...')        
-        end
 
         local s1 = '天下风云出我辈'        
         print('风云 count is: '..utf8.count(s1, '风云'))

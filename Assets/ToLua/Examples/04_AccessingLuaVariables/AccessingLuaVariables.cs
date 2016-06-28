@@ -62,7 +62,7 @@ public class AccessingLuaVariables : MonoBehaviour
             Debugger.Log("varTable[{0}], is {1}", i, list[i]);
         }
 
-        table.Dispose();
+        table.Dispose();                        
         lua.CheckTop();
         lua.Dispose();
 	}

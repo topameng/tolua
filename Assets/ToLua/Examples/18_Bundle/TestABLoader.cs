@@ -3,10 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using LuaInterface;
+using System;
 
+//click Lua/Build lua bundle
 public class TestABLoader : MonoBehaviour 
 {
-    int bundleCount = 5;
+    int bundleCount = int.MaxValue;
+    string tips = null;
 
     IEnumerator CoLoadBundle(string name, string path)
     {
@@ -26,16 +29,15 @@ public class TestABLoader : MonoBehaviour
                 yield break;
             }
 
+            --bundleCount;
             LuaFileUtils.Instance.AddSearchBundle(name, www.assetBundle);
             www.Dispose();
-        }
-
-        --bundleCount;
+        }                     
     }
 
     IEnumerator LoadFinished()
     {
-        if (bundleCount > 0)
+        while (bundleCount > 0)
         {
             yield return null;
         }
@@ -43,44 +45,84 @@ public class TestABLoader : MonoBehaviour
         OnBundleLoad();
     }
 
-#if UNITY_IPHONE
-	static string remoteFolder = "iOS/";
-#elif UNITY_ANDROID
-	static string remoteFolder = "Android/";
-#else
-    static string remoteFolder = "Win/";
-#endif
-
-    public void LoadBundles()
+    public IEnumerator LoadBundles()
     {
-        List<string> list = new List<string>() { "Lua.unity3d", "Lua_math.unity3d", "Lua_system.unity3d", "Lua_u3d.unity3d", "Lua_protobuf.unity3d" };        
         string streamingPath = Application.streamingAssetsPath.Replace('\\', '/');
+
+#if UNITY_5
+#if UNITY_ANDROID && !UNITY_EDITOR
+        string main = streamingPath + "/" + LuaConst.osDir + "/" + LuaConst.osDir;
+#else
+        string main = "file:///" + streamingPath + "/" + LuaConst.osDir + "/" + LuaConst.osDir;
+#endif
+        WWW www = new WWW(main);
+        yield return www;
+
+        AssetBundleManifest manifest = (AssetBundleManifest)www.assetBundle.LoadAsset("AssetBundleManifest");
+        List<string> list = new List<string>(manifest.GetAllAssetBundles());        
+#else
+        //此处应该配表获取
+        List<string> list = new List<string>() { "lua.unity3d", "lua_cjson.unity3d", "lua_system.unity3d", "lua_unityengine.unity3d", "lua_protobuf.unity3d", "lua_misc.unity3d", "lua_socket.unity3d", "lua_system_reflection.unity3d" };
+#endif
+        bundleCount = list.Count;
 
         for (int i = 0; i < list.Count; i++)
         {
-            string str = list[i];            
-            string path = "file:///" + streamingPath + "/" + remoteFolder + str;
+            string str = list[i];
+
+#if UNITY_ANDROID && !UNITY_EDITOR
+            string path = streamingPath + "/" + LuaConst.osDir + "/" + str;
+#else
+            string path = "file:///" + streamingPath + "/" + LuaConst.osDir + "/" + str;
+#endif
             string name = Path.GetFileNameWithoutExtension(str);
             StartCoroutine(CoLoadBundle(name, path));            
         }
 
-        StartCoroutine(LoadFinished());
+        yield return StartCoroutine(LoadFinished());
     }
 
     void Awake()
     {
+#if UNITY_5
+        Application.logMessageReceived += ShowTips;
+#else
+        Application.RegisterLogCallback(ShowTips);
+#endif
         LuaFileUtils file = new LuaFileUtils();
         file.beZip = true;
-        LoadBundles();
+        StartCoroutine(LoadBundles());
+    }
+
+    void ShowTips(string msg, string stackTrace, LogType type)
+    {
+        tips += msg;
+        tips += "\r\n";
+    }
+
+    void OnGUI()
+    {
+        GUI.Label(new Rect(Screen.width / 2 - 200, Screen.height / 2 - 150, 400, 300), tips);
+    }
+
+    void OnApplicationQuit()
+    {
+#if UNITY_5
+        Application.logMessageReceived -= ShowTips;
+#else
+        Application.RegisterLogCallback(null);
+#endif
     }
 
     void OnBundleLoad()
-    {
+    {                
         LuaState state = new LuaState();
         state.Start();
-
-        state.DoString("print('hello world')");
-
+        state.DoString("print('hello tolua#:'..tostring(Vector3.zero))");
+        state.DoFile("Main.lua");
+        LuaFunction func = state.GetFunction("Main");
+        func.Call();
+        func.Dispose();
         state.Dispose();
         state = null;
 	}	

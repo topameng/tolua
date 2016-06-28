@@ -73,9 +73,11 @@ namespace LuaInterface
             }                        
         }
 
-        static bool SkipStack()
+        public static Exception GetLastError()
         {
-            return InstantiateCount > 0 || SendMsgCount > 0;
+            Exception last = luaStack;
+            luaStack = null;
+            return last;
         }
 
         public static void ExtractFormattedStackTrace(StackTrace trace, StringBuilder sb, StackTrace skip = null)
@@ -181,6 +183,9 @@ namespace LuaInterface
             FieldInfo field = type.GetField("projectFolder", BindingFlags.Static | BindingFlags.GetField | BindingFlags.NonPublic);
             LuaException.projectFolder = (string)field.GetValue(null);
             projectFolder = projectFolder.Replace('\\', '/');
+#if DEVELOPER
+            Debugger.Log("projectFolder is {0}", projectFolder);
+#endif
         }
     }
 }

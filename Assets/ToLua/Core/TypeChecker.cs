@@ -31,7 +31,6 @@ namespace LuaInterface
             return !t.IsEnum && t.IsValueType;
         }
 
-
         public static bool CheckTypes(IntPtr L, int begin, Type type0)
         {
             return CheckType(L, type0, begin);
@@ -118,6 +117,42 @@ namespace LuaInterface
             return true;
         }
 
+        static bool IsNilType(Type t)
+        {
+            if (t == null || !IsValueType(t))
+            {
+                return true;
+            }
+
+            if (IsNullable(t))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public static bool IsNullable(Type t)
+        {
+            if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Nullable<>))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public static Type GetNullableType(Type t)
+        {
+            if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Nullable<>))
+            {
+                Type[] ts = t.GetGenericArguments();
+                t = ts[0];
+            }
+
+            return t;
+        }
+
         public static bool CheckType(IntPtr L, Type t, int pos)
         {
             //默认都可以转 object
@@ -126,12 +161,13 @@ namespace LuaInterface
                 return true;
             }
 
-            LuaTypes luaType = LuaDLL.lua_type(L, pos);
+            t = GetNullableType(t);
+            LuaTypes luaType = LuaDLL.lua_type(L, pos);            
 
             switch (luaType)
             {
                 case LuaTypes.LUA_TNUMBER:
-                    return t.IsPrimitive;
+                    return IsNumberType(t);
                 case LuaTypes.LUA_TSTRING:
                     return t == typeof(string) || t == typeof(byte[]) || t == typeof(char[]);
                 case LuaTypes.LUA_TUSERDATA:
@@ -141,16 +177,30 @@ namespace LuaInterface
                 case LuaTypes.LUA_TFUNCTION:
                     return t == typeof(LuaFunction);                            
                 case LuaTypes.LUA_TTABLE:
-                    return lua_isusertable(L, t, pos);
+                    return IsUserTable(L, t, pos);
                 case LuaTypes.LUA_TLIGHTUSERDATA:
-                    return t == typeof(IntPtr);
+                    return t == typeof(IntPtr) || t == typeof(UIntPtr);
                 case LuaTypes.LUA_TNIL:
-                    return t == null || t.IsEnum || !t.IsValueType;
+                    return IsNilType(t);
                 default:
                     break;
             }
 
             throw new LuaException("undefined type to check" + LuaDLL.luaL_typename(L, pos));
+        }
+
+        static Type monoType = typeof(Type).GetType();
+
+        public static T ChangeType<T>(object temp, Type type)
+        {
+            if (temp.GetType() == monoType)
+            {
+                return (T)temp;
+            }
+            else
+            {
+                return (T)Convert.ChangeType(temp, type);
+            }
         }
 
         static bool IsMatchUserData(IntPtr L, Type t, int pos)
@@ -186,7 +236,22 @@ namespace LuaInterface
             return false;
         }
 
-        static bool lua_isusertable(IntPtr L, Type t, int pos)
+        static bool IsNumberType(Type t)
+        {
+            if (t.IsPrimitive)
+            {
+                if (t == typeof(bool) || t == typeof(IntPtr) || t == typeof(UIntPtr))
+                {
+                    return false;
+                }
+
+                return true;
+            }
+
+            return false;
+        }
+
+        static bool IsUserTable(IntPtr L, Type t, int pos)
         {
             if (t.IsArray)
             {

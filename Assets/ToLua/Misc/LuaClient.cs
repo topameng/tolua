@@ -24,6 +24,7 @@ using System.Collections.Generic;
 using LuaInterface;
 using System.Collections;
 using System.IO;
+using System;
 
 public class LuaClient : MonoBehaviour
 {
@@ -42,6 +43,11 @@ public class LuaClient : MonoBehaviour
 
     protected virtual LuaFileUtils InitLoader()
     {
+        if (LuaFileUtils.Instance != null)
+        {
+            return LuaFileUtils.Instance;
+        }
+
         return new LuaFileUtils();
     }
 
@@ -60,31 +66,57 @@ public class LuaClient : MonoBehaviour
 #endif
 
         if (LuaConst.openLuaSocket)
-        {            
-            luaState.OpenLibs(LuaDLL.luaopen_socket_core);
-            luaState.OpenLibs(LuaDLL.luaopen_luasocket_scripts);
+        {
+            OpenLuaSocket();            
+        }        
+
+        if (LuaConst.openZbsDebugger)
+        {
+            OpenZbsDebugger();
         }
     }
 
-    public void OpenZbsDebugger(string ip = null)
+    public void OpenZbsDebugger(string ip = "localhost")
     {
-        if (!LuaConst.openLuaSocket)
+        if (!Directory.Exists(LuaConst.zbsDir))
         {
-            LuaConst.openLuaSocket = true;
-            luaState.OpenLibs(LuaDLL.luaopen_socket_core);
-            luaState.OpenLibs(LuaDLL.luaopen_luasocket_scripts);
+            Debugger.LogWarning("ZeroBraneStudio not install or LuaConst.zbsDir not right");
+            return;
         }
-        
-        luaState.AddSearchPath(LuaConst.zbsDir);
 
-        if (ip != null)
-        {
-            luaState.DoString(string.Format("require('mobdebug').start('{0}')", ip));
+        if (!LuaConst.openLuaSocket)
+        {                            
+            OpenLuaSocket();
         }
-        else
+
+        if (!string.IsNullOrEmpty(LuaConst.zbsDir))
         {
-            luaState.DoString("require('mobdebug').start()");
+            luaState.AddSearchPath(LuaConst.zbsDir);
         }
+
+        luaState.LuaDoString(string.Format("DebugServerIp = '{0}'", ip));
+    }
+
+    [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+    static int LuaOpen_Socket_Core(IntPtr L)
+    {        
+        return LuaDLL.luaopen_socket_core(L);
+    }
+
+    [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+    static int LuaOpen_Mime_Core(IntPtr L)
+    {
+        return LuaDLL.luaopen_mime_core(L);
+    }
+
+    protected void OpenLuaSocket()
+    {
+        LuaConst.openLuaSocket = true;
+
+        luaState.BeginPreLoad();
+        luaState.RegFunction("socket.core", LuaOpen_Socket_Core);
+        luaState.RegFunction("mime.core", LuaOpen_Mime_Core);                
+        luaState.EndPreLoad();                     
     }
 
     //cjson 比较特殊，只new了一个table，没有注册库，这里注册一下
@@ -95,7 +127,7 @@ public class LuaClient : MonoBehaviour
         luaState.LuaSetField(-2, "cjson");
 
         luaState.OpenLibs(LuaDLL.luaopen_cjson_safe);
-        luaState.LuaSetField(-2, "cjson.safe");        
+        luaState.LuaSetField(-2, "cjson.safe");                
     }
 
     protected virtual void CallMain()
@@ -103,7 +135,7 @@ public class LuaClient : MonoBehaviour
         LuaFunction main = luaState.GetFunction("Main");
         main.Call();
         main.Dispose();
-        main = null;        
+        main = null;                
     }
 
     protected virtual void StartMain()
@@ -120,9 +152,9 @@ public class LuaClient : MonoBehaviour
     }
 
     protected virtual void Bind()
-    {
+    {        
+        LuaBinder.Bind(luaState);
         LuaCoroutine.Register(luaState, this);
-        LuaBinder.Bind(luaState);      
     }
 
     protected void Init()
@@ -163,16 +195,22 @@ public class LuaClient : MonoBehaviour
     {
         if (luaState != null)
         {
+            LuaState state = luaState;
+            luaState = null;
+
             if (levelLoaded != null)
             {
                 levelLoaded.Dispose();
                 levelLoaded = null;
             }
 
-            loop.Destroy();
-            luaState.Dispose();
-            loop = null;
-            luaState = null;
+            if (loop != null)
+            {
+                loop.Destroy();
+                loop = null;
+            }
+
+            state.Dispose();            
             Instance = null;
         }
     }

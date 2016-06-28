@@ -16,24 +16,7 @@ public class TestLuaStack : MonoBehaviour
 
     private static GameObject testGo = null;
     private string tips = "";
-    public static TestLuaStack Instance = null;
-
-    static Lua_Debug ar = new Lua_Debug();
-
-    static string LuaWhere(IntPtr L)
-    {
-        if (LuaDLL.lua_getstack(L, 1, ref ar) != 0)
-        {  /* check function at level */
-            LuaDLL.lua_getinfo(L, "Sl", ref ar);  /* get info about it */
-
-            if (ar.currentline > 0)
-            {  /* is there info? */
-                return string.Format("{0}:{1}: ", ar.short_src, ar.currentline);                
-            }
-        }
-
-        return "";
-    }
+    public static TestLuaStack Instance = null;    
 
     [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
     static int Test1(IntPtr L)
@@ -272,7 +255,7 @@ public class TestLuaStack : MonoBehaviour
         }
         catch (Exception e)
         {
-            Debugger.Log("xxxx" + e.StackTrace);
+            //Debugger.Log("xxxx" + e.StackTrace);
             return LuaDLL.toluaL_exception(L, e);
         }
     }
@@ -301,7 +284,7 @@ public class TestLuaStack : MonoBehaviour
     void Awake()
     {
 #if UNITY_5		
-		Application.logMessageReceived += ShowTips;
+        Application.logMessageReceived += ShowTips;
 #else
         Application.RegisterLogCallback(ShowTips);
 #endif
@@ -349,6 +332,11 @@ public class TestLuaStack : MonoBehaviour
 
     void OnApplicationQuit()
     {
+#if UNITY_5		
+        Application.logMessageReceived -= ShowTips;
+#else
+        Application.RegisterLogCallback(null);
+#endif
         state.Dispose();
         state = null;
     }
@@ -475,14 +463,6 @@ public class TestLuaStack : MonoBehaviour
             func.EndPCall();
             func.Dispose();
         }
-        //else if (GUI.Button(new Rect(10, 510, 120, 40), "TestDelegate"))
-        //{
-        //    TestDelegate();
-        //}
-        //else if (GUI.Button(new Rect(10, 560, 120, 40), "- TsetD2"))
-        //{
-        //    TestDelegate -= TestD2;
-        //}
         else if (GUI.Button(new Rect(10, 510, 120, 40), "SendMessage"))
         {
             tips = "";
@@ -622,10 +602,6 @@ public class TestLuaStack : MonoBehaviour
             func.PushObject(null);
             func.PCall();
             func.EndPCall();
-        }
-        else if (GUI.Button(new Rect(210, 360, 120, 40), "TestExp"))
-        {
-            throw new Exception("just an exception");
         }
     }
 

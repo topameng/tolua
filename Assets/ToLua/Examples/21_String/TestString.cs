@@ -1,11 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections;
 using LuaInterface;
+using System;
+using System.Reflection;
+using System.Text;
 
 public class TestString : LuaClient
 {
     string script =
-@"
+@"           
     function Test()
         local str = System.String.New('男儿当自强')
         local index = str:IndexOfAny('儿自')
@@ -15,9 +18,21 @@ public class TestString : LuaClient
         local luastr = tolua.tolstring(buffer)
         print('lua string is: '..luastr..' type is: '..type(luastr))
         luastr = tolua.tolstring(str)
-        print('lua string is: '..luastr)
+        print('lua string is: '..luastr)                    
     end
 ";
+
+    public abstract class Test1
+    {
+        public virtual void Add() { }
+    }
+
+    public class Test2: Test1
+    {
+        public void Add(int i)
+        {
+        }
+    }
 
     protected override LuaFileUtils InitLoader()
     {

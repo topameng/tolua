@@ -79,7 +79,7 @@ public class ToLua_UnityEngine_Object
                 {
                     string error = LuaDLL.lua_tostring(L, -1);
                     LuaDLL.lua_pop(L, 1);
-                    throw new LuaException(error, LuaException.luaStack);
+                    throw new LuaException(error, LuaException.GetLastError());
                 }
                 else
                 {
@@ -100,7 +100,7 @@ public class ToLua_UnityEngine_Object
                 {
                     string error = LuaDLL.lua_tostring(L, -1);
                     LuaDLL.lua_pop(L, 1);
-                    throw new LuaException(error, LuaException.luaStack);
+                    throw new LuaException(error, LuaException.GetLastError());
                 }
                 else
                 {

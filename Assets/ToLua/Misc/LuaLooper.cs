@@ -25,19 +25,19 @@ using LuaInterface;
 
 public class LuaLooper : MonoBehaviour 
 {    
-    public LuaEvent UpdateEvent
+    public LuaBeatEvent UpdateEvent
     {
         get;
         private set;
     }
 
-    public LuaEvent LateUpdateEvent
+    public LuaBeatEvent LateUpdateEvent
     {
         get;
         private set;
     }
 
-    public LuaEvent FixedUpdateEvent
+    public LuaBeatEvent FixedUpdateEvent
     {
         get;
         private set;
@@ -60,7 +60,7 @@ public class LuaLooper : MonoBehaviour
         }        
 	}
 
-    LuaEvent GetEvent(string name)
+    LuaBeatEvent GetEvent(string name)
     {
         LuaTable table = luaState.GetTable(name);
 
@@ -69,7 +69,7 @@ public class LuaLooper : MonoBehaviour
             throw new LuaException(string.Format("Lua table {0} not exists", name));
         }
 
-        LuaEvent e = new LuaEvent(table);
+        LuaBeatEvent e = new LuaBeatEvent(table);
         table.Dispose();
         table = null;
         return e;
@@ -78,14 +78,18 @@ public class LuaLooper : MonoBehaviour
     void ThrowException()
     {
         string error = luaState.LuaToString(-1);
-        luaState.LuaPop(2);
-        Exception last = LuaException.luaStack;
-        LuaException.luaStack = null;        
-        throw new LuaException(error, last);
+        luaState.LuaPop(2);                
+        throw new LuaException(error, LuaException.GetLastError());
     }
 
     void Update()
     {
+#if UNITY_EDITOR
+        if (luaState == null)
+        {
+            return;
+        }
+#endif
         if (luaState.LuaUpdate(Time.deltaTime, Time.unscaledDeltaTime) != 0)
         {
             ThrowException();
@@ -100,6 +104,12 @@ public class LuaLooper : MonoBehaviour
 
     void LateUpdate()
     {
+#if UNITY_EDITOR
+        if (luaState == null)
+        {
+            return;
+        }
+#endif
         if (luaState.LuaLateUpdate() != 0)
         {
             ThrowException();
@@ -110,6 +120,12 @@ public class LuaLooper : MonoBehaviour
 
     void FixedUpdate()
     {
+#if UNITY_EDITOR
+        if (luaState == null)
+        {
+            return;
+        }
+#endif
         if (luaState.LuaFixedUpdate(Time.fixedDeltaTime) != 0)
         {
             ThrowException();

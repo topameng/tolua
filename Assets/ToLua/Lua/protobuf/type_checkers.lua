@@ -20,7 +20,7 @@ local type = type
 local error = error
 local string = string
 
-module "protobuf/type_checkers"
+module "protobuf.type_checkers"
 
 function TypeChecker(acceptable_types)
     local acceptable_types = acceptable_types

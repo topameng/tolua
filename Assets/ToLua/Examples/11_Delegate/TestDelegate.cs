@@ -107,7 +107,7 @@ public class TestDelegate: MonoBehaviour
         RemoveClick2 = state.GetFunction("RemoveClick2");
         TestOverride = state.GetFunction("TestOverride");
         AddEvent = state.GetFunction("AddEvent");
-        RemoveEvent = state.GetFunction("RemoveEvent");
+        RemoveEvent = state.GetFunction("RemoveEvent");        
     }
 
     void Bind(LuaState L)
@@ -115,6 +115,9 @@ public class TestDelegate: MonoBehaviour
         L.BeginModule(null);
         TestEventListenerWrap.Register(state);
         L.EndModule();
+
+        DelegateFactory.dict.Add(typeof(TestEventListener.OnClick), TestEventListener_OnClick);
+        DelegateFactory.dict.Add(typeof(TestEventListener.VoidDelegate), TestEventListener_VoidDelegate);
     }
 
     void CallLuaFunction(LuaFunction func)
@@ -123,6 +126,55 @@ public class TestDelegate: MonoBehaviour
         func.Push(listener);
         func.PCall();
         func.EndPCall();                
+    }
+
+    class TestEventListener_OnClick_Event : LuaDelegate
+    {
+        public TestEventListener_OnClick_Event(LuaFunction func) : base(func) { }
+
+        public void Call(UnityEngine.GameObject param0)
+        {
+            func.BeginPCall();
+            func.Push(param0);
+            func.PCall();
+            func.EndPCall();
+        }
+    }
+    public static Delegate TestEventListener_OnClick(LuaFunction func)
+    {
+        if (func == null)
+        {
+            TestEventListener.OnClick fn = delegate { };
+            return fn;
+        }
+
+        TestEventListener.OnClick d = (new TestEventListener_OnClick_Event(func)).Call;
+        return d;
+    }
+
+    class TestEventListener_VoidDelegate_Event : LuaDelegate
+    {
+        public TestEventListener_VoidDelegate_Event(LuaFunction func) : base(func) { }
+
+        public void Call(UnityEngine.GameObject param0)
+        {
+            func.BeginPCall();
+            func.Push(param0);
+            func.PCall();
+            func.EndPCall();
+        }
+    }
+
+    public static Delegate TestEventListener_VoidDelegate(LuaFunction func)
+    {
+        if (func == null)
+        {
+            TestEventListener.VoidDelegate fn = delegate { };
+            return fn;
+        }
+
+        TestEventListener.VoidDelegate d = (new TestEventListener_VoidDelegate_Event(func)).Call;
+        return d;
     }
 
     void OnGUI()

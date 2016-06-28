@@ -203,7 +203,7 @@ public class UnityEngine_ObjectWrap
                 {
                     string error = LuaDLL.lua_tostring(L, -1);
                     LuaDLL.lua_pop(L, 1);
-                    throw new LuaException(error, LuaException.luaStack);
+                    throw new LuaException(error, LuaException.GetLastError());
                 }
                 else
                 {
@@ -224,7 +224,7 @@ public class UnityEngine_ObjectWrap
                 {
                     string error = LuaDLL.lua_tostring(L, -1);
                     LuaDLL.lua_pop(L, 1);
-                    throw new LuaException(error, LuaException.luaStack);
+                    throw new LuaException(error, LuaException.GetLastError());
                 }
                 else
                 {
