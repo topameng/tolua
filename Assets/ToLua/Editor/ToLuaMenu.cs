@@ -144,7 +144,7 @@ public static class ToLuaMenu
         {
             if (typeof(System.MulticastDelegate).IsAssignableFrom(t))
             {
-                throw new NotSupportedException(string.Format("\nDon't export Delegate {0} as a class, register it in customDelegateList", LuaMisc.GetTypeName(t)));
+                throw new NotSupportedException(string.Format("\nDon't export Delegate {0} as a class, register it in customDelegateList", t.ToString()));
             }
 
             type = t;                        
