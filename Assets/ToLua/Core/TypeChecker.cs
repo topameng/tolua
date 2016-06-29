@@ -203,6 +203,18 @@ namespace LuaInterface
             }
         }
 
+        public static object ChangeType(object temp, Type type)
+        {
+            if (temp.GetType() == monoType)
+            {
+                return (Type)temp;
+            }
+            else
+            {
+                return Convert.ChangeType(temp, type);
+            }
+        }
+
         static bool IsMatchUserData(IntPtr L, Type t, int pos)
         {
             if (t == typeof(LuaInteger64))
@@ -236,7 +248,7 @@ namespace LuaInterface
             return false;
         }
 
-        static bool IsNumberType(Type t)
+        public static bool IsNumberType(Type t)
         {
             if (t.IsPrimitive)
             {
@@ -297,6 +309,6 @@ namespace LuaInterface
             }
 
             return false;
-        }
+        }        
     }
 }

@@ -612,6 +612,20 @@ namespace LuaInterface
             }
         }
 
+        public static object ToVarObject(IntPtr L, int stackPos, Type t)
+        {
+            LuaTypes type = LuaDLL.lua_type(L, stackPos);
+
+            if (type == LuaTypes.LUA_TNUMBER)
+            {
+                object o = LuaDLL.lua_tonumber(L, stackPos);
+                o = Convert.ChangeType(o, t);
+                return o;
+            }
+
+            return ToVarObject(L, stackPos);
+        }
+
         public static object ToVarTable(IntPtr L, int stackPos)
         {
             stackPos = LuaDLL.abs_index(L, stackPos);

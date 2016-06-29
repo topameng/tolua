@@ -340,7 +340,7 @@ public class System_ArrayWrap
             }
 
             object v = ToLua.CheckVarObject(L, 3, t);
-            v = Convert.ChangeType(v, t);
+            v = TypeChecker.ChangeType(v, t);
             obj.SetValue(v, index);
             return 0;
         }
@@ -761,7 +761,7 @@ public class System_ArrayWrap
             if (count == 3 && TypeChecker.CheckTypes(L, 1, typeof(System.Array), typeof(object), typeof(long)))
             {
                 System.Array obj = (System.Array)ToLua.ToObject(L, 1);
-                object arg0 = ToLua.ToVarObject(L, 2);
+                object arg0 = ToLua.ToVarObject(L, 2, obj.GetType().GetElementType());
                 long arg1 = (long)LuaDLL.lua_tonumber(L, 3);
                 obj.SetValue(arg0, arg1);
                 return 0;
@@ -769,7 +769,7 @@ public class System_ArrayWrap
             else if (count == 4 && TypeChecker.CheckTypes(L, 1, typeof(System.Array), typeof(object), typeof(int), typeof(int)))
             {
                 System.Array obj = (System.Array)ToLua.ToObject(L, 1);
-                object arg0 = ToLua.ToVarObject(L, 2);
+                object arg0 = ToLua.ToVarObject(L, 2, obj.GetType().GetElementType());
                 int arg1 = (int)LuaDLL.lua_tonumber(L, 3);
                 int arg2 = (int)LuaDLL.lua_tonumber(L, 4);
                 obj.SetValue(arg0, arg1, arg2);
@@ -778,7 +778,7 @@ public class System_ArrayWrap
             else if (count == 4 && TypeChecker.CheckTypes(L, 1, typeof(System.Array), typeof(object), typeof(long), typeof(long)))
             {
                 System.Array obj = (System.Array)ToLua.ToObject(L, 1);
-                object arg0 = ToLua.ToVarObject(L, 2);
+                object arg0 = ToLua.ToVarObject(L, 2, obj.GetType().GetElementType());
                 long arg1 = (long)LuaDLL.lua_tonumber(L, 3);
                 long arg2 = (long)LuaDLL.lua_tonumber(L, 4);
                 obj.SetValue(arg0, arg1, arg2);
@@ -787,7 +787,7 @@ public class System_ArrayWrap
             else if (count == 5 && TypeChecker.CheckTypes(L, 1, typeof(System.Array), typeof(object), typeof(int), typeof(int), typeof(int)))
             {
                 System.Array obj = (System.Array)ToLua.ToObject(L, 1);
-                object arg0 = ToLua.ToVarObject(L, 2);
+                object arg0 = ToLua.ToVarObject(L, 2, obj.GetType().GetElementType());
                 int arg1 = (int)LuaDLL.lua_tonumber(L, 3);
                 int arg2 = (int)LuaDLL.lua_tonumber(L, 4);
                 int arg3 = (int)LuaDLL.lua_tonumber(L, 5);
@@ -797,7 +797,7 @@ public class System_ArrayWrap
             else if (count == 5 && TypeChecker.CheckTypes(L, 1, typeof(System.Array), typeof(object), typeof(long), typeof(long), typeof(long)))
             {
                 System.Array obj = (System.Array)ToLua.ToObject(L, 1);
-                object arg0 = ToLua.ToVarObject(L, 2);
+                object arg0 = ToLua.ToVarObject(L, 2, obj.GetType().GetElementType());
                 long arg1 = (long)LuaDLL.lua_tonumber(L, 3);
                 long arg2 = (long)LuaDLL.lua_tonumber(L, 4);
                 long arg3 = (long)LuaDLL.lua_tonumber(L, 5);
@@ -807,7 +807,7 @@ public class System_ArrayWrap
             else if (TypeChecker.CheckTypes(L, 1, typeof(System.Array), typeof(object)) && TypeChecker.CheckParamsType(L, typeof(long), 3, count - 2))
             {
                 System.Array obj = (System.Array)ToLua.ToObject(L, 1);
-                object arg0 = ToLua.ToVarObject(L, 2);
+                object arg0 = ToLua.ToVarObject(L, 2, obj.GetType().GetElementType());
                 long[] arg1 = ToLua.ToParamsNumber<long>(L, 3, count - 2);
                 obj.SetValue(arg0, arg1);
                 return 0;
@@ -815,7 +815,7 @@ public class System_ArrayWrap
             else if (TypeChecker.CheckTypes(L, 1, typeof(System.Array), typeof(object)) && TypeChecker.CheckParamsType(L, typeof(int), 3, count - 2))
             {
                 System.Array obj = (System.Array)ToLua.ToObject(L, 1);
-                object arg0 = ToLua.ToVarObject(L, 2);
+                object arg0 = ToLua.ToVarObject(L, 2, obj.GetType().GetElementType());
                 int[] arg1 = ToLua.ToParamsNumber<int>(L, 3, count - 2);
                 obj.SetValue(arg0, arg1);
                 return 0;
@@ -946,7 +946,7 @@ public class System_ArrayWrap
             if (count == 2 && TypeChecker.CheckTypes(L, 1, typeof(System.Array), typeof(object)))
             {
                 System.Array arg0 = (System.Array)ToLua.ToObject(L, 1);
-                object arg1 = ToLua.ToVarObject(L, 2);
+                object arg1 = ToLua.ToVarObject(L, 2, arg0.GetType().GetElementType());
                 int o = System.Array.BinarySearch(arg0, arg1);
                 LuaDLL.lua_pushinteger(L, o);
                 return 1;
@@ -954,7 +954,7 @@ public class System_ArrayWrap
             else if (count == 3 && TypeChecker.CheckTypes(L, 1, typeof(System.Array), typeof(object), typeof(System.Collections.IComparer)))
             {
                 System.Array arg0 = (System.Array)ToLua.ToObject(L, 1);
-                object arg1 = ToLua.ToVarObject(L, 2);
+                object arg1 = ToLua.ToVarObject(L, 2, arg0.GetType().GetElementType());
                 System.Collections.IComparer arg2 = (System.Collections.IComparer)ToLua.ToObject(L, 3);
                 int o = System.Array.BinarySearch(arg0, arg1, arg2);
                 LuaDLL.lua_pushinteger(L, o);
@@ -965,7 +965,7 @@ public class System_ArrayWrap
                 System.Array arg0 = (System.Array)ToLua.ToObject(L, 1);
                 int arg1 = (int)LuaDLL.lua_tonumber(L, 2);
                 int arg2 = (int)LuaDLL.lua_tonumber(L, 3);
-                object arg3 = ToLua.ToVarObject(L, 4);
+                object arg3 = ToLua.ToVarObject(L, 4, arg0.GetType().GetElementType());
                 int o = System.Array.BinarySearch(arg0, arg1, arg2, arg3);
                 LuaDLL.lua_pushinteger(L, o);
                 return 1;
@@ -975,7 +975,7 @@ public class System_ArrayWrap
                 System.Array arg0 = (System.Array)ToLua.ToObject(L, 1);
                 int arg1 = (int)LuaDLL.lua_tonumber(L, 2);
                 int arg2 = (int)LuaDLL.lua_tonumber(L, 3);
-                object arg3 = ToLua.ToVarObject(L, 4);
+                object arg3 = ToLua.ToVarObject(L, 4, arg0.GetType().GetElementType());
                 System.Collections.IComparer arg4 = (System.Collections.IComparer)ToLua.ToObject(L, 5);
                 int o = System.Array.BinarySearch(arg0, arg1, arg2, arg3, arg4);
                 LuaDLL.lua_pushinteger(L, o);
@@ -1083,7 +1083,7 @@ public class System_ArrayWrap
             if (count == 2 && TypeChecker.CheckTypes(L, 1, typeof(System.Array), typeof(object)))
             {
                 System.Array arg0 = (System.Array)ToLua.ToObject(L, 1);
-                object arg1 = ToLua.ToVarObject(L, 2);
+                object arg1 = ToLua.ToVarObject(L, 2, arg0.GetType().GetElementType());
                 int o = System.Array.IndexOf(arg0, arg1);
                 LuaDLL.lua_pushinteger(L, o);
                 return 1;
@@ -1091,7 +1091,7 @@ public class System_ArrayWrap
             else if (count == 3 && TypeChecker.CheckTypes(L, 1, typeof(System.Array), typeof(object), typeof(int)))
             {
                 System.Array arg0 = (System.Array)ToLua.ToObject(L, 1);
-                object arg1 = ToLua.ToVarObject(L, 2);
+                object arg1 = ToLua.ToVarObject(L, 2, arg0.GetType().GetElementType());
                 int arg2 = (int)LuaDLL.lua_tonumber(L, 3);
                 int o = System.Array.IndexOf(arg0, arg1, arg2);
                 LuaDLL.lua_pushinteger(L, o);
@@ -1100,7 +1100,7 @@ public class System_ArrayWrap
             else if (count == 4 && TypeChecker.CheckTypes(L, 1, typeof(System.Array), typeof(object), typeof(int), typeof(int)))
             {
                 System.Array arg0 = (System.Array)ToLua.ToObject(L, 1);
-                object arg1 = ToLua.ToVarObject(L, 2);
+                object arg1 = ToLua.ToVarObject(L, 2, arg0.GetType().GetElementType());
                 int arg2 = (int)LuaDLL.lua_tonumber(L, 3);
                 int arg3 = (int)LuaDLL.lua_tonumber(L, 4);
                 int o = System.Array.IndexOf(arg0, arg1, arg2, arg3);
@@ -1144,7 +1144,7 @@ public class System_ArrayWrap
             if (count == 2 && TypeChecker.CheckTypes(L, 1, typeof(System.Array), typeof(object)))
             {
                 System.Array arg0 = (System.Array)ToLua.ToObject(L, 1);
-                object arg1 = ToLua.ToVarObject(L, 2);
+                object arg1 = ToLua.ToVarObject(L, 2, arg0.GetType().GetElementType());
                 int o = System.Array.LastIndexOf(arg0, arg1);
                 LuaDLL.lua_pushinteger(L, o);
                 return 1;
@@ -1152,7 +1152,7 @@ public class System_ArrayWrap
             else if (count == 3 && TypeChecker.CheckTypes(L, 1, typeof(System.Array), typeof(object), typeof(int)))
             {
                 System.Array arg0 = (System.Array)ToLua.ToObject(L, 1);
-                object arg1 = ToLua.ToVarObject(L, 2);
+                object arg1 = ToLua.ToVarObject(L, 2, arg0.GetType().GetElementType());
                 int arg2 = (int)LuaDLL.lua_tonumber(L, 3);
                 int o = System.Array.LastIndexOf(arg0, arg1, arg2);
                 LuaDLL.lua_pushinteger(L, o);
@@ -1161,7 +1161,7 @@ public class System_ArrayWrap
             else if (count == 4 && TypeChecker.CheckTypes(L, 1, typeof(System.Array), typeof(object), typeof(int), typeof(int)))
             {
                 System.Array arg0 = (System.Array)ToLua.ToObject(L, 1);
-                object arg1 = ToLua.ToVarObject(L, 2);
+                object arg1 = ToLua.ToVarObject(L, 2, arg0.GetType().GetElementType());
                 int arg2 = (int)LuaDLL.lua_tonumber(L, 3);
                 int arg3 = (int)LuaDLL.lua_tonumber(L, 4);
                 int o = System.Array.LastIndexOf(arg0, arg1, arg2, arg3);
