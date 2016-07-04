@@ -119,6 +119,8 @@ public static class ToLuaExport
     {
         "String.Chars",
         "Directory.SetAccessControl",
+        "File.GetAccessControl",
+        "File.SetAccessControl",
         "AnimationClip.averageDuration",
         "AnimationClip.averageAngularSpeed",
         "AnimationClip.averageSpeed",

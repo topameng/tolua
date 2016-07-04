@@ -49,31 +49,36 @@ public static class CustomSettings
         //-------------------------------------------------------------------        
         _GT(typeof(Debugger)),                      
 
-        /*_GT(typeof(DG.Tweening.DOTween)),
-        _GT(typeof(DG.Tweening.Tween)).SetBaseType(typeof(System.Object)),
+#if USING_DOTWEENING
+        _GT(typeof(DG.Tweening.DOTween)),
+        _GT(typeof(DG.Tweening.Tween)).SetBaseType(typeof(System.Object)).AddExtendType(typeof(DG.Tweening.TweenExtensions)),
         _GT(typeof(DG.Tweening.Sequence)).AddExtendType(typeof(DG.Tweening.TweenSettingsExtensions)),
-        _GT(typeof(DG.Tweening.Tweener)),
+        _GT(typeof(DG.Tweening.Tweener)).AddExtendType(typeof(DG.Tweening.TweenSettingsExtensions)),
         _GT(typeof(DG.Tweening.LoopType)),
         _GT(typeof(DG.Tweening.PathMode)),
         _GT(typeof(DG.Tweening.PathType)),
+        _GT(typeof(DG.Tweening.RotateMode)),
         _GT(typeof(Component)).AddExtendType(typeof(DG.Tweening.ShortcutExtensions)),
         _GT(typeof(Transform)).AddExtendType(typeof(DG.Tweening.ShortcutExtensions)),
         _GT(typeof(Light)).AddExtendType(typeof(DG.Tweening.ShortcutExtensions)),
         _GT(typeof(Material)).AddExtendType(typeof(DG.Tweening.ShortcutExtensions)),
         _GT(typeof(Rigidbody)).AddExtendType(typeof(DG.Tweening.ShortcutExtensions)),
         _GT(typeof(Camera)).AddExtendType(typeof(DG.Tweening.ShortcutExtensions)),
-        _GT(typeof(AudioSource)).AddExtendType(typeof(DG.Tweening.ShortcutExtensions)),        
-        _GT(typeof(LineRenderer)).AddExtendType(typeof(DG.Tweening.ShortcutExtensions)),
-        _GT(typeof(TrailRenderer)).AddExtendType(typeof(DG.Tweening.ShortcutExtensions)),  */ 
-                                  
-                
+        _GT(typeof(AudioSource)).AddExtendType(typeof(DG.Tweening.ShortcutExtensions)),
+        //_GT(typeof(LineRenderer)).AddExtendType(typeof(DG.Tweening.ShortcutExtensions)),
+        //_GT(typeof(TrailRenderer)).AddExtendType(typeof(DG.Tweening.ShortcutExtensions)),    
+#else
+                                         
         _GT(typeof(Component)),
         _GT(typeof(Transform)),
         _GT(typeof(Material)),
         _GT(typeof(Light)),
         _GT(typeof(Rigidbody)),
         _GT(typeof(Camera)),
-        _GT(typeof(AudioSource)),     
+        _GT(typeof(AudioSource)),
+        //_GT(typeof(LineRenderer))
+        //_GT(typeof(TrailRenderer))
+#endif   
                         
         _GT(typeof(Behaviour)),
         _GT(typeof(MonoBehaviour)),        
