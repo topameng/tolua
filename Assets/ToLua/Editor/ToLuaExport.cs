@@ -3459,7 +3459,7 @@ public static class ToLuaExport
             ProcessExtendType(extendList[i], list, extendMethod);
             string nameSpace = GetNameSpace(extendList[i], out temp);
 
-            if (string.IsNullOrEmpty(nameSpace))
+            if (!string.IsNullOrEmpty(nameSpace))
             {
                 usingList.Add(nameSpace);
             }            
