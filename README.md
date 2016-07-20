@@ -1,10 +1,10 @@
 #tolua*#*
 
-tolua# is an unity lua static binder solution. the first solution that analyze code by reflection and generate wrapper class.
+tolua# is a unity lua static binder solution. the first solution that analyze code by reflection and generate wrapper class.
 
-tolua# is a unity plugin that greatly simplifies the integration of C# code with Lua. can automatically generates the binding code to access unity from Lua. it maps c# constants,  variables, functions, properties, classes, and methods to Lua.
+tolua# is a unity plugin that greatly simplifies the integration of C# code with Lua. can automatically generates the binding code to access unity from Lua. it maps c# constants, variables, functions, properties, classes, and enum to Lua.
 
-tolua# grows up from cstolua.  tolua#'s goal is to be a powerful development environment for unity.
+tolua# grows up from cstolua.  it's goal is to be a powerful development environment for unity.
 
 support unity4.6.x and unity5.x all(unity5.x download unity5 branch)
 
