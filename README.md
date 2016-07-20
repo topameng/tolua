@@ -2,15 +2,17 @@
 
 tolua# is an unity lua static binder solution. the first solution that analyze code by reflection and generate wrapper class.
 
-tolua# is an unity plugin that greatly simplifies the integration of C# code with Lua. can automatically generates the binding code to access unity from Lua. it maps c# constants,  variables, functions, properties, classes, and methods to Lua.
+tolua# is a unity plugin that greatly simplifies the integration of C# code with Lua. can automatically generates the binding code to access unity from Lua. it maps c# constants,  variables, functions, properties, classes, and methods to Lua.
 
 tolua# grows up from cstolua.  tolua#'s goal is to be a powerful development environment for unity.
 
-support unity4.6.x and unity5.x all(in unity5.x, delete Plugins/x86 directory)
+support unity4.6.x and unity5.x all(unity5.x download unity5 branch)
 
  **if you want to test in mobile, first click menu Lua/Copy lua files to Resources. then build it**
+ **unity5.x use unity5 branche**<br>
 
- **unity5.x 删除Plugins/x86目录, 如果你想在手机上测试，首先点击菜单Lua/Copy lua files to Resources， 之后再build.**
+ **如果你想在手机上测试，首先点击菜单Lua/Copy lua files to Resources， 之后再build.**<br>
+ **unity5.x 请下载unity5分支**<br>
 
  **有bug 可以到QQ群反馈: 286510803. 不闲聊，非bug相关不要加群**
 
