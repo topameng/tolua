@@ -9,7 +9,6 @@ tolua# grows up from cstolua.  it's goal is to be a powerful development environ
 support unity4.6.x and unity5.x all(unity5.x download unity5 branch)
 
  **if you want to test in mobile, first click menu Lua/Copy lua files to Resources. then build it**
- **unity5.x use unity5 branche**<br>
 
  **如果你想在手机上测试，首先点击菜单Lua/Copy lua files to Resources， 之后再build.**<br>
  **unity5.x 请下载unity5分支**<br>
