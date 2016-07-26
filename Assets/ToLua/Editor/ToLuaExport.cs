@@ -991,6 +991,14 @@ public static class ToLuaExport
         }
     }
 
+    static string GetDelegatePushFunction(ParameterInfo pi, bool isByteBuffer = false)
+    {
+        if(pi.IsOut)
+        {
+            return GetPushFunction(pi.ParameterType.GetElementType(), isByteBuffer);
+        }
+        return GetPushFunction(pi.ParameterType, isByteBuffer);
+    }
     static string GetPushFunction(Type t, bool isByteBuffer = false)
     {        
         if (t.IsEnum || t == typeof(bool) || t.IsPrimitive || t == typeof(string) || t == typeof(LuaTable) || t == typeof(LuaCSFunction) 
@@ -2671,30 +2679,56 @@ public static class ToLuaExport
         }
     }
 
-    static void GenDefaultDelegate(Type t, string head, string strType)
+    static string GetDefaultDelegateBody(Type t)
     {
-        if (t.IsPrimitive)
+        if (t == typeof(void))
+        {
+            return "";
+        }
+        else if (t.IsPrimitive)
         {
             if (t == typeof(bool))
             {
-                sb.AppendFormat("{0}{1} fn = delegate {{ return false; }};\r\n", head, strType);
+                return "return false;";
             }
             else if (t == typeof(char))
             {
-                sb.AppendFormat("{0}{1} fn = delegate {{ return '\\0'; }};\r\n", head, strType);
+                return "return '\\0';";
             }
             else
             {
-                sb.AppendFormat("{0}{1} fn = delegate {{ return 0; }};\r\n", head, strType);
+                return "return 0;";
             }
         }
         else if (!t.IsValueType)
         {
-            sb.AppendFormat("{0}{1} fn = delegate {{ return null; }};\r\n", head, strType);
+            return "return null;";
+        }
+
+        return string.Format("return default({2});", GetTypeStr(t));
+    }
+
+    static void GenDefaultDelegate(MethodInfo mi, string head, string strType)
+    {
+        bool hasOut = false;
+        ParameterInfo[] pi = mi.GetParameters();
+        for(int i = 0; i < pi.Length; ++i)
+        {
+            if(pi[i].IsOut)
+            {
+                hasOut = true;
+                break;
+            }
+        }
+        if(!hasOut)
+        {
+            sb.AppendFormat("{0}{1} fn = delegate {{ {2} }};\r\n", head, strType, GetDefaultDelegateBody(mi.ReturnType));
         }
         else
         {
-            sb.AppendFormat("{0}{1} fn = delegate {{ return default({2}); }};\r\n", head, strType, GetTypeStr(t));
+            string defalutParameter = GetDelegateDefalutOutParams(mi);
+            string args = GetDelegateParams(mi, true);
+            sb.AppendFormat("{0}{1} fn = delegate({2}) {{ {3}{4} }};\r\n", head, strType, args, defalutParameter, GetDefaultDelegateBody(mi.ReturnType));
         }
     }
 
@@ -2864,7 +2898,7 @@ public static class ToLuaExport
 
         for (int i = 0; i < n; i++)
         {
-            string push = GetPushFunction(pi[i].ParameterType);
+            string push = GetDelegatePushFunction(pi[i]);
 
             if (!IsParams(pi[i]))
             {
@@ -2945,12 +2979,21 @@ public static class ToLuaExport
             return;
         }
 
-        sb.AppendFormat("{0}{{\r\n{0}", head);
-        sb.AppendLineEx("\tfunc.BeginPCall();");
+        sb.AppendFormat("{0}{{\r\n", head);
+
+        for (int i = 0; i < n; i++)
+        {
+            if(pi[i].IsOut)
+            {
+                sb.AppendFormat("{2}\tparam{0} = default({1});\r\n", i, GetTypeStr(pi[i].ParameterType.GetElementType()), head);
+            }
+        }
+
+        sb.AppendFormat("{0}\tfunc.BeginPCall();\r\n", head);
 
         for (int i = 0; i < n; i++)
         {                        
-            string push = GetPushFunction(pi[i].ParameterType);
+            string push = GetDelegatePushFunction(pi[i]);
 
             if (!IsParams(pi[i]))
             {
@@ -2981,7 +3024,7 @@ public static class ToLuaExport
             {
                 if ((pi[i].Attributes & ParameterAttributes.Out) != ParameterAttributes.None)
                 {
-                    GenLuaFunctionRetValue(sb, pi[i].ParameterType, head + "\t", "param" + i, true);
+                    GenLuaFunctionRetValue(sb, pi[i].ParameterType.GetElementType(), head + "\t", "param" + i, true);
                 }
             }
 
@@ -2995,7 +3038,7 @@ public static class ToLuaExport
             {
                 if ((pi[i].Attributes & ParameterAttributes.Out) != ParameterAttributes.None)
                 {
-                    GenLuaFunctionRetValue(sb, pi[i].ParameterType, head + "\t", "param" + i, true);
+                    GenLuaFunctionRetValue(sb, pi[i].ParameterType.GetElementType(), head + "\t", "param" + i, true);
                 }
             }
 
@@ -3233,19 +3276,26 @@ public static class ToLuaExport
     }
 ";
 
-    static string GetDelegateParams(MethodInfo mi)
+    static string GetDelegateParams(MethodInfo mi, bool defaultDelegate)
     {
         ParameterInfo[] infos = mi.GetParameters();
         List<string> list = new List<string>();
 
         for (int i = 0; i < infos.Length; i++)
         {
-            string str = IsParams(infos[i]) ? "params " : "";            
+            string str = (IsParams(infos[i]) && !defaultDelegate) ? "params " : "";            
             string s2 = GetTypeStr(infos[i].ParameterType) + " param" + i;            
 
             if (infos[i].ParameterType.IsByRef)
             {
-                s2 = "ref " + s2;
+                if (infos[i].IsOut)
+                {
+                    s2 = "out " + s2;
+                }
+                else
+                {
+                    s2 = "ref " + s2;
+                }
             }
 
             str += s2;
@@ -3253,6 +3303,20 @@ public static class ToLuaExport
         }
 
         return string.Join(",", list.ToArray());
+    }
+
+    static string GetDelegateDefalutOutParams(MethodInfo mi)
+    {
+        string str = string.Empty;
+        ParameterInfo[] pi = mi.GetParameters();
+        for (int i = 0; i < pi.Length; i++)
+        {
+            if (pi[i].IsOut)
+            {
+                str += string.Format("param{0} = default({1});", i, GetTypeStr(pi[i].ParameterType.GetElementType()));
+            }
+        }
+        return str;
     }
 
     public static void GenDelegates(DelegateType[] list)
@@ -3303,7 +3367,7 @@ public static class ToLuaExport
             string strType = list[i].strType;
             string name = list[i].name;
             MethodInfo mi = t.GetMethod("Invoke");
-            string args = GetDelegateParams(mi);
+            string args = GetDelegateParams(mi, false);
 
             sb.AppendFormat("\tclass {0}_Event : LuaDelegate\r\n", name);
             sb.AppendLineEx("\t{");
@@ -3317,16 +3381,8 @@ public static class ToLuaExport
             sb.AppendLineEx("\t{");
             sb.AppendLineEx("\t\tif (func == null)");
             sb.AppendLineEx("\t\t{");
-            
 
-            if (mi.ReturnType == typeof(void))
-            {
-                sb.AppendLineEx("\t\t\t" + strType + " fn = delegate { };");
-            }
-            else
-            {
-                GenDefaultDelegate(mi.ReturnType, "\t\t\t", strType);
-            }
+            GenDefaultDelegate(mi, "\t\t\t", strType);
 
             sb.AppendLineEx("\t\t\treturn fn;");
             sb.AppendLineEx("\t\t}\r\n");
