@@ -76,7 +76,7 @@ bug 反馈群: 286510803
 - FIX: LuaTable int key c#不做判断，按照lua标准执行或者报错
 - FIX: 一些小的导出问题
 
-1.0.6
+1.0.6 (需要重新生成库文件，需要重新导出wrap. 需要Clear all)
 - NEW: 加入LuaStatePtr最为LuaDLL函数简单封装层
 - NEW: LuaState ToLuaException 更名为 ThrowLuaException
 - NEW: Debugger 放入到 LuaInterface namespace
