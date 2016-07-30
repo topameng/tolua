@@ -53,7 +53,7 @@ public class ToLua_System_Delegate
                 {
                     LuaDelegate ld = ds[i].Target as LuaDelegate;
 
-                    if (ld != null && ld.func == func)
+                    if (ld != null && ld.func == func && ld.self == null)
                     {
                         arg0 = Delegate.Remove(arg0, ds[i]);
                         state.DelayDispose(ld.func);
@@ -68,7 +68,7 @@ public class ToLua_System_Delegate
             else
             {
                 Delegate arg1 = (Delegate)ToLua.CheckObject(L, 2, typeof(Delegate));
-                arg0 = Delegate.Remove(arg0, arg1);
+                arg0 = DelegateFactory.RemoveDelegate(arg0, arg1);                
                 ToLua.Push(L, arg0);
                 return 1;
             }
@@ -119,9 +119,9 @@ public class ToLua_System_Delegate
         {
             LuaDelegate ld = ds[i].Target as LuaDelegate;
 
-            if (ld != null && ld.func != null)
+            if (ld != null)
             {                
-                ld.func.Dispose();                
+                ld.Dispose();                
             }
         }
 

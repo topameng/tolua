@@ -19,7 +19,7 @@ public class TestInstantiate : MonoBehaviour
         }
         catch (Exception e)
         {            
-            state.ToLuaException(e);
+            state.ThrowLuaException(e);
         }
     }
 

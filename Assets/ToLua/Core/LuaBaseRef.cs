@@ -74,7 +74,8 @@ namespace LuaInterface
                 }
                 
                 reference = -1;
-                luaState = null;                             
+                luaState = null;
+                count = 0;
             }            
         }
 
@@ -90,7 +91,7 @@ namespace LuaInterface
 
         public override int GetHashCode()
         {
-            return reference;
+            return base.GetHashCode();
         }
 
         public virtual int GetReference()
@@ -100,37 +101,42 @@ namespace LuaInterface
 
         public override bool Equals(object o)
         {
-            if ((object)o == null) return false;            
-            LuaBaseRef lbref = o as LuaBaseRef;
-            return lbref != null && lbref.reference == reference;
+            if (o == null) return reference <= 0;
+            LuaBaseRef lr = o as LuaBaseRef;
+            return lr != null && lr.reference == reference;                        
         }
 
-        public static bool operator == (LuaBaseRef a, LuaBaseRef b)
+        static bool CompareRef(LuaBaseRef a, LuaBaseRef b)
         {
             if (System.Object.ReferenceEquals(a, b))
             {
                 return true;
             }
 
-            object l = (object)a;
+            object l = a;
             object r = b;
 
-            if (l == null)
+            if (l == null && r != null)
             {
                 return r == null || b.reference <= 0;
             }
 
-            if (r == null)
+            if (l != null && r == null)
             {
                 return a.reference <= 0;
             }
 
-            return r != null && a.reference == b.reference;
+            return a.reference == b.reference;
+        }
+
+        public static bool operator == (LuaBaseRef a, LuaBaseRef b)
+        {
+            return CompareRef(a, b);
         }
 
         public static bool operator != (LuaBaseRef a, LuaBaseRef b)
         {
-            return !(a == b);
+            return !CompareRef(a, b);
         }
 
         public bool IsAlive()

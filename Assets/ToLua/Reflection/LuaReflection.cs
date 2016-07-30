@@ -33,7 +33,7 @@ namespace LuaInterface
 #endif
 
         public LuaReflection()
-        {                                    
+        {
 #if !MULTI_STATE
             _reflection = this;
 #endif
@@ -82,7 +82,7 @@ namespace LuaInterface
 
             LuaState state = LuaState.Get(L);
             state.BeginPreLoad();
-            state.AddPreLoad("tolua.reflection", OpenReflectionLibs);
+            state.AddPreLoad("tolua.reflection", OpenReflectionLibs);            
             state.EndPreLoad();
         }
 

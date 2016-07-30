@@ -271,7 +271,7 @@ public class TestLuaStack : MonoBehaviour
         }
         catch(Exception e)
         {
-            state.ToLuaException(e);
+            state.ThrowLuaException(e);
         }
     }
     
@@ -509,7 +509,7 @@ public class TestLuaStack : MonoBehaviour
                 state.Push(123456);
                 state.LuaSetField(-2, "value");
                 state.LuaGetField(-1, "value");
-                int n = (int)state.CheckNumber(-1);
+                int n = (int)state.LuaCheckNumber(-1);
                 Debugger.Log("value is: " + n);
 
                 state.LuaPop(1);
@@ -532,7 +532,7 @@ public class TestLuaStack : MonoBehaviour
                 state.LuaSetTable(-3);                
                                 
                 state.LuaGetField(-1, "look");
-                n = (int)state.CheckNumber(-1);
+                n = (int)state.LuaCheckNumber(-1);
                 Debugger.Log("look: " + n);
             }
             catch (Exception e)

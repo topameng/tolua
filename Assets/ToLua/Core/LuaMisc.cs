@@ -55,22 +55,23 @@ namespace LuaInterface
     }
 
     //让byte[] 压入成为lua string 而不是数组 userdata
+    //也可以使用LuaByteBufferAttribute来标记byte[]
     public class LuaByteBuffer
     {        
         public LuaByteBuffer(IntPtr source, int len)
         {
-            buffer = new byte[len];
+            buffer = new byte[len];            
             Marshal.Copy(source, buffer, 0, len);
         }
         
         public LuaByteBuffer(byte[] buf)
         {
-            this.buffer = buf;
+            this.buffer = buf;            
         }
 
         public override bool Equals(object o)
         {
-            if ((object)o == null) return false;
+            if (o == null) return buffer == null;
             LuaByteBuffer bb = o as LuaByteBuffer;
             return bb != null && bb.buffer == buffer;
         }
@@ -82,7 +83,7 @@ namespace LuaInterface
                 return true;
             }
 
-            object l = (object)a;
+            object l = a;
             object r = b;
 
             if (l == null && r != null)
@@ -108,20 +109,86 @@ namespace LuaInterface
             return buffer.GetHashCode();
         }
 
-        public byte[] buffer = null;
+        public byte[] buffer = null;        
     }   
 
     public class LuaOut<T> { }
-    public class LuaOutMetatable { }
+    //public class LuaOutMetatable {}
     public class NullObject { }
 
     public class LuaDelegate
     {
         public LuaFunction func = null;
+        public LuaTable self = null;        
 
         public LuaDelegate(LuaFunction func)
         {
             this.func = func;
+        }
+
+        public LuaDelegate(LuaFunction func, LuaTable self)
+        {
+            this.func = func;
+            this.self = self;
+        }
+
+        public virtual void Dispose()
+        {            
+            if (func != null)
+            {
+                func.Dispose();
+                func = null;
+            }
+
+            if (self != null)
+            {
+                self.Dispose();
+                self = null;
+            }
+        }
+
+        public override bool Equals(object o)
+        {                                    
+            if (o == null) return func == null && self == null;
+            LuaDelegate ld = o as LuaDelegate;
+            return ld != null && ld.func == func && ld.self == self;
+        }
+
+        static bool CompareLuaDelegate(LuaDelegate a, LuaDelegate b)
+        {
+            if (System.Object.ReferenceEquals(a, b))
+            {
+                return true;
+            }
+
+            object l = a;
+            object r = b;
+
+            if (l == null && r != null)
+            {
+                return b.func == null && b.self == null;
+            }
+
+            if (l != null && r == null)
+            {
+                return a.func == null && b.self == null;
+            }
+
+            return a.func == b.func && a.self == b.self;
+        }
+
+        public static bool operator == (LuaDelegate a, LuaDelegate b)
+        {
+            return CompareLuaDelegate(a, b);
+        }
+
+        public static bool operator != (LuaDelegate a, LuaDelegate b)
+        {
+            return !CompareLuaDelegate(a, b);
+        }
+        public override int GetHashCode()
+        {            
+            return base.GetHashCode();
         }
     }
 
@@ -217,7 +284,11 @@ namespace LuaInterface
             string typeName = t.FullName;
             int count = gArgs.Length;
             int pos = typeName.IndexOf("[");
-            typeName = typeName.Substring(0, pos);
+
+            if (pos > 0)
+            {
+                typeName = typeName.Substring(0, pos);
+            }
 
             string str = null;
             string name = null;
@@ -327,7 +398,7 @@ namespace LuaInterface
             {
                 return t.ToString();
             }
-        }
+        }        
 
         public static double ToDouble(object obj)
         {
@@ -386,9 +457,27 @@ namespace LuaInterface
 
             return 0;
         }
+
+        //可产生导出文件的基类
+        public static Type GetExportBaseType(Type t)
+        {
+            Type baseType = t.BaseType;
+
+            if (baseType == typeof(ValueType))
+            {
+                return null;
+            }
+
+            if (t.IsAbstract && t.IsSealed)
+            {
+                return baseType == typeof(object) ? null : baseType;
+            }
+
+            return baseType;
+        }
     }       
 
-    [NoToLuaAttribute]
+    /*[NoToLuaAttribute]
     public struct LuaInteger64
     {
         public long i64;
@@ -417,7 +506,7 @@ namespace LuaInterface
         {
             return Convert.ToString(i64);
         }
-    }
+    }*/
 
     public class TouchBits
     {

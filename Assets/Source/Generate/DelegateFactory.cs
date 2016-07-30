@@ -5,7 +5,7 @@ using LuaInterface;
 
 public static class DelegateFactory
 {
-	public delegate Delegate DelegateValue(LuaFunction func);
+	public delegate Delegate DelegateValue(LuaFunction func, LuaTable self, bool flag);
 	public static Dictionary<Type, DelegateValue> dict = new Dictionary<Type, DelegateValue>();
 
 	static DelegateFactory()
@@ -29,7 +29,20 @@ public static class DelegateFactory
             throw new LuaException(string.Format("Delegate {0} not register", LuaMisc.GetTypeName(t)));            
         }
         
-        return create(func);        
+        return create(func, null, false);        
+    }
+
+    [NoToLuaAttribute]
+    public static Delegate CreateDelegate(Type t, LuaFunction func, LuaTable self)
+    {
+        DelegateValue create = null;
+
+        if (!dict.TryGetValue(t, out create))
+        {
+            throw new LuaException(string.Format("Delegate {0} not register", LuaMisc.GetTypeName(t)));
+        }
+
+        return create(func, self, true);
     }
 
     [NoToLuaAttribute]
@@ -46,6 +59,36 @@ public static class DelegateFactory
             {
                 obj = Delegate.Remove(obj, ds[i]);
                 state.DelayDispose(ld.func);
+                break;
+            }
+        }
+
+        return obj;
+    }
+
+    [NoToLuaAttribute]
+    public static Delegate RemoveDelegate(Delegate obj, Delegate dg)
+    {
+        LuaDelegate remove = dg.Target as LuaDelegate;
+
+        if (remove == null)
+        {
+            obj = Delegate.Remove(obj, dg);
+            return obj;
+        }
+
+        LuaState state = remove.func.GetLuaState();
+        Delegate[] ds = obj.GetInvocationList();        
+
+        for (int i = 0; i < ds.Length; i++)
+        {
+            LuaDelegate ld = ds[i].Target as LuaDelegate;
+
+            if (ld != null && ld == remove)
+            {
+                obj = Delegate.Remove(obj, ds[i]);
+                state.DelayDispose(ld.func);
+                state.DelayDispose(ld.self);
                 break;
             }
         }

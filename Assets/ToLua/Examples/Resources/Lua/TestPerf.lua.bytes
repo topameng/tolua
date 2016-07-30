@@ -115,3 +115,21 @@ function Test9()
 	print("math cal cost: ", os.clock() - t)	
 end
 
+function TestTable()
+	local array = {}
+
+	for i = 1, 1024 do
+		array[i] = i
+	end
+
+	local total = 0
+	local t = os.clock()
+		
+	for j = 1, 100000 do
+		for i = 1, 1024 do
+			total = total + array[i]
+		end			
+	end
+		
+	print("Array cost time: ", os.clock() - t)	
+end

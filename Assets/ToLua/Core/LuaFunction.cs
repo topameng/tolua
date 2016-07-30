@@ -116,6 +116,7 @@ namespace LuaInterface
             EndPCall();            
         }
 
+        //慎用
         public object[] Call(params object[] args)
         {
             BeginPCall();
@@ -143,11 +144,29 @@ namespace LuaInterface
         {
             luaState.Push(num);
             ++argCount;
+        }        
+
+        public void Push(int n)
+        {
+            luaState.Push(n);
+            ++argCount;
         }
 
-        public void PushInt64(LuaInteger64 n64)
+        public void Push(uint un)
         {
-            luaState.PushInt64(n64);
+            luaState.Push(un);
+            ++argCount;
+        }
+
+        public void Push(long num)
+        {
+            luaState.Push(num);
+            ++argCount;
+        }
+
+        public void Push(ulong un)
+        {
+            luaState.Push(un);
             ++argCount;
         }
 
@@ -352,7 +371,7 @@ namespace LuaInterface
         {
             try
             {
-                return luaState.CheckNumber(stackPos++);
+                return luaState.LuaCheckNumber(stackPos++);
             }
             catch(Exception e)
             {
@@ -365,7 +384,7 @@ namespace LuaInterface
         {
             try
             {
-                return luaState.CheckBoolean(stackPos++);
+                return luaState.LuaCheckBoolean(stackPos++);
             }
             catch(Exception e)
             {
@@ -491,17 +510,30 @@ namespace LuaInterface
             } 
         }
 
-        public LuaInteger64 CheckInteger64()
+        public long CheckLong()
         {
             try
             {
-                return luaState.CheckInteger64(stackPos++);
+                return luaState.CheckLong(stackPos++);
             }
             catch (Exception e)
             {
                 EndPCall();
                 throw e;
             } 
+        }
+
+        public ulong CheckULong()
+        {
+            try
+            {
+                return luaState.CheckULong(stackPos++);
+            }
+            catch (Exception e)
+            {
+                EndPCall();
+                throw e;
+            }
         }
 
         public Delegate CheckDelegate()

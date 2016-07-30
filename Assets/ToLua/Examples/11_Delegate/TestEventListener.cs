@@ -9,8 +9,10 @@ public class TestEventListener : MonoBehaviour
     public delegate void OnClick(GameObject go);    
     public OnClick onClick = delegate { };
 
-    public event OnClick onClickEvent = delegate { };    
-    
+    public event OnClick onClickEvent = delegate { };
+
+    public Func<bool> TestFunc = null;
+
     public void SetOnFinished(OnClick click)
     {
         Debugger.Log("SetOnFinished OnClick");
