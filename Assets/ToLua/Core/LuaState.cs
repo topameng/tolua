@@ -477,6 +477,13 @@ namespace LuaInterface
         {
             LuaDLL.tolua_constant(L, name, d);
         }
+        
+        public void RegConstant(string name, bool flag)
+        {
+            LuaDLL.lua_pushstring(L, name);
+            LuaDLL.lua_pushboolean(L, flag);
+            LuaDLL.lua_rawset(L, -3);
+        }
 
         int GetFuncRef(string name)
         {
