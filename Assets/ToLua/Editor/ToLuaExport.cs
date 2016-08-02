@@ -627,7 +627,7 @@ public static class ToLuaExport
             MethodInfo m = methods[i];
             int count = 1;
 
-            if (IsGenericMethod(m))
+            if (m.ContainsGenericParameters)
             {
                 continue;
             }
@@ -910,87 +910,6 @@ public static class ToLuaExport
         sb.AppendLineEx("\t}");
     }
 
-    //没有未知类型的模版类型List<int> 返回false, List<T>返回true
-    static bool IsGenericConstraintType(Type t)
-    {
-        if (!t.IsGenericType)
-        {
-            return t.IsGenericParameter;
-        }
-
-        Type[] types = t.GetGenericArguments();
-
-        for (int i = 0; i < types.Length; i++)
-        {
-            Type t1 = types[i];
-
-            if (t1.IsGenericParameter)
-            {
-                return true;
-            }
-
-            if (IsGenericConstraintType(t1))
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    static bool IsGenericConstraints(Type[] constraints)
-    {
-        for (int i = 0; i < constraints.Length; i++)
-        {
-            if (!IsGenericConstraintType(constraints[i]))
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    static bool IsGenericMethod(MethodInfo md)
-    {
-        if (md.IsGenericMethod)
-        {
-            Type[] gts = md.GetGenericArguments();
-            List<ParameterInfo> list = new List<ParameterInfo>(md.GetParameters());
-
-            for (int i = 0; i < gts.Length; i++)
-            {
-                Type[] ts = gts[i].GetGenericParameterConstraints();
-
-                if (ts == null || ts.Length == 0 || IsGenericConstraints(ts))
-                {
-                    return true;
-                }
-
-                ParameterInfo p = list.Find((iter) => { return iter.ParameterType == gts[i]; });
-
-                if (p == null)
-                {
-                    return true;
-                }
-
-                list.RemoveAll((iter) => { return iter.ParameterType == gts[i]; });
-            }
-
-            for (int i = 0; i < list.Count; i++)
-            {                
-                Type t = list[i].ParameterType;
-
-                if (IsGenericConstraintType(t))
-                {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
-
     static void GenFunctions()
     {
         HashSet<string> set = new HashSet<string>();
@@ -999,7 +918,7 @@ public static class ToLuaExport
         {
             MethodInfo m = methods[i];
 
-            if (IsGenericMethod(m))
+            if (m.ContainsGenericParameters)
             {
                 Debugger.Log("Generic Method {0} cannot be export to lua", m.Name);
                 continue;
@@ -2342,7 +2261,7 @@ public static class ToLuaExport
         {
             string curName = GetMethodName(methods[i]);
 
-            if (curName == name && !IsGenericMethod(methods[i]) && !HasDecimal(methods[i].GetParameters()))
+            if (curName == name && !methods[i].ContainsGenericParameters && !HasDecimal(methods[i].GetParameters()))
             {
                 Push(list, methods[i]);
             }
