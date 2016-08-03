@@ -915,7 +915,7 @@ public static class ToLuaExport
     {
         if (!t.IsGenericType)
         {
-            return t.IsGenericParameter;
+            return t.IsGenericParameter || t == typeof(System.ValueType);
         }
 
         Type[] types = t.GetGenericArguments();
@@ -924,7 +924,7 @@ public static class ToLuaExport
         {
             Type t1 = types[i];
 
-            if (t1.IsGenericParameter)
+            if (t1.IsGenericParameter || t1 == typeof(System.ValueType))
             {
                 return true;
             }
