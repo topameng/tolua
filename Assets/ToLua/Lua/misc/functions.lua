@@ -1,3 +1,7 @@
+local require = require
+local string = string
+local table = table
+
 function import(moduleName, currentModuleName)
     local currentModuleNameParts
     local moduleFullName = moduleName
@@ -27,10 +31,11 @@ function import(moduleName, currentModuleName)
     return require(moduleFullName)
 end
 
-local _loaded = package.loaded
-
+--重新require一个lua文件，替代系统文件。
 function reimport(name)
-    _loaded[name] = nil
+    local package = package
+    package.loaded[name] = nil
+    package.preload[name] = nil
     return require(name)    
 end
 
