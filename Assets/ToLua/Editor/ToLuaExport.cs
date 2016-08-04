@@ -1713,6 +1713,10 @@ public static class ToLuaExport
                 {
                     fname = "CheckByteBuffer";
                 }
+                else if (et == typeof(bool))
+                {
+                    fname = "CheckBoolArray";
+                }
                 else
                 {
                     fname = "CheckNumberArray";

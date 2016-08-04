@@ -9,7 +9,6 @@ public class TestOutArg : MonoBehaviour
         @"                    
             print('start')
             local box = UnityEngine.BoxCollider
-            local box1 = UnityEngine.BoxCollider
                                                                             
             function TestPick(ray)                                                                  
                 local _layer = 2 ^ LayerMask.NameToLayer('Default')
