@@ -102,8 +102,14 @@ namespace LuaInterface
         public override bool Equals(object o)
         {
             if (o == null) return reference <= 0;
-            LuaBaseRef lr = o as LuaBaseRef;
-            return lr != null && lr.reference == reference;                        
+            LuaBaseRef lr = o as LuaBaseRef;      
+            
+            if (lr == null || lr.reference != reference)
+            {
+                return false;
+            }
+
+            return reference > 0;
         }
 
         static bool CompareRef(LuaBaseRef a, LuaBaseRef b)
@@ -126,7 +132,12 @@ namespace LuaInterface
                 return a.reference <= 0;
             }
 
-            return a.reference == b.reference;
+            if (a.reference != b.reference)
+            {
+                return false;
+            }
+
+            return a.reference > 0;
         }
 
         public static bool operator == (LuaBaseRef a, LuaBaseRef b)

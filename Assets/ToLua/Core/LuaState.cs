@@ -477,7 +477,7 @@ namespace LuaInterface
         {
             LuaDLL.tolua_constant(L, name, d);
         }
-        
+
         public void RegConstant(string name, bool flag)
         {
             LuaDLL.lua_pushstring(L, name);
@@ -1794,7 +1794,13 @@ namespace LuaInterface
         {
             if (o == null) return L == IntPtr.Zero;
             LuaState state = o as LuaState;
-            return state != null && state.L == L;
+
+            if (state == null || state.L != L)
+            {
+                return false;
+            }
+
+            return L != IntPtr.Zero;
         }
 
         public static bool operator == (LuaState a, LuaState b)
@@ -1817,7 +1823,12 @@ namespace LuaInterface
                 return a.L == IntPtr.Zero;
             }
 
-            return a.L == b.L;
+            if (a.L != b.L)
+            {
+                return false;
+            }
+
+            return a.L != IntPtr.Zero;
         }
 
         public static bool operator != (LuaState a, LuaState b)

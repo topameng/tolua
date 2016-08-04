@@ -73,7 +73,13 @@ namespace LuaInterface
         {
             if (o == null) return buffer == null;
             LuaByteBuffer bb = o as LuaByteBuffer;
-            return bb != null && bb.buffer == buffer;
+
+            if (bb == null || bb.buffer != buffer)
+            {
+                return false;
+            }
+
+            return buffer != null;
         }
 
         public static bool operator ==(LuaByteBuffer a, LuaByteBuffer b)
@@ -96,7 +102,12 @@ namespace LuaInterface
                 return a.buffer == null;
             }
 
-            return a.buffer == b.buffer;
+            if (a.buffer != b.buffer)
+            {
+                return false;
+            }
+
+            return a.buffer != null;
         }
 
         public static bool operator !=(LuaByteBuffer a, LuaByteBuffer b)
@@ -151,7 +162,13 @@ namespace LuaInterface
         {                                    
             if (o == null) return func == null && self == null;
             LuaDelegate ld = o as LuaDelegate;
-            return ld != null && ld.func == func && ld.self == self;
+
+            if (ld == null || ld.func != func || ld.self != self)
+            {
+                return false;
+            }
+
+            return ld.func != null;
         }
 
         static bool CompareLuaDelegate(LuaDelegate a, LuaDelegate b)
@@ -174,7 +191,12 @@ namespace LuaInterface
                 return a.func == null && b.self == null;
             }
 
-            return a.func == b.func && a.self == b.self;
+            if (a.func != b.func || a.self != b.self)
+            {
+                return false;
+            }
+
+            return a.func != null;
         }
 
         public static bool operator == (LuaDelegate a, LuaDelegate b)
@@ -187,7 +209,7 @@ namespace LuaInterface
             return !CompareLuaDelegate(a, b);
         }
         public override int GetHashCode()
-        {            
+        {
             return base.GetHashCode();
         }
     }
@@ -219,10 +241,10 @@ namespace LuaInterface
         public static string GetTypeName(Type t)
         {
             if (t.IsArray)
-            {                
+            {
                 string str = GetTypeName(t.GetElementType());
                 str += GetArrayRank(t);
-                return str;
+                return str;                
             }
             else if (t.IsByRef)
             {
