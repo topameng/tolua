@@ -3030,7 +3030,7 @@ public static class ToLuaExport
             {
                 if ((pi[i].Attributes & ParameterAttributes.Out) != ParameterAttributes.None)
                 {
-                    GenLuaFunctionRetValue(sb, pi[i].ParameterType, head + "\t", "param" + i, true);
+                    GenLuaFunctionRetValue(sb, pi[i].ParameterType.GetElementType(), head + "\t", "param" + i, true);
                 }
             }
 
@@ -3044,7 +3044,7 @@ public static class ToLuaExport
             {
                 if ((pi[i].Attributes & ParameterAttributes.Out) != ParameterAttributes.None)
                 {
-                    GenLuaFunctionRetValue(sb, pi[i].ParameterType, head + "\t", "param" + i, true);
+                    GenLuaFunctionRetValue(sb, pi[i].ParameterType.GetElementType(), head + "\t", "param" + i, true);
                 }
             }
 
@@ -3330,7 +3330,7 @@ public static class ToLuaExport
 
         for (int i = 0; i < infos.Length; i++)
         {
-            string str = IsParams(infos[i]) ? "params " : "";            
+            //string str = IsParams(infos[i]) ? "params " : "";            
             string s2 = GetTypeStr(infos[i].ParameterType) + " param" + i;            
 
             if (infos[i].ParameterType.IsByRef)
@@ -3343,10 +3343,11 @@ public static class ToLuaExport
                 {
                     s2 = "ref " + s2;
                 }
-            }            
+            }
 
-            str += s2;
-            list.Add(str);
+            //str += s2;
+            //list.Add(str);
+            list.Add(s2);
         }
 
         return string.Join(", ", list.ToArray());
@@ -3389,7 +3390,7 @@ public static class ToLuaExport
         {
             if (pis[i].Attributes == ParameterAttributes.Out)
             {
-                str += string.Format("\t\t\t\tparam{0} = {1};\r\n", i, GetReturnValue(pis[i].ParameterType));
+                str += string.Format("\t\t\t\tparam{0} = {1};\r\n", i, GetReturnValue(pis[i].ParameterType.GetElementType()));
                 flag = true;
             }
         }
