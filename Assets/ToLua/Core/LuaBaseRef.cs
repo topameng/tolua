@@ -52,7 +52,7 @@ namespace LuaInterface
             if (count > 0)
             {
                 return;
-            }
+            }            
 
             Dispose(true);            
         }
@@ -77,6 +77,17 @@ namespace LuaInterface
                 luaState = null;
                 count = 0;
             }            
+        }
+
+        //慎用
+        public void Dispose(int generation)
+        {                         
+            if (count > generation)
+            {
+                return;
+            }
+
+            Dispose(true);
         }
 
         public LuaState GetLuaState()

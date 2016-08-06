@@ -144,16 +144,16 @@ namespace LuaInterface
         }
 
         public virtual void Dispose()
-        {            
+        {
             if (func != null)
             {
-                func.Dispose();
+                func.Dispose(1);
                 func = null;
             }
 
             if (self != null)
             {
-                self.Dispose();
+                self.Dispose(1);
                 self = null;
             }
         }
