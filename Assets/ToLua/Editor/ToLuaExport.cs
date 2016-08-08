@@ -138,13 +138,14 @@ public static class ToLuaExport
         "WWW.movie",
         "WebCamTexture.MarkNonReadable",
         "WebCamTexture.isReadable",		
-		"Graphic.OnRebuildRequested",
-		"Text.OnRebuildRequested",
+        "Graphic.OnRebuildRequested",
+        "Text.OnRebuildRequested",
         "Resources.LoadAssetAtPath",
         "Application.ExternalEval",
         "Handheld.SetActivityIndicatorStyle",
         "CanvasRenderer.OnRequestRebuild",
         "CanvasRenderer.onRequestRebuild",
+        "Terrain.bakeLightProbesForTrees",
         //NGUI
         "UIInput.ProcessEvent",
         "UIWidget.showHandlesWithMoveTool",
@@ -157,6 +158,7 @@ public static class ToLuaExport
     {
         return memberFilter.Contains(type.Name + "." + mi.Name);
     }
+
     public static bool IsMemberFilter(Type t)
     {
         string name = LuaMisc.GetTypeName(t);
