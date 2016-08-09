@@ -24,6 +24,7 @@ using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
+using System.Runtime.CompilerServices;
 
 namespace LuaInterface
 {
@@ -117,7 +118,7 @@ namespace LuaInterface
 
         public override int GetHashCode()
         {
-            return buffer.GetHashCode();
+            return buffer == null ? 0 : buffer.GetHashCode();
         }
 
         public byte[] buffer = null;        
@@ -143,6 +144,7 @@ namespace LuaInterface
             this.self = self;
         }
 
+        //如果count不是1，说明还有其他人引用，只能等待gc来处理
         public virtual void Dispose()
         {
             if (func != null)
@@ -210,7 +212,7 @@ namespace LuaInterface
         }
         public override int GetHashCode()
         {
-            return base.GetHashCode();
+            return RuntimeHelpers.GetHashCode(this);            
         }
     }
 

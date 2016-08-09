@@ -21,6 +21,7 @@ SOFTWARE.
 */
 
 using System;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 namespace LuaInterface
@@ -102,7 +103,7 @@ namespace LuaInterface
 
         public override int GetHashCode()
         {
-            return base.GetHashCode();
+            return RuntimeHelpers.GetHashCode(this);            
         }
 
         public virtual int GetReference()
