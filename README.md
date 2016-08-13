@@ -11,9 +11,8 @@ Support unity4.6.x and Unity5.x all(Unity5.x download from Unity5 branch)
  **If you want to test in mobile, first click menu Lua/Copy lua files to Resources. then build it**
 
  **如果你想在手机上测试，首先点击菜单Lua/Copy lua files to Resources， 之后再build.**<br>
- **Unity5.x 请下载Unity5分支**<br>
 
- **有bug 可以到QQ群反馈: 286510803. 不闲聊，非bug相关不要加群**
+ **有bug 可以到QQ群反馈: 286510803. 不闲聊，非bug相关不要加群, 请加讨论群: 434341400**
 
 #Library
 
