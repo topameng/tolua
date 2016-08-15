@@ -300,14 +300,9 @@ namespace LuaInterface
             {
                 object o = ToLua.ToObject(L, -1);
 
-                if (o == null)
+                if (o == null || o.Equals(null))
                 {
                     LuaDLL.lua_pushboolean(L, true);
-                }
-                else if (o is UnityEngine.Object)
-                {
-                    UnityEngine.Object obj = (UnityEngine.Object)o;
-                    LuaDLL.lua_pushboolean(L, obj == null);
                 }
                 else
                 {
@@ -526,7 +521,11 @@ namespace LuaInterface
         {
             if (_instanceID == -1)
             {
-                _instanceID = AssetDatabase.LoadAssetAtPath("Assets/ToLua/Core/ToLua.cs", typeof(MonoScript)).GetInstanceID();
+                int start = LuaConst.toluaDir.IndexOf("Assets");
+                int end = LuaConst.toluaDir.IndexOf("/Lua");
+                string dir = LuaConst.toluaDir.Substring(start, end - start);
+                dir += "/Core/ToLua.cs";
+                _instanceID = AssetDatabase.LoadAssetAtPath(dir, typeof(MonoScript)).GetInstanceID();//"Assets/ToLua/Core/ToLua.cs"
             }
         }
 

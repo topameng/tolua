@@ -180,7 +180,7 @@ namespace LuaInterface
 
                 if (!Directory.Exists(LuaConst.toluaDir))
                 {
-                    string msg = string.Format("toluaDir path not exists: {0}, configer it in LuaConst.cs", LuaConst.luaDir);
+                    string msg = string.Format("toluaDir path not exists: {0}, configer it in LuaConst.cs", LuaConst.toluaDir);
                     throw new LuaException(msg);
                 }
 

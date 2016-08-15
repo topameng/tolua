@@ -6,7 +6,7 @@ It is a Unity plugin that greatly simplifies the integration of C# code with Lua
 
 tolua# grows up from cstolua.  it's goal is to be a powerful development environment for Unity.
 
-Support unity4.6.x and Unity5.x all(Unity5.x download from Unity5 branch)
+Support unity4.6.x and Unity5.x all(copy /Unity5.x/Assets to /Assets)
 
  **If you want to test in mobile, first click menu Lua/Copy lua files to Resources. then build it**
 
