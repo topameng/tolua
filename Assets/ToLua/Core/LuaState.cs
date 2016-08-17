@@ -151,6 +151,7 @@ namespace LuaInterface
 
             BeginModule("UnityEngine");
             UnityEngine_ObjectWrap.Register(this);            
+            UnityEngine_CoroutineWrap.Register(this);
             EndModule(); //end UnityEngine
 
             EndModule(); //end global
