@@ -19,9 +19,9 @@ TouchPhase =
 TouchBits = 
 {
 	DeltaPosition = 1,
-    Position = 2,
-    RawPosition = 4,
-    ALL = 7,
+	Position = 2,
+	RawPosition = 4,
+	ALL = 7,
 }
 
 local TouchPhase = TouchPhase
