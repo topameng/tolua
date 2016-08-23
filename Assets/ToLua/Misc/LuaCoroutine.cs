@@ -35,10 +35,11 @@ public static class LuaCoroutine
         local debug = debug
         local coroutine = coroutine
         local comap = {}
-        setmetatable(comap, {__mode = 'kv'})
+        setmetatable(comap, {__mode = 'k'})
 
         function _resume(co)
             if comap[co] then
+                comap[co] = nil
                 local flag, msg = coroutine.resume(co)
                     
                 if not flag then
