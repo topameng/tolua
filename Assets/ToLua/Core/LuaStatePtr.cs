@@ -2,6 +2,7 @@
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace LuaInterface
 {
@@ -458,9 +459,18 @@ namespace LuaInterface
             return LuaDLL.luaL_typerror(L, stackPos, tname, t2);
         }
 
-        public int LuaDoString(string chunk)
+        public bool LuaDoString(string chunk, string chunkName = "LuaStatePtr.cs")
         {
-            return LuaDLL.luaL_dostring(L, chunk);
+            byte[] buffer = Encoding.UTF8.GetBytes(chunk);
+            int status = LuaDLL.luaL_loadbuffer(L, buffer, buffer.Length, chunkName);
+
+            if (status != 0)
+            {
+                return false;                
+            }
+
+            return LuaDLL.lua_pcall(L, 0, LuaDLL.LUA_MULTRET, 0) == 0;
+            //return LuaDLL.luaL_dostring(L, chunk);
         }
 
         public bool LuaDoFile(string fileName)

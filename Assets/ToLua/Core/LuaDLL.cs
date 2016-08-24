@@ -187,7 +187,7 @@ namespace LuaInterface
 
     public class LuaDLL
     {
-        public static string version = "1.0.6.237";
+        public static string version = "1.0.6.243";
         public static int LUA_MULTRET = -1;
         public static string[] LuaTypeName = { "none", "nil", "boolean", "lightuserdata", "number", "string", "table", "function", "userdata", "thread" };        
 
@@ -875,16 +875,16 @@ namespace LuaInterface
             return LuaDLL.lua_pcall(luaState, 0, LUA_MULTRET, 0) == 0;
         }
 
-        public static int luaL_dostring(IntPtr luaState, string chunk)
+        public static bool luaL_dostring(IntPtr luaState, string chunk)
         {
             int result = LuaDLL.luaL_loadstring(luaState, chunk);
 
             if (result != 0)
             {
-                return result;
+                return false;
             }
 
-            return LuaDLL.lua_pcall(luaState, 0, LUA_MULTRET, 0);
+            return LuaDLL.lua_pcall(luaState, 0, LUA_MULTRET, 0) == 0;
         }
 
         public static void luaL_getmetatable(IntPtr luaState, string meta)
