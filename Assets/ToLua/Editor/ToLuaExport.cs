@@ -3593,9 +3593,9 @@ public static class ToLuaExport
                 }
 
                 ParameterInfo[] plist = md.GetParameters();
-                Type t = plist[0].ParameterType;                
+                Type t = plist[0].ParameterType;
 
-                if ((t == type) || (IsGenericType(md, t) && type.IsSubclassOf(t.BaseType)))
+                if (t == type || (IsGenericType(md, t) && (type == t.BaseType || type.IsSubclassOf(t.BaseType))))
                 {
                     string name = md.Name;
 
