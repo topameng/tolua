@@ -134,6 +134,8 @@ public static class CustomSettings
         _GT(typeof(RenderSettings)),                                                   
         _GT(typeof(BlendWeights)),           
         _GT(typeof(RenderTexture)),
+		_GT(typeof(Resources)),
+		_GT(typeof(Util)),
     };
 
     public static List<Type> dynamicList = new List<Type>()
