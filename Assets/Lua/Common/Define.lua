@@ -16,3 +16,7 @@ require("Manager/ResourceManager")
 require("Logic/MVC/ControlManager")
 require("Logic/MVC/ModelManager")
 require("Logic/MVC/ViewManager")
+
+require("Manager/UIManager")
+
+require("Logic/UI/PanelDeclare")

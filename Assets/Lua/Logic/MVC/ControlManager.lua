@@ -20,7 +20,6 @@ function ControlManager.Update()
 end
 
 function ControlManager.Init()
-	print("init")
 	for k, v in pairs(_map) do
 		v:Init()
 	end

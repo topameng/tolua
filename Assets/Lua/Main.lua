@@ -12,6 +12,7 @@ function GameMain()
 	Init()
 	Main.UIRoot = GameObject.Find("UI/Canvas")
 	--ResourceManager.LoadAsset("UI/PanelTest", function (obj) end)
+	UIManager.Open("PanelTest")
 end
 
 

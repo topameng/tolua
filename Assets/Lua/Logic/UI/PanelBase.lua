@@ -1,4 +1,5 @@
-local PanelBase = luaclass("PanelBase", require("Logic/MVC/ViewBase"))
+local ViewBase = require("Logic/MVC/ViewBase")
+local PanelBase = luaclass("PanelBase", ViewBase)
 
 local LoadState = 
 {
@@ -9,6 +10,8 @@ local LoadState =
 }
 
 function PanelBase:initialize()
+	--self.class.super.initialize(self)
+	ViewBase.initialize(self)
 	self.go = nil
 	self.transform = nil
 	self.rectTransform = nil
@@ -18,17 +21,57 @@ end
 
 function PanelBase:Show()
 	if self.isActive then
+		print("return")
 		return
 	end
+	self.isActive = true
 	if self.state == LoadState.Loaded then
 		self:OnPreShow()
-		self:gameObject:SetActive(true)
+		self.go:SetActive(true)
+		self:OnShow()
+		print("loaded")
+	else
+		print(self.class.name)
+		ResourceManager.LoadUIAsset(self.class.name, PanelBase.OnPanelLoaded, self)
+		self.state = LoadState.Loading
+	end
+end
+
+
+function PanelBase:OnPanelLoaded(obj)
+	print("loaded")
+	if nil == obj then
+		return
+	end
+	if self.state == LoadState.Unloaded then
+		GameObject:Destory(obj)
+		return
+	end
+	self.go = GameObject.Instantiate(obj)
+	self.transform = self.go.transform
+	self.rectTransform = self.go:GetComponent("RectTransform")
+	self:InitUI()
+	self.state = LoadState.Loaded
+	
+	if self.isActive then
+		self:OnPreShow()
+		self.go:SetActive(self.isActive)
 		self:OnShow()
 	else
+		self.go:SetActive(self.isActive)
+		self:OnHide()
+	end
 end
 
 
 function PanelBase:Hide()
+	if not self.isActive then
+		return
+	end
+	self.isActive = false
+	self.go:SetActive(self.isActive)
+	self:OnHide()
+
 end
 
 function PanelBase:Init()
@@ -67,3 +110,5 @@ function PanelBase:AddComponet(path, type)
 	end
 	tr.gameObject:AddComponet(type)
 end
+
+return PanelBase

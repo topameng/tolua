@@ -1,6 +1,7 @@
 local ViewBase = luaclass("ViewBase")
 
 function ViewBase:initialize()
+	print("init" .. self.class.name)
 	ViewManager.Regist(self.class.name, self)
 end
 

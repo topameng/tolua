@@ -20,7 +20,6 @@ function ViewManager.Update()
 end
 
 function ViewManager.Init()
-	print("init")
 	for k, v in pairs(_map) do
 		v:Init()
 	end
