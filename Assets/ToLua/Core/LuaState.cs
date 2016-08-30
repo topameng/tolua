@@ -1235,7 +1235,14 @@ namespace LuaInterface
 
         public void PushObject(object obj)
         {
-            ToLua.PushObject(L, obj);
+            if (obj.GetType().IsEnum)
+            {
+                ToLua.Push(L, (Enum)obj);                
+            }
+            else                
+            {
+                ToLua.PushObject(L, obj);
+            }
         }
 
         Vector3 ToVector3(int stackPos)
