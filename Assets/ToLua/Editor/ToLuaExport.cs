@@ -137,7 +137,7 @@ public static class ToLuaExport
         "Texture2D.alphaIsTransparency",
         "WWW.movie",
         "WebCamTexture.MarkNonReadable",
-        "WebCamTexture.isReadable",		
+        "WebCamTexture.isReadable",
         "Graphic.OnRebuildRequested",
         "Text.OnRebuildRequested",
         "Resources.LoadAssetAtPath",
@@ -149,9 +149,9 @@ public static class ToLuaExport
         //NGUI
         "UIInput.ProcessEvent",
         "UIWidget.showHandlesWithMoveTool",
-        "UIWidget.showHandles",               
-        "Input.IsJoystickPreconfigured",    
-        "UIDrawCall.isActive",        
+        "UIWidget.showHandles",
+        "Input.IsJoystickPreconfigured",
+        "UIDrawCall.isActive",
     };
 
     public static bool IsMemberFilter(MemberInfo mi)
@@ -1678,7 +1678,7 @@ public static class ToLuaExport
         }
         else if (varType == typeof(LuaByteBuffer))
         {
-            sb.AppendFormat("{0}LuaByteBuffer {1} = new LuaByteBuffer(ToLua.{2}ByteBuffer(L, {3}));\r\n", head, arg, checkStr, stackPos);
+            sb.AppendFormat("{0}LuaByteBuffer {1} = new LuaByteBuffer(ToLua.CheckByteBuffer(L, {2}));\r\n", head, arg, stackPos);
         }
         else if (varType.IsArray && varType.GetArrayRank() == 1)
         {
