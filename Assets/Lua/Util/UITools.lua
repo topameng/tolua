@@ -6,7 +6,7 @@ function UITools.AddMissingComponent(go, type)
     end
     local com = go:GetComponent(type)
     if nil == com then
-        com = go:AddComponet(type)
+        com = go:AddComponent(type)
     end
     return com
 end
