@@ -19,6 +19,10 @@ function PanelBase:initialize()
 	self.state = LoadState.Init
 end
 
+function PanelBase:GetActive()
+	return self.isActive
+end
+
 function PanelBase:Show()
 	if self.isActive then
 		print("return")

@@ -6,17 +6,20 @@ require ("misc/strict")
 
 require ("Common/Logger")
 
-require("Common/PathManager")
+require ("Common/PathManager")
 
 require ("Common/EventManager")
 require ("Common/EventType")
+require ("Common/Enum")
 
-require("Manager/ResourceManager")
+require ("Util/UITools")
 
-require("Logic/MVC/ControlManager")
-require("Logic/MVC/ModelManager")
-require("Logic/MVC/ViewManager")
+require ("Manager/ResourceManager")
 
-require("Manager/UIManager")
+require ("Logic/MVC/ControlManager")
+require ("Logic/MVC/ModelManager")
+require ("Logic/MVC/ViewManager")
 
-require("Logic/UI/PanelDeclare")
+require ("Manager/UIManager")
+
+require ("Logic/UI/PanelDeclare")
