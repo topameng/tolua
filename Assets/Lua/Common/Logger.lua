@@ -1,15 +1,18 @@
-function log(str)
-	local output = str .. tostring(debug.traceback())
+function log(obj)
+    local str = tostring(obj)
+	local output = str ..'\n'.. debug.traceback()..'\n'
 	Util.Log(output)
 end
 
 
-function logWarning(str)
-	local output = str .. tostring(debug.traceback())
+function logWarning(obj)
+     local str = tostring(obj)
+    local output = str ..'\n'.. debug.traceback()..'\n'
 	Util.LogWarning(output)
 end
 
-function logError(str)
-	local output = str .. tostring(debug.traceback())
+function logError(obj)
+    local str = tostring(obj)
+    local output = str ..'\n'.. debug.traceback()..'\n'
 	Util.LogError(output)
 end
