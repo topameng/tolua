@@ -10,7 +10,7 @@ require ("Common/PathManager")
 
 require ("Common/EventManager")
 require ("Common/EventType")
-require ("Common/Enum")
+require ("Common/EnumDefine")
 
 require ("Util/UITools")
 

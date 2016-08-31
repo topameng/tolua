@@ -43,7 +43,6 @@ end
 
 
 function PanelBase:OnPanelLoaded(obj)
-	print("loaded")
 	if nil == obj then
 		return
 	end
@@ -53,6 +52,7 @@ function PanelBase:OnPanelLoaded(obj)
 	end
 	self.go = GameObject.Instantiate(obj)
 	self.transform = self.go.transform
+	self.transform:SetParent(Main.UIRoot.transform, false)
 	self.rectTransform = self.go:GetComponent("RectTransform")
 	self:InitUI()
 	self.state = LoadState.Loaded
@@ -97,6 +97,15 @@ function PanelBase:FindChild(path)
 		return nil
 	end
 	return self.transform:FindChild(path)
+end
+
+function PanelBase:GetGameObject(path)
+    local tr = self:FindChild(path)
+    if tr == nil then
+        logError(path.." not found")
+        return nil
+    end
+    return tr.gameObject
 end
 
 function PanelBase:GetComponent(path, type)

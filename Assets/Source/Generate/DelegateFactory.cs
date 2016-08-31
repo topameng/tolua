@@ -22,11 +22,13 @@ public static class DelegateFactory
 		dict.Add(typeof(System.Predicate<int>), System_Predicate_int);
 		dict.Add(typeof(System.Action<int>), System_Action_int);
 		dict.Add(typeof(System.Comparison<int>), System_Comparison_int);
+		dict.Add(typeof(System.Action<UnityEngine.GameObject>), System_Action_UnityEngine_GameObject);
 		dict.Add(typeof(UnityEngine.Camera.CameraCallback), UnityEngine_Camera_CameraCallback);
 		dict.Add(typeof(UnityEngine.Application.LogCallback), UnityEngine_Application_LogCallback);
 		dict.Add(typeof(UnityEngine.Application.AdvertisingIdentifierCallback), UnityEngine_Application_AdvertisingIdentifierCallback);
 		dict.Add(typeof(UnityEngine.AudioClip.PCMReaderCallback), UnityEngine_AudioClip_PCMReaderCallback);
 		dict.Add(typeof(UnityEngine.AudioClip.PCMSetPositionCallback), UnityEngine_AudioClip_PCMSetPositionCallback);
+		dict.Add(typeof(UIEventListener.VoidDelegate), UIEventListener_VoidDelegate);
 	}
 
     [NoToLuaAttribute]
@@ -323,6 +325,49 @@ public static class DelegateFactory
 		}
 	}
 
+	class System_Action_UnityEngine_GameObject_Event : LuaDelegate
+	{
+		public System_Action_UnityEngine_GameObject_Event(LuaFunction func) : base(func) { }
+		public System_Action_UnityEngine_GameObject_Event(LuaFunction func, LuaTable self) : base(func, self) { }
+
+		public void Call(UnityEngine.GameObject param0)
+		{
+			func.BeginPCall();
+			func.Push(param0);
+			func.PCall();
+			func.EndPCall();
+		}
+
+		public void CallWithSelf(UnityEngine.GameObject param0)
+		{
+			func.BeginPCall();
+			func.Push(self);
+			func.Push(param0);
+			func.PCall();
+			func.EndPCall();
+		}
+	}
+
+	public static Delegate System_Action_UnityEngine_GameObject(LuaFunction func, LuaTable self, bool flag)
+	{
+		if (func == null)
+		{
+			System.Action<UnityEngine.GameObject> fn = delegate(UnityEngine.GameObject param0) { };
+			return fn;
+		}
+
+		if(!flag)
+		{
+			System.Action<UnityEngine.GameObject> d = (new System_Action_UnityEngine_GameObject_Event(func)).Call;
+			return d;
+		}
+		else
+		{
+			System.Action<UnityEngine.GameObject> d = (new System_Action_UnityEngine_GameObject_Event(func, self)).CallWithSelf;
+			return d;
+		}
+	}
+
 	class UnityEngine_Camera_CameraCallback_Event : LuaDelegate
 	{
 		public UnityEngine_Camera_CameraCallback_Event(LuaFunction func) : base(func) { }
@@ -542,6 +587,49 @@ public static class DelegateFactory
 		else
 		{
 			UnityEngine.AudioClip.PCMSetPositionCallback d = (new UnityEngine_AudioClip_PCMSetPositionCallback_Event(func, self)).CallWithSelf;
+			return d;
+		}
+	}
+
+	class UIEventListener_VoidDelegate_Event : LuaDelegate
+	{
+		public UIEventListener_VoidDelegate_Event(LuaFunction func) : base(func) { }
+		public UIEventListener_VoidDelegate_Event(LuaFunction func, LuaTable self) : base(func, self) { }
+
+		public void Call(UnityEngine.GameObject param0)
+		{
+			func.BeginPCall();
+			func.Push(param0);
+			func.PCall();
+			func.EndPCall();
+		}
+
+		public void CallWithSelf(UnityEngine.GameObject param0)
+		{
+			func.BeginPCall();
+			func.Push(self);
+			func.Push(param0);
+			func.PCall();
+			func.EndPCall();
+		}
+	}
+
+	public static Delegate UIEventListener_VoidDelegate(LuaFunction func, LuaTable self, bool flag)
+	{
+		if (func == null)
+		{
+			UIEventListener.VoidDelegate fn = delegate(UnityEngine.GameObject param0) { };
+			return fn;
+		}
+
+		if(!flag)
+		{
+			UIEventListener.VoidDelegate d = (new UIEventListener_VoidDelegate_Event(func)).Call;
+			return d;
+		}
+		else
+		{
+			UIEventListener.VoidDelegate d = (new UIEventListener_VoidDelegate_Event(func, self)).CallWithSelf;
 			return d;
 		}
 	}

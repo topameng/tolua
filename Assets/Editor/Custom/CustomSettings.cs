@@ -5,6 +5,7 @@ using LuaInterface;
 
 using BindType = ToLuaMenu.BindType;
 using System.Reflection;
+using UnityEngine.UI;
 
 public static class CustomSettings
 {
@@ -35,6 +36,7 @@ public static class CustomSettings
         _DT(typeof(System.Predicate<int>)),
         _DT(typeof(System.Action<int>)),
         _DT(typeof(System.Comparison<int>)),
+		_DT(typeof(System.Action<UnityEngine.GameObject>)),
     };
 
     //在这里添加你要导出注册到lua的类型列表
@@ -136,6 +138,8 @@ public static class CustomSettings
         _GT(typeof(RenderTexture)),
 		_GT(typeof(Resources)),
 		_GT(typeof(Util)),
+		_GT(typeof(UIEventListener)),
+		_GT(typeof(Text)),
     };
 
     public static List<Type> dynamicList = new List<Type>()

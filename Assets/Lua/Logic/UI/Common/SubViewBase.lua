@@ -76,12 +76,12 @@ function SubViewBase:GetComponent(path)
     return com
 end
 
-function SubViewBase:AddComponet(path, type)
+function SubViewBase:AddComponent(path, type)
     local go = self:GetGameObject(path)
     if nil == go then
         return nil
     end
-    return UITools.AddMissingComponent(type)
+    return UITools.AddMissingComponent(go, type)
 end
 
 
