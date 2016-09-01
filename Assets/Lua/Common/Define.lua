@@ -13,6 +13,7 @@ require ("Common/EventType")
 require ("Common/EnumDefine")
 
 require ("Util/UITools")
+require ("Util/Util")
 
 require ("Manager/ResourceManager")
 

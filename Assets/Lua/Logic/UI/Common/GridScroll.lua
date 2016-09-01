@@ -88,8 +88,8 @@ end
 
 function GridScroll:InitChild(go, index)
     local rt = go:GetComponent("RectTransform")
-    rt.anchoreMax = Vector2(0,1)
-    rt.anchoreMin = Vector2(0,1)
+    rt.anchorMax = Vector2(0,1)
+    rt.anchorMin = Vector2(0,1)
     rt.pivot = Vector2(0,1)
     rt.sizeDelta = self.sizeDelta
     rt.anchoredPosition = self:IndexToPosition(index)
@@ -101,7 +101,7 @@ function GridScroll:InitChildren()
     if self.transCount > self.itemCount then
         self.transCount = self.itemCount
     end
-    for i, self.transCount do
+    for i = 1 , self.transCount do
         local item = self:GetItem()
         self:InitChild(item.gameObject, i)
         Util.CallFunc(self.valueChangeCallback, item, i)
@@ -123,17 +123,17 @@ function GridScroll:InitTransform()
         --self.gridRt:SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, mathf.Ceil(self.itemCount/self.rowNum)* itemSizeX)
         UITools.SetRectTransformSize(self.gridRt, 
             function (size)
-                size.x = mathf.Ceil(self.itemCount/self.rowNum) * itemSizeX)
+                size.x = mathf.Ceil(self.itemCount/self.rowNum) * itemSizeX
             end)
         UITools.SetRectTransformPos(self.gridRt, function(pos) pos.x = 0 end)
     else
-         if self.gridRt.pivot.y ~= 0 then
+         if self.gridRt.pivot.y ~= 1 then
             logError("gridscorll pivot.y ~= 0")
         end
         self.rowNum = self.rowNum + 2
         UITools.SetRectTransformSize(self.gridRt, 
             function (size) 
-                size.x = matthf.Ceil(self.itemCount / self.colNum) * itemSizeY
+                size.y = mathf.Ceil(self.itemCount / self.colNum) * itemSizeY
             end)
         UITools.SetRectTransformPos(self.gridRt, function (pos) pos.x = 0 end)
     end
@@ -163,7 +163,7 @@ function GridScroll:New(go, itemGo, target, moveType)
     self.itemGo = itemGo
     self.moveType = moveType or Enum.Movement.Vertical
     self.target = target
-    self.class.super.New(go)
+    self.class.super:New(go)
     return self
 end
 
@@ -172,11 +172,12 @@ function GridScroll:Init(callback, itemCount, sizeDelta, spacing)
     self.valueChangeCallback = callback
     self.itemCount = itemCount
     self.sizeDelta = sizeDelta
-    self.spacing = spacing
+    self.spacing = spacing or Vector2.zero
     self:InitScroll()
+    self:InitGrid()
     self:InitTransform()
     self:InitChildren()
-    LuaHelper.AddScrollRectHandler(self.go, System.Action_UnityEngine_GameObject_UnityEndgine_Vector2(self.OnValueChange,self))
+    LuaHelper.AddScrollRectHandler(self.go, System.Action_UnityEngine_GameObject_UnityEngine_Vector2(self.OnValueChange,self))
 end
 
 
@@ -282,11 +283,11 @@ function GridScroll:OnValueChange(rectGo, normalPos)
     local itemSizeY = self.spacing.y + self.sizeDelta.y
     local startIndex = 0
     if self.moveType == Enum.Movement.Horizontal then
-        local len = -self.gridRt.anchoredPosition.y 
+        local len = -self.gridRt.anchoredPosition.x 
         local scrollCol = mathf.Floor(len/itemSizeX)
         startIndex = scrollCol * self.rowNum
     else
-         local len = -self.gridRt.anchoredPosition.x 
+         local len = self.gridRt.anchoredPosition.y 
         local scrollCol = mathf.Floor(len/itemSizeY)
         startIndex = scrollCol * self.colNum
     end

@@ -67,12 +67,12 @@ function SubViewBase:GetGameObject(path)
     return tr.gameObject
 end
 
-function SubViewBase:GetComponent(path)
+function SubViewBase:GetComponent(path, type)
     local go = self:GetGameObject(path)
     if nil == go then
         return nil
     end
-    local com = go:GetComponent(path)
+    local com = go:GetComponent(type)
     return com
 end
 

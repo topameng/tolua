@@ -19,9 +19,9 @@ function UITools.AddChild(parent, child)
     end
     go:SetActive(true)
     local transform = go.transform
-    transform.SetParent(parent.transform)
-    transform.localPosition = Vector3.Zero
-    transform.localScale = Vector3.Zero
+    transform:SetParent(parent.transform, false)
+    transform.localPosition = Vector3.zero
+    transform.localScale = Vector3.one
     transform.localRotation = Quaternion.identity
 
     return go
