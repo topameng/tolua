@@ -301,14 +301,13 @@ namespace LuaInterface
             this.state = table.GetLuaState();
         }
 
-        ~LuaArrayTable()
-        {
-            table.Dispose(false);
-        }
-
         public void Dispose()
         {
-            table.Dispose(true);            
+            if (table != null)
+            {
+                table.Dispose();
+                table = null;
+            }
         }
 
         public int Length
@@ -395,16 +394,14 @@ namespace LuaInterface
             this.state = table.GetLuaState() ;
         }
 
-        ~LuaDictTable()
-        {
-            table.Dispose(false);
-        }
-
         public void Dispose()
         {
-            table.Dispose(true);            
+            if (table != null)
+            {
+                table.Dispose();
+                table = null;
+            }
         }
-
 
         public object this[string key]
         {
