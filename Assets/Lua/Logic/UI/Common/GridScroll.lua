@@ -264,7 +264,7 @@ function GridScroll:SwapIndex(index)
         local lhsIter = GetExcept(self.showIndexSet, self.transIndexSet)
         local rhsIter = GetExcept(self.transIndexSet, self.showIndexSet)
         for k in pairs(rhsIter) do
-            table.insert(self.hideTransList, self.transDic)
+            table.insert(self.hideTransList, self.transDic[k])
             self.transIndexSet[k] = nil
         end
 
