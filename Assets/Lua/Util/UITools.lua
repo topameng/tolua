@@ -39,7 +39,7 @@ function UITools.SetRectTransformPos(rt, changePosFunc)
     if nil == changePosFunc then
         return
     end
-    local pos = rt.anchoredPosition
+    local pos = rt.anchoredPosition:Clone()
     changePosFunc(pos)
     rt.anchoredPosition = pos
 end
@@ -56,7 +56,7 @@ function UITools.SetRectTransformSize(rt, changeSizeFunc)
     if nil == changeSizeFunc then
         return
     end
-    local rect = rt.sizeDelta
+    local rect = rt.sizeDelta:Clone()
     changeSizeFunc(rect)
     rt.sizeDelta = rect
 end
