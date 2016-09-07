@@ -23,7 +23,7 @@ function DisplayBase:Init()
 end
 
 function DisplayBase:Show()
-    ResourceManager.Load("test", self.OnLoaded, self)
+    ResourceManager.Load(roleBase.data:Get("url"), self.OnLoaded, self)
 end
 
 function DisplayBase:OnLoaded(obj)
