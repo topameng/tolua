@@ -132,7 +132,7 @@ public class LuaClient : MonoBehaviour
 
     protected virtual void CallMain()
     {
-        LuaFunction main = luaState.GetFunction("Main");
+        LuaFunction main = luaState.GetFunction("GameMain");
         main.Call();
         main.Dispose();
         main = null;                

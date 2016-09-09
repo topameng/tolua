@@ -1,0 +1,4 @@
+PathManager = {}
+
+
+PathManager.UIRoot = "UI/"

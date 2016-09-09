@@ -1,0 +1,1 @@
+require("Logic/GameSys/PanelTest"):new()
