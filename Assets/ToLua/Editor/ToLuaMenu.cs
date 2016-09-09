@@ -755,7 +755,7 @@ public static class ToLuaMenu
         sb.AppendFormat("\t\t\tstate.BeginPreModule(\"{0}\");\r\n", bt.nameSpace);
         sb.AppendFormat("\t\t\t{0}Wrap.Register(state);\r\n", bt.wrapName);
         sb.AppendFormat("\t\t\tint reference = state.GetMetaReference(typeof({0}));\r\n", bt.name);
-        sb.AppendLineEx("\t\t\tstate.EndPreModule(reference);");                
+        sb.AppendLineEx("\t\t\tstate.EndPreModule(L, reference);");                
         sb.AppendLineEx("\t\t\treturn 1;");
         sb.AppendLineEx("\t\t}");
         sb.AppendLineEx("\t\tcatch(Exception e)");
@@ -1268,4 +1268,4 @@ public static class ToLuaMenu
         Debug.Log("Clear base type wrap files over");
         AssetDatabase.Refresh();
     }
-}
+            }
