@@ -800,12 +800,14 @@ namespace LuaInterface
         void RemoveFromGCList(int reference)
         {            
             lock (gcList)
-            {
-                int index = gcList.FindIndex((gc) => { return gc.reference == reference; });
-
-                if (index >= 0)
+            {                
+                for (int i = 0; i < gcList.Count; i++)
                 {
-                    gcList.RemoveAt(index);
+                    if (gcList[i].reference == reference)
+                    {
+                        gcList.RemoveAt(i);
+                        break;
+                    }
                 }
             }
         }
