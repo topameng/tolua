@@ -3261,11 +3261,17 @@ public static class ToLuaExport
             WeakReference luaDelegateWeakRef = null;
             if (!luaDelegateDict.TryGetValue(luaFunctionRef, out luaDelegateWeakRef) || luaDelegateWeakRef == null || !luaDelegateWeakRef.IsAlive)
             {
-                luaDelegateWeakRef = new WeakReference(create(func, null, false));
+                Delegate d = create(func, null, false);
+                luaDelegateWeakRef = new WeakReference(d.Target);
                 luaDelegateDict[luaFunctionRef] = luaDelegateWeakRef;
+                return d;
             }
 
-            return luaDelegateWeakRef.Target as Delegate;
+            LuaDelegate luaDelegate = luaDelegateWeakRef.Target as LuaDelegate;
+            if (luaDelegate.self == null)
+                return Delegate.CreateDelegate(t, luaDelegate, 'Call');
+            else
+                return Delegate.CreateDelegate(t, luaDelegate, 'CallWithSelf');
         }
         
         return create(func, null, false);        
