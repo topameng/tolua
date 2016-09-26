@@ -3269,9 +3269,9 @@ public static class ToLuaExport
 
             LuaDelegate luaDelegate = luaDelegateWeakRef.Target as LuaDelegate;
             if (luaDelegate.self == null)
-                return Delegate.CreateDelegate(t, luaDelegate, 'Call');
+                return Delegate.CreateDelegate(t, luaDelegate, ""Call"");
             else
-                return Delegate.CreateDelegate(t, luaDelegate, 'CallWithSelf');
+                return Delegate.CreateDelegate(t, luaDelegate, ""CallWithSelf"");
         }
         
         return create(func, null, false);        
