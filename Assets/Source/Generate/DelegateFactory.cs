@@ -7,6 +7,7 @@ public static class DelegateFactory
 {
 	public delegate Delegate DelegateValue(LuaFunction func, LuaTable self, bool flag);
 	public static Dictionary<Type, DelegateValue> dict = new Dictionary<Type, DelegateValue>();
+	public static Dictionary<int, WeakReference> luaDelegateDict = new Dictionary<int, WeakReference>();
 
 	static DelegateFactory()
 	{
@@ -27,6 +28,19 @@ public static class DelegateFactory
         if (!dict.TryGetValue(t, out create))
         {
             throw new LuaException(string.Format("Delegate {0} not register", LuaMisc.GetTypeName(t)));            
+        }
+
+        if (func != null)
+        {
+            int luaFunctionRef = func.GetReference();
+            WeakReference luaDelegateWeakRef = null;
+            if (!luaDelegateDict.TryGetValue(luaFunctionRef, out luaDelegateWeakRef) || luaDelegateWeakRef == null || !luaDelegateWeakRef.IsAlive)
+            {
+                luaDelegateWeakRef = new WeakReference(create(func, null, false));
+                luaDelegateDict[luaFunctionRef] = luaDelegateWeakRef;
+            }
+
+            return luaDelegateWeakRef.Target as Delegate;
         }
         
         return create(func, null, false);        
