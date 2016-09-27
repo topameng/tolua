@@ -3254,6 +3254,25 @@ public static class ToLuaExport
         {
             throw new LuaException(string.Format(""Delegate {0} not register"", LuaMisc.GetTypeName(t)));            
         }
+
+        if (func != null)
+        {
+            int luaFunctionRef = func.GetReference();
+            WeakReference luaDelegateWeakRef = null;
+            if (!luaDelegateDict.TryGetValue(luaFunctionRef, out luaDelegateWeakRef) || luaDelegateWeakRef == null || !luaDelegateWeakRef.IsAlive)
+            {
+                Delegate d = create(func, null, false);
+                luaDelegateWeakRef = new WeakReference(d.Target);
+                luaDelegateDict[luaFunctionRef] = luaDelegateWeakRef;
+                return d;
+            }
+
+            LuaDelegate luaDelegate = luaDelegateWeakRef.Target as LuaDelegate;
+            if (luaDelegate.self == null)
+                return Delegate.CreateDelegate(t, luaDelegate, ""Call"");
+            else
+                return Delegate.CreateDelegate(t, luaDelegate, ""CallWithSelf"");
+        }
         
         return create(func, null, false);        
     }
@@ -3440,6 +3459,7 @@ public static class ToLuaExport
         sb.Append("{\r\n");        
         sb.Append("\tpublic delegate Delegate DelegateValue(LuaFunction func, LuaTable self, bool flag);\r\n");
         sb.Append("\tpublic static Dictionary<Type, DelegateValue> dict = new Dictionary<Type, DelegateValue>();\r\n");
+        sb.Append("\tpublic static Dictionary<int, WeakReference> luaDelegateDict = new Dictionary<int, WeakReference>();\r\n");
         sb.AppendLineEx();
         sb.Append("\tstatic DelegateFactory()\r\n");
         sb.Append("\t{\r\n");
