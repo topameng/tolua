@@ -3248,55 +3248,63 @@ public static class ToLuaExport
     [NoToLuaAttribute]
     public static Delegate CreateDelegate(Type t, LuaFunction func = null)
     {
-        DelegateValue create = null;
+        DelegateValue Create = null;
 
-        if (!dict.TryGetValue(t, out create))
+        if (!dict.TryGetValue(t, out Create))
         {
             throw new LuaException(string.Format(""Delegate {0} not register"", LuaMisc.GetTypeName(t)));            
         }
 
         if (func != null)
         {
-            bool bCachedDelegateValid = false;
-            LuaDelegate luaDelegate = null;
-            WeakReference luaDelegateWeakRef = null;
-            int luaFunctionRef = func.GetReference();
-
-            if (luaDelegateDict.TryGetValue(luaFunctionRef, out luaDelegateWeakRef) 
-                && luaDelegateWeakRef.IsAlive)
+            LuaState state = func.GetLuaState();
+            LuaDelegate target = state.GetLuaDelegate(func);
+            
+            if (target != null)
             {
-                luaDelegate = luaDelegateWeakRef.Target as LuaDelegate;
-                if (luaDelegate.func.IsAlive())
-                    bCachedDelegateValid = true;
-            }
-
-            if (!bCachedDelegateValid)
-            {
-                Delegate d = create(func, null, false);
-                luaDelegateDict[luaFunctionRef] = new WeakReference(d.Target);
-                return d;
-            }
-
-            if (luaDelegate.self == null)
-                return Delegate.CreateDelegate(t, luaDelegate, ""Call"");
+                return Delegate.CreateDelegate(t, target, target.method);
+            }  
             else
-                return Delegate.CreateDelegate(t, luaDelegate, ""CallWithSelf"");
+            {
+                Delegate d = Create(func, null, false);
+                target = d.Target as LuaDelegate;
+                state.AddLuaDelegate(target, func);
+                return d;
+            }       
         }
-        
-        return create(func, null, false);        
+
+        return Create(func, null, false);        
     }
 
     [NoToLuaAttribute]
     public static Delegate CreateDelegate(Type t, LuaFunction func, LuaTable self)
     {
-        DelegateValue create = null;
+        DelegateValue Create = null;
 
-        if (!dict.TryGetValue(t, out create))
+        if (!dict.TryGetValue(t, out Create))
         {
             throw new LuaException(string.Format(""Delegate {0} not register"", LuaMisc.GetTypeName(t)));
         }
 
-        return create(func, self, true);
+        if (func != null)
+        {
+            LuaState state = func.GetLuaState();
+            LuaDelegate target = state.GetLuaDelegate(func, self);
+
+            if (target != null)
+            {
+                return Delegate.CreateDelegate(t, target, target.method);
+            }
+            else
+            {
+                Delegate d = Create(func, self, true);
+                target = d.Target as LuaDelegate;
+                state.AddLuaDelegate(target, func, self);
+                return d;
+            }
+        }
+
+        return Create(func, self, true);
     }
 ";
 
@@ -3467,8 +3475,7 @@ public static class ToLuaExport
         sb.Append("public static class DelegateFactory\r\n");
         sb.Append("{\r\n");        
         sb.Append("\tpublic delegate Delegate DelegateValue(LuaFunction func, LuaTable self, bool flag);\r\n");
-        sb.Append("\tpublic static Dictionary<Type, DelegateValue> dict = new Dictionary<Type, DelegateValue>();\r\n");
-        sb.Append("\tpublic static Dictionary<int, WeakReference> luaDelegateDict = new Dictionary<int, WeakReference>();\r\n");
+        sb.Append("\tpublic static Dictionary<Type, DelegateValue> dict = new Dictionary<Type, DelegateValue>();\r\n");        
         sb.AppendLineEx();
         sb.Append("\tstatic DelegateFactory()\r\n");
         sb.Append("\t{\r\n");
@@ -3522,12 +3529,16 @@ public static class ToLuaExport
             sb.AppendLineEx("\t\t}\r\n");
             sb.AppendLineEx("\t\tif(!flag)");
             sb.AppendLineEx("\t\t{");
-            sb.AppendFormat("\t\t\t{0} d = (new {1}_Event(func)).Call;\r\n", strType, name);            
+            sb.AppendFormat("\t\t\t{0}_Event target = new {0}_Event(func);\r\n", name);
+            sb.AppendFormat("\t\t\t{0} d = target.Call;\r\n", strType);
+            sb.AppendLineEx("\t\t\ttarget.method = d.Method;");
             sb.AppendLineEx("\t\t\treturn d;");
             sb.AppendLineEx("\t\t}");
             sb.AppendLineEx("\t\telse");
             sb.AppendLineEx("\t\t{");
-            sb.AppendFormat("\t\t\t{0} d = (new {1}_Event(func, self)).CallWithSelf;\r\n", strType, name);
+            sb.AppendFormat("\t\t\t{0}_Event target = new {0}_Event(func, self);\r\n", name);
+            sb.AppendFormat("\t\t\t{0} d = target.CallWithSelf;\r\n", strType);
+            sb.AppendLineEx("\t\t\ttarget.method = d.Method;");
             sb.AppendLineEx("\t\t\treturn d;");
             sb.AppendLineEx("\t\t}");
 

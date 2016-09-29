@@ -33,16 +33,18 @@ namespace LuaInterface
         protected LuaState luaState;
         protected ObjectTranslator translator = null;
 
-        protected bool beDisposed;
+        protected volatile bool beDisposed;
         protected int count = 0;
 
         public LuaBaseRef()
         {
+            IsAlive = true;
             count = 1;
         }
 
         ~LuaBaseRef()
         {
+            IsAlive = false;
             Dispose(false);
         }
 
@@ -53,8 +55,9 @@ namespace LuaInterface
             if (count > 0)
             {
                 return;
-            }            
+            }
 
+            IsAlive = false;
             Dispose(true);            
         }
 
@@ -162,9 +165,6 @@ namespace LuaInterface
             return !CompareRef(a, b);
         }
 
-        public bool IsAlive()
-        {
-            return !beDisposed;
-        }
+        public volatile bool IsAlive = true;
     }
 }

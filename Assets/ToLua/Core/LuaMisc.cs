@@ -131,7 +131,8 @@ namespace LuaInterface
     public class LuaDelegate
     {
         public LuaFunction func = null;
-        public LuaTable self = null;        
+        public LuaTable self = null;
+        public MethodInfo method = null; 
 
         public LuaDelegate(LuaFunction func)
         {
@@ -147,6 +148,8 @@ namespace LuaInterface
         //如果count不是1，说明还有其他人引用，只能等待gc来处理
         public virtual void Dispose()
         {
+            method = null;
+
             if (func != null)
             {
                 func.Dispose(1);

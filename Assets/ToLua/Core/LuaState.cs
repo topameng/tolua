@@ -69,6 +69,7 @@ namespace LuaInterface
         
         Dictionary<string, WeakReference> funcMap = new Dictionary<string, WeakReference>();
         Dictionary<int, WeakReference> funcRefMap = new Dictionary<int, WeakReference>();
+        Dictionary<long, WeakReference> delegateMap = new Dictionary<long, WeakReference>();
 
         List<GCRef> gcList = new List<GCRef>();
         List<LuaBaseRef> subList = new List<LuaBaseRef>();
@@ -745,7 +746,7 @@ namespace LuaInterface
                         LuaFunction func = weak.Target as LuaFunction;
                         CheckNull(func, "{0} not a lua function", fullPath);
 
-                        if (func.IsAlive())
+                        if (func.IsAlive)
                         {
                             func.AddRef();
                             return true;
@@ -823,7 +824,7 @@ namespace LuaInterface
                     LuaFunction func = weak.Target as LuaFunction;
                     CheckNull(func, "{0} not a lua function", name);
 
-                    if (func.IsAlive())
+                    if (func.IsAlive)
                     {
                         func.AddRef();
                         RemoveFromGCList(func.GetReference());
@@ -845,7 +846,7 @@ namespace LuaInterface
                         LuaFunction func = weak.Target as LuaFunction;
                         CheckNull(func, "{0} not a lua function", name);
 
-                        if (func.IsAlive())
+                        if (func.IsAlive)
                         {
                             funcMap.Add(name, weak);
                             func.AddRef();
@@ -855,6 +856,7 @@ namespace LuaInterface
                     }
 
                     funcRefMap.Remove(reference);
+                    delegateMap.Remove(reference);
                 }
                 
                 LuaFunction fun = new LuaFunction(reference, this);
@@ -884,14 +886,14 @@ namespace LuaInterface
                 {
                     LuaBaseRef luaRef = (LuaBaseRef)weak.Target;
 
-                    if (luaRef.IsAlive())
+                    if (luaRef.IsAlive)
                     {
                         luaRef.AddRef();
                         return luaRef;
                     }
                 }                
 
-                funcRefMap.Remove(reference);
+                funcRefMap.Remove(reference);                
             }
 
             return null;
@@ -923,7 +925,7 @@ namespace LuaInterface
                     LuaTable table = weak.Target as LuaTable;
                     CheckNull(table, "{0} not a lua table", fullPath);
 
-                    if (table.IsAlive())
+                    if (table.IsAlive)
                     {
                         table.AddRef();
                         RemoveFromGCList(table.GetReference());
@@ -946,7 +948,7 @@ namespace LuaInterface
                         table = weak.Target as LuaTable;
                         CheckNull(table, "{0} not a lua table", fullPath);
 
-                        if (table.IsAlive())
+                        if (table.IsAlive)
                         {
                             funcMap.Add(fullPath, weak);
                             table.AddRef();
@@ -1001,6 +1003,70 @@ namespace LuaInterface
 
             RemoveFromGCList(reference);
             return thread;
+        }
+
+        public LuaDelegate GetLuaDelegate(LuaFunction func)
+        {
+            WeakReference weak = null;
+            int reference = func.GetReference();            
+            delegateMap.TryGetValue(reference, out weak);
+
+            if (weak != null)
+            {
+                if (weak.IsAlive)
+                {
+                    return weak.Target as LuaDelegate;
+                }
+
+                delegateMap.Remove(reference);
+            }
+
+            return null;
+        }
+
+        public LuaDelegate GetLuaDelegate(LuaFunction func, LuaTable self)
+        {
+            WeakReference weak = null;
+            long high = func.GetReference();
+            long low = self == null ? 0 : self.GetReference();
+            low = low >= 0 ? low : 0;
+            long key = high << 32 | low;            
+            delegateMap.TryGetValue(key, out weak);
+
+            if (weak != null)
+            {
+                if (weak.IsAlive)
+                {
+                    return weak.Target as LuaDelegate;
+                }
+
+                delegateMap.Remove(key);
+            }
+
+            return null;
+        }
+
+        public void AddLuaDelegate(LuaDelegate target, LuaFunction func)
+        {            
+            int key = func.GetReference();
+
+            if (key > 0)
+            {
+                delegateMap[key] = new WeakReference(target);
+            }
+        }
+
+        public void AddLuaDelegate(LuaDelegate target, LuaFunction func, LuaTable self)
+        {
+            long high = func.GetReference();
+            long low = self == null ? 0 : self.GetReference();
+            low = low >= 0 ? low : 0;
+            long key = high << 32 | low;
+
+            if (key > 0)
+            {
+                delegateMap[key] = new WeakReference(target);
+            }
         }
 
         public bool CheckTop()
@@ -1569,6 +1635,25 @@ namespace LuaInterface
             return 0;
         }
 
+        public void RefreshDelegateMap()
+        {
+            List<long> list = new List<long>();
+            var iter = delegateMap.GetEnumerator();
+
+            while (iter.MoveNext())
+            {
+                if (!iter.Current.Value.IsAlive)
+                {
+                    list.Add(iter.Current.Key);
+                }
+            }
+
+            for (int i = 0; i < list.Count; i++)
+            {
+                delegateMap.Remove(list[i]);
+            }
+        }
+
         public object this[string fullPath]
         {
             get
@@ -1767,6 +1852,7 @@ namespace LuaInterface
                 }
 
                 CloseBaseRef();
+                delegateMap.Clear();
                 funcRefMap.Clear();
                 funcMap.Clear();
                 metaMap.Clear();                
@@ -1891,6 +1977,7 @@ namespace LuaInterface
                 {
                     ToLuaUnRef(reference);
                     funcRefMap.Remove(reference);
+                    delegateMap.Remove(reference);
 
                     if (LogGC)
                     {
@@ -1919,6 +2006,7 @@ namespace LuaInterface
 
                 ToLuaUnRef(reference);
                 funcRefMap.Remove(reference);
+                delegateMap.Remove(reference);
 
                 if (LogGC)
                 {
