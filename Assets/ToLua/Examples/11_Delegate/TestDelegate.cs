@@ -291,9 +291,7 @@ public class TestDelegate: MonoBehaviour
     void Update()
     {
         state.Collect();
-        state.CheckTop();
-
-        state.RefreshDelegateMap();
+        state.CheckTop();        
     }
 
     void SafeRelease(ref LuaFunction luaRef)
