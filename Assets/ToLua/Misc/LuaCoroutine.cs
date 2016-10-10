@@ -91,7 +91,13 @@ public static class LuaCoroutine
 
         function StartCoroutine(func)
             local co = coroutine.create(func)                       
-            coroutine.resume(co)
+            local flag, msg = coroutine.resume(co)
+
+            if not flag then
+                msg = debug.traceback(co, msg)
+                error(msg)
+            end
+
             return co
         end
 
