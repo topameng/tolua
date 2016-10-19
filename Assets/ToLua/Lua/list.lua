@@ -216,7 +216,7 @@ function list:tail()
 end
 
 function list:clone()
-	local t = list:New()
+	local t = list:new()
 	
 	for item in self.items() do
 		t:push(item.value)
