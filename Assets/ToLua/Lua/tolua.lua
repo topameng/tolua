@@ -37,7 +37,7 @@ require "event"
 require "typeof"
 require "slot"
 require "System.Timer"
-require "System.coroutine"
+require "System.Coroutine"
 require "System.ValueType"
 require "System.Reflection.BindingFlags"
 
