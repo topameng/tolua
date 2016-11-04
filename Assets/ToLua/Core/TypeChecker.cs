@@ -175,7 +175,7 @@ namespace LuaInterface
                 case LuaTypes.LUA_TBOOLEAN:
                     return t == typeof(bool);
                 case LuaTypes.LUA_TFUNCTION:
-                    return t == typeof(LuaFunction);                            
+                    return t == typeof(LuaFunction) || typeof(Delegate).IsAssignableFrom(t);                            
                 case LuaTypes.LUA_TTABLE:
                     return IsUserTable(L, t, pos);
                 case LuaTypes.LUA_TLIGHTUSERDATA:
