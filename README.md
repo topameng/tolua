@@ -12,7 +12,7 @@ Support unity4.6.x and Unity5.x all(copy /Unity5.x/Assets to /Assets)
 
  **如果你想在手机上测试，首先点击菜单Lua/Copy lua files to Resources， 之后再build.**<br>
 
- **有bug 可以到QQ群反馈: 286510803. 不闲聊，非bug相关不要加群, 请加讨论群: 434341400**
+ **有bug 可以到QQ群反馈: 286510803. 不闲聊，非bug相关不要加群, 请加讨论群: <br> ulua&tolua技术交流群① 341746602(已满) <br> ulua_tolua技术讨论群② 469941220 <br> ulua&tolua技术交流群3 434341400(已满) <br> tolua#技术讨论群④ 543826216**
 
 #Library
 
