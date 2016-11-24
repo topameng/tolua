@@ -100,7 +100,7 @@ namespace LuaInterface
                 return list[index].obj;                
             }
             
-            return false;
+            return null;
         }
 
         public object Remove(int pos)
