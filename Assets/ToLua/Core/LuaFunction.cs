@@ -353,11 +353,16 @@ namespace LuaInterface
             luaState.PushArgs(args);
         }
 
-        public void PushByteBuffer(byte[] buffer)
+        public void PushByteBuffer(byte[] buffer, int len = -1)
         {
             try
             {
-                luaState.PushByteBuffer(buffer);
+                if (len == -1)
+                {
+                    len = buffer.Length;
+                }
+
+                luaState.PushByteBuffer(buffer, len);
                 ++argCount;
             }
             catch (Exception e)
