@@ -152,6 +152,8 @@ public static class ToLuaExport
         "UIWidget.showHandles",
         "Input.IsJoystickPreconfigured",
         "UIDrawCall.isActive",
+        "MonoBehaviour.runInEditMode",
+        "Light.lightmappingMode"
     };
 
     public static bool IsMemberFilter(MemberInfo mi)
