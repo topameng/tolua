@@ -165,6 +165,11 @@ namespace LuaInterface
             return objectsBackMap.TryGetValue(o, out index);
         }
 
+        public void Destroyudata(int udata)
+        {
+            objects.Destroy(udata);
+        }
+
         public void SetBack(int index, object o)
         {
             objects.Replace(index, o);            
