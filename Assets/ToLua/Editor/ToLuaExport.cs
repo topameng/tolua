@@ -135,7 +135,6 @@ public static class ToLuaExport
         "Light.areaSize",
         "Security.GetChainOfTrustValue",
         "Texture2D.alphaIsTransparency",
-        "WWW.movie",
         "WebCamTexture.MarkNonReadable",
         "WebCamTexture.isReadable",
         "Graphic.OnRebuildRequested",
@@ -156,15 +155,20 @@ public static class ToLuaExport
         "Light.lightmappingMode"
     };
 
+	public static List<MemberInfo> memberInfoFilter = new List<MemberInfo>
+	{
+		typeof(WWW).GetProperty("movie"),
+	};
+
     public static bool IsMemberFilter(MemberInfo mi)
     {
-        return memberFilter.Contains(type.Name + "." + mi.Name);
+		return memberInfoFilter.Contains(mi) || memberFilter.Contains(type.Name + "." + mi.Name);
     }
 
     public static bool IsMemberFilter(Type t)
     {
         string name = LuaMisc.GetTypeName(t);
-        return memberFilter.Find((p) => { return name.Contains(p); }) != null;
+        return memberInfoFilter.Contains(t) || memberFilter.Find((p) => { return name.Contains(p); }) != null;
     }
 
     static ToLuaExport()
