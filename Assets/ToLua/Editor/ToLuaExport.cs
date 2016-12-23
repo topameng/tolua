@@ -135,6 +135,7 @@ public static class ToLuaExport
         "Light.areaSize",
         "Security.GetChainOfTrustValue",
         "Texture2D.alphaIsTransparency",
+        "WWW.movie",
         "WebCamTexture.MarkNonReadable",
         "WebCamTexture.isReadable",
         "Graphic.OnRebuildRequested",
@@ -157,8 +158,9 @@ public static class ToLuaExport
 
 	public static List<MemberInfo> memberInfoFilter = new List<MemberInfo>
 	{
-		typeof(WWW).GetProperty("movie"),
-	};
+        //可精确查找一个函数
+		//Type.GetMethod(string name, BindingFlags bindingAttr, Binder binder, CallingConventions callConvention, Type[] types, ParameterModifier[] modifiers);
+    };
 
     public static bool IsMemberFilter(MemberInfo mi)
     {
