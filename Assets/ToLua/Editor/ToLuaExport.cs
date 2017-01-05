@@ -146,14 +146,14 @@ public static class ToLuaExport
         "CanvasRenderer.OnRequestRebuild",
         "CanvasRenderer.onRequestRebuild",
         "Terrain.bakeLightProbesForTrees",
+        "MonoBehaviour.runInEditMode",
+        "Light.lightmappingMode"，
         //NGUI
         "UIInput.ProcessEvent",
         "UIWidget.showHandlesWithMoveTool",
         "UIWidget.showHandles",
         "Input.IsJoystickPreconfigured",
-        "UIDrawCall.isActive",
-        "MonoBehaviour.runInEditMode",
-        "Light.lightmappingMode"
+        "UIDrawCall.isActive"
     };
 
 	public static List<MemberInfo> memberInfoFilter = new List<MemberInfo>
