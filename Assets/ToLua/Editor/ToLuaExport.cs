@@ -147,7 +147,7 @@ public static class ToLuaExport
         "CanvasRenderer.onRequestRebuild",
         "Terrain.bakeLightProbesForTrees",
         "MonoBehaviour.runInEditMode",
-        "Light.lightmappingMode"，
+        "Light.lightmappingMode",
         //NGUI
         "UIInput.ProcessEvent",
         "UIWidget.showHandlesWithMoveTool",
