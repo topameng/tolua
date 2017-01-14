@@ -1752,7 +1752,11 @@ namespace LuaInterface
         public int GetMetaReference(Type t)
         {
             int reference = -1;
-            metaMap.TryGetValue(t, out reference);
+            while (t != null && !metaMap.TryGetValue(t, out reference))
+            {
+                t = t.BaseType;
+            }
+
             return reference;
         }
 
