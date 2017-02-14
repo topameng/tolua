@@ -27,6 +27,7 @@ using System.Text;
 using System.Reflection;
 using System.Collections.Generic;
 using LuaInterface;
+using System.Linq;
 
 using Object = UnityEngine.Object;
 using System.IO;
@@ -101,7 +102,7 @@ public static class ToLuaExport
     static List<MethodInfo> setItems = new List<MethodInfo>();
 
     static BindingFlags binding = BindingFlags.Public | BindingFlags.Static | BindingFlags.IgnoreCase;
-        
+
     static ObjAmbig ambig = ObjAmbig.NetObj;    
     //wrapClaaName + "Wrap" = 导出文件名，导出类名
     public static string wrapClassName = "";
@@ -156,15 +157,14 @@ public static class ToLuaExport
         "UIDrawCall.isActive"
     };
 
-	public static List<MemberInfo> memberInfoFilter = new List<MemberInfo>
-	{
+    public static List<MemberInfo> memberInfoFilter = new List<MemberInfo>
+    {
         //可精确查找一个函数
-		//Type.GetMethod(string name, BindingFlags bindingAttr, Binder binder, CallingConventions callConvention, Type[] types, ParameterModifier[] modifiers);
+        //Type.GetMethod(string name, BindingFlags bindingAttr, Binder binder, CallingConventions callConvention, Type[] types, ParameterModifier[] modifiers);
     };
-
     public static bool IsMemberFilter(MemberInfo mi)
     {
-		return memberInfoFilter.Contains(mi) || memberFilter.Contains(type.Name + "." + mi.Name);
+        return memberInfoFilter.Contains(mi) || memberFilter.Contains(type.Name + "." + mi.Name);
     }
 
     public static bool IsMemberFilter(Type t)
@@ -358,6 +358,25 @@ public static class ToLuaExport
         SaveFile(dir + wrapClassName + "Wrap.cs");
     }
 
+    public static MethodInfo[] GetExtensionMethods( Type t)
+    {
+        List<Type> AssTypes = new List<Type>();
+
+        foreach (Assembly item in AppDomain.CurrentDomain.GetAssemblies())
+        {
+            AssTypes.AddRange(item.GetTypes());
+        }
+        AssTypes.Remove(t);
+
+        var query = from type in AssTypes
+                    where type.IsSealed && !type.IsGenericType && !type.IsNested
+                    from method in type.GetMethods(BindingFlags.Static | BindingFlags.Public )
+                    where method.IsDefined(typeof(ExtensionAttribute), false)
+                    where method.GetParameters()[0].ParameterType == t
+                    select method;
+        return query.ToArray<MethodInfo>();
+    }
+
     static void InitMethods()
     {
         bool flag = false;
@@ -370,6 +389,14 @@ public static class ToLuaExport
 
         List<MethodInfo> list = new List<MethodInfo>();
         list.AddRange(type.GetMethods(BindingFlags.Instance | binding));
+
+        //
+        MethodInfo[] extensionMethods = GetExtensionMethods(type);
+        foreach (var method in extensionMethods)
+        {
+            if (!list.Contains(method))
+                list.Add(method);
+        }
 
         for (int i = list.Count - 1; i >= 0; --i)
         {
@@ -898,7 +925,7 @@ public static class ToLuaExport
         }
 
         ParameterInfo[] paramInfos = m.GetParameters();
-        int offset = m.IsStatic ? 0 : 1;
+        int offset = m.IsStatic ? 0 : 1;//拓展方法参数一致
         bool haveParams = HasOptionalParam(paramInfos);
         int rc = m.ReturnType == typeof(void) ? 0 : 1;
 
@@ -3622,47 +3649,6 @@ public static class ToLuaExport
         return false;
     }
 
-    static void ProcessExtendType(Type extendType, List<MethodInfo> list, List<MethodInfo> extendList)
-    {
-        HashSet<string> removeSet = new HashSet<string>();
-
-        if (extendType != null)
-        {
-            List<MethodInfo> list2 = new List<MethodInfo>();
-            list2.AddRange(extendType.GetMethods(BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly));
-
-            for (int i = list2.Count - 1; i >= 0; i--)
-            {
-                MethodInfo md = list2[i];
-
-                if (!md.IsDefined(typeof(ExtensionAttribute), false))
-                {
-                    continue;
-                }
-
-                ParameterInfo[] plist = md.GetParameters();
-                Type t = plist[0].ParameterType;
-
-                if (t == type || (IsGenericType(md, t) && (type == t.BaseType || type.IsSubclassOf(t.BaseType))))
-                {
-                    string name = md.Name;
-
-                    if (!removeSet.Contains(name))
-                    {
-                        removeSet.Add(name);
-                        list.RemoveAll((m) => { return m.Name == name; });
-                    }
-
-                    if (!IsObsolete(list2[i]))
-                    {
-                        extendList.Add(md);
-                        list.Add(md);
-                    }
-                }
-            }
-        }
-    }
-
     static void ProcessExtends(List<MethodInfo> list)
     {
         extendName = "ToLua_" + className.Replace(".", "_");
@@ -3670,14 +3656,22 @@ public static class ToLuaExport
         ProcessEditorExtend(extendType, list);
         string temp = null;
 
-        for (int i = 0; i < extendList.Count; i++)
+        for (int i = 0; i < list.Count; ++i)
         {
-            ProcessExtendType(extendList[i], list, extendMethod);
-            string nameSpace = GetNameSpace(extendList[i], out temp);
-
-            if (!string.IsNullOrEmpty(nameSpace))
+            MethodInfo method = list[i];
+            bool extensions = method.IsDefined(typeof(ExtensionAttribute), false);
+            if (extensions)
             {
-                usingList.Add(nameSpace);
+                if (!IsObsolete(method))
+                {
+                    extendMethod.Add(method);
+                }
+
+                string nameSpace = GetNameSpace(method.DeclaringType, out temp);
+                if (!string.IsNullOrEmpty(nameSpace) && usingList.Contains(nameSpace) == false)
+                {
+                    usingList.Add(nameSpace);
+                }
             }
         }
     }
