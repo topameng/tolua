@@ -46,5 +46,10 @@ public class TestCoroutine : MonoBehaviour
             func.Call();
             func.Dispose();
         }
+        else if (GUI.Button(new Rect(50, 250, 120, 45), "GC"))
+        {
+            lua.DoString("collectgarbage('collect')", "TestCoroutine.cs");
+            Resources.UnloadUnusedAssets();
+        }
     }
 }

@@ -113,7 +113,7 @@ public class TestReflection : LuaClient
         f.SetValue(obj, 2048);
         num = (int)f.GetValue(obj);
         Debugger.Log("object field: {0}", num);*/
-        
+
         luaState.CheckTop();
         luaState.DoString(script, "TestReflection.cs");
         LuaFunction func = luaState.GetFunction("Test");

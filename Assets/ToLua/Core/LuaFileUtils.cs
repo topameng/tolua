@@ -122,7 +122,7 @@ namespace LuaInterface
                 sb.Append(';');
             }
 
-            return sb.ToString();
+            return StringBuilderCache.GetStringAndRelease(sb);
         }
 
         public void AddSearchBundle(string name, AssetBundle bundle)
@@ -231,7 +231,7 @@ namespace LuaInterface
                 sb.AppendFormat("\n\tno file '{0}' in {1}", fileName, bundle);
             }
 
-            return sb.ToString();
+            return StringBuilderCache.GetStringAndRelease(sb);
         }
 
         byte[] ReadZipFile(string fileName)
@@ -259,7 +259,7 @@ namespace LuaInterface
 #if UNITY_5
             fileName += ".bytes";
 #endif
-            zipName = sb.ToString();
+            zipName = StringBuilderCache.GetStringAndRelease(sb);
             zipMap.TryGetValue(zipName, out zipFile);
 
             if (zipFile != null)

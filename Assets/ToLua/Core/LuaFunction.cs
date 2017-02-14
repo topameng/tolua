@@ -39,7 +39,7 @@ namespace LuaInterface
             }
         }
 
-        protected int oldTop = -1;        
+        protected int oldTop = -1;
         private int argCount = 0;
         private int stackPos = -1;
         private Stack<FuncData> stack = new Stack<FuncData>();
@@ -47,7 +47,7 @@ namespace LuaInterface
         public LuaFunction(int reference, LuaState state)
         {
             this.reference = reference;
-            this.luaState = state;            
+            this.luaState = state;
         }
 
         public override void Dispose()
@@ -58,8 +58,8 @@ namespace LuaInterface
                 Debugger.LogError("You must call EndPCall before calling Dispose");
             }
 #endif
-                base.Dispose();
-            }
+            base.Dispose();
+        }
 
         public virtual int BeginPCall()
         {
@@ -90,11 +90,11 @@ namespace LuaInterface
             {
                 luaState.PCall(argCount, oldTop);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 EndPCall();
                 throw e;
-            }               
+            }
         }
 
         public void EndPCall()
@@ -105,17 +105,18 @@ namespace LuaInterface
                 argCount = 0;
                 FuncData data = stack.Pop();
                 oldTop = data.oldTop;
-                stackPos = data.stackPos;                
+                stackPos = data.stackPos;
             }
         }
 
         public void Call()
-        {            
+        {
             BeginPCall();
             PCall();
-            EndPCall();            
+            EndPCall();
         }
 
+        //慎用
         public object[] Call(params object[] args)
         {
             BeginPCall();
@@ -124,7 +125,7 @@ namespace LuaInterface
             if (!luaState.LuaCheckStack(count + 6))
             {
                 EndPCall();
-                throw new LuaException("stack overflow");                
+                throw new LuaException("stack overflow");
             }
 
             PushArgs(args);
@@ -145,9 +146,27 @@ namespace LuaInterface
             ++argCount;
         }
 
-        public void PushInt64(LuaInteger64 n64)
+        public void Push(int n)
         {
-            luaState.PushInt64(n64);
+            luaState.Push(n);
+            ++argCount;
+        }
+
+        public void Push(uint un)
+        {
+            luaState.Push(un);
+            ++argCount;
+        }
+
+        public void Push(long num)
+        {
+            luaState.Push(num);
+            ++argCount;
+        }
+
+        public void Push(ulong un)
+        {
+            luaState.Push(un);
             ++argCount;
         }
 
@@ -248,11 +267,11 @@ namespace LuaInterface
                 luaState.Push(ray);
                 ++argCount;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 EndPCall();
                 throw e;
-            }            
+            }
         }
 
         public void Push(Bounds bounds)
@@ -266,7 +285,7 @@ namespace LuaInterface
             {
                 EndPCall();
                 throw e;
-            }  
+            }
         }
 
         public void Push(RaycastHit hit)
@@ -294,7 +313,7 @@ namespace LuaInterface
             {
                 EndPCall();
                 throw e;
-            }  
+            }
         }
 
         public void Push(LuaByteBuffer buffer)
@@ -308,7 +327,7 @@ namespace LuaInterface
             {
                 EndPCall();
                 throw e;
-            }            
+            }
         }
 
         public void PushValue(ValueType value)
@@ -323,7 +342,7 @@ namespace LuaInterface
             ++argCount;
         }
 
-        public void PushArgs(object[] args)        
+        public void PushArgs(object[] args)
         {
             if (args == null)
             {
@@ -334,14 +353,19 @@ namespace LuaInterface
             luaState.PushArgs(args);
         }
 
-        public void PushByteBuffer(byte[] buffer)
+        public void PushByteBuffer(byte[] buffer, int len = -1)
         {
             try
             {
-                luaState.PushByteBuffer(buffer);
+                if (len == -1)
+                {
+                    len = buffer.Length;
+                }
+
+                luaState.PushByteBuffer(buffer, len);
                 ++argCount;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 EndPCall();
                 throw e;
@@ -352,22 +376,22 @@ namespace LuaInterface
         {
             try
             {
-                return luaState.CheckNumber(stackPos++);
+                return luaState.LuaCheckNumber(stackPos++);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 EndPCall();
                 throw e;
-            }            
+            }
         }
 
         public bool CheckBoolean()
         {
             try
             {
-                return luaState.CheckBoolean(stackPos++);
+                return luaState.LuaCheckBoolean(stackPos++);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 EndPCall();
                 throw e;
@@ -375,16 +399,16 @@ namespace LuaInterface
         }
 
         public string CheckString()
-        {            
+        {
             try
             {
-                return luaState.CheckString(stackPos++);                
+                return luaState.CheckString(stackPos++);
             }
             catch (Exception e)
             {
                 EndPCall();
                 throw e;
-            }            
+            }
         }
 
         public Vector3 CheckVector3()
@@ -393,11 +417,11 @@ namespace LuaInterface
             {
                 return luaState.CheckVector3(stackPos++);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 EndPCall();
                 throw e;
-            }                        
+            }
         }
 
         public Quaternion CheckQuaternion()
@@ -406,11 +430,11 @@ namespace LuaInterface
             {
                 return luaState.CheckQuaternion(stackPos++);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 EndPCall();
                 throw e;
-            }                        
+            }
         }
 
         public Vector2 CheckVector2()
@@ -419,11 +443,11 @@ namespace LuaInterface
             {
                 return luaState.CheckVector2(stackPos++);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 EndPCall();
                 throw e;
-            }                       
+            }
         }
 
         public Vector4 CheckVector4()
@@ -436,7 +460,7 @@ namespace LuaInterface
             {
                 EndPCall();
                 throw e;
-            } 
+            }
         }
 
         public Color CheckColor()
@@ -449,7 +473,7 @@ namespace LuaInterface
             {
                 EndPCall();
                 throw e;
-            } 
+            }
         }
 
         public Ray CheckRay()
@@ -475,7 +499,7 @@ namespace LuaInterface
             {
                 EndPCall();
                 throw e;
-            }        
+            }
         }
 
         public LayerMask CheckLayerMask()
@@ -488,20 +512,33 @@ namespace LuaInterface
             {
                 EndPCall();
                 throw e;
-            } 
+            }
         }
 
-        public LuaInteger64 CheckInteger64()
+        public long CheckLong()
         {
             try
             {
-                return luaState.CheckInteger64(stackPos++);
+                return luaState.CheckLong(stackPos++);
             }
             catch (Exception e)
             {
                 EndPCall();
                 throw e;
-            } 
+            }
+        }
+
+        public ulong CheckULong()
+        {
+            try
+            {
+                return luaState.CheckULong(stackPos++);
+            }
+            catch (Exception e)
+            {
+                EndPCall();
+                throw e;
+            }
         }
 
         public Delegate CheckDelegate()
@@ -514,7 +551,7 @@ namespace LuaInterface
             {
                 EndPCall();
                 throw e;
-            } 
+            }
         }
 
         public object CheckVariant()
@@ -532,7 +569,7 @@ namespace LuaInterface
             {
                 EndPCall();
                 throw e;
-            } 
+            }
         }
 
         public byte[] CheckByteBuffer()
@@ -545,7 +582,7 @@ namespace LuaInterface
             {
                 EndPCall();
                 throw e;
-            } 
+            }
         }
 
         public object CheckObject(Type t)
@@ -558,7 +595,7 @@ namespace LuaInterface
             {
                 EndPCall();
                 throw e;
-            } 
+            }
         }
 
         public LuaFunction CheckLuaFunction()
@@ -571,7 +608,7 @@ namespace LuaInterface
             {
                 EndPCall();
                 throw e;
-            } 
+            }
         }
 
         public LuaTable CheckLuaTable()
@@ -584,7 +621,7 @@ namespace LuaInterface
             {
                 EndPCall();
                 throw e;
-            } 
+            }
         }
 
         public LuaThread CheckLuaThread()
@@ -597,7 +634,7 @@ namespace LuaInterface
             {
                 EndPCall();
                 throw e;
-            } 
+            }
         }
     }
 }

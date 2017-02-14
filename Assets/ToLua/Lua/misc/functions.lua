@@ -1,3 +1,21 @@
+local require = require
+local string = string
+local table = table
+
+function string.split(input, delimiter)
+    input = tostring(input)
+    delimiter = tostring(delimiter)
+    if (delimiter=='') then return false end
+    local pos,arr = 0, {}
+    -- for each divider found
+    for st,sp in function() return string.find(input, delimiter, pos, true) end do
+        table.insert(arr, string.sub(input, pos, st - 1))
+        pos = sp + 1
+    end
+    table.insert(arr, string.sub(input, pos))
+    return arr
+end
+
 function import(moduleName, currentModuleName)
     local currentModuleNameParts
     local moduleFullName = moduleName
@@ -26,3 +44,12 @@ function import(moduleName, currentModuleName)
 
     return require(moduleFullName)
 end
+
+--重新require一个lua文件，替代系统文件。
+function reimport(name)
+    local package = package
+    package.loaded[name] = nil
+    package.preload[name] = nil
+    return require(name)    
+end
+

@@ -11,11 +11,11 @@ if jit then
 	print(string.format("os: %s, arch: %s", jit.os, jit.arch))
 end
 
---mobdebug 会调整jit
 if DebugServerIp then  
   require("mobdebug").start(DebugServerIp)
 end
 
+require "misc.functions"
 Mathf		= require "UnityEngine.Mathf"
 Vector3 	= require "UnityEngine.Vector3"
 Quaternion	= require "UnityEngine.Quaternion"
@@ -28,7 +28,7 @@ RaycastHit	= require "UnityEngine.RaycastHit"
 Touch		= require "UnityEngine.Touch"
 LayerMask	= require "UnityEngine.LayerMask"
 Plane		= require "UnityEngine.Plane"
-Time		= require "UnityEngine.Time"
+Time		= reimport "UnityEngine.Time"
 
 list		= require "list"
 utf8		= require "misc.utf8"

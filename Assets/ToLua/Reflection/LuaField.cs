@@ -82,7 +82,7 @@ namespace LuaInterface
                 {                    
                     object arg0 = ToLua.ToVarObject(L, 2);
                     object arg1 = ToLua.ToVarObject(L, 3);
-                    arg1 = Convert.ChangeType(arg1, field.FieldType);
+                    arg1 = TypeChecker.ChangeType(arg1, field.FieldType);
                     field.SetValue(arg0, arg1);
                     return 0;
                 }
@@ -93,7 +93,7 @@ namespace LuaInterface
                     BindingFlags arg2 = (BindingFlags)LuaDLL.lua_tonumber(L, 4);
                     Binder arg3 = (Binder)ToLua.ToObject(L, 5);
                     CultureInfo arg4 = (CultureInfo)ToLua.ToObject(L, 6);
-                    arg1 = Convert.ChangeType(arg1, field.FieldType);
+                    arg1 = TypeChecker.ChangeType(arg1, field.FieldType);
                     field.SetValue(arg0, arg1, arg2, arg3, arg4);
                     return 0;
                 }

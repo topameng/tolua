@@ -6,58 +6,52 @@ public class TestInherit : MonoBehaviour
 {
     private string script =
     @"  LuaTransform = 
-        {             
-             posCount = -1,
-            _position = Vector3.zero,
-        }        
-        
-        local get = tolua.initget(LuaTransform)
-        local set = tolua.initset(LuaTransform)               
-                
-        --重写同名函数
-        function LuaTransform:Translate(...)            
-	        print('child Translate')
-	        self.base:Translate(...)                   
-        end         
-
-        function LuaTransform:Init(u)
-            self._position = u.position                    
-        end
-
-        LuaTransform.__index = LuaTransform            
+        {                          
+        }                                                   
 
         function LuaTransform.Extend(u)         
-            local t = {}            
-            setmetatable(t, LuaTransform)   
-            t:Init(u)                     
-            tolua.setpeer(u, t)                                
+            local t = {}                        
+            local _position = u.position      
+            tolua.setpeer(u, t)     
+
+            t.__index = t
+            local get = tolua.initget(t)
+            local set = tolua.initset(t)   
+
+            local _base = u.base            
+
+            --重写同名属性获取        
+            get.position = function(self)                              
+                return _position                
+            end            
+
+            --重写同名属性设置
+            set.position = function(self, v)                 	                                            
+                if _position ~= v then         
+                    _position = v                    
+                    _base.position = v                                                                      	            
+                end
+            end
+
+            --重写同名函数
+            function t:Translate(...)            
+	            print('child Translate')
+	            _base:Translate(...)                   
+            end    
+                           
             return u
         end
         
-        --重写同名属性获取        
-        get.position = function(self)                              
-            return self._position
-        end
-
-        --重写同名属性设置
-        set.position = function(self, v)                 
-	        if self._position ~= v then                                  
-		        self._position = v                
-                self.base.position = v                                             
-	        end
-        end
         
         --既保证支持继承函数，又支持go.transform == transform 这样的比较
         function Test(node)        
             local v = Vector3.one           
-            local transform = LuaTransform.Extend(node)                                                    
+            local transform = LuaTransform.Extend(node)  
+            --local transform = node                                                  
 
             local t = os.clock()            
-            for i=1, 200000 do
+            for i = 1, 200000 do
                 transform.position = transform.position
-                --local v = transform.position:Clone()                
-                --v.x = v.x - 1                
-                --transform.position = v
             end
             print('LuaTransform get set cost', os.clock() - t)
 
@@ -83,7 +77,7 @@ public class TestInherit : MonoBehaviour
         lua = new LuaState();        
         lua.Start();
         LuaBinder.Bind(lua);
-        lua.DoString(script);
+        lua.DoString(script, "TestInherit.cs");
 
         float time = Time.realtimeSinceStartup;
 

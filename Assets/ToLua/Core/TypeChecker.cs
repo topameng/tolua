@@ -31,7 +31,6 @@ namespace LuaInterface
             return !t.IsEnum && t.IsValueType;
         }
 
-
         public static bool CheckTypes(IntPtr L, int begin, Type type0)
         {
             return CheckType(L, type0, begin);
@@ -87,11 +86,11 @@ namespace LuaInterface
                    CheckType(L, type5, begin + 5) && CheckType(L, type6, begin + 6) && CheckType(L, type7, begin + 7) && CheckType(L, type8, begin + 8) && CheckType(L, type9, begin + 9);
         }
 
-        public static bool CheckTypes(IntPtr L, params Type[] types)
+        public static bool CheckTypes(IntPtr L, int begin, params Type[] types)
         {
             for (int i = 0; i < types.Length; i++)
             {
-                if (!CheckType(L, types[i], i + 1))
+                if (!CheckType(L, types[i], i + begin))
                 {
                     return false;
                 }
@@ -143,6 +142,17 @@ namespace LuaInterface
             return false;
         }
 
+        public static Type GetNullableType(Type t)
+        {
+            if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Nullable<>))
+            {
+                Type[] ts = t.GetGenericArguments();
+                t = ts[0];
+            }
+
+            return t;
+        }
+
         public static bool CheckType(IntPtr L, Type t, int pos)
         {
             //默认都可以转 object
@@ -151,7 +161,8 @@ namespace LuaInterface
                 return true;
             }
 
-            LuaTypes luaType = LuaDLL.lua_type(L, pos);
+            t = GetNullableType(t);
+            LuaTypes luaType = LuaDLL.lua_type(L, pos);            
 
             switch (luaType)
             {
@@ -178,11 +189,41 @@ namespace LuaInterface
             throw new LuaException("undefined type to check" + LuaDLL.luaL_typename(L, pos));
         }
 
+        static Type monoType = typeof(Type).GetType();
+
+        public static T ChangeType<T>(object temp, Type type)
+        {
+            if (temp.GetType() == monoType)
+            {
+                return (T)temp;
+            }
+            else
+            {
+                return (T)Convert.ChangeType(temp, type);
+            }
+        }
+
+        public static object ChangeType(object temp, Type type)
+        {
+            if (temp.GetType() == monoType)
+            {
+                return (Type)temp;
+            }
+            else
+            {
+                return Convert.ChangeType(temp, type);
+            }
+        }
+
         static bool IsMatchUserData(IntPtr L, Type t, int pos)
         {
-            if (t == typeof(LuaInteger64))
+            if (t == typeof(long))
             {
                 return LuaDLL.tolua_isint64(L, pos);
+            }
+            else if (t == typeof(ulong))
+            {
+                return LuaDLL.tolua_isuint64(L, pos);
             }
 
             object obj = null;
@@ -211,7 +252,7 @@ namespace LuaInterface
             return false;
         }
 
-        static bool IsNumberType(Type t)
+        public static bool IsNumberType(Type t)
         {
             if (t.IsPrimitive)
             {
@@ -230,6 +271,11 @@ namespace LuaInterface
         {
             if (t.IsArray)
             {
+                if (t.GetElementType().IsArray || t.GetArrayRank() > 1)
+                {
+                    return false;
+                }
+
                 return true;
             }
             else if (t == typeof(LuaTable))
@@ -243,25 +289,25 @@ namespace LuaInterface
                 switch (vt)
                 {
                     case LuaValueType.Vector3:
-                        return typeof(Vector3) == t || typeof(Nullable<Vector3>) == t;
+                        return typeof(Vector3) == t;
                     case LuaValueType.Quaternion:
-                        return typeof(Quaternion) == t || typeof(Nullable<Quaternion>) == t;
+                        return typeof(Quaternion) == t;
                     case LuaValueType.Color:
-                        return typeof(Color) == t || typeof(Nullable<Color>) == t;
+                        return typeof(Color) == t;
                     case LuaValueType.Ray:
-                        return typeof(Ray) == t || typeof(Nullable<Ray>) == t;
+                        return typeof(Ray) == t;
                     case LuaValueType.Bounds:
-                        return typeof(Bounds) == t || typeof(Nullable<Bounds>) == t;
+                        return typeof(Bounds) == t;
                     case LuaValueType.Vector2:
-                        return typeof(Vector2) == t || typeof(Nullable<Vector2>) == t;
+                        return typeof(Vector2) == t;
                     case LuaValueType.Vector4:
-                        return typeof(Vector4) == t || typeof(Nullable<Vector4>) == t;
+                        return typeof(Vector4) == t;
                     case LuaValueType.Touch:
-                        return typeof(Touch) == t || typeof(Nullable<Touch>) == t;
+                        return typeof(Touch) == t;
                     case LuaValueType.LayerMask:
-                        return typeof(LayerMask) == t || typeof(Nullable<LayerMask>) == t;
+                        return typeof(LayerMask) == t;
                     case LuaValueType.RaycastHit:
-                        return typeof(RaycastHit) == t || typeof(Nullable<RaycastHit>) == t;
+                        return typeof(RaycastHit) == t;
                     default:
                         break;
                 }
@@ -272,6 +318,6 @@ namespace LuaInterface
             }
 
             return false;
-        }
+        }        
     }
 }

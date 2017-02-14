@@ -19,9 +19,9 @@ TouchPhase =
 TouchBits = 
 {
 	DeltaPosition = 1,
-    Position = 2,
-    RawPosition = 4,
-    ALL = 7,
+	Position = 2,
+	RawPosition = 4,
+	ALL = 7,
 }
 
 local TouchPhase = TouchPhase
@@ -44,17 +44,17 @@ Touch.__index = function(t,k)
 end
 
 --c# 创建
-function Touch.New(fingerId, position, rawPosition, deltaPostion, deltaTime, tapCount, phase)
-	local touch = {fingerId = fingerId or 0, position = position or zero, rawPosition = rawPosition or zero, deltaPostion = deltaPostion or zero, deltaTime = deltaTime or 0, tapCount = tapCount or 0, phase = phase or 0}		
+function Touch.New(fingerId, position, rawPosition, deltaPosition, deltaTime, tapCount, phase)
+	local touch = {fingerId = fingerId or 0, position = position or zero, rawPosition = rawPosition or zero, deltaPosition = deltaPosition or zero, deltaTime = deltaTime or 0, tapCount = tapCount or 0, phase = phase or 0}		
 	setmetatable(touch, Touch)
 	return touch
 end
 
-function Touch:Init(fingerId, position, rawPosition, deltaPostion, deltaTime, tapCount, phase)
+function Touch:Init(fingerId, position, rawPosition, deltaPosition, deltaTime, tapCount, phase)
 	self.fingerId = fingerId
 	self.position = position
 	self.rawPosition = rawPosition
-	self.deltaPosition = deltaPostion
+	self.deltaPosition = deltaPosition
 	self.deltaTime = deltaTime
 	self.tapCount = tapCount
 	self.phase = phase	
@@ -63,7 +63,7 @@ end
 function Touch:Destroy()
 	self.position 		= nil
 	self.rawPosition	= nil
-	self.deltaPostion 	= nil	
+	self.deltaPosition 	= nil	
 end
 
 function Touch.GetMask(...)
