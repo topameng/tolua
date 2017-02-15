@@ -194,7 +194,7 @@ function Mathf.SmoothDamp(current, target, currentVelocity, smoothTime, maxSpeed
         currentVelocity = (num8 - num5) / deltaTime		
     end
 	
-    return num8
+    return num8,currentVelocity
 end
 
 function Mathf.SmoothDampAngle(current, target, currentVelocity, smoothTime, maxSpeed, deltaTime)

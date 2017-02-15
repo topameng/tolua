@@ -86,11 +86,11 @@ namespace LuaInterface
                    CheckType(L, type5, begin + 5) && CheckType(L, type6, begin + 6) && CheckType(L, type7, begin + 7) && CheckType(L, type8, begin + 8) && CheckType(L, type9, begin + 9);
         }
 
-        public static bool CheckTypes(IntPtr L, params Type[] types)
+        public static bool CheckTypes(IntPtr L, int begin, params Type[] types)
         {
             for (int i = 0; i < types.Length; i++)
             {
-                if (!CheckType(L, types[i], i + 1))
+                if (!CheckType(L, types[i], i + begin))
                 {
                     return false;
                 }
@@ -217,9 +217,13 @@ namespace LuaInterface
 
         static bool IsMatchUserData(IntPtr L, Type t, int pos)
         {
-            if (t == typeof(LuaInteger64))
+            if (t == typeof(long))
             {
                 return LuaDLL.tolua_isint64(L, pos);
+            }
+            else if (t == typeof(ulong))
+            {
+                return LuaDLL.tolua_isuint64(L, pos);
             }
 
             object obj = null;
@@ -267,6 +271,11 @@ namespace LuaInterface
         {
             if (t.IsArray)
             {
+                if (t.GetElementType().IsArray || t.GetArrayRank() > 1)
+                {
+                    return false;
+                }
+
                 return true;
             }
             else if (t == typeof(LuaTable))

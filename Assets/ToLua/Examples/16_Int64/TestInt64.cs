@@ -10,9 +10,10 @@ public class TestInt64 : MonoBehaviour
     private string tips = "";
 
     string script =
-        @"
-            function TestInt64(x)
-                x = x + 789				
+        @"            
+            function TestInt64(x)                
+                x = x + 789		
+                assert(tostring(x) == '9223372036854775807')		
                 local low, high = int64.tonum2(x)                
                 print('x value is: '..tostring(x)..' low is: '.. low .. ' high is: '..high.. ' type is: '.. tolua.typename(x))           
                 local y = int64.new(1,2)                
@@ -36,7 +37,14 @@ public class TestInt64 : MonoBehaviour
                 local str = tostring(int64.new(3605690779, 30459971))                
                 local n2 = int64.new(str)
                 local l, h = int64.tonum2(n2)                        
-                print(str..':'..tostring(n2)..' low:'..l..' high:'..h)       
+                print(str..':'..tostring(n2)..' low:'..l..' high:'..h)                  
+
+                print('----------------------------uint64-----------------------------')
+                x = uint64.new('18446744073709551615')                                
+                print('uint64 max is: '..tostring(x))
+                l, h = uint64.tonum2(x)      
+                str = tostring(uint64.new(l, h))
+                print(str..':'..tostring(x)..' low:'..l..' high:'..h)     
 
                 return y
             end
@@ -53,13 +61,13 @@ public class TestInt64 : MonoBehaviour
         new LuaResLoader();
         LuaState lua = new LuaState();
         lua.Start();
-        lua.DoString(script);                
+        lua.DoString(script, "TestInt64.cs");                
 
         LuaFunction func = lua.GetFunction("TestInt64");
         func.BeginPCall();
-        func.PushInt64(9223372036854775807 - 789);
+        func.Push(9223372036854775807 - 789);
         func.PCall();
-        LuaInteger64 n64 = func.CheckInteger64();        
+        long n64 = func.CheckLong();        
         Debugger.Log("int64 return from lua is: {0}", n64);
         func.EndPCall();
         func.Dispose();
@@ -86,7 +94,7 @@ public class TestInt64 : MonoBehaviour
     }
 
     void OnGUI()
-    {
-        GUI.Label(new Rect(Screen.width / 2 - 200, Screen.height / 2 - 150, 400, 300), tips);
+    {        
+        GUI.Label(new Rect(Screen.width / 2 - 200, Screen.height / 2 - 150, 400, 300), tips);        
     }
 }

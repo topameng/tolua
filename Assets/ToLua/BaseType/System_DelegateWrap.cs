@@ -291,9 +291,9 @@ public class System_DelegateWrap
             LuaTypes type = LuaDLL.lua_type(L, 2);
 
             if (type == LuaTypes.LUA_TFUNCTION)
-            {
-                LuaState state = LuaState.Get(L);
+            {                
                 LuaFunction func = ToLua.ToLuaFunction(L, 2);
+                LuaState state = LuaState.Get(L);
                 Delegate[] ds = arg0.GetInvocationList();
 
                 for (int i = 0; i < ds.Length; i++)
@@ -314,8 +314,8 @@ public class System_DelegateWrap
             }
             else
             {
-                Delegate arg1 = (Delegate)ToLua.CheckObject(L, 2, typeof(Delegate));
-                arg0 = Delegate.Remove(arg0, arg1);
+                Delegate arg1 = (Delegate)ToLua.CheckObject(L, 2, typeof(Delegate));                
+                arg0 = DelegateFactory.RemoveDelegate(arg0, arg1);
                 ToLua.Push(L, arg0);
                 return 1;
             }
@@ -386,9 +386,9 @@ public class System_DelegateWrap
         {
             LuaDelegate ld = ds[i].Target as LuaDelegate;
 
-            if (ld != null && ld.func != null)
+            if (ld != null)
             {                
-                ld.func.Dispose();                
+                ld.Dispose();                
             }
         }
 

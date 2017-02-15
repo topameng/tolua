@@ -1,18 +1,18 @@
 #tolua*#*
 
-tolua# is an unity lua static binder solution. the first solution that analyze code by reflection and generate wrapper class.
+tolua# is a Unity lua static binder solution. the first solution that analyzes code by reflection and generates wrapper classes.
 
-tolua# is an unity plugin that greatly simplifies the integration of C# code with Lua. can automatically generates the binding code to access unity from Lua. it maps c# constants,  variables, functions, properties, classes, and methods to Lua.
+It is a Unity plugin that greatly simplifies the integration of C# code with Lua. which can automatically generate the binding code to access Unity from Lua and map c# constants, variables, functions, properties, classes, and enums to Lua.
 
-tolua# grows up from cstolua.  tolua#'s goal is to be a powerful development environment for unity.
+tolua# grows up from cstolua.  it's goal is to be a powerful development environment for Unity.
 
-support unity4.6.x and unity5.x all(in unity5.x, delete Plugins/x86 directory)
+Support unity4.6.x and Unity5.x all(copy /Unity5.x/Assets to /Assets)
 
- **if you want to test in mobile, first click menu Lua/Copy lua files to Resources. then build it**
+ **If you want to test in mobile, first click menu Lua/Copy lua files to Resources. then build it**
 
- **unity5.x 删除Plugins/x86目录, 如果你想在手机上测试，首先点击菜单Lua/Copy lua files to Resources， 之后再build.**
+ **如果你想在手机上测试，首先点击菜单Lua/Copy lua files to Resources， 之后再build.**<br>
 
- **有bug 可以到QQ群反馈: 286510803. 不闲聊，非bug相关不要加群**
+ **有bug 可以到QQ群反馈: 286510803. 不闲聊，非bug相关不要加群, 请加讨论群: <br> ulua&tolua技术交流群① 341746602(已满) <br> ulua_tolua技术讨论群② 469941220 <br> ulua&tolua技术交流群3 434341400(已满) <br> tolua#技术讨论群④ 543826216**
 
 #Library
 
@@ -30,6 +30,10 @@ https://github.com/jarjin/LuaFramework_UGUI <br>
 https://github.com/zhangqi-ulua/XlsxToLua<br>
 **UnityHello**<br>
 https://github.com/woshihuo12/UnityHello<br>
+**UWA-ToLua**<br>
+http://uwa-download.oss-cn-beijing.aliyuncs.com/plugins%2FiOS%2FUWA-iOS-ToLua.zip<br>
+**unity_tolua-_zerobrane_api**<br>
+https://github.com/LabOfHoward/unity_tolua-_zerobrane_api
 
 #Packages
 　**Basics**　　　　　　　　**Math**　　　　　　**Data Structures**<br>

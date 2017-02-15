@@ -75,3 +75,20 @@ bug 反馈群: 286510803
 - FIX: int64作为object push check 问题
 - FIX: LuaTable int key c#不做判断，按照lua标准执行或者报错
 - FIX: 一些小的导出问题
+
+1.0.6 (需要重新生成库文件，需要重新导出wrap. 需要Clear all)
+- NEW: 加入LuaStatePtr最为LuaDLL函数简单封装层
+- NEW: LuaState ToLuaException 更名为 ThrowLuaException
+- NEW: Debugger 放入到 LuaInterface namespace
+- NEW: module.name 如果.name不存在，可以自动进行preloading操作，相当于 require "module.name"
+- NEW: 在控制台窗口点击print打印的lua log, 将会自动打开lua文件，或者跳转到设置的cs文件中
+- NEW: 支持int64和uint64. c# 端long做为int64压入，ulong作为uint64压入
+- NEW: 支持list和dictionary的通用导出
+- NEW: list 支持数组操作符，如果Dictionary key 为int也支持，非int key 继续使用get_Item函数
+- NEW: 支持委托转换LuaFunction函数，附带self。即System.Action(self.func, self)， 这样转换可自动作为:调用
+
+- FIX: tolua_pushcclosure 调整为 tolua_pushcfunction
+- FIX: userdata 访问__newindex不能存在的属性不创建peer表。如需peer表请主动创建
+- FIX: 委托自动适配lua函数时，支持out参数。- 委托操作，支持自动转换函数。 
+- FIX: 部分GetHashCode函数可能潜在的问题
+- FIX: CheckInteger64 更名为 CheckLong

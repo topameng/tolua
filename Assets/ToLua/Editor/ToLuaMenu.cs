@@ -35,6 +35,7 @@ using LuaInterface;
 
 using Object = UnityEngine.Object;
 using Debug = UnityEngine.Debug;
+using Debugger = LuaInterface.Debugger;
 using System.Threading;
 
 [InitializeOnLoad]
@@ -51,7 +52,7 @@ public static class ToLuaMenu
         typeof(UnityEngine.WaitForEndOfFrame),              //内部支持
         typeof(UnityEngine.WaitForFixedUpdate),
         typeof(UnityEngine.WaitForSeconds),        
-        typeof(UnityEngine.Mathf),                          //lua层支持        
+        typeof(UnityEngine.Mathf),                          //lua层支持                
         typeof(Plane),                                      
         typeof(LayerMask),                                  
         typeof(Vector3),
@@ -64,7 +65,7 @@ public static class ToLuaMenu
         typeof(Touch),
         typeof(RaycastHit),                                 
         typeof(TouchPhase),     
-        typeof(LuaInterface.LuaOutMetatable),               //手写支持
+        //typeof(LuaInterface.LuaOutMetatable),               //手写支持
         typeof(LuaInterface.NullObject),             
         typeof(System.Array),                        
         typeof(System.Reflection.MemberInfo),    
@@ -146,7 +147,12 @@ public static class ToLuaMenu
             if (typeof(System.MulticastDelegate).IsAssignableFrom(t))
             {
                 throw new NotSupportedException(string.Format("\nDon't export Delegate {0} as a class, register it in customDelegateList", LuaMisc.GetTypeName(t)));
-            }
+            }            
+
+            //if (IsObsolete(t))
+            //{
+            //    throw new Exception(string.Format("\n{0} is obsolete, don't export it!", LuaMisc.GetTypeName(t)));
+            //}
 
             type = t;                        
             nameSpace = ToLuaExport.GetNameSpace(t, out libName);
@@ -169,18 +175,14 @@ public static class ToLuaMenu
                 wrapName = ToLuaExport.ConvertToLibSign(wrapName);
             }
 
-            if (type.BaseType != null && type.BaseType != typeof(ValueType))
-            {
-                baseType = type.BaseType;
-            }
-
             int index = CustomSettings.staticClassTypes.IndexOf(type);
 
-            if (index >= 0 || (type.GetConstructor(Type.EmptyTypes) == null && type.IsAbstract && type.IsSealed))
+            if (index >= 0 || (type.IsAbstract && type.IsSealed))
             {
-                IsStatic = true;
-                baseType = baseType == typeof(object) ? null : baseType;
+                IsStatic = true;                
             }
+
+            baseType = LuaMisc.GetExportBaseType(type);
         }
 
         public BindType SetBaseType(Type t)
@@ -215,6 +217,23 @@ public static class ToLuaMenu
         {
             nameSpace = space;            
             return this;
+        }
+
+        public static bool IsObsolete(Type type)
+        {
+            object[] attrs = type.GetCustomAttributes(true);
+
+            for (int j = 0; j < attrs.Length; j++)
+            {
+                Type t = attrs[j].GetType();
+
+                if (t == typeof(System.ObsoleteAttribute) || t == typeof(NoToLuaAttribute) || t.Name == "MonoNotSupportedAttribute" || t.Name == "MonoTODOAttribute")
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 
@@ -275,14 +294,15 @@ public static class ToLuaMenu
     }
 
     static BindType[] GenBindTypes(BindType[] list, bool beDropBaseType = true)
-    {                
+    {
         allTypes = new List<BindType>(list);
+
         for (int i = 0; i < list.Length; i++)
-        {            
+        {
             for (int j = i + 1; j < list.Length; j++)
             {
                 if (list[i].type == list[j].type)
-                    throw new NotSupportedException("Repeat BindType:"+list[i].type);
+                    throw new NotSupportedException("Repeat BindType:" + list[i].type);
             }
 
             if (dropType.IndexOf(list[i].type) >= 0)
@@ -297,11 +317,11 @@ public static class ToLuaMenu
                 allTypes.Remove(list[i]);
                 continue;
             }
-            else if (list[i].type.IsEnum) 
+            else if (list[i].type.IsEnum)
             {
                 continue;
             }
-            
+
             AutoAddBaseType(list[i], beDropBaseType);
         }
 
@@ -463,11 +483,12 @@ public static class ToLuaMenu
             AddSpaceNameToTree(tree, root, space);
         }
 
-        DelegateType[] dts = CustomSettings.customDelegateList;        
+        DelegateType[] dts = CustomSettings.customDelegateList;
+        string str = null;      
 
         for (int i = 0; i < dts.Length; i++)
         {            
-            string space = dts[i].type.Namespace;                        
+            string space = ToLuaExport.GetNameSpace(dts[i].type, out str);
             AddSpaceNameToTree(tree, root, space);            
         }
 
@@ -590,13 +611,14 @@ public static class ToLuaMenu
         List<BindType> backupList = new List<BindType>();
         backupList.AddRange(allTypes);
         ToLuaNode<string> root = tree.GetRoot();
+        string libname = null;
 
         foreach (Type t in set)
         {
             if (null == list.Find((p) => { return p.type == t; }))
             {
-                DelegateType dt = new DelegateType(t);                
-                AddSpaceNameToTree(tree, root, dt.type.Namespace);
+                DelegateType dt = new DelegateType(t);                                
+                AddSpaceNameToTree(tree, root, ToLuaExport.GetNameSpace(t, out libname));
                 list.Add(dt);
             }
         }
@@ -730,11 +752,10 @@ public static class ToLuaMenu
         sb.AppendLineEx("\t\ttry");
         sb.AppendLineEx("\t\t{");        
         sb.AppendLineEx("\t\t\tLuaState state = LuaState.Get(L);");
-        sb.AppendFormat("\t\t\tint preTop = state.BeginPreModule(\"{0}\");\r\n", bt.nameSpace);
+        sb.AppendFormat("\t\t\tstate.BeginPreModule(\"{0}\");\r\n", bt.nameSpace);
         sb.AppendFormat("\t\t\t{0}Wrap.Register(state);\r\n", bt.wrapName);
-        sb.AppendLineEx("\t\t\tstate.EndPreModule(preTop);");
         sb.AppendFormat("\t\t\tint reference = state.GetMetaReference(typeof({0}));\r\n", bt.name);
-        sb.AppendLineEx("\t\t\tLuaDLL.lua_getref(L, reference);");
+        sb.AppendLineEx("\t\t\tstate.EndPreModule(L, reference);");                
         sb.AppendLineEx("\t\t\treturn 1;");
         sb.AppendLineEx("\t\t}");
         sb.AppendLineEx("\t\tcatch(Exception e)");
@@ -795,9 +816,7 @@ public static class ToLuaMenu
             File.Delete(output);
             BuildPipeline.BuildAssetBundle(null, list.ToArray(), output, options, EditorUserBuildSettings.activeBuildTarget);            
         }
-#endif
-
-        AssetDatabase.Refresh();
+#endif        
     }
 
     static void ClearAllLuaFiles()
@@ -1071,7 +1090,7 @@ public static class ToLuaMenu
         List<string> dirs = new List<string>();
         GetAllDirs(tempDir, dirs);
 
-#if UNITY_5
+#if UNITY_5        
         for (int i = 0; i < dirs.Count; i++)
         {
             string str = dirs[i].Remove(0, tempDir.Length);
@@ -1080,10 +1099,11 @@ public static class ToLuaMenu
 
         BuildLuaBundle(null, "Assets/temp/Lua");
 
-        AssetDatabase.Refresh();
-        string output = string.Format("{0}/{1}", Application.streamingAssetsPath, GetOS());
+        AssetDatabase.SaveAssets();        
+        string output = string.Format("{0}/{1}", Application.streamingAssetsPath, GetOS());        
         BuildPipeline.BuildAssetBundles(output, BuildAssetBundleOptions.DeterministicAssetBundle, EditorUserBuildSettings.activeBuildTarget);
-        Directory.Delete(Application.dataPath + "/temp/", true);
+
+        //Directory.Delete(Application.dataPath + "/temp/", true);
 #else
         for (int i = 0; i < dirs.Count; i++)
         {
@@ -1248,4 +1268,4 @@ public static class ToLuaMenu
         Debug.Log("Clear base type wrap files over");
         AssetDatabase.Refresh();
     }
-}
+            }

@@ -88,6 +88,12 @@ public class TestExport
         return 15;
     }
 
+    public int Test(int[,] objs)
+    {
+        Debugger.Log("call Test(int[,] objs)");
+        return 16;
+    }
+
     public int Test(int i)
     {
         Debugger.Log("call Test(int i)");
@@ -132,7 +138,7 @@ public class TestExport
     {
         Debugger.Log("call Test(object o)");
         return 8;
-    }
+    }    
 
     public int Test(params int[] objs)
     {
@@ -242,8 +248,9 @@ public class TestOverload : MonoBehaviour
 {
     private string script =
 @"                  
+        require 'TestExport'                                        
         local out = require 'tolua.out'
-        local GameObject = UnityEngine.GameObject
+        local GameObject = UnityEngine.GameObject                                
 
         function Test(to)            
             assert(to:Test(1) == 4)            
@@ -261,7 +268,7 @@ public class TestOverload : MonoBehaviour
             assert(to:TestGeneric(GameObject().transform) == 11)
             assert(to:TestCheckParamNumber(1,2,3) == 6)
             assert(to:TestCheckParamString('1', '2', '3') == '123')
-            --assert(to:Test(TestExport.Space.World) == 10)        
+            assert(to:Test(TestExport.Space.World) == 10)        
             print(to.this:get(123))
             to.this:set(1, 456)           
         end
@@ -273,11 +280,12 @@ public class TestOverload : MonoBehaviour
         state.Start();
         LuaBinder.Bind(state);
         Bind(state);
-        state.DoString(script, "TestOverride.cs");
+        state.DoString(script, "TestOverload.cs");
 
         TestExport to = new TestExport();
         LuaFunction func = state.GetFunction("Test");
-        func.Call(to);                               
+        func.Call(to);          
+        state.Dispose();                     
     }
 
     void Bind(LuaState state)
@@ -285,7 +293,7 @@ public class TestOverload : MonoBehaviour
         state.BeginModule(null);
         TestExportWrap.Register(state);
         state.BeginModule("TestExport");
-        //TestExport_SpaceWrap.Register(state);
+        TestExport_SpaceWrap.Register(state);
         state.EndModule();
         state.EndModule();
     }

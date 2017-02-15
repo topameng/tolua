@@ -5,7 +5,7 @@ using LuaInterface;
 
 public static class DelegateFactory
 {
-	public delegate Delegate DelegateValue(LuaFunction func);
+	public delegate Delegate DelegateValue(LuaFunction func, LuaTable self, bool flag);
 	public static Dictionary<Type, DelegateValue> dict = new Dictionary<Type, DelegateValue>();
 
 	static DelegateFactory()
@@ -22,14 +22,63 @@ public static class DelegateFactory
     [NoToLuaAttribute]
     public static Delegate CreateDelegate(Type t, LuaFunction func = null)
     {
-        DelegateValue create = null;
+        DelegateValue Create = null;
 
-        if (!dict.TryGetValue(t, out create))
+        if (!dict.TryGetValue(t, out Create))
         {
             throw new LuaException(string.Format("Delegate {0} not register", LuaMisc.GetTypeName(t)));            
         }
-        
-        return create(func);        
+
+        if (func != null)
+        {
+            LuaState state = func.GetLuaState();
+            LuaDelegate target = state.GetLuaDelegate(func);
+            
+            if (target != null)
+            {
+                return Delegate.CreateDelegate(t, target, target.method);
+            }  
+            else
+            {
+                Delegate d = Create(func, null, false);
+                target = d.Target as LuaDelegate;
+                state.AddLuaDelegate(target, func);
+                return d;
+            }       
+        }
+
+        return Create(func, null, false);        
+    }
+
+    [NoToLuaAttribute]
+    public static Delegate CreateDelegate(Type t, LuaFunction func, LuaTable self)
+    {
+        DelegateValue Create = null;
+
+        if (!dict.TryGetValue(t, out Create))
+        {
+            throw new LuaException(string.Format("Delegate {0} not register", LuaMisc.GetTypeName(t)));
+        }
+
+        if (func != null)
+        {
+            LuaState state = func.GetLuaState();
+            LuaDelegate target = state.GetLuaDelegate(func, self);
+
+            if (target != null)
+            {
+                return Delegate.CreateDelegate(t, target, target.method);
+            }
+            else
+            {
+                Delegate d = Create(func, self, true);
+                target = d.Target as LuaDelegate;
+                state.AddLuaDelegate(target, func, self);
+                return d;
+            }
+        }
+
+        return Create(func, self, true);
     }
 
     [NoToLuaAttribute]
@@ -46,6 +95,36 @@ public static class DelegateFactory
             {
                 obj = Delegate.Remove(obj, ds[i]);
                 state.DelayDispose(ld.func);
+                break;
+            }
+        }
+
+        return obj;
+    }
+
+    [NoToLuaAttribute]
+    public static Delegate RemoveDelegate(Delegate obj, Delegate dg)
+    {
+        LuaDelegate remove = dg.Target as LuaDelegate;
+
+        if (remove == null)
+        {
+            obj = Delegate.Remove(obj, dg);
+            return obj;
+        }
+
+        LuaState state = remove.func.GetLuaState();
+        Delegate[] ds = obj.GetInvocationList();        
+
+        for (int i = 0; i < ds.Length; i++)
+        {
+            LuaDelegate ld = ds[i].Target as LuaDelegate;
+
+            if (ld != null && ld == remove)
+            {
+                obj = Delegate.Remove(obj, ds[i]);
+                state.DelayDispose(ld.func);
+                state.DelayDispose(ld.self);
                 break;
             }
         }

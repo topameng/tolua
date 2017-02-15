@@ -301,14 +301,13 @@ namespace LuaInterface
             this.state = table.GetLuaState();
         }
 
-        ~LuaArrayTable()
-        {
-            table.Dispose(false);
-        }
-
         public void Dispose()
         {
-            table.Dispose(true);            
+            if (table != null)
+            {
+                table.Dispose();
+                table = null;
+            }
         }
 
         public int Length
@@ -331,6 +330,17 @@ namespace LuaInterface
             }
         }
 
+        public void ForEach(Action<object> action)
+        {
+            using (var iter = this.GetEnumerator())
+            {
+                while (iter.MoveNext())
+                {
+                    action(iter.Current);
+                }                
+            }
+        }
+
         public IEnumerator<object> GetEnumerator()
         {
             return new Enumerator(this);
@@ -346,10 +356,12 @@ namespace LuaInterface
             LuaState state;
             int index = 1;
             object current = null;
+            int top = -1;
 
             public Enumerator(LuaArrayTable list)
             {                
                 state = list.state;
+                top = state.LuaGetTop();
                 state.Push(list.table);                
             }
 
@@ -378,7 +390,11 @@ namespace LuaInterface
 
             public void Dispose()
             {
-                state.LuaPop(1);
+                if (state != null)
+                {
+                    state.LuaSetTop(top);
+                    state = null;
+                }
             }
         }
     }
@@ -395,16 +411,14 @@ namespace LuaInterface
             this.state = table.GetLuaState() ;
         }
 
-        ~LuaDictTable()
-        {
-            table.Dispose(false);
-        }
-
         public void Dispose()
         {
-            table.Dispose(true);            
+            if (table != null)
+            {
+                table.Dispose();
+                table = null;
+            }
         }
-
 
         public object this[string key]
         {
@@ -447,10 +461,12 @@ namespace LuaInterface
         {            
             LuaState state;                        
             DictionaryEntry current = new DictionaryEntry();
+            int top = -1;
 
             public Enumerator(LuaDictTable list)
             {                
                 state = list.state;
+                top = state.LuaGetTop();
                 state.Push(list.table);
                 state.LuaPushNil();                
             }
@@ -495,7 +511,11 @@ namespace LuaInterface
 
             public void Dispose()
             {
-                state.LuaPop(1);
+                if (state != null)
+                {
+                    state.LuaSetTop(top);
+                    state = null;
+                }
             }
         }
     }

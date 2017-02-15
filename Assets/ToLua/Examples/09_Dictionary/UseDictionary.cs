@@ -29,32 +29,63 @@ public class UseDictionary : MonoBehaviour
                     local v = iter.Current.Value
                     print('id: '..v.id ..' name: '..v.name..' sex: '..v.sex)                                
                 end
+
+                local flag, account = map:TryGetValue(1, nil)
+
+                if flag then
+                    print('TryGetValue result ok: '..account.name)
+                end
+
+                local keys = map.Keys
+                iter = keys:GetEnumerator()
+                print('------------print dictionary keys---------------')
+                while iter:MoveNext() do
+                    print(iter.Current)
+                end
+                print('----------------------over----------------------')
+
+                local values = map.Values
+                iter = values:GetEnumerator()
+                print('------------print dictionary values---------------')
+                while iter:MoveNext() do
+                    print(iter.Current.name)
+                end
+                print('----------------------over----------------------')                
+
+                print('kick '..map[2].name)
+                map:Remove(2)
+                iter = map:GetEnumerator() 
+
+                while iter:MoveNext() do
+                    local v = iter.Current.Value
+                    print('id: '..v.id ..' name: '..v.name..' sex: '..v.sex)                                
+                end
             end                        
         ";
 
 	void Awake () 
     {
-        map.Add(1, new TestAccount(2, "水水", 0));
-        map.Add(2, new TestAccount(1, "王伟", 1));
-        map.Add(3, new TestAccount(2, "王芳", 0));
-        
+        map.Add(1, new TestAccount(1, "水水", 0));
+        map.Add(2, new TestAccount(2, "王伟", 1));
+        map.Add(3, new TestAccount(3, "王芳", 0));
+
         LuaState luaState = new LuaState();
         luaState.Start();
-        BindMap(luaState);        
+        BindMap(luaState);
 
-        luaState.DoString(script);        
+        luaState.DoString(script, "UseDictionary.cs");
         LuaFunction func = luaState.GetFunction("TestDict");
         func.BeginPCall();
         func.Push(map);
         func.PCall();
-        func.EndPCall();        
+        func.EndPCall();
 
         func.Dispose();
         func = null;
         luaState.CheckTop();
         luaState.Dispose();
-        luaState = null;    
-	}
+        luaState = null;
+    }
 
     //示例方式，正常导出无需手写下面代码
     void BindMap(LuaState L)
@@ -66,6 +97,10 @@ public class UseDictionary : MonoBehaviour
         L.BeginModule("Generic");
         System_Collections_Generic_Dictionary_int_TestAccountWrap.Register(L);
         System_Collections_Generic_KeyValuePair_int_TestAccountWrap.Register(L);
+        L.BeginModule("Dictionary");
+        System_Collections_Generic_Dictionary_int_TestAccount_KeyCollectionWrap.Register(L);
+        System_Collections_Generic_Dictionary_int_TestAccount_ValueCollectionWrap.Register(L);
+        L.EndModule();
         L.EndModule();
         L.EndModule();
         L.EndModule();

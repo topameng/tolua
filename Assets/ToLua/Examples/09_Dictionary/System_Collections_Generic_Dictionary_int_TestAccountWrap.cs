@@ -7,7 +7,9 @@ public class System_Collections_Generic_Dictionary_int_TestAccountWrap
 	public static void Register(LuaState L)
 	{
 		L.BeginClass(typeof(System.Collections.Generic.Dictionary<int,TestAccount>), typeof(System.Object), "AccountMap");
+		L.RegFunction(".geti", get_Item);
 		L.RegFunction("get_Item", get_Item);
+		L.RegFunction(".seti", set_Item);
 		L.RegFunction("set_Item", set_Item);
 		L.RegFunction("Add", Add);
 		L.RegFunction("Clear", Clear);
@@ -20,7 +22,7 @@ public class System_Collections_Generic_Dictionary_int_TestAccountWrap
 		L.RegFunction("GetEnumerator", GetEnumerator);
 		L.RegFunction("New", _CreateSystem_Collections_Generic_Dictionary_int_TestAccount);
 		L.RegVar("this", _this, null);
-		L.RegFunction("__tostring", Lua_ToString);
+		L.RegFunction("__tostring", ToLua.op_ToString);
 		L.RegVar("Count", get_Count, null);
 		L.RegVar("Comparer", get_Comparer, null);
 		L.RegVar("Keys", get_Keys, null);
@@ -336,23 +338,6 @@ public class System_Collections_Generic_Dictionary_int_TestAccountWrap
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
-	}
-
-	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int Lua_ToString(IntPtr L)
-	{
-		object obj = ToLua.ToObject(L, 1);
-
-		if (obj != null)
-		{
-			LuaDLL.lua_pushstring(L, obj.ToString());
-		}
-		else
-		{
-			LuaDLL.lua_pushnil(L);
-		}
-
-		return 1;
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]

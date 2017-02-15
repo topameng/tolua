@@ -16,7 +16,7 @@ public class TestProtolWrap
 	{
 		try
 		{
-			ToLua.Push(L, TestProtol.data);
+			LuaDLL.tolua_pushlstring(L, TestProtol.data, TestProtol.data.Length);
 			return 1;
 		}
 		catch(Exception e)
@@ -30,7 +30,7 @@ public class TestProtolWrap
 	{
 		try
 		{
-			LuaByteBuffer arg0 = new LuaByteBuffer(ToLua.CheckByteBuffer(L, 2));
+			byte[] arg0 = ToLua.CheckByteBuffer(L, 2);
 			TestProtol.data = arg0;
 			return 0;
 		}

@@ -13,7 +13,7 @@ public class TestInstantiate2 : MonoBehaviour
         catch (Exception e)
         {
             LuaState state = LuaState.Get(IntPtr.Zero);
-            state.ToLuaException(e);
+            state.ThrowLuaException(e);
         }
     }
 }

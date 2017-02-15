@@ -59,7 +59,7 @@ _Time.__index = function(t, k)
 end
 
 _Time.__newindex = function(t, k, v)
-	func = rawget(_set, k)
+	local func = rawget(_set, k)
 
 	if func then
 		return func(v)
