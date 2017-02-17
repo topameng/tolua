@@ -61,6 +61,11 @@ namespace LuaInterface
             base.Dispose();
         }
 
+        public T ToDelegate<T>() where T: class
+        {
+            return DelegateFactory.CreateDelegate(typeof(T), this) as T;
+        }
+
         public virtual int BeginPCall()
         {
             if (luaState == null)
