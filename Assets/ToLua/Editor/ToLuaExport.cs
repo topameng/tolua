@@ -147,14 +147,12 @@ public static class ToLuaExport
         "CanvasRenderer.OnRequestRebuild",
         "CanvasRenderer.onRequestRebuild",
         "Terrain.bakeLightProbesForTrees",
-        "MonoBehaviour.runInEditMode",
-        "Light.lightmappingMode",
         //NGUI
         "UIInput.ProcessEvent",
         "UIWidget.showHandlesWithMoveTool",
         "UIWidget.showHandles",
         "Input.IsJoystickPreconfigured",
-        "UIDrawCall.isActive"
+        "UIDrawCall.isActive",
     };
 
     public static List<MemberInfo> memberInfoFilter = new List<MemberInfo>
@@ -162,6 +160,7 @@ public static class ToLuaExport
         //可精确查找一个函数
         //Type.GetMethod(string name, BindingFlags bindingAttr, Binder binder, CallingConventions callConvention, Type[] types, ParameterModifier[] modifiers);
     };
+    
     public static bool IsMemberFilter(MemberInfo mi)
     {
         return memberInfoFilter.Contains(mi) || memberFilter.Contains(type.Name + "." + mi.Name);
@@ -172,6 +171,7 @@ public static class ToLuaExport
         string name = LuaMisc.GetTypeName(t);
         return memberInfoFilter.Contains(t) || memberFilter.Find((p) => { return name.Contains(p); }) != null;
     }
+
 
     static ToLuaExport()
     {
@@ -362,16 +362,17 @@ public static class ToLuaExport
     {
         List<Type> AssTypes = new List<Type>();
 
-        foreach (Assembly item in AppDomain.CurrentDomain.GetAssemblies())
-        {
-            AssTypes.AddRange(item.GetTypes());
-        }
-        AssTypes.Remove(t);
+        Assembly scriptassem = AppDomain.CurrentDomain.Load("Assembly-CSharp");
+        Assembly pluginassem = AppDomain.CurrentDomain.Load("Assembly-CSharp-firstpass");
+
+        AssTypes.AddRange(scriptassem.GetTypes());
+        AssTypes.AddRange(pluginassem.GetTypes());
+        AssTypes.RemoveAll(p => p.IsDefined(typeof(NoToLuaAttribute), false));
 
         var query = from type in AssTypes
                     where type.IsSealed && !type.IsGenericType && !type.IsNested
                     from method in type.GetMethods(BindingFlags.Static | BindingFlags.Public )
-                    where method.IsDefined(typeof(ExtensionAttribute), false)
+                    where method.IsDefined(typeof(ExtensionAttribute), false) && !method.IsDefined(typeof(NoToLuaAttribute), false)
                     where method.GetParameters()[0].ParameterType == t
                     select method;
         return query.ToArray<MethodInfo>();
@@ -925,23 +926,55 @@ public static class ToLuaExport
         }
 
         ParameterInfo[] paramInfos = m.GetParameters();
-        int offset = m.IsStatic ? 0 : 1;//拓展方法参数一致
+        int offset = m.IsStatic? 0 : 1;
         bool haveParams = HasOptionalParam(paramInfos);
         int rc = m.ReturnType == typeof(void) ? 0 : 1;
 
         BeginTry();
 
+        //modify start
+        int defCnt = 0;
+
         if (!haveParams)
         {
             int count = paramInfos.Length + offset;
-            sb.AppendFormat("\t\t\tToLua.CheckArgsCount(L, {0});\r\n", count);
+            
+            foreach (ParameterInfo p in paramInfos)
+            {
+                if (p.DefaultValue != null && !(p.DefaultValue is DBNull))
+                {
+                    ++defCnt;
+                }
+            }
+            if (defCnt == 0)
+            {
+                sb.AppendFormat("\t\t\tToLua.CheckArgsCount(L, {0});\r\n", count);
+                rc += ProcessParams(m, 3, false);
+            }
+            else
+            {
+                sb.AppendFormat("\t\t\tToLua.CheckArgsAndDefaltCount(L, {0}, {1});\r\n", count, defCnt);
+                rc += ProcessParams(m, 3, false, false, defCnt);
+            }
         }
         else
         {
             sb.AppendLineEx("\t\t\tint count = LuaDLL.lua_gettop(L);");
+            rc += ProcessParams(m, 3, false);
         }
-        
-        rc += ProcessParams(m, 3, false);
+        //modify end
+
+        //if (!haveParams)
+        //{
+        //    int count = paramInfos.Length + offset;
+        //    sb.AppendFormat("\t\t\tToLua.CheckArgsCount(L, {0});\r\n", count);
+        //}
+        //else
+        //{
+        //    sb.AppendLineEx("\t\t\tint count = LuaDLL.lua_gettop(L);");
+        //}
+
+        //rc += ProcessParams(m, 3, false);
         sb.AppendFormat("\t\t\treturn {0};\r\n", rc);
         EndTry();
         sb.AppendLineEx("\t}");
@@ -1916,7 +1949,7 @@ public static class ToLuaExport
         return t;
     }
     
-    static int ProcessParams(MethodBase md, int tab, bool beConstruct, bool beCheckTypes = false)
+    static int ProcessParams(MethodBase md, int tab, bool beConstruct, bool beCheckTypes = false, int defCnt = 0)
     {
         ParameterInfo[] paramInfos = md.GetParameters();
         bool beExtend = IsExtendFunction(md);
@@ -1930,8 +1963,8 @@ public static class ToLuaExport
 
         int count = paramInfos.Length;
         string head = string.Empty;        
-        PropertyInfo pi = null;
-        int methodType = GetMethodType(md, out pi);
+       // PropertyInfo pi = null;
+       // int methodType = GetMethodType(md, out pi);
         int offset = ((md.IsStatic && !beExtend )|| beConstruct) ? 1 : 2;                       
 
         if (md.Name == "op_Equality")
@@ -1967,21 +2000,278 @@ public static class ToLuaExport
             }
         }
 
-        for (int j = 0; j < count; j++)
+        //modify start
+        for (int j = 0; j < count - defCnt; j++)
         {
-            ParameterInfo param = paramInfos[j];                 
-            string arg = "arg" + j;                
+            ParameterInfo param = paramInfos[j];
+            string arg = "arg" + j;
             bool beOutArg = param.Attributes == ParameterAttributes.Out;
             bool beParams = IsParams(param);
             Type t = GetGenericBaseType(md, param.ParameterType);
-            ProcessArg(t, head, arg, offset + j, beCheckTypes, beParams , beOutArg);
+            ProcessArg(t, head, arg, offset + j, beCheckTypes, beParams, beOutArg);
+        }
+
+        if (defCnt > 0)
+        {
+            int resCnt = 0;
+
+            sb.AppendFormat("{0}int LCnt = LuaDLL.lua_gettop(L);\r\n", head);
+            int offset_1 = md.IsStatic ? 0 : 1;
+            int j = md.GetParameters().Length - 1 + offset_1;
+            sb.AppendFormat("{0}if(LCnt == {1}){{\r\n", head, j + 1);
+            for (int k = count - defCnt; k < count; k++)
+            {
+                ParameterInfo param = paramInfos[k];
+                string arg = "arg" + k;
+                bool beOutArg = param.Attributes == ParameterAttributes.Out;
+                bool beParams = IsParams(param);
+                Type t = GetGenericBaseType(md, param.ParameterType);
+                ProcessArg(t, head + "\t", arg, offset + k, beCheckTypes, beParams, beOutArg);
+            }
+            resCnt = ProcessFunctionParams(md, tab + 1, beConstruct);
+            sb.AppendFormat("{0}}}\r\n", head);
+            j--;
+            if (beExtend)
+            {
+                while (j > count + offset_1 - defCnt)
+                {
+                    sb.AppendFormat("{0}else if(LCnt == {1}){{\r\n", head, j + 1);
+                    for (int k = count - defCnt; k < j; k++)
+                    {
+                        ParameterInfo param = paramInfos[k];
+                        string arg = "arg" + k;
+                        bool beOutArg = param.Attributes == ParameterAttributes.Out;
+                        bool beParams = IsParams(param);
+                        Type t = GetGenericBaseType(md, param.ParameterType);
+                        ProcessArg(t, head + "\t", arg, offset + k, beCheckTypes, beParams, beOutArg);
+                    }
+                    ProcessFunctionParams(md, tab + 1, beConstruct, count + offset_1 - j);
+                    sb.AppendFormat("{0}}}\r\n", head);
+                    j--;
+                }
+            }
+            else
+            {
+                while (j >= md.GetParameters().Length + offset_1 - defCnt)
+                {
+                    sb.AppendFormat("{0}else if(LCnt == {1}){{\r\n", head, j + 1);
+                    for (int k = count - defCnt; k < j + 1; k++)
+                    {
+                        ParameterInfo param = paramInfos[k];
+                        string arg = "arg" + k;
+                        bool beOutArg = param.Attributes == ParameterAttributes.Out;
+                        bool beParams = IsParams(param);
+                        Type t = GetGenericBaseType(md, param.ParameterType);
+                        ProcessArg(t, head + "\t", arg, offset + k, beCheckTypes, beParams, beOutArg);
+                    }
+                    ProcessFunctionParams(md, tab + 1, beConstruct, count - 1 + offset_1 - j);
+                    sb.AppendFormat("{0}}}\r\n", head);
+                    j--;
+                }
+            }
+            //while (j >= value)
+            //{
+            //    sb.AppendFormat("{0}else if(LCnt == {1}){{\r\n", head, j + 1);
+            //    for (int k = count - defCnt; k < j + 1; k++)
+            //    {
+            //        ParameterInfo param = paramInfos[k];
+            //        string arg = "arg" + k;
+            //        bool beOutArg = param.Attributes == ParameterAttributes.Out;
+            //        bool beParams = IsParams(param);
+            //        Type t = GetGenericBaseType(md, param.ParameterType);
+            //        ProcessArg(t, head + "\t", arg, offset + k, beCheckTypes, beParams, beOutArg);
+            //    }
+            //    ProcessFunctionParams(md, tab + 1, beConstruct, count - 1 + offset_1 - j);
+            //    sb.AppendFormat("{0}}}\r\n", head);
+            //    j--;
+            //}
+
+            sb.AppendFormat("{0}else{{\r\n", head);
+            ProcessFunctionParams(md, tab + 1, beConstruct, defCnt);
+            sb.AppendFormat("{0}}}\r\n", head);
+
+            return resCnt;
+        }
+
+        return ProcessFunctionParams(md, tab, beConstruct);
+        //modify end
+
+        //for (int j = 0; j < count; j++)
+        //{
+        //    ParameterInfo param = paramInfos[j];
+        //    string arg = "arg" + j;
+        //    bool beOutArg = param.Attributes == ParameterAttributes.Out;
+        //    bool beParams = IsParams(param);
+        //    Type t = GetGenericBaseType(md, param.ParameterType);
+        //    ProcessArg(t, head, arg, offset + j, beCheckTypes, beParams, beOutArg);
+        //}
+
+        //StringBuilder sbArgs = new StringBuilder();
+        //List<string> refList = new List<string>();
+        //List<Type> refTypes = new List<Type>();
+
+        //for (int j = 0; j < count; j++)
+        //{
+        //    ParameterInfo param = paramInfos[j];
+
+        //    if (!param.ParameterType.IsByRef)
+        //    {
+        //        sbArgs.Append("arg");
+        //    }
+        //    else
+        //    {
+        //        if (param.Attributes == ParameterAttributes.Out)
+        //        {
+        //            sbArgs.Append("out arg");
+        //        }
+        //        else
+        //        {
+        //            sbArgs.Append("ref arg");
+        //        }
+
+        //        refList.Add("arg" + j);
+        //        refTypes.Add(GetRefBaseType(param.ParameterType));
+        //    }
+
+        //    sbArgs.Append(j);
+
+        //    if (j != count - 1)
+        //    {
+        //        sbArgs.Append(", ");
+        //    }
+        //}
+
+        //if (beConstruct)
+        //{
+        //    sb.AppendFormat("{2}{0} obj = new {0}({1});\r\n", className, sbArgs.ToString(), head);
+        //    string str = GetPushFunction(type);
+        //    sb.AppendFormat("{0}ToLua.{1}(L, obj);\r\n", head, str);
+
+        //    for (int i = 0; i < refList.Count; i++)
+        //    {
+        //        GenPushStr(refTypes[i], refList[i], head);
+        //    } 
+
+        //    return refList.Count + 1;          
+        //}
+
+        //string obj = (md.IsStatic && !beExtend) ? className : "obj";
+        //MethodInfo m = md as MethodInfo;        
+
+        //if (m.ReturnType == typeof(void))
+        //{
+        //    if (md.Name == "set_Item")
+        //    {
+        //        if (methodType == 2)
+        //        {
+        //            string str = sbArgs.ToString();
+        //            string[] ss = str.Split(',');
+        //            str = string.Join(",", ss, 0, ss.Length - 1);
+
+        //            sb.AppendFormat("{0}{1}[{2}] ={3};\r\n", head, obj, str, ss[ss.Length - 1]);
+        //        }
+        //        else if (methodType == 1)
+        //        {
+        //            sb.AppendFormat("{0}{1}.Item = arg0;\r\n", head, obj, pi.Name);
+        //        }
+        //        else
+        //        {
+        //            sb.AppendFormat("{0}{1}.{2}({3});\r\n", head, obj, md.Name, sbArgs.ToString());
+        //        }
+        //    }
+        //    else if (methodType == 1)
+        //    {
+        //        sb.AppendFormat("{0}{1}.{2} = arg0;\r\n", head, obj, pi.Name);
+        //    }
+        //    else
+        //    {
+        //        sb.AppendFormat("{3}{0}.{1}({2});\r\n", obj, md.Name, sbArgs.ToString(), head);
+        //    }
+        //}
+        //else
+        //{
+        //    Type retType = GetGenericBaseType(md, m.ReturnType);
+        //    string ret = GetTypeStr(retType);                   
+
+        //    if (md.Name.StartsWith("op_"))
+        //    {
+        //        CallOpFunction(md.Name, tab, ret);
+        //    }
+        //    else if (md.Name == "get_Item")
+        //    {
+        //        if (methodType == 2)
+        //        {
+        //            sb.AppendFormat("{0}{1} o = {2}[{3}];\r\n", head, ret, obj, sbArgs.ToString());
+        //        }
+        //        else if (methodType == 1)
+        //        {
+        //            sb.AppendFormat("{0}{1} o = {2}.Item;\r\n", head, ret, obj);
+        //        }
+        //        else
+        //        {
+        //            sb.AppendFormat("{0}{1} o = {2}.{3}({4});\r\n", head, ret, obj, md.Name, sbArgs.ToString());
+        //        }
+        //    }
+        //    else if (md.Name == "Equals")
+        //    {
+        //        if (type.IsValueType)
+        //        {
+        //            sb.AppendFormat("{0}{1} o = obj.Equals({2});\r\n", head, ret, sbArgs.ToString());
+        //        }
+        //        else
+        //        {
+        //            sb.AppendFormat("{0}{1} o = obj != null ? obj.Equals({2}) : arg0 == null;\r\n", head, ret, sbArgs.ToString());
+        //        }
+        //    }
+        //    else if (methodType == 1)
+        //    {
+        //        sb.AppendFormat("{0}{1} o = {2}.{3};\r\n", head, ret, obj, pi.Name);
+        //    }
+        //    else
+        //    {
+        //        sb.AppendFormat("{0}{1} o = {2}.{3}({4});\r\n", head, ret, obj, md.Name, sbArgs.ToString());
+        //    }
+
+        //    bool isbuffer = IsByteBuffer(m);
+        //    GenPushStr(m.ReturnType, "o", head, isbuffer);
+        //}
+
+        //for (int i = 0; i < refList.Count; i++)
+        //{                        
+        //    GenPushStr(refTypes[i], refList[i], head);
+        //}
+
+        //if (!md.IsStatic && type.IsValueType && md.Name != "ToString")
+        //{
+        //    sb.Append(head + "ToLua.SetBack(L, 1, obj);\r\n");
+        //}   
+
+        //return refList.Count;
+    }
+
+    private static int ProcessFunctionParams(MethodBase md, int tab, bool beConstruct, int defCnt = 0)
+    {
+        ParameterInfo[] paramInfos = md.GetParameters();
+        bool beExtend = IsExtendFunction(md);
+
+        if (beExtend)
+        {
+            ParameterInfo[] pt = new ParameterInfo[paramInfos.Length - 1];
+            Array.Copy(paramInfos, 1, pt, 0, pt.Length);
+            paramInfos = pt;
+        }
+        int count = paramInfos.Length;
+        string head = String.Empty;
+        for (int i = 0; i < tab; i++)
+        {
+            head += "\t";
         }
 
         StringBuilder sbArgs = new StringBuilder();
         List<string> refList = new List<string>();
         List<Type> refTypes = new List<Type>();
 
-        for (int j = 0; j < count; j++)
+        for (int j = 0; j < count - defCnt; j++)
         {
             ParameterInfo param = paramInfos[j];
 
@@ -2006,7 +2296,7 @@ public static class ToLuaExport
 
             sbArgs.Append(j);
 
-            if (j != count - 1)
+            if (j != count - defCnt - 1)
             {
                 sbArgs.Append(", ");
             }
@@ -2021,13 +2311,15 @@ public static class ToLuaExport
             for (int i = 0; i < refList.Count; i++)
             {
                 GenPushStr(refTypes[i], refList[i], head);
-            } 
-            
-            return refList.Count + 1;          
+            }
+
+            return refList.Count + 1;
         }
 
         string obj = (md.IsStatic && !beExtend) ? className : "obj";
-        MethodInfo m = md as MethodInfo;        
+        MethodInfo m = md as MethodInfo;
+        PropertyInfo pi = null;
+        int methodType = GetMethodType(md, out pi);
 
         if (m.ReturnType == typeof(void))
         {
@@ -2062,7 +2354,7 @@ public static class ToLuaExport
         else
         {
             Type retType = GetGenericBaseType(md, m.ReturnType);
-            string ret = GetTypeStr(retType);                   
+            string ret = GetTypeStr(retType);
 
             if (md.Name.StartsWith("op_"))
             {
@@ -2108,18 +2400,18 @@ public static class ToLuaExport
         }
 
         for (int i = 0; i < refList.Count; i++)
-        {                        
+        {
             GenPushStr(refTypes[i], refList[i], head);
         }
 
         if (!md.IsStatic && type.IsValueType && md.Name != "ToString")
         {
             sb.Append(head + "ToLua.SetBack(L, 1, obj);\r\n");
-        }   
-        
+        }
+
         return refList.Count;
     }
-
+    
     static bool IsNumberEnum(Type t)
     {
         if (t == typeof(BindingFlags))
@@ -3502,7 +3794,7 @@ public static class ToLuaExport
 
             if (!typeof(System.Delegate).IsAssignableFrom(t))
             {
-                Debug.LogError(t.FullName + " not a delegate type");
+                LogMgr.LogError(t.FullName + " not a delegate type");
                 return;
             }          
         }
