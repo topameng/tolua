@@ -1184,12 +1184,17 @@ namespace LuaInterface
 
         public void Push(LuaByteBuffer bb)
         {
-            LuaDLL.lua_pushlstring(L, bb.buffer, bb.buffer.Length);
+            LuaDLL.lua_pushlstring(L, bb.buffer, bb.Length);
         }
 
         public void PushByteBuffer(byte[] buffer)
         {
             LuaDLL.lua_pushlstring(L, buffer, buffer.Length);
+        }
+
+        public void PushByteBuffer(byte[] buffer, int len)
+        {
+            LuaDLL.lua_pushlstring(L, buffer, len);
         }
 
         public void Push(LuaBaseRef lbr)

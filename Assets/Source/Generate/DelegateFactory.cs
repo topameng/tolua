@@ -5,19 +5,19 @@ using LuaInterface;
 
 public static class DelegateFactory
 {
-    public delegate Delegate DelegateValue(LuaFunction func, LuaTable self, bool flag);
-    public static Dictionary<Type, DelegateValue> dict = new Dictionary<Type, DelegateValue>();
+	public delegate Delegate DelegateValue(LuaFunction func, LuaTable self, bool flag);
+	public static Dictionary<Type, DelegateValue> dict = new Dictionary<Type, DelegateValue>();
 
-    static DelegateFactory()
-    {
-        Register();
-    }
+	static DelegateFactory()
+	{
+		Register();
+	}
 
-    [NoToLuaAttribute]
-    public static void Register()
-    {
-        dict.Clear();
-    }
+	[NoToLuaAttribute]
+	public static void Register()
+	{
+		dict.Clear();
+	}
 
     [NoToLuaAttribute]
     public static Delegate CreateDelegate(Type t, LuaFunction func = null)
@@ -26,28 +26,28 @@ public static class DelegateFactory
 
         if (!dict.TryGetValue(t, out Create))
         {
-            throw new LuaException(string.Format("Delegate {0} not register", LuaMisc.GetTypeName(t)));
+            throw new LuaException(string.Format("Delegate {0} not register", LuaMisc.GetTypeName(t)));            
         }
 
         if (func != null)
         {
             LuaState state = func.GetLuaState();
             LuaDelegate target = state.GetLuaDelegate(func);
-
+            
             if (target != null)
             {
                 return Delegate.CreateDelegate(t, target, target.method);
-            }
+            }  
             else
             {
                 Delegate d = Create(func, null, false);
                 target = d.Target as LuaDelegate;
                 state.AddLuaDelegate(target, func);
                 return d;
-            }
+            }       
         }
 
-        return Create(func, null, false);
+        return Create(func, null, false);        
     }
 
     [NoToLuaAttribute]
@@ -114,7 +114,7 @@ public static class DelegateFactory
         }
 
         LuaState state = remove.func.GetLuaState();
-        Delegate[] ds = obj.GetInvocationList();
+        Delegate[] ds = obj.GetInvocationList();        
 
         for (int i = 0; i < ds.Length; i++)
         {
@@ -131,5 +131,6 @@ public static class DelegateFactory
 
         return obj;
     }
+
 }
 

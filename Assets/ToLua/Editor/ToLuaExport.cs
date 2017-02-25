@@ -146,23 +146,31 @@ public static class ToLuaExport
         "CanvasRenderer.OnRequestRebuild",
         "CanvasRenderer.onRequestRebuild",
         "Terrain.bakeLightProbesForTrees",
+        "MonoBehaviour.runInEditMode",
+        "Light.lightmappingMode",
         //NGUI
         "UIInput.ProcessEvent",
         "UIWidget.showHandlesWithMoveTool",
         "UIWidget.showHandles",
         "Input.IsJoystickPreconfigured",
-        "UIDrawCall.isActive",
+        "UIDrawCall.isActive"
+    };
+
+	public static List<MemberInfo> memberInfoFilter = new List<MemberInfo>
+	{
+        //可精确查找一个函数
+		//Type.GetMethod(string name, BindingFlags bindingAttr, Binder binder, CallingConventions callConvention, Type[] types, ParameterModifier[] modifiers);
     };
 
     public static bool IsMemberFilter(MemberInfo mi)
     {
-        return memberFilter.Contains(type.Name + "." + mi.Name);
+		return memberInfoFilter.Contains(mi) || memberFilter.Contains(type.Name + "." + mi.Name);
     }
 
     public static bool IsMemberFilter(Type t)
     {
         string name = LuaMisc.GetTypeName(t);
-        return memberFilter.Find((p) => { return name.Contains(p); }) != null;
+        return memberInfoFilter.Contains(t) || memberFilter.Find((p) => { return name.Contains(p); }) != null;
     }
 
     static ToLuaExport()
