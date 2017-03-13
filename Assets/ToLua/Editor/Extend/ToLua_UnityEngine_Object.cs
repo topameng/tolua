@@ -89,6 +89,28 @@ public class ToLua_UnityEngine_Object
                 --LuaException.InstantiateCount;
                 return 1;
             }
+#if UNITY_5_4_OR_NEWER
+            else if (count == 2 && TypeChecker.CheckTypes(L, 1, typeof(UnityEngine.Object), typeof(UnityEngine.Transform)))
+            {
+                UnityEngine.Object arg0 = (UnityEngine.Object)ToLua.ToObject(L, 1);
+                UnityEngine.Transform arg1 = (UnityEngine.Transform)ToLua.ToObject(L, 2);
+                UnityEngine.Object o = UnityEngine.Object.Instantiate(arg0, arg1);
+
+                if (LuaDLL.lua_toboolean(L, LuaDLL.lua_upvalueindex(1)))
+                {
+                    string error = LuaDLL.lua_tostring(L, -1);
+                    LuaDLL.lua_pop(L, 1);
+                    throw new LuaException(error, LuaException.GetLastError());
+                }
+                else
+                {
+                    ToLua.Push(L, o);
+                }
+
+                --LuaException.InstantiateCount;
+                return 1;
+            }
+#endif
             else if (count == 3 && TypeChecker.CheckTypes(L, 1, typeof(UnityEngine.Object), typeof(UnityEngine.Vector3), typeof(UnityEngine.Quaternion)))
             {
                 UnityEngine.Object arg0 = (UnityEngine.Object)ToLua.ToObject(L, 1);
@@ -110,6 +132,51 @@ public class ToLua_UnityEngine_Object
                 --LuaException.InstantiateCount;
                 return 1;
             }
+#if UNITY_5_4_OR_NEWER
+            else if (count == 3 && TypeChecker.CheckTypes(L, 1, typeof(UnityEngine.Object), typeof(UnityEngine.Transform), typeof(bool)))
+            {
+                UnityEngine.Object arg0 = (UnityEngine.Object)ToLua.ToObject(L, 1);
+                UnityEngine.Transform arg1 = (UnityEngine.Transform)ToLua.ToObject(L, 2);
+                bool arg2 = LuaDLL.lua_toboolean(L, 3);
+                UnityEngine.Object o = UnityEngine.Object.Instantiate(arg0, arg1, arg2);
+
+                if (LuaDLL.lua_toboolean(L, LuaDLL.lua_upvalueindex(1)))
+                {
+                    string error = LuaDLL.lua_tostring(L, -1);
+                    LuaDLL.lua_pop(L, 1);
+                    throw new LuaException(error, LuaException.GetLastError());
+                }
+                else
+                {
+                    ToLua.Push(L, o);
+                }
+
+                --LuaException.InstantiateCount;
+                return 1;
+            }
+            else if (count == 4 && TypeChecker.CheckTypes(L, 1, typeof(UnityEngine.Object), typeof(UnityEngine.Vector3), typeof(UnityEngine.Quaternion), typeof(UnityEngine.Transform)))
+            {
+                UnityEngine.Object arg0 = (UnityEngine.Object)ToLua.ToObject(L, 1);
+                UnityEngine.Vector3 arg1 = ToLua.ToVector3(L, 2);
+                UnityEngine.Quaternion arg2 = ToLua.ToQuaternion(L, 3);
+                UnityEngine.Transform arg3 = (UnityEngine.Transform)ToLua.ToObject(L, 4);
+                UnityEngine.Object o = UnityEngine.Object.Instantiate(arg0, arg1, arg2, arg3);
+
+                if (LuaDLL.lua_toboolean(L, LuaDLL.lua_upvalueindex(1)))
+                {
+                    string error = LuaDLL.lua_tostring(L, -1);
+                    LuaDLL.lua_pop(L, 1);
+                    throw new LuaException(error, LuaException.GetLastError());
+                }
+                else
+                {
+                    ToLua.Push(L, o);
+                }
+
+                --LuaException.InstantiateCount;
+                return 1;
+            }
+#endif
             else
             {
                 --LuaException.InstantiateCount;
@@ -140,7 +207,7 @@ public class ToLua_UnityEngine_Object
     public static void DestroyObject(Object obj)
     {
 
-    }   
+    }
 
     [UseDefinedAttribute]
     public static void Instantiate(Object original)
