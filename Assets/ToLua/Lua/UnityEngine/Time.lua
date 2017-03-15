@@ -86,7 +86,7 @@ function Time:SetDeltaTime(deltaTime, unscaledDeltaTime)
 		counter = 1000000
 	else
 		_Time.time = _Time.time + deltaTime
-		_Time.realtimeSinceStartup = _Time.realtimeSinceStartup + deltaTime
+		_Time.realtimeSinceStartup = _Time.realtimeSinceStartup + unscaledDeltaTime
 		_Time.timeSinceLevelLoad = _Time.timeSinceLevelLoad + deltaTime	
 		_Time.unscaledTime = _Time.unscaledTime + unscaledDeltaTime 
 	end		
