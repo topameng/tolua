@@ -1314,7 +1314,7 @@ namespace LuaInterface
 
         public void PushObject(object obj)
         {
-            if (obj.GetType().IsEnum)
+            if (obj != null && obj.GetType().IsEnum)
             {
                 ToLua.Push(L, (Enum)obj);
             }
