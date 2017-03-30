@@ -12,11 +12,11 @@ If you want to test in mobile, first click menu Lua/Copy lua files to Resources.
 
 如果你想在手机上测试，首先点击菜单Lua/Copy lua files to Resources， 之后再build.
 
-有bug 可以到QQ群反馈: 286510803. 不闲聊，非bug相关不要加群, 请加讨论群: 
-ulua&tolua技术交流群① 341746602(已满) 
-ulua_tolua技术讨论群② 469941220 
-ulua&tolua技术交流群3 434341400(已满) 
-tolua#技术讨论群④ 543826216
+有bug 可以到QQ群反馈: 286510803. 不闲聊，非bug相关不要加群, 请加讨论群: <br>
+ulua&tolua技术交流群① 341746602(已满) <br>
+ulua_tolua技术讨论群② 469941220 <br>
+ulua&tolua技术交流群3 434341400(已满) <br>
+tolua#技术讨论群④ 543826216<br>
 
 # Library
 **Debugger** <br>
