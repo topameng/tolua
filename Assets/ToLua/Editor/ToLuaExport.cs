@@ -133,6 +133,8 @@ public static class ToLuaExport
         "Caching.SetNoBackupFlag",
         "Caching.ResetNoBackupFlag",
         "Light.areaSize",
+        "Light.lightmappingMode",
+        "Light.lightmapBakeType",
         "Security.GetChainOfTrustValue",
         "Texture2D.alphaIsTransparency",
         "WWW.movie",
@@ -147,7 +149,6 @@ public static class ToLuaExport
         "CanvasRenderer.onRequestRebuild",
         "Terrain.bakeLightProbesForTrees",
         "MonoBehaviour.runInEditMode",
-        "Light.lightmappingMode",
         //NGUI
         "UIInput.ProcessEvent",
         "UIWidget.showHandlesWithMoveTool",
