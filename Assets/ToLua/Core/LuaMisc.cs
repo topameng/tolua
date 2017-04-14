@@ -207,7 +207,7 @@ namespace LuaInterface
 
             if (l != null && r == null)
             {
-                return a.func == null && b.self == null;
+                return a.func == null && a.self == null;
             }
 
             if (a.func != b.func || a.self != b.self)
