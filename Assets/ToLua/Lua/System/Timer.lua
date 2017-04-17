@@ -60,17 +60,16 @@ function Timer:Update()
 	self.time = self.time - delta
 	
 	if self.time <= 0 and Time.frameCount > self.count then
-		self.func()
-		
 		if self.loop > 0 then
 			self.loop = self.loop - 1
 			self.time = self.time + self.duration
-		end
-		
-		if self.loop == 0 then
-			self:Stop()
+			self.func()
+		elseif self.loop == 0 then
+			self.func()
+			self:Reset()
 		elseif self.loop < 0 then
 			self.time = self.time + self.duration
+			self.func()
 		end
 	end
 end
