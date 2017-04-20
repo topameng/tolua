@@ -8,22 +8,22 @@ public class TestPerformance : MonoBehaviour
     LuaState state = null;        
     private string tips = "";
 
-	void Start () 
+    private void Awake()
+    {
+        new LuaResLoader();
+        state = new LuaState();
+        state.Start();
+        LuaBinder.Bind(state);
+    }
+
+    void Start () 
     {
 #if UNITY_5
         Application.logMessageReceived += ShowTips;
 #else
         Application.RegisterLogCallback(ShowTips);
-#endif         
-        new LuaResLoader();          
-        state = new LuaState();
-        state.Start();
-        LuaBinder.Bind(state);                       
+#endif
         state.DoFile("TestPerf.lua");        
-        state.LuaGC(LuaGCOptions.LUA_GCCOLLECT);
-        state.LogGC = false;
-
-        Debug.Log(typeof(List<int>).BaseType);
     }
 
     void ShowTips(string msg, string stackTrace, LogType type)
