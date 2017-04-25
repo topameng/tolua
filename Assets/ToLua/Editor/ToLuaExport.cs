@@ -414,7 +414,7 @@ public static class ToLuaExport
                         {
                             list.RemoveAt(index);
                         }
-                        else if (md.Name == "get_Item")
+                        else if (HasGetIndex(md))
                         {
                             getItems.Add(md);
                         }
@@ -433,7 +433,7 @@ public static class ToLuaExport
                         {
                             list.RemoveAt(index);
                         }
-                        else if (md.Name == "set_Item")
+                        else if (HasSetIndex(md))
                         {
                             setItems.Add(md);
                         }
@@ -515,6 +515,14 @@ public static class ToLuaExport
                 piList.RemoveAt(i);
             }
             else if (piList[i].Name == "Item" && IsItemThis(piList[i]))
+            {
+                piList.RemoveAt(i);
+            }  
+            else if(piList[i].GetGetMethod() != null && HasGetIndex(piList[i].GetGetMethod()))
+            {
+                piList.RemoveAt(i);
+            }
+            else if (piList[i].GetSetMethod() != null && HasSetIndex(piList[i].GetSetMethod()))
             {
                 piList.RemoveAt(i);
             }
@@ -610,6 +618,46 @@ public static class ToLuaExport
         }
 
         return md.Name;
+    }
+
+    static bool HasGetIndex(MemberInfo md)
+    {
+        if (md.Name == "get_Item")
+        {
+            return true;
+        }
+
+        object[] attrs = type.GetCustomAttributes(true);
+
+        for (int i = 0; i < attrs.Length; i++)
+        {
+            if (attrs[i] is DefaultMemberAttribute)
+            {
+                return md.Name == "get_ItemOf";
+            }
+        }
+
+        return false;
+    }
+
+    static bool HasSetIndex(MemberInfo md)
+    {
+        if (md.Name == "set_Item")
+        {
+            return true;
+        }
+
+        object[] attrs = type.GetCustomAttributes(true);
+
+        for (int i = 0; i < attrs.Length; i++)
+        {
+            if (attrs[i] is DefaultMemberAttribute)
+            {
+                return md.Name == "set_ItemOf";
+            }
+        }
+
+        return false;
     }
 
     static bool IsThisArray(MethodInfo md, int count)
@@ -906,7 +954,7 @@ public static class ToLuaExport
         BeginTry();
 
         if (!haveParams)
-        {
+        {            
             int count = paramInfos.Length + offset;
             sb.AppendFormat("\t\t\tToLua.CheckArgsCount(L, {0});\r\n", count);
         }
@@ -2005,7 +2053,7 @@ public static class ToLuaExport
 
         if (m.ReturnType == typeof(void))
         {
-            if (md.Name == "set_Item")
+            if (HasSetIndex(md))
             {
                 if (methodType == 2)
                 {
@@ -2042,7 +2090,7 @@ public static class ToLuaExport
             {
                 CallOpFunction(md.Name, tab, ret);
             }
-            else if (md.Name == "get_Item")
+            else if (HasGetIndex(md))
             {
                 if (methodType == 2)
                 {
