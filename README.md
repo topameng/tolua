@@ -70,4 +70,4 @@ Android: 中兴nubia z9 max(NX512J) + Adnroid5.0.2<br>
 参考包内1-20例子
 
 # About Lua
-win, android using luajit2.0.4. macos using luac(for u5.x). ios using luajit2.1-beta2
+win, android ios using luajit2.1-beta2. macos using luac(for u5.x). 
