@@ -155,7 +155,7 @@ function Bounds:ClosestPoint(point)
 			distance = distance + delta * delta
 			closest[i] = -extent[i]
 		elseif closest[i] > extent[i]  then
-			fDelta = closest[i] - extent[i]
+			delta = closest[i] - extent[i]
 			distance = distance + delta * delta
 			closest[i] = extent[i]
 		end

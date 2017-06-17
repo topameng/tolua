@@ -27,7 +27,7 @@ function typeof(obj)
   			types[obj] = ret
   		end	
   	else
-  		error("attemp to call typeof on type "..t)
+  		error(debug.traceback("attemp to call typeof on type "..t))
 	end
 	
 	return ret

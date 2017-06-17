@@ -8,6 +8,8 @@ local sqrt = Mathf.Sqrt
 local setmetatable = setmetatable
 local rawset = rawset
 local rawget = rawget
+local clamp = Mathf.Clamp
+local acos = math.acos
 
 local Vector2 = {}
 local get = tolua.initget(Vector2)
@@ -77,7 +79,7 @@ function Vector2.Dot(lhs, rhs)
 end
 
 function Vector2.Angle(from, to)
-	return acos(clamp(Vector2.dot(from:Normalize(), to:Normalize()), -1, 1)) * 57.29578
+	return acos(clamp(Vector2.Dot(from:Normalize(), to:Normalize()), -1, 1)) * 57.29578
 end
 
 
