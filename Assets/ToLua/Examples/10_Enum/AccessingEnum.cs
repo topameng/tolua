@@ -31,14 +31,22 @@ public class AccessingEnum : MonoBehaviour
             end
 
             function ChangeLightType(light, type)
-                print('change light type to Directional')
-                light.type = UnityEngine.LightType.Directional
+                print('change light type to '..tostring(type))
+                light.type = type
             end
         ";
 
-	void Start () 
+    LuaState state = null;
+
+    void Start () 
     {
-        LuaState state = new LuaState();
+#if UNITY_5
+        Application.logMessageReceived += ShowTips;
+#else
+        Application.RegisterLogCallback(ShowTips);
+#endif
+        new LuaResLoader();
+        state = new LuaState();
         state.Start();
         LuaBinder.Bind(state);
 
@@ -50,22 +58,47 @@ public class AccessingEnum : MonoBehaviour
         func.Push(Space.World);
         func.PCall();
         func.EndPCall();
-        func.Dispose();
+        func.Dispose();        
         func = null;
-
-        GameObject go = GameObject.Find("/Light");
-        Light light = go.GetComponent<Light>();
-        func = state.GetFunction("ChangeLightType");
-        func.BeginPCall();
-        func.Push(light);
-        func.Push(LightType.Directional);
-        func.PCall();
-        func.EndPCall();
-        func.Dispose();
-        func = null;
- 
+	}
+    void OnApplicationQuit()
+    {
         state.CheckTop();
         state.Dispose();
         state = null;
-	}
+
+#if UNITY_5
+        Application.logMessageReceived -= ShowTips;
+#else
+        Application.RegisterLogCallback(null);
+#endif        
+    }
+
+    string tips = "";
+    int count = 1;
+
+    void ShowTips(string msg, string stackTrace, LogType type)
+    {
+        tips += msg;
+        tips += "\r\n";
+    }
+
+    void OnGUI()
+    {
+        GUI.Label(new Rect(Screen.width / 2 - 300, Screen.height / 2 - 200, 600, 400), tips);
+
+        if (GUI.Button(new Rect(0, 60, 120, 50), "ChangeType"))
+        {
+            GameObject go = GameObject.Find("/Light");
+            Light light = go.GetComponent<Light>();
+            LuaFunction func = state.GetFunction("ChangeLightType");
+            func.BeginPCall();
+            func.Push(light);
+            LightType type = (LightType)(count++ % 4);
+            func.Push(type);
+            func.PCall();
+            func.EndPCall();
+            func.Dispose();
+        }
+    }
 }

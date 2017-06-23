@@ -6,7 +6,7 @@ public class ToLua_LuaInterface_LuaProperty
     public static string GetDefined =
 @"		try
 		{			
-			LuaInterface.LuaProperty obj = (LuaInterface.LuaProperty)ToLua.CheckObject(L, 1, typeof(LuaInterface.LuaProperty));            
+			LuaProperty obj = (LuaProperty)ToLua.CheckObject(L, 1, typeof(LuaProperty));            
             return obj.Get(L);						
 		}
 		catch (Exception e)
@@ -17,7 +17,7 @@ public class ToLua_LuaInterface_LuaProperty
     public static string SetDefined =
 @"		try
 		{			
-            LuaInterface.LuaProperty obj = (LuaInterface.LuaProperty)ToLua.CheckObject(L, 1, typeof(LuaInterface.LuaProperty));            
+            LuaProperty obj = (LuaProperty)ToLua.CheckObject(L, 1, typeof(LuaProperty));            
             return obj.Set(L);
         }
         catch (Exception e)

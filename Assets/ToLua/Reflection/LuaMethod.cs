@@ -26,7 +26,7 @@ using System.Reflection;
 namespace LuaInterface
 {
     //代表一个反射函数
-    public class LuaMethod
+    public sealed class LuaMethod
     {        
         MethodInfo method = null;
         List<Type> list = new List<Type>();

@@ -26,7 +26,7 @@ using System.Reflection;
 
 namespace LuaInterface
 {
-    public class LuaConstructor
+    public sealed class LuaConstructor
     {
         ConstructorInfo method = null;
         List<Type> list = null;

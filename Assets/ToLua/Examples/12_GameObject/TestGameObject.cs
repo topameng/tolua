@@ -8,19 +8,19 @@ public class TestGameObject: MonoBehaviour
         @"                                                
             local Color = UnityEngine.Color
             local GameObject = UnityEngine.GameObject
-            local ParticleSystem = UnityEngine.ParticleSystem
+            local ParticleSystem = UnityEngine.ParticleSystem 
 
             function OnComplete()
                 print('OnComplete CallBack')
             end                       
             
-            local go = GameObject('go', typeof(UnityEngine.Camera))
+            local go = GameObject('go')
             go:AddComponent(typeof(ParticleSystem))
             local node = go.transform
-            node.position = Vector3.one      
+            node.position = Vector3.one                  
             print('gameObject is: '..tostring(go))                 
             --go.transform:DOPath({Vector3.zero, Vector3.one * 10}, 1, DG.Tweening.PathType.Linear, DG.Tweening.PathMode.Full3D, 10, nil)
-            --go.transform:DORotate(Vector3(0,0,360), 2, DG.Tweening.RotateMode.FastBeyond360):OnComplete(OnComplete)
+            --go.transform:DORotate(Vector3(0,0,360), 2, DG.Tweening.RotateMode.FastBeyond360):OnComplete(OnComplete)            
             GameObject.Destroy(go, 2)                  
             print('delay destroy gameobject is: '..go.name)                                           
         ";
@@ -28,12 +28,18 @@ public class TestGameObject: MonoBehaviour
     LuaState lua = null;
 
     void Start()
-    {        
+    {
+#if UNITY_5
+        Application.logMessageReceived += ShowTips;
+#else
+        Application.RegisterLogCallback(ShowTips);
+#endif
+        new LuaResLoader();
         lua = new LuaState();
         lua.LogGC = true;
         lua.Start();
         LuaBinder.Bind(lua);
-        lua.DoString(script, "TestGameObject.cs");            
+        lua.DoString(script, "TestGameObject.cs");
     }
 
     void Update()
@@ -42,9 +48,27 @@ public class TestGameObject: MonoBehaviour
         lua.Collect();        
     }
 
+    string tips = "";
+        
+    void ShowTips(string msg, string stackTrace, LogType type)
+    {
+        tips += msg;
+        tips += "\r\n";
+    }
+
     void OnApplicationQuit()
     {        
         lua.Dispose();
-        lua = null;   
+        lua = null;
+#if UNITY_5
+        Application.logMessageReceived -= ShowTips;
+#else
+        Application.RegisterLogCallback(null);
+#endif    
+    }
+
+    void OnGUI()
+    {
+        GUI.Label(new Rect(Screen.width / 2 - 300, Screen.height / 2 - 300, 600, 600), tips);
     }
 }

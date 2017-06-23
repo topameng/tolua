@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using LuaInterface;
 
-public class TestAccount
+public sealed class TestAccount
 {
     public int id;
     public string name;
@@ -65,6 +65,12 @@ public class UseDictionary : MonoBehaviour
 
 	void Awake () 
     {
+#if UNITY_5
+        Application.logMessageReceived += ShowTips;
+#else
+        Application.RegisterLogCallback(ShowTips);
+#endif
+        new LuaResLoader();
         map.Add(1, new TestAccount(1, "水水", 0));
         map.Add(2, new TestAccount(2, "王伟", 1));
         map.Add(3, new TestAccount(3, "王芳", 0));
@@ -87,7 +93,29 @@ public class UseDictionary : MonoBehaviour
         luaState = null;
     }
 
-    //示例方式，正常导出无需手写下面代码
+    void OnApplicationQuit()
+    {
+#if UNITY_5
+        Application.logMessageReceived -= ShowTips;
+#else
+        Application.RegisterLogCallback(null);
+#endif        
+    }
+
+    string tips = "";
+
+    void ShowTips(string msg, string stackTrace, LogType type)
+    {
+        tips += msg;
+        tips += "\r\n";
+    }
+
+    void OnGUI()
+    {
+        GUI.Label(new Rect(Screen.width / 2 - 300, Screen.height / 2 - 200, 600, 400), tips);
+    }
+
+    //示例方式，方便删除，正常导出无需手写下面代码
     void BindMap(LuaState L)
     {
         L.BeginModule(null);

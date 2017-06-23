@@ -246,6 +246,12 @@ public static class ToLuaMenu
             return;
         }
 
+        if (CustomSettings.sealedList.Contains(t))
+        {
+            CustomSettings.sealedList.Remove(t);
+            Debugger.LogError("{0} not a sealed class, it is parent of {1}", LuaMisc.GetTypeName(t), bt.name);
+        }
+
         if (t.IsInterface)
         {
             Debugger.LogWarning("{0} has a base type {1} is Interface, use SetBaseType to jump it", bt.name, t.FullName);
@@ -1268,4 +1274,4 @@ public static class ToLuaMenu
         Debug.Log("Clear base type wrap files over");
         AssetDatabase.Refresh();
     }
-            }
+}

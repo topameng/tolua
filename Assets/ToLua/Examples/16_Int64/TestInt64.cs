@@ -12,8 +12,8 @@ public class TestInt64 : MonoBehaviour
     string script =
         @"            
             function TestInt64(x)                
-                x = x + 789		
-                assert(tostring(x) == '9223372036854775807')		
+                x = 789 + x
+                assert(tostring(x) == '9223372036854775807')		                                       
                 local low, high = int64.tonum2(x)                
                 print('x value is: '..tostring(x)..' low is: '.. low .. ' high is: '..high.. ' type is: '.. tolua.typename(x))           
                 local y = int64.new(1,2)                
@@ -94,7 +94,7 @@ public class TestInt64 : MonoBehaviour
     }
 
     void OnGUI()
-    {        
-        GUI.Label(new Rect(Screen.width / 2 - 200, Screen.height / 2 - 150, 400, 300), tips);        
+    {
+        GUI.Label(new Rect(Screen.width / 2 - 300, Screen.height / 2 - 300, 600, 600), tips);
     }
 }

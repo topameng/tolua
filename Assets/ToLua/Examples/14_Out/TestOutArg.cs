@@ -6,15 +6,15 @@ using System;
 public class TestOutArg : MonoBehaviour 
 {            
     string script =
-        @"                    
-            print('start')
+        @"                                
             local box = UnityEngine.BoxCollider
                                                                             
             function TestPick(ray)                                                                  
-                local _layer = 2 ^ LayerMask.NameToLayer('Default')
-                local flag, hit = UnityEngine.Physics.Raycast(ray, nil, 5000, _layer)                          
-                --local flag, hit = UnityEngine.Physics.Raycast(ray, RaycastHit.out, 5000, _layer)                
-                
+                local _layer = 2 ^ LayerMask.NameToLayer('Default')                
+                local time = os.clock()                                                  
+                local flag, hit = UnityEngine.Physics.Raycast(ray, nil, 5000, _layer)                                              
+                --local flag, hit = UnityEngine.Physics.Raycast(ray, RaycastHit.out, 5000, _layer)                                
+                                
                 if flag then
                     print('pick from lua, point: '..tostring(hit.point))                                        
                 end
@@ -23,26 +23,51 @@ public class TestOutArg : MonoBehaviour
 
     LuaState state = null;
     LuaFunction func = null;
+    string tips = string.Empty;
 
     void Start () 
     {
+#if UNITY_5
+        Application.logMessageReceived += ShowTips;
+#else
+        Application.RegisterLogCallback(ShowTips);
+#endif
         new LuaResLoader();
         state = new LuaState();
         LuaBinder.Bind(state);
         state.Start();
         state.DoString(script, "TestOutArg.cs");
-
-        func = state.GetFunction("TestPick");
+        func = state.GetFunction("TestPick");        
 	}
+
+    void ShowTips(string msg, string stackTrace, LogType type)
+    {
+        tips += msg;
+        tips += "\r\n";
+    }
+
+    void OnApplicationQuit()
+    {
+#if UNITY_5
+        Application.logMessageReceived -= ShowTips;
+#else
+        Application.RegisterLogCallback(null);
+#endif        
+    }
+
+    private void OnGUI()
+    {
+        GUI.Label(new Rect(Screen.width / 2 - 300, Screen.height / 2 - 300, 600, 600), tips);
+    }
 
     void Update()
     {
         if (Input.GetMouseButtonDown(0))
         {
             Camera camera = Camera.main;
-            Ray ray = camera.ScreenPointToRay(Input.mousePosition);
+            Ray ray = camera.ScreenPointToRay(Input.mousePosition);                  
             RaycastHit hit;
-            bool flag = Physics.Raycast(ray, out hit, 5000, 1 << LayerMask.NameToLayer("Default"));
+            bool flag = Physics.Raycast(ray, out hit, 5000, 1 << LayerMask.NameToLayer("Default"));            
 
             if (flag)
             {

@@ -10,6 +10,18 @@ public class TestExport_SpaceWrap
 		L.RegVar("World", get_World, null);
 		L.RegFunction("IntToEnum", IntToEnum);
 		L.EndEnum();
+		TypeTraits<TestExport.Space>.Check = CheckType;
+		StackTraits<TestExport.Space>.Push = Push;
+	}
+
+	static void Push(IntPtr L, TestExport.Space arg)
+	{
+		ToLua.Push(L, arg);
+	}
+
+	static bool CheckType(IntPtr L, int pos)
+	{
+		return TypeChecker.CheckEnumType(typeof(TestExport.Space), L, pos);
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]

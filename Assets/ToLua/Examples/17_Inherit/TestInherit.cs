@@ -46,8 +46,7 @@ public class TestInherit : MonoBehaviour
         --既保证支持继承函数，又支持go.transform == transform 这样的比较
         function Test(node)        
             local v = Vector3.one           
-            local transform = LuaTransform.Extend(node)  
-            --local transform = node                                                  
+            local transform = LuaTransform.Extend(node)                                                         
 
             local t = os.clock()            
             for i = 1, 200000 do
@@ -74,6 +73,12 @@ public class TestInherit : MonoBehaviour
 
 	void Start () 
     {
+#if UNITY_5
+        Application.logMessageReceived += ShowTips;
+#else
+        Application.RegisterLogCallback(ShowTips);
+#endif   
+        new LuaResLoader();
         lua = new LuaState();        
         lua.Start();
         LuaBinder.Bind(lua);
@@ -98,6 +103,28 @@ public class TestInherit : MonoBehaviour
 
         lua.CheckTop();
         lua.Dispose();
-        lua = null;
+        lua = null;        
 	}
+
+    string tips;
+
+    void ShowTips(string msg, string stackTrace, LogType type)
+    {
+        tips += msg;
+        tips += "\r\n";
+    }
+
+    void OnDestroy()
+    {
+#if UNITY_5		
+        Application.logMessageReceived -= ShowTips;
+#else
+        Application.RegisterLogCallback(null);
+#endif
+    }
+
+    void OnGUI()
+    {
+        GUI.Label(new Rect(Screen.width / 2 - 300, Screen.height / 2 - 300, 600, 600), tips);
+    }
 }

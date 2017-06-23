@@ -10,7 +10,7 @@ public class System_Collections_Generic_Dictionary_int_TestAccount_ValueCollecti
 		L.RegFunction("CopyTo", CopyTo);
 		L.RegFunction("GetEnumerator", GetEnumerator);
 		L.RegFunction("New", _CreateSystem_Collections_Generic_Dictionary_int_TestAccount_ValueCollection);
-		L.RegFunction("__tostring", Lua_ToString);
+		L.RegFunction("__tostring", ToLua.op_ToString);
 		L.RegVar("Count", get_Count, null);
 		L.EndClass();
 	}
@@ -26,7 +26,7 @@ public class System_Collections_Generic_Dictionary_int_TestAccount_ValueCollecti
 			{
 				System.Collections.Generic.Dictionary<int,TestAccount> arg0 = (System.Collections.Generic.Dictionary<int,TestAccount>)ToLua.CheckObject(L, 1, typeof(System.Collections.Generic.Dictionary<int,TestAccount>));
 				System.Collections.Generic.Dictionary<int,TestAccount>.ValueCollection obj = new System.Collections.Generic.Dictionary<int,TestAccount>.ValueCollection(arg0);
-				ToLua.PushObject(L, obj);
+				ToLua.PushSealed(L, obj);
 				return 1;
 			}
 			else
@@ -34,7 +34,7 @@ public class System_Collections_Generic_Dictionary_int_TestAccount_ValueCollecti
 				return LuaDLL.luaL_throw(L, "invalid arguments to ctor method: System.Collections.Generic.Dictionary<int,TestAccount>.ValueCollection.New");
 			}
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -52,7 +52,7 @@ public class System_Collections_Generic_Dictionary_int_TestAccount_ValueCollecti
 			obj.CopyTo(arg0, arg1);
 			return 0;
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -65,31 +65,14 @@ public class System_Collections_Generic_Dictionary_int_TestAccount_ValueCollecti
 		{
 			ToLua.CheckArgsCount(L, 1);
 			System.Collections.Generic.Dictionary<int,TestAccount>.ValueCollection obj = (System.Collections.Generic.Dictionary<int,TestAccount>.ValueCollection)ToLua.CheckObject(L, 1, typeof(System.Collections.Generic.Dictionary<int,TestAccount>.ValueCollection));
-			System.Collections.Generic.Dictionary<int,TestAccount>.ValueCollection.Enumerator o = obj.GetEnumerator();
+			System.Collections.IEnumerator o = obj.GetEnumerator();
 			ToLua.Push(L, o);
 			return 1;
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
-	}
-
-	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int Lua_ToString(IntPtr L)
-	{
-		object obj = ToLua.ToObject(L, 1);
-
-		if (obj != null)
-		{
-			LuaDLL.lua_pushstring(L, obj.ToString());
-		}
-		else
-		{
-			LuaDLL.lua_pushnil(L);
-		}
-
-		return 1;
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]

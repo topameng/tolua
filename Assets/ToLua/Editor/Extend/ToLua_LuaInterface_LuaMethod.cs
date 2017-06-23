@@ -6,7 +6,7 @@ public class ToLua_LuaInterface_LuaMethod
     public static string CallDefined =
 @"		try
 		{			
-			LuaInterface.LuaMethod obj = (LuaInterface.LuaMethod)ToLua.CheckObject(L, 1, typeof(LuaInterface.LuaMethod));            
+			LuaMethod obj = (LuaMethod)ToLua.CheckObject(L, 1, typeof(LuaMethod));            
 			return obj.Call(L);						
 		}
 		catch(Exception e)
@@ -18,7 +18,7 @@ public class ToLua_LuaInterface_LuaMethod
 @"		try
 		{
 			ToLua.CheckArgsCount(L, 1);
-			LuaInterface.LuaMethod obj = (LuaInterface.LuaMethod)ToLua.CheckObject(L, 1, typeof(LuaInterface.LuaMethod));
+			LuaMethod obj = (LuaMethod)ToLua.CheckObject(L, 1, typeof(LuaMethod));
 			obj.Destroy();
             ToLua.Destroy(L);
 			return 0;

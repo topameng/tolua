@@ -9,7 +9,7 @@ public class System_Collections_Generic_KeyValuePair_int_TestAccountWrap
 		L.BeginClass(typeof(System.Collections.Generic.KeyValuePair<int,TestAccount>), null, "KeyValuePair_int_TestAccount");
 		L.RegFunction("ToString", ToString);
 		L.RegFunction("New", _CreateSystem_Collections_Generic_KeyValuePair_int_TestAccount);
-		L.RegFunction("__tostring", Lua_ToString);
+		L.RegFunction("__tostring", ToLua.op_ToString);
 		L.RegVar("Key", get_Key, null);
 		L.RegVar("Value", get_Value, null);
 		L.EndClass();
@@ -41,7 +41,7 @@ public class System_Collections_Generic_KeyValuePair_int_TestAccountWrap
 				return LuaDLL.luaL_throw(L, "invalid arguments to ctor method: System.Collections.Generic.KeyValuePair<int,TestAccount>.New");
 			}
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -56,30 +56,12 @@ public class System_Collections_Generic_KeyValuePair_int_TestAccountWrap
 			System.Collections.Generic.KeyValuePair<int,TestAccount> obj = (System.Collections.Generic.KeyValuePair<int,TestAccount>)ToLua.CheckObject(L, 1, typeof(System.Collections.Generic.KeyValuePair<int,TestAccount>));
 			string o = obj.ToString();
 			LuaDLL.lua_pushstring(L, o);
-			ToLua.SetBack(L, 1, obj);
 			return 1;
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
-	}
-
-	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int Lua_ToString(IntPtr L)
-	{
-		object obj = ToLua.ToObject(L, 1);
-
-		if (obj != null)
-		{
-			LuaDLL.lua_pushstring(L, obj.ToString());
-		}
-		else
-		{
-			LuaDLL.lua_pushnil(L);
-		}
-
-		return 1;
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]

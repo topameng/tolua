@@ -22,7 +22,13 @@ public class AccessingLuaVariables : MonoBehaviour
         ";
 
 	void Start () 
-    {        
+    {
+#if UNITY_5
+        Application.logMessageReceived += ShowTips;
+#else
+        Application.RegisterLogCallback(ShowTips);
+#endif
+        new LuaResLoader();
         LuaState lua = new LuaState();
         lua.Start();
         lua["Objs2Spawn"] = 5;
@@ -30,7 +36,7 @@ public class AccessingLuaVariables : MonoBehaviour
 
         //通过LuaState访问
         Debugger.Log("Read var from lua: {0}", lua["var2read"]);
-        Debugger.Log("Read table var from lua: {0}", lua["varTable.default"]);
+        Debugger.Log("Read table var from lua: {0}", lua["varTable.default"]);  //LuaState 拆串式table
 
         LuaFunction func = lua["TestFunc"] as LuaFunction;
         func.Call();
@@ -39,7 +45,7 @@ public class AccessingLuaVariables : MonoBehaviour
         //cache成LuaTable进行访问
         LuaTable table = lua.GetTable("varTable");
         Debugger.Log("Read varTable from lua, default: {0} name: {1}", table["default"], table["map.name"]);
-        table["map.name"] = "new";
+        table["map.name"] = "new";  //table 字符串只能是key
         Debugger.Log("Modify varTable name: {0}", table["map.name"]);
 
         table.AddTable("newmap");
@@ -66,4 +72,26 @@ public class AccessingLuaVariables : MonoBehaviour
         lua.CheckTop();
         lua.Dispose();
 	}
+
+    private void OnApplicationQuit()
+    {
+#if UNITY_5
+        Application.logMessageReceived -= ShowTips;
+#else
+        Application.RegisterLogCallback(null);
+#endif
+    }
+
+    string tips = null;
+
+    void ShowTips(string msg, string stackTrace, LogType type)
+    {
+        tips += msg;
+        tips += "\r\n";
+    }
+
+    void OnGUI()
+    {
+        GUI.Label(new Rect(Screen.width / 2 - 300, Screen.height / 2 - 200, 600, 400), tips);
+    }
 }

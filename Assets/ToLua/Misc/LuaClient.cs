@@ -46,12 +46,7 @@ public class LuaClient : MonoBehaviour
 
     protected virtual LuaFileUtils InitLoader()
     {
-        if (LuaFileUtils.Instance != null)
-        {
-            return LuaFileUtils.Instance;
-        }
-
-        return new LuaFileUtils();
+        return LuaFileUtils.Instance;       
     }
 
     protected virtual void LoadLuaFiles()
@@ -73,7 +68,7 @@ public class LuaClient : MonoBehaviour
             OpenLuaSocket();            
         }        
 
-        if (LuaConst.openZbsDebugger)
+        if (LuaConst.openLuaDebugger)
         {
             OpenZbsDebugger();
         }
@@ -157,7 +152,8 @@ public class LuaClient : MonoBehaviour
     protected virtual void Bind()
     {        
         LuaBinder.Bind(luaState);
-        LuaCoroutine.Register(luaState, this);
+        DelegateFactory.Init();   
+        LuaCoroutine.Register(luaState, this);        
     }
 
     protected void Init()
@@ -166,8 +162,8 @@ public class LuaClient : MonoBehaviour
         luaState = new LuaState();
         OpenLibs();
         luaState.LuaSetTop(0);
-        Bind();
-        LoadLuaFiles();    
+        Bind();        
+        LoadLuaFiles();        
     }
 
     protected void Awake()
@@ -184,7 +180,7 @@ public class LuaClient : MonoBehaviour
     {
         luaState.Start();
         StartLooper();
-        StartMain();
+        StartMain();        
     }
 
     void OnLevelLoaded(int level)
@@ -198,8 +194,7 @@ public class LuaClient : MonoBehaviour
         }
 
         if (luaState != null)
-        {
-            //luaState.LuaGC(LuaGCOptions.LUA_GCCOLLECT);
+        {            
             luaState.RefreshDelegateMap();
         }
     }

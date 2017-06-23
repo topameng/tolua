@@ -13,7 +13,7 @@ public class ToLua_System_String
             if (luatype == LuaTypes.LUA_TSTRING)
             {
                 string arg0 = LuaDLL.lua_tostring(L, 1);
-                ToLua.PushObject(L, arg0);
+                ToLua.PushSealed(L, arg0);
                 return 1;
             }
             else

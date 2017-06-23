@@ -66,7 +66,7 @@ public class System_StringWrap
             if (luatype == LuaTypes.LUA_TSTRING)
             {
                 string arg0 = LuaDLL.lua_tostring(L, 1);
-                ToLua.PushObject(L, arg0);
+                ToLua.PushSealed(L, arg0);
                 return 1;
             }
             else
@@ -87,25 +87,25 @@ public class System_StringWrap
 		{
 			int count = LuaDLL.lua_gettop(L);
 
-			if (count == 2 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(string)))
+			if (count == 2 && TypeChecker.CheckTypes<string>(L, 2))
 			{
-				System.String obj = (System.String)ToLua.ToObject(L, 1);
+				System.String obj = (System.String)ToLua.CheckObject(L, 1, typeof(System.String));
 				string arg0 = ToLua.ToString(L, 2);
 				bool o = obj != null ? obj.Equals(arg0) : arg0 == null;
 				LuaDLL.lua_pushboolean(L, o);
 				return 1;
 			}
-			else if (count == 2 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(object)))
+			else if (count == 2 && TypeChecker.CheckTypes<object>(L, 2))
 			{
-				System.String obj = (System.String)ToLua.ToObject(L, 1);
+				System.String obj = (System.String)ToLua.CheckObject(L, 1, typeof(System.String));
 				object arg0 = ToLua.ToVarObject(L, 2);
 				bool o = obj != null ? obj.Equals(arg0) : arg0 == null;
 				LuaDLL.lua_pushboolean(L, o);
 				return 1;
 			}
-			else if (count == 3 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(string), typeof(System.StringComparison)))
+			else if (count == 3 && TypeChecker.CheckTypes<string, System.StringComparison>(L, 2))
 			{
-				System.String obj = (System.String)ToLua.ToObject(L, 1);
+				System.String obj = (System.String)ToLua.CheckObject(L, 1, typeof(System.String));
 				string arg0 = ToLua.ToString(L, 2);
 				System.StringComparison arg1 = (System.StringComparison)ToLua.ToObject(L, 3);
 				bool o = obj != null ? obj.Equals(arg0, arg1) : arg0 == null;
@@ -117,7 +117,7 @@ public class System_StringWrap
 				return LuaDLL.luaL_throw(L, "invalid arguments to method: System.String.Equals");
 			}
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -134,7 +134,7 @@ public class System_StringWrap
 			ToLua.Push(L, o);
 			return 1;
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -151,7 +151,7 @@ public class System_StringWrap
 			ToLua.Push(L, o);
 			return 1;
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -171,7 +171,7 @@ public class System_StringWrap
 			obj.CopyTo(arg0, arg1, arg2, arg3);
 			return 0;
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -184,16 +184,16 @@ public class System_StringWrap
 		{
 			int count = LuaDLL.lua_gettop(L);
 
-			if (count == 1 && TypeChecker.CheckTypes(L, 1, typeof(string)))
+			if (count == 1)
 			{
-				System.String obj = (System.String)ToLua.ToObject(L, 1);
+				System.String obj = (System.String)ToLua.CheckObject(L, 1, typeof(System.String));
 				char[] o = obj.ToCharArray();
 				ToLua.Push(L, o);
 				return 1;
 			}
-			else if (count == 3 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(int), typeof(int)))
+			else if (count == 3 && TypeChecker.CheckTypes<int, int>(L, 2))
 			{
-				System.String obj = (System.String)ToLua.ToObject(L, 1);
+				System.String obj = (System.String)ToLua.CheckObject(L, 1, typeof(System.String));
 				int arg0 = (int)LuaDLL.lua_tonumber(L, 2);
 				int arg1 = (int)LuaDLL.lua_tonumber(L, 3);
 				char[] o = obj.ToCharArray(arg0, arg1);
@@ -205,7 +205,7 @@ public class System_StringWrap
 				return LuaDLL.luaL_throw(L, "invalid arguments to method: System.String.ToCharArray");
 			}
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -218,46 +218,46 @@ public class System_StringWrap
 		{
 			int count = LuaDLL.lua_gettop(L);
 
-			if (count == 3 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(char[]), typeof(System.StringSplitOptions)))
+			if (count == 3 && TypeChecker.CheckTypes<char[], System.StringSplitOptions>(L, 2))
 			{
-				System.String obj = (System.String)ToLua.ToObject(L, 1);
+				System.String obj = (System.String)ToLua.CheckObject(L, 1, typeof(System.String));
 				char[] arg0 = ToLua.CheckCharBuffer(L, 2);
 				System.StringSplitOptions arg1 = (System.StringSplitOptions)ToLua.ToObject(L, 3);
 				string[] o = obj.Split(arg0, arg1);
 				ToLua.Push(L, o);
 				return 1;
 			}
-			else if (count == 3 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(char[]), typeof(int)))
+			else if (count == 3 && TypeChecker.CheckTypes<char[], int>(L, 2))
 			{
-				System.String obj = (System.String)ToLua.ToObject(L, 1);
+				System.String obj = (System.String)ToLua.CheckObject(L, 1, typeof(System.String));
 				char[] arg0 = ToLua.CheckCharBuffer(L, 2);
 				int arg1 = (int)LuaDLL.lua_tonumber(L, 3);
 				string[] o = obj.Split(arg0, arg1);
 				ToLua.Push(L, o);
 				return 1;
 			}
-			else if (count == 3 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(string[]), typeof(System.StringSplitOptions)))
+			else if (count == 3 && TypeChecker.CheckTypes<string[], System.StringSplitOptions>(L, 2))
 			{
-				System.String obj = (System.String)ToLua.ToObject(L, 1);
-				string[] arg0 = ToLua.CheckStringArray(L, 2);
+				System.String obj = (System.String)ToLua.CheckObject(L, 1, typeof(System.String));
+				string[] arg0 = ToLua.ToStringArray(L, 2);
 				System.StringSplitOptions arg1 = (System.StringSplitOptions)ToLua.ToObject(L, 3);
 				string[] o = obj.Split(arg0, arg1);
 				ToLua.Push(L, o);
 				return 1;
 			}
-			else if (count == 4 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(string[]), typeof(int), typeof(System.StringSplitOptions)))
+			else if (count == 4 && TypeChecker.CheckTypes<string[], int, System.StringSplitOptions>(L, 2))
 			{
-				System.String obj = (System.String)ToLua.ToObject(L, 1);
-				string[] arg0 = ToLua.CheckStringArray(L, 2);
+				System.String obj = (System.String)ToLua.CheckObject(L, 1, typeof(System.String));
+				string[] arg0 = ToLua.ToStringArray(L, 2);
 				int arg1 = (int)LuaDLL.lua_tonumber(L, 3);
 				System.StringSplitOptions arg2 = (System.StringSplitOptions)ToLua.ToObject(L, 4);
 				string[] o = obj.Split(arg0, arg1, arg2);
 				ToLua.Push(L, o);
 				return 1;
 			}
-			else if (count == 4 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(char[]), typeof(int), typeof(System.StringSplitOptions)))
+			else if (count == 4 && TypeChecker.CheckTypes<char[], int, System.StringSplitOptions>(L, 2))
 			{
-				System.String obj = (System.String)ToLua.ToObject(L, 1);
+				System.String obj = (System.String)ToLua.CheckObject(L, 1, typeof(System.String));
 				char[] arg0 = ToLua.CheckCharBuffer(L, 2);
 				int arg1 = (int)LuaDLL.lua_tonumber(L, 3);
 				System.StringSplitOptions arg2 = (System.StringSplitOptions)ToLua.ToObject(L, 4);
@@ -265,9 +265,9 @@ public class System_StringWrap
 				ToLua.Push(L, o);
 				return 1;
 			}
-			else if (TypeChecker.CheckParamsType(L, typeof(char), 2, count - 1))
+			else if (TypeChecker.CheckParamsType<char>(L, 2, count - 1))
 			{
-				System.String obj = (System.String)ToLua.ToObject(L, 1);
+				System.String obj = (System.String)ToLua.CheckObject(L, 1, typeof(System.String));
 				char[] arg0 = ToLua.ToParamsChar(L, 2, count - 1);
 				string[] o = obj.Split(arg0);
 				ToLua.Push(L, o);
@@ -278,7 +278,7 @@ public class System_StringWrap
 				return LuaDLL.luaL_throw(L, "invalid arguments to method: System.String.Split");
 			}
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -291,17 +291,17 @@ public class System_StringWrap
 		{
 			int count = LuaDLL.lua_gettop(L);
 
-			if (count == 2 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(int)))
+			if (count == 2 && TypeChecker.CheckTypes<int>(L, 2))
 			{
-				System.String obj = (System.String)ToLua.ToObject(L, 1);
+				System.String obj = (System.String)ToLua.CheckObject(L, 1, typeof(System.String));
 				int arg0 = (int)LuaDLL.lua_tonumber(L, 2);
 				string o = obj.Substring(arg0);
 				LuaDLL.lua_pushstring(L, o);
 				return 1;
 			}
-			else if (count == 3 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(int), typeof(int)))
+			else if (count == 3 && TypeChecker.CheckTypes<int, int>(L, 2))
 			{
-				System.String obj = (System.String)ToLua.ToObject(L, 1);
+				System.String obj = (System.String)ToLua.CheckObject(L, 1, typeof(System.String));
 				int arg0 = (int)LuaDLL.lua_tonumber(L, 2);
 				int arg1 = (int)LuaDLL.lua_tonumber(L, 3);
 				string o = obj.Substring(arg0, arg1);
@@ -313,7 +313,7 @@ public class System_StringWrap
 				return LuaDLL.luaL_throw(L, "invalid arguments to method: System.String.Substring");
 			}
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -326,16 +326,16 @@ public class System_StringWrap
 		{
 			int count = LuaDLL.lua_gettop(L);
 
-			if (count == 1 && TypeChecker.CheckTypes(L, 1, typeof(string)))
+			if (count == 1)
 			{
-				System.String obj = (System.String)ToLua.ToObject(L, 1);
+				System.String obj = (System.String)ToLua.CheckObject(L, 1, typeof(System.String));
 				string o = obj.Trim();
 				LuaDLL.lua_pushstring(L, o);
 				return 1;
 			}
-			else if (TypeChecker.CheckParamsType(L, typeof(char), 2, count - 1))
+			else if (TypeChecker.CheckParamsType<char>(L, 2, count - 1))
 			{
-				System.String obj = (System.String)ToLua.ToObject(L, 1);
+				System.String obj = (System.String)ToLua.CheckObject(L, 1, typeof(System.String));
 				char[] arg0 = ToLua.ToParamsChar(L, 2, count - 1);
 				string o = obj.Trim(arg0);
 				LuaDLL.lua_pushstring(L, o);
@@ -346,7 +346,7 @@ public class System_StringWrap
 				return LuaDLL.luaL_throw(L, "invalid arguments to method: System.String.Trim");
 			}
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -364,7 +364,7 @@ public class System_StringWrap
 			LuaDLL.lua_pushstring(L, o);
 			return 1;
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -382,7 +382,7 @@ public class System_StringWrap
 			LuaDLL.lua_pushstring(L, o);
 			return 1;
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -395,7 +395,7 @@ public class System_StringWrap
 		{
 			int count = LuaDLL.lua_gettop(L);
 
-			if (count == 2 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(string)))
+			if (count == 2 && TypeChecker.CheckTypes<string, string>(L, 1))
 			{
 				string arg0 = ToLua.ToString(L, 1);
 				string arg1 = ToLua.ToString(L, 2);
@@ -403,7 +403,7 @@ public class System_StringWrap
 				LuaDLL.lua_pushinteger(L, o);
 				return 1;
 			}
-			else if (count == 3 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(string), typeof(System.StringComparison)))
+			else if (count == 3 && TypeChecker.CheckTypes<string, string, System.StringComparison>(L, 1))
 			{
 				string arg0 = ToLua.ToString(L, 1);
 				string arg1 = ToLua.ToString(L, 2);
@@ -412,7 +412,7 @@ public class System_StringWrap
 				LuaDLL.lua_pushinteger(L, o);
 				return 1;
 			}
-			else if (count == 3 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(string), typeof(bool)))
+			else if (count == 3 && TypeChecker.CheckTypes<string, string, bool>(L, 1))
 			{
 				string arg0 = ToLua.ToString(L, 1);
 				string arg1 = ToLua.ToString(L, 2);
@@ -421,7 +421,7 @@ public class System_StringWrap
 				LuaDLL.lua_pushinteger(L, o);
 				return 1;
 			}
-			else if (count == 4 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(string), typeof(System.Globalization.CultureInfo), typeof(System.Globalization.CompareOptions)))
+			else if (count == 4 && TypeChecker.CheckTypes<string, string, System.Globalization.CultureInfo, System.Globalization.CompareOptions>(L, 1))
 			{
 				string arg0 = ToLua.ToString(L, 1);
 				string arg1 = ToLua.ToString(L, 2);
@@ -431,7 +431,7 @@ public class System_StringWrap
 				LuaDLL.lua_pushinteger(L, o);
 				return 1;
 			}
-			else if (count == 4 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(string), typeof(bool), typeof(System.Globalization.CultureInfo)))
+			else if (count == 4 && TypeChecker.CheckTypes<string, string, bool, System.Globalization.CultureInfo>(L, 1))
 			{
 				string arg0 = ToLua.ToString(L, 1);
 				string arg1 = ToLua.ToString(L, 2);
@@ -441,7 +441,7 @@ public class System_StringWrap
 				LuaDLL.lua_pushinteger(L, o);
 				return 1;
 			}
-			else if (count == 5 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(int), typeof(string), typeof(int), typeof(int)))
+			else if (count == 5 && TypeChecker.CheckTypes<string, int, string, int, int>(L, 1))
 			{
 				string arg0 = ToLua.ToString(L, 1);
 				int arg1 = (int)LuaDLL.lua_tonumber(L, 2);
@@ -452,7 +452,7 @@ public class System_StringWrap
 				LuaDLL.lua_pushinteger(L, o);
 				return 1;
 			}
-			else if (count == 6 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(int), typeof(string), typeof(int), typeof(int), typeof(System.StringComparison)))
+			else if (count == 6 && TypeChecker.CheckTypes<string, int, string, int, int, System.StringComparison>(L, 1))
 			{
 				string arg0 = ToLua.ToString(L, 1);
 				int arg1 = (int)LuaDLL.lua_tonumber(L, 2);
@@ -464,7 +464,7 @@ public class System_StringWrap
 				LuaDLL.lua_pushinteger(L, o);
 				return 1;
 			}
-			else if (count == 6 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(int), typeof(string), typeof(int), typeof(int), typeof(bool)))
+			else if (count == 6 && TypeChecker.CheckTypes<string, int, string, int, int, bool>(L, 1))
 			{
 				string arg0 = ToLua.ToString(L, 1);
 				int arg1 = (int)LuaDLL.lua_tonumber(L, 2);
@@ -476,7 +476,7 @@ public class System_StringWrap
 				LuaDLL.lua_pushinteger(L, o);
 				return 1;
 			}
-			else if (count == 7 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(int), typeof(string), typeof(int), typeof(int), typeof(System.Globalization.CultureInfo), typeof(System.Globalization.CompareOptions)))
+			else if (count == 7 && TypeChecker.CheckTypes<string, int, string, int, int, System.Globalization.CultureInfo, System.Globalization.CompareOptions>(L, 1))
 			{
 				string arg0 = ToLua.ToString(L, 1);
 				int arg1 = (int)LuaDLL.lua_tonumber(L, 2);
@@ -489,7 +489,7 @@ public class System_StringWrap
 				LuaDLL.lua_pushinteger(L, o);
 				return 1;
 			}
-			else if (count == 7 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(int), typeof(string), typeof(int), typeof(int), typeof(bool), typeof(System.Globalization.CultureInfo)))
+			else if (count == 7 && TypeChecker.CheckTypes<string, int, string, int, int, bool, System.Globalization.CultureInfo>(L, 1))
 			{
 				string arg0 = ToLua.ToString(L, 1);
 				int arg1 = (int)LuaDLL.lua_tonumber(L, 2);
@@ -507,7 +507,7 @@ public class System_StringWrap
 				return LuaDLL.luaL_throw(L, "invalid arguments to method: System.String.Compare");
 			}
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -520,17 +520,17 @@ public class System_StringWrap
 		{
 			int count = LuaDLL.lua_gettop(L);
 
-			if (count == 2 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(string)))
+			if (count == 2 && TypeChecker.CheckTypes<string>(L, 2))
 			{
-				System.String obj = (System.String)ToLua.ToObject(L, 1);
+				System.String obj = (System.String)ToLua.CheckObject(L, 1, typeof(System.String));
 				string arg0 = ToLua.ToString(L, 2);
 				int o = obj.CompareTo(arg0);
 				LuaDLL.lua_pushinteger(L, o);
 				return 1;
 			}
-			else if (count == 2 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(object)))
+			else if (count == 2 && TypeChecker.CheckTypes<object>(L, 2))
 			{
-				System.String obj = (System.String)ToLua.ToObject(L, 1);
+				System.String obj = (System.String)ToLua.CheckObject(L, 1, typeof(System.String));
 				object arg0 = ToLua.ToVarObject(L, 2);
 				int o = obj.CompareTo(arg0);
 				LuaDLL.lua_pushinteger(L, o);
@@ -541,7 +541,7 @@ public class System_StringWrap
 				return LuaDLL.luaL_throw(L, "invalid arguments to method: System.String.CompareTo");
 			}
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -554,7 +554,7 @@ public class System_StringWrap
 		{
 			int count = LuaDLL.lua_gettop(L);
 
-			if (count == 2 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(string)))
+			if (count == 2 && TypeChecker.CheckTypes<string, string>(L, 1))
 			{
 				string arg0 = ToLua.ToString(L, 1);
 				string arg1 = ToLua.ToString(L, 2);
@@ -562,7 +562,7 @@ public class System_StringWrap
 				LuaDLL.lua_pushinteger(L, o);
 				return 1;
 			}
-			else if (count == 5 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(int), typeof(string), typeof(int), typeof(int)))
+			else if (count == 5 && TypeChecker.CheckTypes<string, int, string, int, int>(L, 1))
 			{
 				string arg0 = ToLua.ToString(L, 1);
 				int arg1 = (int)LuaDLL.lua_tonumber(L, 2);
@@ -578,7 +578,7 @@ public class System_StringWrap
 				return LuaDLL.luaL_throw(L, "invalid arguments to method: System.String.CompareOrdinal");
 			}
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -591,26 +591,26 @@ public class System_StringWrap
 		{
 			int count = LuaDLL.lua_gettop(L);
 
-			if (count == 2 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(string)))
+			if (count == 2 && TypeChecker.CheckTypes<string>(L, 2))
 			{
-				System.String obj = (System.String)ToLua.ToObject(L, 1);
+				System.String obj = (System.String)ToLua.CheckObject(L, 1, typeof(System.String));
 				string arg0 = ToLua.ToString(L, 2);
 				bool o = obj.EndsWith(arg0);
 				LuaDLL.lua_pushboolean(L, o);
 				return 1;
 			}
-			else if (count == 3 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(string), typeof(System.StringComparison)))
+			else if (count == 3 && TypeChecker.CheckTypes<string, System.StringComparison>(L, 2))
 			{
-				System.String obj = (System.String)ToLua.ToObject(L, 1);
+				System.String obj = (System.String)ToLua.CheckObject(L, 1, typeof(System.String));
 				string arg0 = ToLua.ToString(L, 2);
 				System.StringComparison arg1 = (System.StringComparison)ToLua.ToObject(L, 3);
 				bool o = obj.EndsWith(arg0, arg1);
 				LuaDLL.lua_pushboolean(L, o);
 				return 1;
 			}
-			else if (count == 4 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(string), typeof(bool), typeof(System.Globalization.CultureInfo)))
+			else if (count == 4 && TypeChecker.CheckTypes<string, bool, System.Globalization.CultureInfo>(L, 2))
 			{
-				System.String obj = (System.String)ToLua.ToObject(L, 1);
+				System.String obj = (System.String)ToLua.CheckObject(L, 1, typeof(System.String));
 				string arg0 = ToLua.ToString(L, 2);
 				bool arg1 = LuaDLL.lua_toboolean(L, 3);
 				System.Globalization.CultureInfo arg2 = (System.Globalization.CultureInfo)ToLua.ToObject(L, 4);
@@ -623,7 +623,7 @@ public class System_StringWrap
 				return LuaDLL.luaL_throw(L, "invalid arguments to method: System.String.EndsWith");
 			}
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -636,26 +636,26 @@ public class System_StringWrap
 		{
 			int count = LuaDLL.lua_gettop(L);
 
-			if (count == 2 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(char[])))
+			if (count == 2 && TypeChecker.CheckTypes<char[]>(L, 2))
 			{
-				System.String obj = (System.String)ToLua.ToObject(L, 1);
+				System.String obj = (System.String)ToLua.CheckObject(L, 1, typeof(System.String));
 				char[] arg0 = ToLua.CheckCharBuffer(L, 2);
 				int o = obj.IndexOfAny(arg0);
 				LuaDLL.lua_pushinteger(L, o);
 				return 1;
 			}
-			else if (count == 3 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(char[]), typeof(int)))
+			else if (count == 3 && TypeChecker.CheckTypes<char[], int>(L, 2))
 			{
-				System.String obj = (System.String)ToLua.ToObject(L, 1);
+				System.String obj = (System.String)ToLua.CheckObject(L, 1, typeof(System.String));
 				char[] arg0 = ToLua.CheckCharBuffer(L, 2);
 				int arg1 = (int)LuaDLL.lua_tonumber(L, 3);
 				int o = obj.IndexOfAny(arg0, arg1);
 				LuaDLL.lua_pushinteger(L, o);
 				return 1;
 			}
-			else if (count == 4 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(char[]), typeof(int), typeof(int)))
+			else if (count == 4 && TypeChecker.CheckTypes<char[], int, int>(L, 2))
 			{
-				System.String obj = (System.String)ToLua.ToObject(L, 1);
+				System.String obj = (System.String)ToLua.CheckObject(L, 1, typeof(System.String));
 				char[] arg0 = ToLua.CheckCharBuffer(L, 2);
 				int arg1 = (int)LuaDLL.lua_tonumber(L, 3);
 				int arg2 = (int)LuaDLL.lua_tonumber(L, 4);
@@ -668,7 +668,7 @@ public class System_StringWrap
 				return LuaDLL.luaL_throw(L, "invalid arguments to method: System.String.IndexOfAny");
 			}
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -681,52 +681,52 @@ public class System_StringWrap
 		{
 			int count = LuaDLL.lua_gettop(L);
 
-			if (count == 2 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(char)))
+			if (count == 2 && TypeChecker.CheckTypes<char>(L, 2))
 			{
-				System.String obj = (System.String)ToLua.ToObject(L, 1);
+				System.String obj = (System.String)ToLua.CheckObject(L, 1, typeof(System.String));
 				char arg0 = (char)LuaDLL.lua_tonumber(L, 2);
 				int o = obj.IndexOf(arg0);
 				LuaDLL.lua_pushinteger(L, o);
 				return 1;
 			}
-			else if (count == 2 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(string)))
+			else if (count == 2 && TypeChecker.CheckTypes<string>(L, 2))
 			{
-				System.String obj = (System.String)ToLua.ToObject(L, 1);
+				System.String obj = (System.String)ToLua.CheckObject(L, 1, typeof(System.String));
 				string arg0 = ToLua.ToString(L, 2);
 				int o = obj.IndexOf(arg0);
 				LuaDLL.lua_pushinteger(L, o);
 				return 1;
 			}
-			else if (count == 3 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(string), typeof(int)))
+			else if (count == 3 && TypeChecker.CheckTypes<string, int>(L, 2))
 			{
-				System.String obj = (System.String)ToLua.ToObject(L, 1);
+				System.String obj = (System.String)ToLua.CheckObject(L, 1, typeof(System.String));
 				string arg0 = ToLua.ToString(L, 2);
 				int arg1 = (int)LuaDLL.lua_tonumber(L, 3);
 				int o = obj.IndexOf(arg0, arg1);
 				LuaDLL.lua_pushinteger(L, o);
 				return 1;
 			}
-			else if (count == 3 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(char), typeof(int)))
+			else if (count == 3 && TypeChecker.CheckTypes<char, int>(L, 2))
 			{
-				System.String obj = (System.String)ToLua.ToObject(L, 1);
+				System.String obj = (System.String)ToLua.CheckObject(L, 1, typeof(System.String));
 				char arg0 = (char)LuaDLL.lua_tonumber(L, 2);
 				int arg1 = (int)LuaDLL.lua_tonumber(L, 3);
 				int o = obj.IndexOf(arg0, arg1);
 				LuaDLL.lua_pushinteger(L, o);
 				return 1;
 			}
-			else if (count == 3 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(string), typeof(System.StringComparison)))
+			else if (count == 3 && TypeChecker.CheckTypes<string, System.StringComparison>(L, 2))
 			{
-				System.String obj = (System.String)ToLua.ToObject(L, 1);
+				System.String obj = (System.String)ToLua.CheckObject(L, 1, typeof(System.String));
 				string arg0 = ToLua.ToString(L, 2);
 				System.StringComparison arg1 = (System.StringComparison)ToLua.ToObject(L, 3);
 				int o = obj.IndexOf(arg0, arg1);
 				LuaDLL.lua_pushinteger(L, o);
 				return 1;
 			}
-			else if (count == 4 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(string), typeof(int), typeof(int)))
+			else if (count == 4 && TypeChecker.CheckTypes<string, int, int>(L, 2))
 			{
-				System.String obj = (System.String)ToLua.ToObject(L, 1);
+				System.String obj = (System.String)ToLua.CheckObject(L, 1, typeof(System.String));
 				string arg0 = ToLua.ToString(L, 2);
 				int arg1 = (int)LuaDLL.lua_tonumber(L, 3);
 				int arg2 = (int)LuaDLL.lua_tonumber(L, 4);
@@ -734,9 +734,9 @@ public class System_StringWrap
 				LuaDLL.lua_pushinteger(L, o);
 				return 1;
 			}
-			else if (count == 4 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(string), typeof(int), typeof(System.StringComparison)))
+			else if (count == 4 && TypeChecker.CheckTypes<string, int, System.StringComparison>(L, 2))
 			{
-				System.String obj = (System.String)ToLua.ToObject(L, 1);
+				System.String obj = (System.String)ToLua.CheckObject(L, 1, typeof(System.String));
 				string arg0 = ToLua.ToString(L, 2);
 				int arg1 = (int)LuaDLL.lua_tonumber(L, 3);
 				System.StringComparison arg2 = (System.StringComparison)ToLua.ToObject(L, 4);
@@ -744,9 +744,9 @@ public class System_StringWrap
 				LuaDLL.lua_pushinteger(L, o);
 				return 1;
 			}
-			else if (count == 4 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(char), typeof(int), typeof(int)))
+			else if (count == 4 && TypeChecker.CheckTypes<char, int, int>(L, 2))
 			{
-				System.String obj = (System.String)ToLua.ToObject(L, 1);
+				System.String obj = (System.String)ToLua.CheckObject(L, 1, typeof(System.String));
 				char arg0 = (char)LuaDLL.lua_tonumber(L, 2);
 				int arg1 = (int)LuaDLL.lua_tonumber(L, 3);
 				int arg2 = (int)LuaDLL.lua_tonumber(L, 4);
@@ -754,9 +754,9 @@ public class System_StringWrap
 				LuaDLL.lua_pushinteger(L, o);
 				return 1;
 			}
-			else if (count == 5 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(string), typeof(int), typeof(int), typeof(System.StringComparison)))
+			else if (count == 5 && TypeChecker.CheckTypes<string, int, int, System.StringComparison>(L, 2))
 			{
-				System.String obj = (System.String)ToLua.ToObject(L, 1);
+				System.String obj = (System.String)ToLua.CheckObject(L, 1, typeof(System.String));
 				string arg0 = ToLua.ToString(L, 2);
 				int arg1 = (int)LuaDLL.lua_tonumber(L, 3);
 				int arg2 = (int)LuaDLL.lua_tonumber(L, 4);
@@ -770,7 +770,7 @@ public class System_StringWrap
 				return LuaDLL.luaL_throw(L, "invalid arguments to method: System.String.IndexOf");
 			}
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -783,52 +783,52 @@ public class System_StringWrap
 		{
 			int count = LuaDLL.lua_gettop(L);
 
-			if (count == 2 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(char)))
+			if (count == 2 && TypeChecker.CheckTypes<char>(L, 2))
 			{
-				System.String obj = (System.String)ToLua.ToObject(L, 1);
+				System.String obj = (System.String)ToLua.CheckObject(L, 1, typeof(System.String));
 				char arg0 = (char)LuaDLL.lua_tonumber(L, 2);
 				int o = obj.LastIndexOf(arg0);
 				LuaDLL.lua_pushinteger(L, o);
 				return 1;
 			}
-			else if (count == 2 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(string)))
+			else if (count == 2 && TypeChecker.CheckTypes<string>(L, 2))
 			{
-				System.String obj = (System.String)ToLua.ToObject(L, 1);
+				System.String obj = (System.String)ToLua.CheckObject(L, 1, typeof(System.String));
 				string arg0 = ToLua.ToString(L, 2);
 				int o = obj.LastIndexOf(arg0);
 				LuaDLL.lua_pushinteger(L, o);
 				return 1;
 			}
-			else if (count == 3 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(string), typeof(int)))
+			else if (count == 3 && TypeChecker.CheckTypes<string, int>(L, 2))
 			{
-				System.String obj = (System.String)ToLua.ToObject(L, 1);
+				System.String obj = (System.String)ToLua.CheckObject(L, 1, typeof(System.String));
 				string arg0 = ToLua.ToString(L, 2);
 				int arg1 = (int)LuaDLL.lua_tonumber(L, 3);
 				int o = obj.LastIndexOf(arg0, arg1);
 				LuaDLL.lua_pushinteger(L, o);
 				return 1;
 			}
-			else if (count == 3 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(char), typeof(int)))
+			else if (count == 3 && TypeChecker.CheckTypes<char, int>(L, 2))
 			{
-				System.String obj = (System.String)ToLua.ToObject(L, 1);
+				System.String obj = (System.String)ToLua.CheckObject(L, 1, typeof(System.String));
 				char arg0 = (char)LuaDLL.lua_tonumber(L, 2);
 				int arg1 = (int)LuaDLL.lua_tonumber(L, 3);
 				int o = obj.LastIndexOf(arg0, arg1);
 				LuaDLL.lua_pushinteger(L, o);
 				return 1;
 			}
-			else if (count == 3 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(string), typeof(System.StringComparison)))
+			else if (count == 3 && TypeChecker.CheckTypes<string, System.StringComparison>(L, 2))
 			{
-				System.String obj = (System.String)ToLua.ToObject(L, 1);
+				System.String obj = (System.String)ToLua.CheckObject(L, 1, typeof(System.String));
 				string arg0 = ToLua.ToString(L, 2);
 				System.StringComparison arg1 = (System.StringComparison)ToLua.ToObject(L, 3);
 				int o = obj.LastIndexOf(arg0, arg1);
 				LuaDLL.lua_pushinteger(L, o);
 				return 1;
 			}
-			else if (count == 4 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(string), typeof(int), typeof(int)))
+			else if (count == 4 && TypeChecker.CheckTypes<string, int, int>(L, 2))
 			{
-				System.String obj = (System.String)ToLua.ToObject(L, 1);
+				System.String obj = (System.String)ToLua.CheckObject(L, 1, typeof(System.String));
 				string arg0 = ToLua.ToString(L, 2);
 				int arg1 = (int)LuaDLL.lua_tonumber(L, 3);
 				int arg2 = (int)LuaDLL.lua_tonumber(L, 4);
@@ -836,9 +836,9 @@ public class System_StringWrap
 				LuaDLL.lua_pushinteger(L, o);
 				return 1;
 			}
-			else if (count == 4 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(string), typeof(int), typeof(System.StringComparison)))
+			else if (count == 4 && TypeChecker.CheckTypes<string, int, System.StringComparison>(L, 2))
 			{
-				System.String obj = (System.String)ToLua.ToObject(L, 1);
+				System.String obj = (System.String)ToLua.CheckObject(L, 1, typeof(System.String));
 				string arg0 = ToLua.ToString(L, 2);
 				int arg1 = (int)LuaDLL.lua_tonumber(L, 3);
 				System.StringComparison arg2 = (System.StringComparison)ToLua.ToObject(L, 4);
@@ -846,9 +846,9 @@ public class System_StringWrap
 				LuaDLL.lua_pushinteger(L, o);
 				return 1;
 			}
-			else if (count == 4 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(char), typeof(int), typeof(int)))
+			else if (count == 4 && TypeChecker.CheckTypes<char, int, int>(L, 2))
 			{
-				System.String obj = (System.String)ToLua.ToObject(L, 1);
+				System.String obj = (System.String)ToLua.CheckObject(L, 1, typeof(System.String));
 				char arg0 = (char)LuaDLL.lua_tonumber(L, 2);
 				int arg1 = (int)LuaDLL.lua_tonumber(L, 3);
 				int arg2 = (int)LuaDLL.lua_tonumber(L, 4);
@@ -856,9 +856,9 @@ public class System_StringWrap
 				LuaDLL.lua_pushinteger(L, o);
 				return 1;
 			}
-			else if (count == 5 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(string), typeof(int), typeof(int), typeof(System.StringComparison)))
+			else if (count == 5 && TypeChecker.CheckTypes<string, int, int, System.StringComparison>(L, 2))
 			{
-				System.String obj = (System.String)ToLua.ToObject(L, 1);
+				System.String obj = (System.String)ToLua.CheckObject(L, 1, typeof(System.String));
 				string arg0 = ToLua.ToString(L, 2);
 				int arg1 = (int)LuaDLL.lua_tonumber(L, 3);
 				int arg2 = (int)LuaDLL.lua_tonumber(L, 4);
@@ -872,7 +872,7 @@ public class System_StringWrap
 				return LuaDLL.luaL_throw(L, "invalid arguments to method: System.String.LastIndexOf");
 			}
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -885,26 +885,26 @@ public class System_StringWrap
 		{
 			int count = LuaDLL.lua_gettop(L);
 
-			if (count == 2 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(char[])))
+			if (count == 2 && TypeChecker.CheckTypes<char[]>(L, 2))
 			{
-				System.String obj = (System.String)ToLua.ToObject(L, 1);
+				System.String obj = (System.String)ToLua.CheckObject(L, 1, typeof(System.String));
 				char[] arg0 = ToLua.CheckCharBuffer(L, 2);
 				int o = obj.LastIndexOfAny(arg0);
 				LuaDLL.lua_pushinteger(L, o);
 				return 1;
 			}
-			else if (count == 3 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(char[]), typeof(int)))
+			else if (count == 3 && TypeChecker.CheckTypes<char[], int>(L, 2))
 			{
-				System.String obj = (System.String)ToLua.ToObject(L, 1);
+				System.String obj = (System.String)ToLua.CheckObject(L, 1, typeof(System.String));
 				char[] arg0 = ToLua.CheckCharBuffer(L, 2);
 				int arg1 = (int)LuaDLL.lua_tonumber(L, 3);
 				int o = obj.LastIndexOfAny(arg0, arg1);
 				LuaDLL.lua_pushinteger(L, o);
 				return 1;
 			}
-			else if (count == 4 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(char[]), typeof(int), typeof(int)))
+			else if (count == 4 && TypeChecker.CheckTypes<char[], int, int>(L, 2))
 			{
-				System.String obj = (System.String)ToLua.ToObject(L, 1);
+				System.String obj = (System.String)ToLua.CheckObject(L, 1, typeof(System.String));
 				char[] arg0 = ToLua.CheckCharBuffer(L, 2);
 				int arg1 = (int)LuaDLL.lua_tonumber(L, 3);
 				int arg2 = (int)LuaDLL.lua_tonumber(L, 4);
@@ -917,7 +917,7 @@ public class System_StringWrap
 				return LuaDLL.luaL_throw(L, "invalid arguments to method: System.String.LastIndexOfAny");
 			}
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -935,7 +935,7 @@ public class System_StringWrap
 			LuaDLL.lua_pushboolean(L, o);
 			return 1;
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -952,7 +952,7 @@ public class System_StringWrap
 			LuaDLL.lua_pushboolean(L, o);
 			return 1;
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -965,16 +965,16 @@ public class System_StringWrap
 		{
 			int count = LuaDLL.lua_gettop(L);
 
-			if (count == 1 && TypeChecker.CheckTypes(L, 1, typeof(string)))
+			if (count == 1)
 			{
-				System.String obj = (System.String)ToLua.ToObject(L, 1);
+				System.String obj = (System.String)ToLua.CheckObject(L, 1, typeof(System.String));
 				string o = obj.Normalize();
 				LuaDLL.lua_pushstring(L, o);
 				return 1;
 			}
-			else if (count == 2 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(System.Text.NormalizationForm)))
+			else if (count == 2 && TypeChecker.CheckTypes<System.Text.NormalizationForm>(L, 2))
 			{
-				System.String obj = (System.String)ToLua.ToObject(L, 1);
+				System.String obj = (System.String)ToLua.CheckObject(L, 1, typeof(System.String));
 				System.Text.NormalizationForm arg0 = (System.Text.NormalizationForm)ToLua.ToObject(L, 2);
 				string o = obj.Normalize(arg0);
 				LuaDLL.lua_pushstring(L, o);
@@ -985,7 +985,7 @@ public class System_StringWrap
 				return LuaDLL.luaL_throw(L, "invalid arguments to method: System.String.Normalize");
 			}
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -998,16 +998,16 @@ public class System_StringWrap
 		{
 			int count = LuaDLL.lua_gettop(L);
 
-			if (count == 1 && TypeChecker.CheckTypes(L, 1, typeof(string)))
+			if (count == 1)
 			{
-				System.String obj = (System.String)ToLua.ToObject(L, 1);
+				System.String obj = (System.String)ToLua.CheckObject(L, 1, typeof(System.String));
 				bool o = obj.IsNormalized();
 				LuaDLL.lua_pushboolean(L, o);
 				return 1;
 			}
-			else if (count == 2 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(System.Text.NormalizationForm)))
+			else if (count == 2 && TypeChecker.CheckTypes<System.Text.NormalizationForm>(L, 2))
 			{
-				System.String obj = (System.String)ToLua.ToObject(L, 1);
+				System.String obj = (System.String)ToLua.CheckObject(L, 1, typeof(System.String));
 				System.Text.NormalizationForm arg0 = (System.Text.NormalizationForm)ToLua.ToObject(L, 2);
 				bool o = obj.IsNormalized(arg0);
 				LuaDLL.lua_pushboolean(L, o);
@@ -1018,7 +1018,7 @@ public class System_StringWrap
 				return LuaDLL.luaL_throw(L, "invalid arguments to method: System.String.IsNormalized");
 			}
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -1031,17 +1031,17 @@ public class System_StringWrap
 		{
 			int count = LuaDLL.lua_gettop(L);
 
-			if (count == 2 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(int)))
+			if (count == 2 && TypeChecker.CheckTypes<int>(L, 2))
 			{
-				System.String obj = (System.String)ToLua.ToObject(L, 1);
+				System.String obj = (System.String)ToLua.CheckObject(L, 1, typeof(System.String));
 				int arg0 = (int)LuaDLL.lua_tonumber(L, 2);
 				string o = obj.Remove(arg0);
 				LuaDLL.lua_pushstring(L, o);
 				return 1;
 			}
-			else if (count == 3 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(int), typeof(int)))
+			else if (count == 3 && TypeChecker.CheckTypes<int, int>(L, 2))
 			{
-				System.String obj = (System.String)ToLua.ToObject(L, 1);
+				System.String obj = (System.String)ToLua.CheckObject(L, 1, typeof(System.String));
 				int arg0 = (int)LuaDLL.lua_tonumber(L, 2);
 				int arg1 = (int)LuaDLL.lua_tonumber(L, 3);
 				string o = obj.Remove(arg0, arg1);
@@ -1053,7 +1053,7 @@ public class System_StringWrap
 				return LuaDLL.luaL_throw(L, "invalid arguments to method: System.String.Remove");
 			}
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -1066,17 +1066,17 @@ public class System_StringWrap
 		{
 			int count = LuaDLL.lua_gettop(L);
 
-			if (count == 2 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(int)))
+			if (count == 2 && TypeChecker.CheckTypes<int>(L, 2))
 			{
-				System.String obj = (System.String)ToLua.ToObject(L, 1);
+				System.String obj = (System.String)ToLua.CheckObject(L, 1, typeof(System.String));
 				int arg0 = (int)LuaDLL.lua_tonumber(L, 2);
 				string o = obj.PadLeft(arg0);
 				LuaDLL.lua_pushstring(L, o);
 				return 1;
 			}
-			else if (count == 3 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(int), typeof(char)))
+			else if (count == 3 && TypeChecker.CheckTypes<int, char>(L, 2))
 			{
-				System.String obj = (System.String)ToLua.ToObject(L, 1);
+				System.String obj = (System.String)ToLua.CheckObject(L, 1, typeof(System.String));
 				int arg0 = (int)LuaDLL.lua_tonumber(L, 2);
 				char arg1 = (char)LuaDLL.lua_tonumber(L, 3);
 				string o = obj.PadLeft(arg0, arg1);
@@ -1088,7 +1088,7 @@ public class System_StringWrap
 				return LuaDLL.luaL_throw(L, "invalid arguments to method: System.String.PadLeft");
 			}
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -1101,17 +1101,17 @@ public class System_StringWrap
 		{
 			int count = LuaDLL.lua_gettop(L);
 
-			if (count == 2 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(int)))
+			if (count == 2 && TypeChecker.CheckTypes<int>(L, 2))
 			{
-				System.String obj = (System.String)ToLua.ToObject(L, 1);
+				System.String obj = (System.String)ToLua.CheckObject(L, 1, typeof(System.String));
 				int arg0 = (int)LuaDLL.lua_tonumber(L, 2);
 				string o = obj.PadRight(arg0);
 				LuaDLL.lua_pushstring(L, o);
 				return 1;
 			}
-			else if (count == 3 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(int), typeof(char)))
+			else if (count == 3 && TypeChecker.CheckTypes<int, char>(L, 2))
 			{
-				System.String obj = (System.String)ToLua.ToObject(L, 1);
+				System.String obj = (System.String)ToLua.CheckObject(L, 1, typeof(System.String));
 				int arg0 = (int)LuaDLL.lua_tonumber(L, 2);
 				char arg1 = (char)LuaDLL.lua_tonumber(L, 3);
 				string o = obj.PadRight(arg0, arg1);
@@ -1123,7 +1123,7 @@ public class System_StringWrap
 				return LuaDLL.luaL_throw(L, "invalid arguments to method: System.String.PadRight");
 			}
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -1136,26 +1136,26 @@ public class System_StringWrap
 		{
 			int count = LuaDLL.lua_gettop(L);
 
-			if (count == 2 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(string)))
+			if (count == 2 && TypeChecker.CheckTypes<string>(L, 2))
 			{
-				System.String obj = (System.String)ToLua.ToObject(L, 1);
+				System.String obj = (System.String)ToLua.CheckObject(L, 1, typeof(System.String));
 				string arg0 = ToLua.ToString(L, 2);
 				bool o = obj.StartsWith(arg0);
 				LuaDLL.lua_pushboolean(L, o);
 				return 1;
 			}
-			else if (count == 3 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(string), typeof(System.StringComparison)))
+			else if (count == 3 && TypeChecker.CheckTypes<string, System.StringComparison>(L, 2))
 			{
-				System.String obj = (System.String)ToLua.ToObject(L, 1);
+				System.String obj = (System.String)ToLua.CheckObject(L, 1, typeof(System.String));
 				string arg0 = ToLua.ToString(L, 2);
 				System.StringComparison arg1 = (System.StringComparison)ToLua.ToObject(L, 3);
 				bool o = obj.StartsWith(arg0, arg1);
 				LuaDLL.lua_pushboolean(L, o);
 				return 1;
 			}
-			else if (count == 4 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(string), typeof(bool), typeof(System.Globalization.CultureInfo)))
+			else if (count == 4 && TypeChecker.CheckTypes<string, bool, System.Globalization.CultureInfo>(L, 2))
 			{
-				System.String obj = (System.String)ToLua.ToObject(L, 1);
+				System.String obj = (System.String)ToLua.CheckObject(L, 1, typeof(System.String));
 				string arg0 = ToLua.ToString(L, 2);
 				bool arg1 = LuaDLL.lua_toboolean(L, 3);
 				System.Globalization.CultureInfo arg2 = (System.Globalization.CultureInfo)ToLua.ToObject(L, 4);
@@ -1168,7 +1168,7 @@ public class System_StringWrap
 				return LuaDLL.luaL_throw(L, "invalid arguments to method: System.String.StartsWith");
 			}
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -1181,18 +1181,18 @@ public class System_StringWrap
 		{
 			int count = LuaDLL.lua_gettop(L);
 
-			if (count == 3 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(string), typeof(string)))
+			if (count == 3 && TypeChecker.CheckTypes<string, string>(L, 2))
 			{
-				System.String obj = (System.String)ToLua.ToObject(L, 1);
+				System.String obj = (System.String)ToLua.CheckObject(L, 1, typeof(System.String));
 				string arg0 = ToLua.ToString(L, 2);
 				string arg1 = ToLua.ToString(L, 3);
 				string o = obj.Replace(arg0, arg1);
 				LuaDLL.lua_pushstring(L, o);
 				return 1;
 			}
-			else if (count == 3 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(char), typeof(char)))
+			else if (count == 3 && TypeChecker.CheckTypes<char, char>(L, 2))
 			{
-				System.String obj = (System.String)ToLua.ToObject(L, 1);
+				System.String obj = (System.String)ToLua.CheckObject(L, 1, typeof(System.String));
 				char arg0 = (char)LuaDLL.lua_tonumber(L, 2);
 				char arg1 = (char)LuaDLL.lua_tonumber(L, 3);
 				string o = obj.Replace(arg0, arg1);
@@ -1204,7 +1204,7 @@ public class System_StringWrap
 				return LuaDLL.luaL_throw(L, "invalid arguments to method: System.String.Replace");
 			}
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -1217,16 +1217,16 @@ public class System_StringWrap
 		{
 			int count = LuaDLL.lua_gettop(L);
 
-			if (count == 1 && TypeChecker.CheckTypes(L, 1, typeof(string)))
+			if (count == 1)
 			{
-				System.String obj = (System.String)ToLua.ToObject(L, 1);
+				System.String obj = (System.String)ToLua.CheckObject(L, 1, typeof(System.String));
 				string o = obj.ToLower();
 				LuaDLL.lua_pushstring(L, o);
 				return 1;
 			}
-			else if (count == 2 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(System.Globalization.CultureInfo)))
+			else if (count == 2 && TypeChecker.CheckTypes<System.Globalization.CultureInfo>(L, 2))
 			{
-				System.String obj = (System.String)ToLua.ToObject(L, 1);
+				System.String obj = (System.String)ToLua.CheckObject(L, 1, typeof(System.String));
 				System.Globalization.CultureInfo arg0 = (System.Globalization.CultureInfo)ToLua.ToObject(L, 2);
 				string o = obj.ToLower(arg0);
 				LuaDLL.lua_pushstring(L, o);
@@ -1237,7 +1237,7 @@ public class System_StringWrap
 				return LuaDLL.luaL_throw(L, "invalid arguments to method: System.String.ToLower");
 			}
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -1254,7 +1254,7 @@ public class System_StringWrap
 			LuaDLL.lua_pushstring(L, o);
 			return 1;
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -1267,16 +1267,16 @@ public class System_StringWrap
 		{
 			int count = LuaDLL.lua_gettop(L);
 
-			if (count == 1 && TypeChecker.CheckTypes(L, 1, typeof(string)))
+			if (count == 1)
 			{
-				System.String obj = (System.String)ToLua.ToObject(L, 1);
+				System.String obj = (System.String)ToLua.CheckObject(L, 1, typeof(System.String));
 				string o = obj.ToUpper();
 				LuaDLL.lua_pushstring(L, o);
 				return 1;
 			}
-			else if (count == 2 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(System.Globalization.CultureInfo)))
+			else if (count == 2 && TypeChecker.CheckTypes<System.Globalization.CultureInfo>(L, 2))
 			{
-				System.String obj = (System.String)ToLua.ToObject(L, 1);
+				System.String obj = (System.String)ToLua.CheckObject(L, 1, typeof(System.String));
 				System.Globalization.CultureInfo arg0 = (System.Globalization.CultureInfo)ToLua.ToObject(L, 2);
 				string o = obj.ToUpper(arg0);
 				LuaDLL.lua_pushstring(L, o);
@@ -1287,7 +1287,7 @@ public class System_StringWrap
 				return LuaDLL.luaL_throw(L, "invalid arguments to method: System.String.ToUpper");
 			}
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -1304,7 +1304,7 @@ public class System_StringWrap
 			LuaDLL.lua_pushstring(L, o);
 			return 1;
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -1317,16 +1317,16 @@ public class System_StringWrap
 		{
 			int count = LuaDLL.lua_gettop(L);
 
-			if (count == 1 && TypeChecker.CheckTypes(L, 1, typeof(string)))
+			if (count == 1)
 			{
-				System.String obj = (System.String)ToLua.ToObject(L, 1);
+				System.String obj = (System.String)ToLua.CheckObject(L, 1, typeof(System.String));
 				string o = obj.ToString();
 				LuaDLL.lua_pushstring(L, o);
 				return 1;
 			}
-			else if (count == 2 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(System.IFormatProvider)))
+			else if (count == 2 && TypeChecker.CheckTypes<System.IFormatProvider>(L, 2))
 			{
-				System.String obj = (System.String)ToLua.ToObject(L, 1);
+				System.String obj = (System.String)ToLua.CheckObject(L, 1, typeof(System.String));
 				System.IFormatProvider arg0 = (System.IFormatProvider)ToLua.ToObject(L, 2);
 				string o = obj.ToString(arg0);
 				LuaDLL.lua_pushstring(L, o);
@@ -1337,7 +1337,7 @@ public class System_StringWrap
 				return LuaDLL.luaL_throw(L, "invalid arguments to method: System.String.ToString");
 			}
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -1350,7 +1350,7 @@ public class System_StringWrap
 		{
 			int count = LuaDLL.lua_gettop(L);
 
-			if (count == 2 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(object)))
+			if (count == 2 && TypeChecker.CheckTypes<string, object>(L, 1))
 			{
 				string arg0 = ToLua.ToString(L, 1);
 				object arg1 = ToLua.ToVarObject(L, 2);
@@ -1358,7 +1358,7 @@ public class System_StringWrap
 				LuaDLL.lua_pushstring(L, o);
 				return 1;
 			}
-			else if (count == 3 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(object), typeof(object)))
+			else if (count == 3 && TypeChecker.CheckTypes<string, object, object>(L, 1))
 			{
 				string arg0 = ToLua.ToString(L, 1);
 				object arg1 = ToLua.ToVarObject(L, 2);
@@ -1367,7 +1367,7 @@ public class System_StringWrap
 				LuaDLL.lua_pushstring(L, o);
 				return 1;
 			}
-			else if (count == 4 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(object), typeof(object), typeof(object)))
+			else if (count == 4 && TypeChecker.CheckTypes<string, object, object, object>(L, 1))
 			{
 				string arg0 = ToLua.ToString(L, 1);
 				object arg1 = ToLua.ToVarObject(L, 2);
@@ -1377,7 +1377,7 @@ public class System_StringWrap
 				LuaDLL.lua_pushstring(L, o);
 				return 1;
 			}
-			else if (TypeChecker.CheckTypes(L, 1, typeof(System.IFormatProvider), typeof(string)) && TypeChecker.CheckParamsType(L, typeof(object), 3, count - 2))
+			else if (TypeChecker.CheckTypes<System.IFormatProvider, string>(L, 1) && TypeChecker.CheckParamsType<object>(L, 3, count - 2))
 			{
 				System.IFormatProvider arg0 = (System.IFormatProvider)ToLua.ToObject(L, 1);
 				string arg1 = ToLua.ToString(L, 2);
@@ -1386,7 +1386,7 @@ public class System_StringWrap
 				LuaDLL.lua_pushstring(L, o);
 				return 1;
 			}
-			else if (TypeChecker.CheckTypes(L, 1, typeof(string)) && TypeChecker.CheckParamsType(L, typeof(object), 2, count - 1))
+			else if (TypeChecker.CheckTypes<string>(L, 1) && TypeChecker.CheckParamsType<object>(L, 2, count - 1))
 			{
 				string arg0 = ToLua.ToString(L, 1);
 				object[] arg1 = ToLua.ToParamsObject(L, 2, count - 1);
@@ -1399,7 +1399,7 @@ public class System_StringWrap
 				return LuaDLL.luaL_throw(L, "invalid arguments to method: System.String.Format");
 			}
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -1416,7 +1416,7 @@ public class System_StringWrap
 			LuaDLL.lua_pushstring(L, o);
 			return 1;
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -1429,14 +1429,14 @@ public class System_StringWrap
 		{
 			int count = LuaDLL.lua_gettop(L);
 
-			if (count == 1 && TypeChecker.CheckTypes(L, 1, typeof(object)))
+			if (count == 1 && TypeChecker.CheckTypes<object>(L, 1))
 			{
 				object arg0 = ToLua.ToVarObject(L, 1);
 				string o = System.String.Concat(arg0);
 				LuaDLL.lua_pushstring(L, o);
 				return 1;
 			}
-			else if (count == 2 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(string)))
+			else if (count == 2 && TypeChecker.CheckTypes<string, string>(L, 1))
 			{
 				string arg0 = ToLua.ToString(L, 1);
 				string arg1 = ToLua.ToString(L, 2);
@@ -1444,7 +1444,7 @@ public class System_StringWrap
 				LuaDLL.lua_pushstring(L, o);
 				return 1;
 			}
-			else if (count == 2 && TypeChecker.CheckTypes(L, 1, typeof(object), typeof(object)))
+			else if (count == 2 && TypeChecker.CheckTypes<object, object>(L, 1))
 			{
 				object arg0 = ToLua.ToVarObject(L, 1);
 				object arg1 = ToLua.ToVarObject(L, 2);
@@ -1452,7 +1452,7 @@ public class System_StringWrap
 				LuaDLL.lua_pushstring(L, o);
 				return 1;
 			}
-			else if (count == 3 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(string), typeof(string)))
+			else if (count == 3 && TypeChecker.CheckTypes<string, string, string>(L, 1))
 			{
 				string arg0 = ToLua.ToString(L, 1);
 				string arg1 = ToLua.ToString(L, 2);
@@ -1461,7 +1461,7 @@ public class System_StringWrap
 				LuaDLL.lua_pushstring(L, o);
 				return 1;
 			}
-			else if (count == 3 && TypeChecker.CheckTypes(L, 1, typeof(object), typeof(object), typeof(object)))
+			else if (count == 3 && TypeChecker.CheckTypes<object, object, object>(L, 1))
 			{
 				object arg0 = ToLua.ToVarObject(L, 1);
 				object arg1 = ToLua.ToVarObject(L, 2);
@@ -1470,7 +1470,7 @@ public class System_StringWrap
 				LuaDLL.lua_pushstring(L, o);
 				return 1;
 			}
-			else if (count == 4 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(string), typeof(string), typeof(string)))
+			else if (count == 4 && TypeChecker.CheckTypes<string, string, string, string>(L, 1))
 			{
 				string arg0 = ToLua.ToString(L, 1);
 				string arg1 = ToLua.ToString(L, 2);
@@ -1480,7 +1480,7 @@ public class System_StringWrap
 				LuaDLL.lua_pushstring(L, o);
 				return 1;
 			}
-			else if (count == 4 && TypeChecker.CheckTypes(L, 1, typeof(object), typeof(object), typeof(object), typeof(object)))
+			else if (count == 4 && TypeChecker.CheckTypes<object, object, object, object>(L, 1))
 			{
 				object arg0 = ToLua.ToVarObject(L, 1);
 				object arg1 = ToLua.ToVarObject(L, 2);
@@ -1490,14 +1490,14 @@ public class System_StringWrap
 				LuaDLL.lua_pushstring(L, o);
 				return 1;
 			}
-			else if (TypeChecker.CheckParamsType(L, typeof(string), 1, count))
+			else if (TypeChecker.CheckParamsType<string>(L, 1, count))
 			{
 				string[] arg0 = ToLua.ToParamsString(L, 1, count);
 				string o = System.String.Concat(arg0);
 				LuaDLL.lua_pushstring(L, o);
 				return 1;
 			}
-			else if (TypeChecker.CheckParamsType(L, typeof(object), 1, count))
+			else if (TypeChecker.CheckParamsType<object>(L, 1, count))
 			{
 				object[] arg0 = ToLua.ToParamsObject(L, 1, count);
 				string o = System.String.Concat(arg0);
@@ -1509,7 +1509,7 @@ public class System_StringWrap
 				return LuaDLL.luaL_throw(L, "invalid arguments to method: System.String.Concat");
 			}
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -1528,7 +1528,7 @@ public class System_StringWrap
 			LuaDLL.lua_pushstring(L, o);
 			return 1;
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -1545,7 +1545,7 @@ public class System_StringWrap
 			LuaDLL.lua_pushstring(L, o);
 			return 1;
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -1562,7 +1562,7 @@ public class System_StringWrap
 			LuaDLL.lua_pushstring(L, o);
 			return 1;
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -1575,18 +1575,18 @@ public class System_StringWrap
 		{
 			int count = LuaDLL.lua_gettop(L);
 
-			if (count == 2 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(string[])))
+			if (count == 2 && TypeChecker.CheckTypes<string, string[]>(L, 1))
 			{
 				string arg0 = ToLua.ToString(L, 1);
-				string[] arg1 = ToLua.CheckStringArray(L, 2);
+				string[] arg1 = ToLua.ToStringArray(L, 2);
 				string o = System.String.Join(arg0, arg1);
 				LuaDLL.lua_pushstring(L, o);
 				return 1;
 			}
-			else if (count == 4 && TypeChecker.CheckTypes(L, 1, typeof(string), typeof(string[]), typeof(int), typeof(int)))
+			else if (count == 4 && TypeChecker.CheckTypes<string, string[], int, int>(L, 1))
 			{
 				string arg0 = ToLua.ToString(L, 1);
-				string[] arg1 = ToLua.CheckStringArray(L, 2);
+				string[] arg1 = ToLua.ToStringArray(L, 2);
 				int arg2 = (int)LuaDLL.lua_tonumber(L, 3);
 				int arg3 = (int)LuaDLL.lua_tonumber(L, 4);
 				string o = System.String.Join(arg0, arg1, arg2, arg3);
@@ -1598,7 +1598,7 @@ public class System_StringWrap
 				return LuaDLL.luaL_throw(L, "invalid arguments to method: System.String.Join");
 			}
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -1611,11 +1611,11 @@ public class System_StringWrap
 		{
 			ToLua.CheckArgsCount(L, 1);
 			System.String obj = (System.String)ToLua.CheckObject(L, 1, typeof(System.String));
-			System.CharEnumerator o = obj.GetEnumerator();
+			System.Collections.IEnumerator o = obj.GetEnumerator();
 			ToLua.Push(L, o);
 			return 1;
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -1632,7 +1632,7 @@ public class System_StringWrap
 			LuaDLL.lua_pushinteger(L, o);
 			return 1;
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -1650,7 +1650,7 @@ public class System_StringWrap
 			LuaDLL.lua_pushboolean(L, o);
 			return 1;
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -1664,7 +1664,7 @@ public class System_StringWrap
 			LuaDLL.lua_pushstring(L, System.String.Empty);
 			return 1;
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}

@@ -18,7 +18,7 @@ public class LuaInterface_LuaFieldWrap
 	{
 		try
 		{			
-			LuaInterface.LuaField obj = (LuaInterface.LuaField)ToLua.CheckObject(L, 1, typeof(LuaInterface.LuaField));            
+			LuaField obj = (LuaField)ToLua.CheckObject(L, 1, typeof(LuaField));            
             return obj.Get(L);						
 		}
 		catch (Exception e)
@@ -32,7 +32,7 @@ public class LuaInterface_LuaFieldWrap
 	{
 		try
 		{			
-            LuaInterface.LuaField obj = (LuaInterface.LuaField)ToLua.CheckObject(L, 1, typeof(LuaInterface.LuaField));            
+            LuaField obj = (LuaField)ToLua.CheckObject(L, 1, typeof(LuaField));            
             return obj.Set(L);
         }
         catch (Exception e)

@@ -11,7 +11,7 @@ local assert = assert
 local rawget = rawget
 local error = error
 local print = print
-local traceback = traceback
+local traceback = tolua.traceback
 local ilist = ilist
 
 local _xpcall = {}

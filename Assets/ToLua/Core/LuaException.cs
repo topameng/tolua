@@ -34,6 +34,7 @@ namespace LuaInterface
         public static string projectFolder = null;
         public static int InstantiateCount = 0;
         public static int SendMsgCount = 0;
+        public static IntPtr L = IntPtr.Zero;
 
         public override string StackTrace
         {
@@ -177,8 +178,9 @@ namespace LuaInterface
             }
         }
 
-        public static void Init()
+        public static void Init(IntPtr L0)
         {
+            L = L0;
             Type type = typeof(StackTraceUtility);
             FieldInfo field = type.GetField("projectFolder", BindingFlags.Static | BindingFlags.GetField | BindingFlags.NonPublic);
             LuaException.projectFolder = (string)field.GetValue(null);

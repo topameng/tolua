@@ -2,8 +2,8 @@ local require = require
 local string = string
 local table = table
 
-int64.zero = int64.new(0)
-uint64.zero = uint64.new(0)
+int64.zero = int64.new(0,0)
+uint64.zero = uint64.new(0,0)
 
 function string.split(input, delimiter)
     input = tostring(input)

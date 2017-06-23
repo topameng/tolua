@@ -43,7 +43,7 @@ public class UnityEngine_ObjectWrap
 				return LuaDLL.luaL_throw(L, "invalid arguments to ctor method: UnityEngine.Object.New");
 			}
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -55,12 +55,12 @@ public class UnityEngine_ObjectWrap
 		try
 		{
 			ToLua.CheckArgsCount(L, 1);
-			System.Type arg0 = (System.Type)ToLua.CheckObject(L, 1, typeof(System.Type));
+			System.Type arg0 = ToLua.CheckMonoType(L, 1);
 			UnityEngine.Object[] o = UnityEngine.Object.FindObjectsOfType(arg0);
 			ToLua.Push(L, o);
 			return 1;
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -72,11 +72,11 @@ public class UnityEngine_ObjectWrap
 		try
 		{
 			ToLua.CheckArgsCount(L, 1);
-			UnityEngine.Object arg0 = (UnityEngine.Object)ToLua.CheckUnityObject(L, 1, typeof(UnityEngine.Object));
+			UnityEngine.Object arg0 = (UnityEngine.Object)ToLua.CheckObject<UnityEngine.Object>(L, 1);
 			UnityEngine.Object.DontDestroyOnLoad(arg0);
 			return 0;
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -88,12 +88,12 @@ public class UnityEngine_ObjectWrap
 		try
 		{
 			ToLua.CheckArgsCount(L, 1);
-			UnityEngine.Object obj = (UnityEngine.Object)ToLua.CheckObject(L, 1, typeof(UnityEngine.Object));
+			UnityEngine.Object obj = (UnityEngine.Object)ToLua.CheckObject<UnityEngine.Object>(L, 1);
 			string o = obj.ToString();
 			LuaDLL.lua_pushstring(L, o);
 			return 1;
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -105,12 +105,12 @@ public class UnityEngine_ObjectWrap
 		try
 		{
 			ToLua.CheckArgsCount(L, 1);
-			UnityEngine.Object obj = (UnityEngine.Object)ToLua.CheckObject(L, 1, typeof(UnityEngine.Object));
+			UnityEngine.Object obj = (UnityEngine.Object)ToLua.CheckObject<UnityEngine.Object>(L, 1);
 			int o = obj.GetInstanceID();
 			LuaDLL.lua_pushinteger(L, o);
 			return 1;
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -122,12 +122,12 @@ public class UnityEngine_ObjectWrap
 		try
 		{
 			ToLua.CheckArgsCount(L, 1);
-			UnityEngine.Object obj = (UnityEngine.Object)ToLua.CheckObject(L, 1, typeof(UnityEngine.Object));
+			UnityEngine.Object obj = (UnityEngine.Object)ToLua.CheckObject<UnityEngine.Object>(L, 1);
 			int o = obj.GetHashCode();
 			LuaDLL.lua_pushinteger(L, o);
 			return 1;
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -139,13 +139,13 @@ public class UnityEngine_ObjectWrap
 		try
 		{
 			ToLua.CheckArgsCount(L, 2);
-			UnityEngine.Object obj = (UnityEngine.Object)ToLua.CheckObject(L, 1, typeof(UnityEngine.Object));
+			UnityEngine.Object obj = (UnityEngine.Object)ToLua.CheckObject<UnityEngine.Object>(L, 1);
 			object arg0 = ToLua.ToVarObject(L, 2);
 			bool o = obj != null ? obj.Equals(arg0) : arg0 == null;
 			LuaDLL.lua_pushboolean(L, o);
 			return 1;
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -157,12 +157,12 @@ public class UnityEngine_ObjectWrap
 		try
 		{
 			ToLua.CheckArgsCount(L, 1);
-			System.Type arg0 = (System.Type)ToLua.CheckObject(L, 1, typeof(System.Type));
+			System.Type arg0 = ToLua.CheckMonoType(L, 1);
 			UnityEngine.Object o = UnityEngine.Object.FindObjectOfType(arg0);
 			ToLua.Push(L, o);
 			return 1;
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -180,7 +180,7 @@ public class UnityEngine_ObjectWrap
 			LuaDLL.lua_pushboolean(L, o);
 			return 1;
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -189,12 +189,15 @@ public class UnityEngine_ObjectWrap
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	static int Instantiate(IntPtr L)
 	{
+		IntPtr L0 = LuaException.L;
+
         try
         {
-            ++LuaException.InstantiateCount;
+            ++LuaException.InstantiateCount;            
+            LuaException.L = L;
             int count = LuaDLL.lua_gettop(L);
 
-            if (count == 1 && TypeChecker.CheckTypes(L, 1, typeof(UnityEngine.Object)))
+            if (count == 1 && TypeChecker.CheckTypes<UnityEngine.Object>(L, 1))
             {
                 UnityEngine.Object arg0 = (UnityEngine.Object)ToLua.ToObject(L, 1);
                 UnityEngine.Object o = UnityEngine.Object.Instantiate(arg0);
@@ -210,11 +213,12 @@ public class UnityEngine_ObjectWrap
                     ToLua.Push(L, o);
                 }
 
+                LuaException.L = L0;
                 --LuaException.InstantiateCount;
                 return 1;
             }
 #if UNITY_5_4_OR_NEWER
-            else if (count == 2 && TypeChecker.CheckTypes(L, 1, typeof(UnityEngine.Object), typeof(UnityEngine.Transform)))
+            else if (count == 2 && TypeChecker.CheckTypes<UnityEngine.Object, UnityEngine.Transform>(L, 1))
             {
                 UnityEngine.Object arg0 = (UnityEngine.Object)ToLua.ToObject(L, 1);
                 UnityEngine.Transform arg1 = (UnityEngine.Transform)ToLua.ToObject(L, 2);
@@ -231,11 +235,12 @@ public class UnityEngine_ObjectWrap
                     ToLua.Push(L, o);
                 }
 
+                LuaException.L = L0;
                 --LuaException.InstantiateCount;
                 return 1;
             }
 #endif
-            else if (count == 3 && TypeChecker.CheckTypes(L, 1, typeof(UnityEngine.Object), typeof(UnityEngine.Vector3), typeof(UnityEngine.Quaternion)))
+            else if (count == 3 && TypeChecker.CheckTypes<UnityEngine.Object, UnityEngine.Vector3, UnityEngine.Quaternion>(L, 1))
             {
                 UnityEngine.Object arg0 = (UnityEngine.Object)ToLua.ToObject(L, 1);
                 UnityEngine.Vector3 arg1 = ToLua.ToVector3(L, 2);
@@ -253,11 +258,12 @@ public class UnityEngine_ObjectWrap
                     ToLua.Push(L, o);
                 }
 
+                LuaException.L = L0;
                 --LuaException.InstantiateCount;
                 return 1;
             }
 #if UNITY_5_4_OR_NEWER
-            else if (count == 3 && TypeChecker.CheckTypes(L, 1, typeof(UnityEngine.Object), typeof(UnityEngine.Transform), typeof(bool)))
+            else if (count == 3 && TypeChecker.CheckTypes<UnityEngine.Object, UnityEngine.Transform, bool>(L, 1))
             {
                 UnityEngine.Object arg0 = (UnityEngine.Object)ToLua.ToObject(L, 1);
                 UnityEngine.Transform arg1 = (UnityEngine.Transform)ToLua.ToObject(L, 2);
@@ -275,10 +281,11 @@ public class UnityEngine_ObjectWrap
                     ToLua.Push(L, o);
                 }
 
+                LuaException.L = L0;
                 --LuaException.InstantiateCount;
                 return 1;
             }
-            else if (count == 4 && TypeChecker.CheckTypes(L, 1, typeof(UnityEngine.Object), typeof(UnityEngine.Vector3), typeof(UnityEngine.Quaternion), typeof(UnityEngine.Transform)))
+            else if (count == 4 && TypeChecker.CheckTypes<UnityEngine.Object, UnityEngine.Vector3, UnityEngine.Quaternion, UnityEngine.Transform>(L, 1))
             {
                 UnityEngine.Object arg0 = (UnityEngine.Object)ToLua.ToObject(L, 1);
                 UnityEngine.Vector3 arg1 = ToLua.ToVector3(L, 2);
@@ -297,22 +304,24 @@ public class UnityEngine_ObjectWrap
                     ToLua.Push(L, o);
                 }
 
+                LuaException.L = L0;
                 --LuaException.InstantiateCount;
                 return 1;
             }
 #endif
             else
             {
+                LuaException.L = L0;
                 --LuaException.InstantiateCount;
                 return LuaDLL.luaL_throw(L, "invalid arguments to method: UnityEngine.Object.Instantiate");
             }
         }
         catch (Exception e)
         {
+            LuaException.L = L0;
             --LuaException.InstantiateCount;
             return LuaDLL.toluaL_exception(L, e);
-        }  
-
+        }
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
@@ -324,14 +333,14 @@ public class UnityEngine_ObjectWrap
 
             if (count == 1)
             {
-                UnityEngine.Object arg0 = (UnityEngine.Object)ToLua.CheckObject(L, 1);
+                UnityEngine.Object arg0 = (UnityEngine.Object)ToLua.CheckObject<UnityEngine.Object>(L, 1);
                 ToLua.Destroy(L);
                 UnityEngine.Object.DestroyImmediate(arg0);
                 return 0;
             }
             else if (count == 2)
             {
-                UnityEngine.Object arg0 = (UnityEngine.Object)ToLua.CheckObject(L, 1);
+                UnityEngine.Object arg0 = (UnityEngine.Object)ToLua.CheckObject<UnityEngine.Object>(L, 1);
                 bool arg1 = LuaDLL.luaL_checkboolean(L, 2);
                 ToLua.Destroy(L);
                 UnityEngine.Object.DestroyImmediate(arg0, arg1);
@@ -357,7 +366,7 @@ public class UnityEngine_ObjectWrap
 
             if (count == 1)
             {
-                UnityEngine.Object arg0 = (UnityEngine.Object)ToLua.CheckObject(L, 1);
+                UnityEngine.Object arg0 = (UnityEngine.Object)ToLua.CheckObject<UnityEngine.Object>(L, 1);
                 ToLua.Destroy(L);
                 UnityEngine.Object.Destroy(arg0);
                 return 0;
