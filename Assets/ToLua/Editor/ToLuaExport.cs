@@ -2478,7 +2478,7 @@ public static class ToLuaExport
             {
 #if !SKIP_TYPE
                 string strParams = GenParamTypes(paramInfos, md);
-                sb.AppendFormat("\t\t\t{0}(TypeChecker.CheckTypes(L, 1, {1}) && TypeChecker.CheckParamsType(L, typeof({2}), {3}, {4}))\r\n", strIf, strParams, str, paramInfos.Length + offset, GetCountStr(paramInfos.Length + offset - 1));
+                sb.AppendFormat("\t\t\t{0}(TypeChecker.CheckTypes<{1}>(L, 1) && TypeChecker.CheckParamsType<{2}>(L, {3}, {4}))\r\n", strIf, strParams, str, paramInfos.Length + offset, GetCountStr(paramInfos.Length + offset - 1));
 #else
                 string strParams = GenParamTypes(paramInfos, md, false);
                 sb.AppendFormat("\t\t\t{0}(TypeChecker.CheckTypes<{1}>(L, {2}) && TypeChecker.CheckParamsType<{3}>(L, {4}, {5}))\r\n", strIf, strParams, offset + 1, str, paramInfos.Length + offset, GetCountStr(paramInfos.Length + offset - 1));
@@ -2497,7 +2497,7 @@ public static class ToLuaExport
             if (paramInfos.Length + offset > 0)
             {
                 string strParams = GenParamTypes(paramInfos, md);
-                sb.AppendFormat("\t\t\t{0}(count == {1} && TypeChecker.CheckTypes(L, 1, {2}))\r\n", strIf, paramInfos.Length + offset, strParams);
+                sb.AppendFormat("\t\t\t{0}(count == {1} && TypeChecker.CheckTypes<{2}>(L, 1))\r\n", strIf, paramInfos.Length + offset, strParams);
             }
 #else
             if (paramInfos.Length > 0)
