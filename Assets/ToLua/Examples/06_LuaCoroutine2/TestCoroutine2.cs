@@ -52,6 +52,11 @@ public class TestCoroutine2 : LuaClient
         end
     ";
 
+    protected override LuaFileUtils InitLoader()
+    {
+        return new LuaResLoader();
+    }
+
     protected override void OnLoadFinished()
     {
         base.OnLoadFinished();
@@ -67,14 +72,43 @@ public class TestCoroutine2 : LuaClient
     protected override void CallMain() { }
 
     bool beStart = false;
+    string tips = null;
+
+    void Start()
+    {
+#if UNITY_5
+        Application.logMessageReceived += ShowTips;
+#else
+        Application.RegisterLogCallback(ShowTips);
+#endif
+    }
+
+    void ShowTips(string msg, string stackTrace, LogType type)
+    {
+        tips += msg;
+        tips += "\r\n";
+    }
+
+    new void OnApplicationQuit()
+    {
+#if UNITY_5
+        Application.logMessageReceived -= ShowTips;
+#else
+        Application.RegisterLogCallback(null);
+#endif
+        base.OnApplicationQuit();
+    }
 
     void OnGUI()
     {
+        GUI.Label(new Rect(Screen.width / 2 - 300, Screen.height / 2 - 200, 600, 400), tips);
+
         if (GUI.Button(new Rect(50, 50, 120, 45), "Start Counter"))
         {
             if (!beStart)
             {
                 beStart = true;
+                tips = "";
                 LuaFunction func = luaState.GetFunction("StartDelay");
                 func.Call();
                 func.Dispose();

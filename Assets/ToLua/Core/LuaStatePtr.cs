@@ -16,8 +16,8 @@ namespace LuaInterface
         }
 
         public IntPtr LuaNewState()
-        {
-            return LuaDLL.luaL_newstate();
+        {            
+            return LuaDLL.luaL_newstate();                        
         }
 
         public void LuaClose()
@@ -525,7 +525,7 @@ namespace LuaInterface
         {
             if (LuaException.InstantiateCount > 0 || LuaException.SendMsgCount > 0)
             {
-                LuaDLL.toluaL_exception(L, e);
+                LuaDLL.toluaL_exception(LuaException.L, e);
             }
             else
             {

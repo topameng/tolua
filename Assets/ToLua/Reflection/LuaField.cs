@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2015-2016 topameng(topameng@qq.com)
+Copyright (c) 2015-2017 topameng(topameng@qq.com)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -27,7 +27,7 @@ using System.Reflection;
 namespace LuaInterface
 {    
     //代表一个反射属性
-    public class LuaField
+    public sealed class LuaField
     {
         FieldInfo field = null;
         Type kclass = null;
@@ -78,17 +78,17 @@ namespace LuaInterface
             {
                 int count = LuaDLL.lua_gettop(L);
 
-                if (count == 3 && TypeChecker.CheckTypes(L, 2, kclass, typeof(object)))
-                {                    
-                    object arg0 = ToLua.ToVarObject(L, 2);
+                if (count == 3 && TypeChecker.CheckTypes<object>(L, 3))
+                {
+                    object arg0 = ToLua.CheckVarObject(L, 2, kclass);
                     object arg1 = ToLua.ToVarObject(L, 3);
                     arg1 = TypeChecker.ChangeType(arg1, field.FieldType);
                     field.SetValue(arg0, arg1);
                     return 0;
                 }
-                else if (count == 6 && TypeChecker.CheckTypes(L, 2, kclass, typeof(object), typeof(uint), typeof(Binder), typeof(CultureInfo)))
-                {                    
-                    object arg0 = ToLua.ToVarObject(L, 2);
+                else if (count == 6 && TypeChecker.CheckTypes<object, uint, Binder, CultureInfo>(L, 3))
+                {
+                    object arg0 = ToLua.CheckVarObject(L, 2, kclass);
                     object arg1 = ToLua.ToVarObject(L, 3);
                     BindingFlags arg2 = (BindingFlags)LuaDLL.lua_tonumber(L, 4);
                     Binder arg3 = (Binder)ToLua.ToObject(L, 5);

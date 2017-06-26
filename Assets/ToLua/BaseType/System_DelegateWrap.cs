@@ -22,7 +22,7 @@ public class System_DelegateWrap
 		L.RegFunction("__add", op_Addition);
 		L.RegFunction("__sub", op_Subtraction);
 		L.RegFunction("__eq", op_Equality);
-		L.RegFunction("__tostring", Lua_ToString);
+		L.RegFunction("__tostring", ToLua.op_ToString);
 		L.RegVar("Method", get_Method, null);
 		L.RegVar("Target", get_Target, null);
 		L.EndClass();
@@ -35,7 +35,7 @@ public class System_DelegateWrap
 		{
 			int count = LuaDLL.lua_gettop(L);
 
-			if (count == 2 && TypeChecker.CheckTypes(L, 1, typeof(System.Type), typeof(System.Reflection.MethodInfo)))
+			if (count == 2 && TypeChecker.CheckTypes<System.Type, System.Reflection.MethodInfo>(L, 1))
 			{
 				System.Type arg0 = (System.Type)ToLua.ToObject(L, 1);
 				System.Reflection.MethodInfo arg1 = (System.Reflection.MethodInfo)ToLua.ToObject(L, 2);
@@ -43,7 +43,7 @@ public class System_DelegateWrap
 				ToLua.Push(L, o);
 				return 1;
 			}
-			else if (count == 3 && TypeChecker.CheckTypes(L, 1, typeof(System.Type), typeof(System.Reflection.MethodInfo), typeof(bool)))
+			else if (count == 3 && TypeChecker.CheckTypes<System.Type, System.Reflection.MethodInfo, bool>(L, 1))
 			{
 				System.Type arg0 = (System.Type)ToLua.ToObject(L, 1);
 				System.Reflection.MethodInfo arg1 = (System.Reflection.MethodInfo)ToLua.ToObject(L, 2);
@@ -52,7 +52,7 @@ public class System_DelegateWrap
 				ToLua.Push(L, o);
 				return 1;
 			}
-			else if (count == 3 && TypeChecker.CheckTypes(L, 1, typeof(System.Type), typeof(System.Type), typeof(string)))
+			else if (count == 3 && TypeChecker.CheckTypes<System.Type, System.Type, string>(L, 1))
 			{
 				System.Type arg0 = (System.Type)ToLua.ToObject(L, 1);
 				System.Type arg1 = (System.Type)ToLua.ToObject(L, 2);
@@ -61,7 +61,7 @@ public class System_DelegateWrap
 				ToLua.Push(L, o);
 				return 1;
 			}
-			else if (count == 3 && TypeChecker.CheckTypes(L, 1, typeof(System.Type), typeof(object), typeof(string)))
+			else if (count == 3 && TypeChecker.CheckTypes<System.Type, object, string>(L, 1))
 			{
 				System.Type arg0 = (System.Type)ToLua.ToObject(L, 1);
 				object arg1 = ToLua.ToVarObject(L, 2);
@@ -70,7 +70,7 @@ public class System_DelegateWrap
 				ToLua.Push(L, o);
 				return 1;
 			}
-			else if (count == 3 && TypeChecker.CheckTypes(L, 1, typeof(System.Type), typeof(object), typeof(System.Reflection.MethodInfo)))
+			else if (count == 3 && TypeChecker.CheckTypes<System.Type, object, System.Reflection.MethodInfo>(L, 1))
 			{
 				System.Type arg0 = (System.Type)ToLua.ToObject(L, 1);
 				object arg1 = ToLua.ToVarObject(L, 2);
@@ -79,7 +79,7 @@ public class System_DelegateWrap
 				ToLua.Push(L, o);
 				return 1;
 			}
-			else if (count == 4 && TypeChecker.CheckTypes(L, 1, typeof(System.Type), typeof(System.Type), typeof(string), typeof(bool)))
+			else if (count == 4 && TypeChecker.CheckTypes<System.Type, System.Type, string, bool>(L, 1))
 			{
 				System.Type arg0 = (System.Type)ToLua.ToObject(L, 1);
 				System.Type arg1 = (System.Type)ToLua.ToObject(L, 2);
@@ -89,7 +89,7 @@ public class System_DelegateWrap
 				ToLua.Push(L, o);
 				return 1;
 			}
-			else if (count == 4 && TypeChecker.CheckTypes(L, 1, typeof(System.Type), typeof(object), typeof(string), typeof(bool)))
+			else if (count == 4 && TypeChecker.CheckTypes<System.Type, object, string, bool>(L, 1))
 			{
 				System.Type arg0 = (System.Type)ToLua.ToObject(L, 1);
 				object arg1 = ToLua.ToVarObject(L, 2);
@@ -99,7 +99,7 @@ public class System_DelegateWrap
 				ToLua.Push(L, o);
 				return 1;
 			}
-			else if (count == 4 && TypeChecker.CheckTypes(L, 1, typeof(System.Type), typeof(object), typeof(System.Reflection.MethodInfo), typeof(bool)))
+			else if (count == 4 && TypeChecker.CheckTypes<System.Type, object, System.Reflection.MethodInfo, bool>(L, 1))
 			{
 				System.Type arg0 = (System.Type)ToLua.ToObject(L, 1);
 				object arg1 = ToLua.ToVarObject(L, 2);
@@ -109,7 +109,7 @@ public class System_DelegateWrap
 				ToLua.Push(L, o);
 				return 1;
 			}
-			else if (count == 5 && TypeChecker.CheckTypes(L, 1, typeof(System.Type), typeof(System.Type), typeof(string), typeof(bool), typeof(bool)))
+			else if (count == 5 && TypeChecker.CheckTypes<System.Type, System.Type, string, bool, bool>(L, 1))
 			{
 				System.Type arg0 = (System.Type)ToLua.ToObject(L, 1);
 				System.Type arg1 = (System.Type)ToLua.ToObject(L, 2);
@@ -120,7 +120,7 @@ public class System_DelegateWrap
 				ToLua.Push(L, o);
 				return 1;
 			}
-			else if (count == 5 && TypeChecker.CheckTypes(L, 1, typeof(System.Type), typeof(object), typeof(string), typeof(bool), typeof(bool)))
+			else if (count == 5 && TypeChecker.CheckTypes<System.Type, object, string, bool, bool>(L, 1))
 			{
 				System.Type arg0 = (System.Type)ToLua.ToObject(L, 1);
 				object arg1 = ToLua.ToVarObject(L, 2);
@@ -136,7 +136,7 @@ public class System_DelegateWrap
 				return LuaDLL.luaL_throw(L, "invalid arguments to method: System.Delegate.CreateDelegate");
 			}
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -148,13 +148,13 @@ public class System_DelegateWrap
 		try
 		{
 			int count = LuaDLL.lua_gettop(L);
-			System.Delegate obj = (System.Delegate)ToLua.CheckObject(L, 1, typeof(System.Delegate));
+			System.Delegate obj = (System.Delegate)ToLua.CheckObject<System.Delegate>(L, 1);
 			object[] arg0 = ToLua.ToParamsObject(L, 2, count - 1);
 			object o = obj.DynamicInvoke(arg0);
 			ToLua.Push(L, o);
 			return 1;
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -166,12 +166,12 @@ public class System_DelegateWrap
 		try
 		{
 			ToLua.CheckArgsCount(L, 1);
-			System.Delegate obj = (System.Delegate)ToLua.CheckObject(L, 1, typeof(System.Delegate));
+			System.Delegate obj = (System.Delegate)ToLua.CheckObject<System.Delegate>(L, 1);
 			object o = obj.Clone();
 			ToLua.Push(L, o);
 			return 1;
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -183,13 +183,13 @@ public class System_DelegateWrap
 		try
 		{
 			ToLua.CheckArgsCount(L, 3);
-			System.Delegate obj = (System.Delegate)ToLua.CheckObject(L, 1, typeof(System.Delegate));
+			System.Delegate obj = (System.Delegate)ToLua.CheckObject<System.Delegate>(L, 1);
 			System.Runtime.Serialization.SerializationInfo arg0 = (System.Runtime.Serialization.SerializationInfo)ToLua.CheckObject(L, 2, typeof(System.Runtime.Serialization.SerializationInfo));
-			System.Runtime.Serialization.StreamingContext arg1 = (System.Runtime.Serialization.StreamingContext)ToLua.CheckObject(L, 3, typeof(System.Runtime.Serialization.StreamingContext));
+			System.Runtime.Serialization.StreamingContext arg1 = StackTraits<System.Runtime.Serialization.StreamingContext>.Check(L, 3);
 			obj.GetObjectData(arg0, arg1);
 			return 0;
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -201,12 +201,12 @@ public class System_DelegateWrap
 		try
 		{
 			ToLua.CheckArgsCount(L, 1);
-			System.Delegate obj = (System.Delegate)ToLua.CheckObject(L, 1, typeof(System.Delegate));
+			System.Delegate obj = (System.Delegate)ToLua.CheckObject<System.Delegate>(L, 1);
 			System.Delegate[] o = obj.GetInvocationList();
 			ToLua.Push(L, o);
 			return 1;
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -219,7 +219,7 @@ public class System_DelegateWrap
 		{
 			int count = LuaDLL.lua_gettop(L);
 
-			if (count == 2 && TypeChecker.CheckTypes(L, 1, typeof(System.Delegate), typeof(System.Delegate)))
+			if (count == 2 && TypeChecker.CheckTypes<System.Delegate, System.Delegate>(L, 1))
 			{
 				System.Delegate arg0 = (System.Delegate)ToLua.ToObject(L, 1);
 				System.Delegate arg1 = (System.Delegate)ToLua.ToObject(L, 2);
@@ -227,7 +227,7 @@ public class System_DelegateWrap
 				ToLua.Push(L, o);
 				return 1;
 			}
-			else if (TypeChecker.CheckParamsType(L, typeof(System.Delegate), 1, count))
+			else if (TypeChecker.CheckParamsType<System.Delegate>(L, 1, count))
 			{
 				System.Delegate[] arg0 = ToLua.ToParamsObject<System.Delegate>(L, 1, count);
 				System.Delegate o = System.Delegate.Combine(arg0);
@@ -239,7 +239,7 @@ public class System_DelegateWrap
 				return LuaDLL.luaL_throw(L, "invalid arguments to method: System.Delegate.Combine");
 			}
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -251,13 +251,13 @@ public class System_DelegateWrap
 		try
 		{
 			ToLua.CheckArgsCount(L, 2);
-			System.Delegate arg0 = (System.Delegate)ToLua.CheckObject(L, 1, typeof(System.Delegate));
-			System.Delegate arg1 = (System.Delegate)ToLua.CheckObject(L, 2, typeof(System.Delegate));
+			System.Delegate arg0 = (System.Delegate)ToLua.CheckObject<System.Delegate>(L, 1);
+			System.Delegate arg1 = (System.Delegate)ToLua.CheckObject<System.Delegate>(L, 2);
 			System.Delegate o = System.Delegate.Remove(arg0, arg1);
 			ToLua.Push(L, o);
 			return 1;
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -269,13 +269,13 @@ public class System_DelegateWrap
 		try
 		{
 			ToLua.CheckArgsCount(L, 2);
-			System.Delegate arg0 = (System.Delegate)ToLua.CheckObject(L, 1, typeof(System.Delegate));
-			System.Delegate arg1 = (System.Delegate)ToLua.CheckObject(L, 2, typeof(System.Delegate));
+			System.Delegate arg0 = (System.Delegate)ToLua.CheckObject<System.Delegate>(L, 1);
+			System.Delegate arg1 = (System.Delegate)ToLua.CheckObject<System.Delegate>(L, 2);
 			System.Delegate o = System.Delegate.RemoveAll(arg0, arg1);
 			ToLua.Push(L, o);
 			return 1;
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -287,20 +287,20 @@ public class System_DelegateWrap
         try
         {
             ToLua.CheckArgsCount(L, 2);
-            Delegate arg0 = (Delegate)ToLua.CheckObject(L, 1, typeof(Delegate));
+            Delegate arg0 = (Delegate)ToLua.CheckObject<Delegate>(L, 1);
             LuaTypes type = LuaDLL.lua_type(L, 2);
 
             if (type == LuaTypes.LUA_TFUNCTION)
-            {                
-                LuaFunction func = ToLua.ToLuaFunction(L, 2);
+            {
                 LuaState state = LuaState.Get(L);
+                LuaFunction func = ToLua.ToLuaFunction(L, 2);
                 Delegate[] ds = arg0.GetInvocationList();
 
                 for (int i = 0; i < ds.Length; i++)
                 {
                     LuaDelegate ld = ds[i].Target as LuaDelegate;
 
-                    if (ld != null && ld.func == func)
+                    if (ld != null && ld.func == func && ld.self == null)
                     {
                         arg0 = Delegate.Remove(arg0, ds[i]);
                         state.DelayDispose(ld.func);
@@ -314,8 +314,8 @@ public class System_DelegateWrap
             }
             else
             {
-                Delegate arg1 = (Delegate)ToLua.CheckObject(L, 2, typeof(Delegate));                
-                arg0 = DelegateFactory.RemoveDelegate(arg0, arg1);
+                Delegate arg1 = (Delegate)ToLua.CheckObject<Delegate>(L, 2);
+                arg0 = DelegateFactory.RemoveDelegate(arg0, arg1);                
                 ToLua.Push(L, arg0);
                 return 1;
             }
@@ -332,7 +332,7 @@ public class System_DelegateWrap
         try
         {
             ToLua.CheckArgsCount(L, 2);
-            Delegate arg0 = ToLua.CheckObject(L, 1, typeof(Delegate)) as Delegate;
+            Delegate arg0 = (Delegate)ToLua.CheckObject<Delegate>(L, 1);
             LuaTypes type = LuaDLL.lua_type(L, 2);
 
             if (type == LuaTypes.LUA_TFUNCTION)
@@ -370,7 +370,7 @@ public class System_DelegateWrap
 			LuaDLL.lua_pushboolean(L, o);
 			return 1;
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -379,7 +379,7 @@ public class System_DelegateWrap
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	static int Destroy(IntPtr L)
 	{
-        Delegate arg0 = ToLua.CheckObject(L, 1, typeof(Delegate)) as Delegate;
+        Delegate arg0 = (Delegate)ToLua.CheckObject<Delegate>(L, 1);
         Delegate[] ds = arg0.GetInvocationList();
 
         for (int i = 0; i < ds.Length; i++)
@@ -401,12 +401,12 @@ public class System_DelegateWrap
 		try
 		{
 			ToLua.CheckArgsCount(L, 1);
-			System.Delegate obj = (System.Delegate)ToLua.CheckObject(L, 1, typeof(System.Delegate));
+			System.Delegate obj = (System.Delegate)ToLua.CheckObject<System.Delegate>(L, 1);
 			int o = obj.GetHashCode();
 			LuaDLL.lua_pushinteger(L, o);
 			return 1;
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -418,33 +418,16 @@ public class System_DelegateWrap
 		try
 		{
 			ToLua.CheckArgsCount(L, 2);
-			System.Delegate obj = (System.Delegate)ToLua.CheckObject(L, 1, typeof(System.Delegate));
+			System.Delegate obj = (System.Delegate)ToLua.CheckObject<System.Delegate>(L, 1);
 			object arg0 = ToLua.ToVarObject(L, 2);
 			bool o = obj != null ? obj.Equals(arg0) : arg0 == null;
 			LuaDLL.lua_pushboolean(L, o);
 			return 1;
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
-	}
-
-	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int Lua_ToString(IntPtr L)
-	{
-		object obj = ToLua.ToObject(L, 1);
-
-		if (obj != null)
-		{
-			LuaDLL.lua_pushstring(L, obj.ToString());
-		}
-		else
-		{
-			LuaDLL.lua_pushnil(L);
-		}
-
-		return 1;
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]

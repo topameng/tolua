@@ -76,7 +76,7 @@ bug 反馈群: 286510803
 - FIX: LuaTable int key c#不做判断，按照lua标准执行或者报错
 - FIX: 一些小的导出问题
 
-1.0.6 (需要重新生成库文件，需要重新导出wrap. 需要Clear all)
+1.0.6 (需要重新生成库文件，需要Clear all, 重新导出wrap)
 - NEW: 加入LuaStatePtr最为LuaDLL函数简单封装层
 - NEW: LuaState ToLuaException 更名为 ThrowLuaException
 - NEW: Debugger 放入到 LuaInterface namespace
@@ -92,3 +92,24 @@ bug 反馈群: 286510803
 - FIX: 委托自动适配lua函数时，支持out参数。- 委托操作，支持自动转换函数。 
 - FIX: 部分GetHashCode函数可能潜在的问题
 - FIX: CheckInteger64 更名为 CheckLong
+- FIX: DefaultMember("ItemOf")类导出问题
+- FIX: 5.6部分编辑器函数或参数导出问题
+- FIX：Object新的Instantiate函数导出问题
+- FIX: int64反向计算问题
+- FIX: 枚举唯一性问题
+- Fix: LuaArrayTable LuaDictTable 迭代中break问题
+
+1.0.7 (需要重新生成库文件，需要Clear all, 重新导出wrap)
+- NEW: LuaState增加直接调用一个lua函数，不生成临时的LuaFunction
+- NEW: LuaTable增加直接调用一个lua函数，不生成临时的LuaFunction
+- NEW: 通用模板支持， LuaFunction可以写简短调用方式，LuaTable 增加Get RawGet等无GC获取
+- NEW: LuaFunction可转换为DelegateFactory中注册的委托
+- NEW: CheckType采用模板形式，提高了重载函数匹配速度
+- NEW: 优化了Physics.RayCast调用速度, 以及Check数组优化速度外加扩充
+- NEW: 增加了struct类型自行扩展机制，通过自行扩展注入到tolua系统，快速无GC转换c#类型到lua table
+- NEW: luajit 升级为2.1b3, 并且极大减小在安卓上jit失败情况。
+
+- FIX: luajit不再因64位分配内存地址报not enough memory. 错误函数调用不在此列。参考http://luajit.org/status.html
+- FIX: 安卓上jit失败造成卡机问题
+- FIX: 在系统中Instantis对象上的脚本Awake调用LuaFunction失败，通过LuaState.ThrowLuaException时堆栈错误上报出错问题
+- FIX: 修正一些lua脚本中的书写错误

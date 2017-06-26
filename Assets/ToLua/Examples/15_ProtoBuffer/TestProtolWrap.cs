@@ -19,7 +19,7 @@ public class TestProtolWrap
 			LuaDLL.tolua_pushlstring(L, TestProtol.data, TestProtol.data.Length);
 			return 1;
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -34,7 +34,7 @@ public class TestProtolWrap
 			TestProtol.data = arg0;
 			return 0;
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}

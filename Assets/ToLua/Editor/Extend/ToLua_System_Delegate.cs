@@ -6,11 +6,11 @@ public class ToLua_System_Delegate
     public static string AdditionNameSpace = "System.Collections.Generic";
 
     [NoToLuaAttribute]
-    public static string op_AdditionDefined = 
+    public static string op_AdditionDefined =
 @"        try
         {
             ToLua.CheckArgsCount(L, 2);
-            Delegate arg0 = ToLua.CheckObject(L, 1, typeof(Delegate)) as Delegate;
+            Delegate arg0 = (Delegate)ToLua.CheckObject<Delegate>(L, 1);
             LuaTypes type = LuaDLL.lua_type(L, 2);
 
             if (type == LuaTypes.LUA_TFUNCTION)
@@ -40,7 +40,7 @@ public class ToLua_System_Delegate
 @"        try
         {
             ToLua.CheckArgsCount(L, 2);
-            Delegate arg0 = (Delegate)ToLua.CheckObject(L, 1, typeof(Delegate));
+            Delegate arg0 = (Delegate)ToLua.CheckObject<Delegate>(L, 1);
             LuaTypes type = LuaDLL.lua_type(L, 2);
 
             if (type == LuaTypes.LUA_TFUNCTION)
@@ -67,7 +67,7 @@ public class ToLua_System_Delegate
             }
             else
             {
-                Delegate arg1 = (Delegate)ToLua.CheckObject(L, 2, typeof(Delegate));
+                Delegate arg1 = (Delegate)ToLua.CheckObject<Delegate>(L, 2);
                 arg0 = DelegateFactory.RemoveDelegate(arg0, arg1);                
                 ToLua.Push(L, arg0);
                 return 1;
@@ -112,7 +112,7 @@ public class ToLua_System_Delegate
     }
 
     public static string DestroyDefined =
-@"        Delegate arg0 = ToLua.CheckObject(L, 1, typeof(Delegate)) as Delegate;
+@"        Delegate arg0 = (Delegate)ToLua.CheckObject<Delegate>(L, 1);
         Delegate[] ds = arg0.GetInvocationList();
 
         for (int i = 0; i < ds.Length; i++)

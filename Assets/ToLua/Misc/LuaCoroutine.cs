@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2015-2016 topameng(topameng@qq.com)
+Copyright (c) 2015-2017 topameng(topameng@qq.com)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -116,7 +116,7 @@ public static class LuaCoroutine
     public static void Register(LuaState state, MonoBehaviour behaviour)
     {
         state.BeginModule(null);
-        state.RegFunction("WaitForSeconds", WaitForSeconds);
+        state.RegFunction("WaitForSeconds", _WaitForSeconds);
         state.RegFunction("WaitForFixedUpdate", WaitForFixedUpdate);
         state.RegFunction("WaitForEndOfFrame", WaitForEndOfFrame);
         state.RegFunction("Yield", Yield);
@@ -153,14 +153,14 @@ public static class LuaCoroutine
     }*/
 
     [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-    static int WaitForSeconds(IntPtr L)
+    static int _WaitForSeconds(IntPtr L)
     {
         try
         {
             float sec = (float)LuaDLL.luaL_checknumber(L, 1);
             LuaFunction func = ToLua.ToLuaFunction(L, 2);
             Coroutine co = mb.StartCoroutine(CoWaitForSeconds(sec, func));
-            ToLua.PushObject(L, co);
+            ToLua.PushSealed(L, co);
             return 1;
         }
         catch (Exception e)
@@ -182,7 +182,7 @@ public static class LuaCoroutine
         {
             LuaFunction func = ToLua.ToLuaFunction(L, 1);
             Coroutine co = mb.StartCoroutine(CoWaitForFixedUpdate(func));
-            ToLua.PushObject(L, co);
+            ToLua.PushSealed(L, co);
             return 1;
         }
         catch (Exception e)
@@ -204,7 +204,7 @@ public static class LuaCoroutine
         {
             LuaFunction func = ToLua.ToLuaFunction(L, 1);
             Coroutine co = mb.StartCoroutine(CoWaitForEndOfFrame(func));
-            ToLua.PushObject(L, co);
+            ToLua.PushSealed(L, co);
             return 1;
         }
         catch (Exception e)
@@ -227,7 +227,7 @@ public static class LuaCoroutine
             object o = ToLua.ToVarObject(L, 1);
             LuaFunction func = ToLua.ToLuaFunction(L, 2);
             Coroutine co = mb.StartCoroutine(CoYield(o, func));
-            ToLua.PushObject(L, co);
+            ToLua.PushSealed(L, co);
             return 1;
         }
         catch (Exception e)

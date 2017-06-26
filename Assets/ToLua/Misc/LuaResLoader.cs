@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2015-2016 topameng(topameng@qq.com)
+Copyright (c) 2015-2017 topameng(topameng@qq.com)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -72,21 +72,25 @@ public class LuaResLoader : LuaFileUtils
             return fileName;
         }
 
-        StringBuilder sb = StringBuilderCache.Acquire();
-
         if (Path.GetExtension(fileName) == ".lua")
         {
-            fileName = fileName.Substring(0, fileName.Length - 4);
+            fileName = fileName.Substring(0, fileName.Length - 4);            
         }
 
-        for (int i = 0; i < searchPaths.Count; i++)
+        using (CString.Block())
         {
-            sb.AppendFormat("\n\tno file '{0}'", searchPaths[i]);
-        }
+            CString sb = CString.Alloc(512);
 
-        sb.AppendFormat("\n\tno file ./Resources/?.lua");
-        sb = sb.Replace("?", fileName);
-        return StringBuilderCache.GetStringAndRelease(sb);
+            for (int i = 0; i < searchPaths.Count; i++)
+            {
+                sb.Append("\n\tno file '").Append(searchPaths[i]).Append('\'');
+            }
+
+            sb.Append("\n\tno file './Resources/").Append(fileName).Append(".lua'");
+            sb = sb.Replace("?", fileName);
+
+            return sb.ToString();
+        }
     }
 
     byte[] ReadResourceFile(string fileName)

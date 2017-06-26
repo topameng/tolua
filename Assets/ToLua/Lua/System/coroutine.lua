@@ -22,9 +22,8 @@ function coroutine.start(f, ...)
 	if running() == nil then
 		local flag, msg = resume(co, ...)
 	
-		if not flag then		
-			msg = debug.traceback(co, msg)					
-			error(msg)				
+		if not flag then					
+			error(debug.traceback(co, msg))
 		end					
 	else
 		local args = {...}
@@ -34,9 +33,8 @@ function coroutine.start(f, ...)
 			local flag, msg = resume(co, unpack(args))			
 	
 			if not flag then				
-				timer:Stop()				
-				msg = debug.traceback(co, msg)				
-				error(msg)						
+				timer:Stop()								
+				error(debug.traceback(co, msg))						
 			end		
 		end
 			
@@ -57,9 +55,8 @@ function coroutine.wait(t, co, ...)
 		local flag, msg = resume(co, unpack(args))
 		
 		if not flag then	
-			timer:Stop()			
-			msg = debug.traceback(co, msg)							
-			error(msg)			
+			timer:Stop()						
+			error(debug.traceback(co, msg))			
 			return
 		end
 	end
@@ -79,9 +76,8 @@ function coroutine.step(t, co, ...)
 		local flag, msg = resume(co, unpack(args))
 	
 		if not flag then							
-			timer:Stop()					
-			msg = debug.traceback(co, msg)					
-			error(msg)
+			timer:Stop()								
+			error(debug.traceback(co, msg))
 			return	
 		end		
 	end
@@ -104,9 +100,8 @@ function coroutine.www(www, co)
 		timer:Stop()		
 		local flag, msg = resume(co)		
 			
-		if not flag then						
-			msg = debug.traceback(co, msg)						
-			error(msg)			
+		if not flag then												
+			error(debug.traceback(co, msg))			
 			return			
 		end				
 	end		

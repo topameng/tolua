@@ -131,7 +131,7 @@ EnumSizer = Int32Sizer
 UInt32Sizer = _SimpleSizer(_VarintSize)
 UInt64Sizer = UInt32Sizer 
 
-SInt32Sizer = _ModifiedSizer(_SignedVarintSize, wire_format.ZigZagEncode)
+SInt32Sizer = _ModifiedSizer(_SignedVarintSize, wire_format.ZigZagEncode32)
 SInt64Sizer = SInt32Sizer
 
 Fixed32Sizer = _FixedSizer(4) 

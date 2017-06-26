@@ -26,7 +26,7 @@ public class System_Collections_Generic_Dictionary_int_TestAccount_KeyCollection
 			{
 				System.Collections.Generic.Dictionary<int,TestAccount> arg0 = (System.Collections.Generic.Dictionary<int,TestAccount>)ToLua.CheckObject(L, 1, typeof(System.Collections.Generic.Dictionary<int,TestAccount>));
 				System.Collections.Generic.Dictionary<int,TestAccount>.KeyCollection obj = new System.Collections.Generic.Dictionary<int,TestAccount>.KeyCollection(arg0);
-				ToLua.PushObject(L, obj);
+				ToLua.PushSealed(L, obj);
 				return 1;
 			}
 			else
@@ -34,7 +34,7 @@ public class System_Collections_Generic_Dictionary_int_TestAccount_KeyCollection
 				return LuaDLL.luaL_throw(L, "invalid arguments to ctor method: System.Collections.Generic.Dictionary<int,TestAccount>.KeyCollection.New");
 			}
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -52,7 +52,7 @@ public class System_Collections_Generic_Dictionary_int_TestAccount_KeyCollection
 			obj.CopyTo(arg0, arg1);
 			return 0;
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -65,11 +65,11 @@ public class System_Collections_Generic_Dictionary_int_TestAccount_KeyCollection
 		{
 			ToLua.CheckArgsCount(L, 1);
 			System.Collections.Generic.Dictionary<int,TestAccount>.KeyCollection obj = (System.Collections.Generic.Dictionary<int,TestAccount>.KeyCollection)ToLua.CheckObject(L, 1, typeof(System.Collections.Generic.Dictionary<int,TestAccount>.KeyCollection));
-			System.Collections.Generic.Dictionary<int,TestAccount>.KeyCollection.Enumerator o = obj.GetEnumerator();
+			System.Collections.IEnumerator o = obj.GetEnumerator();
 			ToLua.Push(L, o);
 			return 1;
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}

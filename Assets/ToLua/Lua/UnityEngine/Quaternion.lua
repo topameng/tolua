@@ -344,7 +344,7 @@ end
 function Quaternion.LookRotation(forward, up)
 	local mag = forward:Magnitude()
 	if mag < 1e-6 then
-		error("error input forward to Quaternion.LookRotation" + tostring(forward))
+		error("error input forward to Quaternion.LookRotation"..tostring(forward))
 		return nil
 	end
 	

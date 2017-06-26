@@ -10,7 +10,7 @@ public class TestUTF8 : LuaClient
     function Test()        
 	    local l1 = utf8.len('你好')
         local l2 = utf8.len('こんにちは')
-        print('chinese string len is: '..l1..' japanese len: '..l2)     
+        print('chinese string len is: '..l1..' japanese sting len: '..l2)     
 
         local s = '遍历字符串'                                        
 
@@ -43,11 +43,40 @@ public class TestUTF8 : LuaClient
 
     protected override void OnLoadFinished()
     {
+#if UNITY_5
+        Application.logMessageReceived += ShowTips;
+#else
+        Application.RegisterLogCallback(ShowTips);
+#endif  
         base.OnLoadFinished();
         luaState.DoString(script);
         LuaFunction func = luaState.GetFunction("Test");
         func.Call();
         func.Dispose();
         func = null;
+    }
+
+    string tips;
+
+    void ShowTips(string msg, string stackTrace, LogType type)
+    {
+        tips += msg;
+        tips += "\r\n";
+    }
+
+    new void OnApplicationQuit()
+    {
+        base.OnApplicationQuit();
+
+#if UNITY_5		
+        Application.logMessageReceived -= ShowTips;
+#else
+        Application.RegisterLogCallback(null);
+#endif
+    }
+
+    void OnGUI()
+    {
+        GUI.Label(new Rect(Screen.width / 2 - 300, Screen.height / 2 - 300, 600, 600), tips);
     }
 }

@@ -42,7 +42,9 @@ function Ray:GetPoint(distance)
 end
 
 function Ray:Get()		
-	return self.origin, self.direction
+	local o = self.origin
+	local d = self.direction
+	return o.x, o.y, o.z, d.x, d.y, d.z
 end
 
 Ray.__tostring = function(self)

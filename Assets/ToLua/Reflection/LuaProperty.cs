@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2015-2016 topameng(topameng@qq.com)
+Copyright (c) 2015-2017 topameng(topameng@qq.com)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -26,7 +26,7 @@ using System.Reflection;
 namespace LuaInterface
 {
     //代表一个反射属性
-    public class LuaProperty
+    public sealed class LuaProperty
     {
         PropertyInfo property = null;
         Type kclass = null;        
@@ -40,19 +40,19 @@ namespace LuaInterface
 
         public int Get(IntPtr L)
         {
-            int count = LuaDLL.lua_gettop(L);
+            int count = LuaDLL.lua_gettop(L);            
 
-            if (count == 3 && TypeChecker.CheckTypes(L, 2, kclass, typeof(object[])))
+            if (count == 3 && TypeChecker.CheckTypes<object[]>(L, 3))
             {
-                object arg0 = ToLua.ToVarObject(L, 2);
+                object arg0 = ToLua.CheckVarObject(L, 2, kclass);
                 object[] arg1 = ToLua.CheckObjectArray(L, 3);
                 object o = property.GetValue(arg0, arg1);                
                 ToLua.Push(L, o);
                 return 1;
             }
-            else if (count == 6 && TypeChecker.CheckTypes(L, 2, kclass, typeof(uint), typeof(Binder), typeof(object[]), typeof(CultureInfo)))
+            else if (count == 6 && TypeChecker.CheckTypes<uint, Binder, object[], CultureInfo>(L, 3))
             {
-                object arg0 = ToLua.ToVarObject(L, 2);
+                object arg0 = ToLua.CheckVarObject(L, 2, kclass);
                 BindingFlags arg1 = (BindingFlags)LuaDLL.lua_tonumber(L, 3);
                 Binder arg2 = (Binder)ToLua.ToObject(L, 4);
                 object[] arg3 = ToLua.CheckObjectArray(L, 5);
@@ -69,20 +69,20 @@ namespace LuaInterface
 
         public int Set(IntPtr L)
         {
-            int count = LuaDLL.lua_gettop(L);
+            int count = LuaDLL.lua_gettop(L);            
 
-            if (count == 4 && TypeChecker.CheckTypes(L, 2, kclass, typeof(object), typeof(object[])))
+            if (count == 4 && TypeChecker.CheckTypes<object, object[]>(L, 3))
             {
-                object arg0 = ToLua.ToVarObject(L, 2);
+                object arg0 = ToLua.CheckVarObject(L, 2, kclass);
                 object arg1 = ToLua.ToVarObject(L, 3);
                 object[] arg2 = ToLua.CheckObjectArray(L, 4);
                 arg1 = TypeChecker.ChangeType(arg1, property.PropertyType);
                 property.SetValue(arg0, arg1, arg2);
                 return 0;
             }
-            else if (count == 7 && TypeChecker.CheckTypes(L, 2, kclass, typeof(object), typeof(uint), typeof(Binder), typeof(object[]), typeof(CultureInfo)))
+            else if (count == 7 && TypeChecker.CheckTypes<object, uint, Binder, object[], CultureInfo>(L, 3))
             {
-                object arg0 = ToLua.ToVarObject(L, 2);
+                object arg0 = ToLua.CheckVarObject(L, 2, kclass);
                 object arg1 = ToLua.ToVarObject(L, 3);
                 BindingFlags arg2 = (BindingFlags)LuaDLL.lua_tonumber(L, 4);
                 Binder arg3 = (Binder)ToLua.ToObject(L, 5);

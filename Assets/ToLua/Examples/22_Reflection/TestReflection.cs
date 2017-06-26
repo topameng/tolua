@@ -10,8 +10,7 @@ public class TestReflection : LuaClient
     string script =
 @"    
     require 'tolua.reflection'          
-    tolua.loadassembly('Assembly-CSharp')
-    tolua.loadassembly('mscorlib')         
+    tolua.loadassembly('Assembly-CSharp')        
     local BindingFlags = require 'System.Reflection.BindingFlags'
 
     function DoClick()

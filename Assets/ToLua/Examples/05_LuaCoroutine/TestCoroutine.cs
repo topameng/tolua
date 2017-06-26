@@ -11,10 +11,17 @@ public class TestCoroutine : MonoBehaviour
     private LuaLooper looper = null;
 
 	void Awake () 
-    {        
+    {
+#if UNITY_5
+        Application.logMessageReceived += ShowTips;
+#else
+        Application.RegisterLogCallback(ShowTips);
+#endif        
+        new LuaResLoader();
         lua  = new LuaState();
         lua.Start();
-        LuaBinder.Bind(lua);                
+        LuaBinder.Bind(lua);
+        DelegateFactory.Init();         
         looper = gameObject.AddComponent<LuaLooper>();
         looper.luaState = lua;
 
@@ -25,17 +32,33 @@ public class TestCoroutine : MonoBehaviour
         f = null;        
     }
 
-    void OnDestroy()
+    void OnApplicationQuit()
     {
         looper.Destroy();
         lua.Dispose();
         lua = null;
+#if UNITY_5
+        Application.logMessageReceived -= ShowTips;
+#else
+        Application.RegisterLogCallback(null);
+#endif
+    }
+
+    string tips = null;
+
+    void ShowTips(string msg, string stackTrace, LogType type)
+    {
+        tips += msg;
+        tips += "\r\n";
     }
 
     void OnGUI()
     {
+        GUI.Label(new Rect(Screen.width / 2 - 300, Screen.height / 2 - 200, 600, 400), tips);
+
         if (GUI.Button(new Rect(50, 50, 120, 45), "Start Counter"))
         {
+            tips = null;
             LuaFunction func = lua.GetFunction("StartDelay");
             func.Call();
             func.Dispose();

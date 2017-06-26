@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2015-2016 topameng(topameng@qq.com)
+Copyright (c) 2015-2017 topameng(topameng@qq.com)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -244,6 +244,12 @@ public static class ToLuaMenu
         if (t == null)
         {
             return;
+        }
+
+        if (CustomSettings.sealedList.Contains(t))
+        {
+            CustomSettings.sealedList.Remove(t);
+            Debugger.LogError("{0} not a sealed class, it is parent of {1}", LuaMisc.GetTypeName(t), bt.name);
         }
 
         if (t.IsInterface)
@@ -1268,4 +1274,4 @@ public static class ToLuaMenu
         Debug.Log("Clear base type wrap files over");
         AssetDatabase.Refresh();
     }
-            }
+}

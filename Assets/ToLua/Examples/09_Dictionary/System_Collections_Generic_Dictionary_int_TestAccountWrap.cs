@@ -43,39 +43,39 @@ public class System_Collections_Generic_Dictionary_int_TestAccountWrap
 				ToLua.PushObject(L, obj);
 				return 1;
 			}
-			else if (count == 1 && TypeChecker.CheckTypes(L, 1, typeof(int)))
+			else if (count == 1 && TypeChecker.CheckTypes<int>(L, 1))
 			{
-				int arg0 = (int)LuaDLL.luaL_checknumber(L, 1);
+				int arg0 = (int)LuaDLL.lua_tonumber(L, 1);
 				System.Collections.Generic.Dictionary<int,TestAccount> obj = new System.Collections.Generic.Dictionary<int,TestAccount>(arg0);
 				ToLua.PushObject(L, obj);
 				return 1;
 			}
-			else if (count == 1 && TypeChecker.CheckTypes(L, 1, typeof(System.Collections.Generic.IDictionary<int,TestAccount>)))
+			else if (count == 1 && TypeChecker.CheckTypes<System.Collections.Generic.IDictionary<int,TestAccount>>(L, 1))
 			{
-				System.Collections.Generic.IDictionary<int,TestAccount> arg0 = (System.Collections.Generic.IDictionary<int,TestAccount>)ToLua.CheckObject(L, 1, typeof(System.Collections.Generic.IDictionary<int,TestAccount>));
+				System.Collections.Generic.IDictionary<int,TestAccount> arg0 = (System.Collections.Generic.IDictionary<int,TestAccount>)ToLua.ToObject(L, 1);
 				System.Collections.Generic.Dictionary<int,TestAccount> obj = new System.Collections.Generic.Dictionary<int,TestAccount>(arg0);
 				ToLua.PushObject(L, obj);
 				return 1;
 			}
-			else if (count == 1 && TypeChecker.CheckTypes(L, 1, typeof(System.Collections.Generic.IEqualityComparer<int>)))
+			else if (count == 1 && TypeChecker.CheckTypes<System.Collections.Generic.IEqualityComparer<int>>(L, 1))
 			{
-				System.Collections.Generic.IEqualityComparer<int> arg0 = (System.Collections.Generic.IEqualityComparer<int>)ToLua.CheckObject(L, 1, typeof(System.Collections.Generic.IEqualityComparer<int>));
+				System.Collections.Generic.IEqualityComparer<int> arg0 = (System.Collections.Generic.IEqualityComparer<int>)ToLua.ToObject(L, 1);
 				System.Collections.Generic.Dictionary<int,TestAccount> obj = new System.Collections.Generic.Dictionary<int,TestAccount>(arg0);
 				ToLua.PushObject(L, obj);
 				return 1;
 			}
-			else if (count == 2 && TypeChecker.CheckTypes(L, 1, typeof(int), typeof(System.Collections.Generic.IEqualityComparer<int>)))
+			else if (count == 2 && TypeChecker.CheckTypes<int, System.Collections.Generic.IEqualityComparer<int>>(L, 1))
 			{
-				int arg0 = (int)LuaDLL.luaL_checknumber(L, 1);
-				System.Collections.Generic.IEqualityComparer<int> arg1 = (System.Collections.Generic.IEqualityComparer<int>)ToLua.CheckObject(L, 2, typeof(System.Collections.Generic.IEqualityComparer<int>));
+				int arg0 = (int)LuaDLL.lua_tonumber(L, 1);
+				System.Collections.Generic.IEqualityComparer<int> arg1 = (System.Collections.Generic.IEqualityComparer<int>)ToLua.ToObject(L, 2);
 				System.Collections.Generic.Dictionary<int,TestAccount> obj = new System.Collections.Generic.Dictionary<int,TestAccount>(arg0, arg1);
 				ToLua.PushObject(L, obj);
 				return 1;
 			}
-			else if (count == 2 && TypeChecker.CheckTypes(L, 1, typeof(System.Collections.Generic.IDictionary<int,TestAccount>), typeof(System.Collections.Generic.IEqualityComparer<int>)))
+			else if (count == 2 && TypeChecker.CheckTypes<System.Collections.Generic.IDictionary<int,TestAccount>, System.Collections.Generic.IEqualityComparer<int>>(L, 1))
 			{
-				System.Collections.Generic.IDictionary<int,TestAccount> arg0 = (System.Collections.Generic.IDictionary<int,TestAccount>)ToLua.CheckObject(L, 1, typeof(System.Collections.Generic.IDictionary<int,TestAccount>));
-				System.Collections.Generic.IEqualityComparer<int> arg1 = (System.Collections.Generic.IEqualityComparer<int>)ToLua.CheckObject(L, 2, typeof(System.Collections.Generic.IEqualityComparer<int>));
+				System.Collections.Generic.IDictionary<int,TestAccount> arg0 = (System.Collections.Generic.IDictionary<int,TestAccount>)ToLua.ToObject(L, 1);
+				System.Collections.Generic.IEqualityComparer<int> arg1 = (System.Collections.Generic.IEqualityComparer<int>)ToLua.ToObject(L, 2);
 				System.Collections.Generic.Dictionary<int,TestAccount> obj = new System.Collections.Generic.Dictionary<int,TestAccount>(arg0, arg1);
 				ToLua.PushObject(L, obj);
 				return 1;
@@ -85,7 +85,7 @@ public class System_Collections_Generic_Dictionary_int_TestAccountWrap
 				return LuaDLL.luaL_throw(L, "invalid arguments to ctor method: System.Collections.Generic.Dictionary<int,TestAccount>.New");
 			}
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -104,7 +104,7 @@ public class System_Collections_Generic_Dictionary_int_TestAccountWrap
 			return 1;
 
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -123,7 +123,7 @@ public class System_Collections_Generic_Dictionary_int_TestAccountWrap
 			return 0;
 
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -138,7 +138,7 @@ public class System_Collections_Generic_Dictionary_int_TestAccountWrap
 			LuaDLL.tolua_bindthis(L, _get_this, _set_this);
 			return 1;
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -156,7 +156,7 @@ public class System_Collections_Generic_Dictionary_int_TestAccountWrap
 			ToLua.PushObject(L, o);
 			return 1;
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -174,7 +174,7 @@ public class System_Collections_Generic_Dictionary_int_TestAccountWrap
 			obj[arg0] = arg1;
 			return 0;
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -192,7 +192,7 @@ public class System_Collections_Generic_Dictionary_int_TestAccountWrap
 			obj.Add(arg0, arg1);
 			return 0;
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -208,7 +208,7 @@ public class System_Collections_Generic_Dictionary_int_TestAccountWrap
 			obj.Clear();
 			return 0;
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -226,7 +226,7 @@ public class System_Collections_Generic_Dictionary_int_TestAccountWrap
 			LuaDLL.lua_pushboolean(L, o);
 			return 1;
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -244,7 +244,7 @@ public class System_Collections_Generic_Dictionary_int_TestAccountWrap
 			LuaDLL.lua_pushboolean(L, o);
 			return 1;
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -258,11 +258,11 @@ public class System_Collections_Generic_Dictionary_int_TestAccountWrap
 			ToLua.CheckArgsCount(L, 3);
 			System.Collections.Generic.Dictionary<int,TestAccount> obj = (System.Collections.Generic.Dictionary<int,TestAccount>)ToLua.CheckObject(L, 1, typeof(System.Collections.Generic.Dictionary<int,TestAccount>));
 			System.Runtime.Serialization.SerializationInfo arg0 = (System.Runtime.Serialization.SerializationInfo)ToLua.CheckObject(L, 2, typeof(System.Runtime.Serialization.SerializationInfo));
-			System.Runtime.Serialization.StreamingContext arg1 = (System.Runtime.Serialization.StreamingContext)ToLua.CheckObject(L, 3, typeof(System.Runtime.Serialization.StreamingContext));
+			System.Runtime.Serialization.StreamingContext arg1 = StackTraits<System.Runtime.Serialization.StreamingContext>.Check(L, 3);
 			obj.GetObjectData(arg0, arg1);
 			return 0;
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -279,7 +279,7 @@ public class System_Collections_Generic_Dictionary_int_TestAccountWrap
 			obj.OnDeserialization(arg0);
 			return 0;
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -297,7 +297,7 @@ public class System_Collections_Generic_Dictionary_int_TestAccountWrap
 			LuaDLL.lua_pushboolean(L, o);
 			return 1;
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -317,7 +317,7 @@ public class System_Collections_Generic_Dictionary_int_TestAccountWrap
 			ToLua.PushObject(L, arg1);
 			return 2;
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -330,11 +330,11 @@ public class System_Collections_Generic_Dictionary_int_TestAccountWrap
 		{
 			ToLua.CheckArgsCount(L, 1);
 			System.Collections.Generic.Dictionary<int,TestAccount> obj = (System.Collections.Generic.Dictionary<int,TestAccount>)ToLua.CheckObject(L, 1, typeof(System.Collections.Generic.Dictionary<int,TestAccount>));
-			System.Collections.Generic.Dictionary<int,TestAccount>.Enumerator o = obj.GetEnumerator();
+			System.Collections.IEnumerator o = obj.GetEnumerator();
 			ToLua.Push(L, o);
 			return 1;
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
@@ -388,7 +388,7 @@ public class System_Collections_Generic_Dictionary_int_TestAccountWrap
 			o = ToLua.ToObject(L, 1);
 			System.Collections.Generic.Dictionary<int,TestAccount> obj = (System.Collections.Generic.Dictionary<int,TestAccount>)o;
 			System.Collections.Generic.Dictionary<int,TestAccount>.KeyCollection ret = obj.Keys;
-			ToLua.PushObject(L, ret);
+			ToLua.PushSealed(L, ret);
 			return 1;
 		}
 		catch(Exception e)
@@ -407,7 +407,7 @@ public class System_Collections_Generic_Dictionary_int_TestAccountWrap
 			o = ToLua.ToObject(L, 1);
 			System.Collections.Generic.Dictionary<int,TestAccount> obj = (System.Collections.Generic.Dictionary<int,TestAccount>)o;
 			System.Collections.Generic.Dictionary<int,TestAccount>.ValueCollection ret = obj.Values;
-			ToLua.PushObject(L, ret);
+			ToLua.PushSealed(L, ret);
 			return 1;
 		}
 		catch(Exception e)

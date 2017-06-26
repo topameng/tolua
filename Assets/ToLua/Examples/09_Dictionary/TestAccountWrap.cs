@@ -8,7 +8,7 @@ public class TestAccountWrap
 	{
 		L.BeginClass(typeof(TestAccount), typeof(System.Object));
 		L.RegFunction("New", _CreateTestAccount);
-		L.RegFunction("__tostring", Lua_ToString);
+		L.RegFunction("__tostring", ToLua.op_ToString);
 		L.RegVar("id", get_id, set_id);
 		L.RegVar("name", get_name, set_name);
 		L.RegVar("sex", get_sex, set_sex);
@@ -28,7 +28,7 @@ public class TestAccountWrap
 				string arg1 = ToLua.CheckString(L, 2);
 				int arg2 = (int)LuaDLL.luaL_checknumber(L, 3);
 				TestAccount obj = new TestAccount(arg0, arg1, arg2);
-				ToLua.PushObject(L, obj);
+				ToLua.PushSealed(L, obj);
 				return 1;
 			}
 			else
@@ -36,27 +36,10 @@ public class TestAccountWrap
 				return LuaDLL.luaL_throw(L, "invalid arguments to ctor method: TestAccount.New");
 			}
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
-	}
-
-	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int Lua_ToString(IntPtr L)
-	{
-		object obj = ToLua.ToObject(L, 1);
-
-		if (obj != null)
-		{
-			LuaDLL.lua_pushstring(L, obj.ToString());
-		}
-		else
-		{
-			LuaDLL.lua_pushnil(L);
-		}
-
-		return 1;
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]

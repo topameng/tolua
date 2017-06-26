@@ -9,7 +9,7 @@ public class LuaInterface_LuaConstructorWrap
 		L.BeginClass(typeof(LuaInterface.LuaConstructor), typeof(System.Object));
 		L.RegFunction("Call", Call);
 		L.RegFunction("Destroy", Destroy);
-		L.RegFunction("__tostring", Lua_ToString);
+		L.RegFunction("__tostring", ToLua.op_ToString);
 		L.EndClass();
 	}
 
@@ -18,7 +18,7 @@ public class LuaInterface_LuaConstructorWrap
 	{
 		try
 		{			
-			LuaInterface.LuaConstructor obj = (LuaInterface.LuaConstructor)ToLua.CheckObject(L, 1, typeof(LuaInterface.LuaConstructor));            
+			LuaConstructor obj = (LuaConstructor)ToLua.CheckObject(L, 1, typeof(LuaConstructor));            
 			return obj.Call(L);						
 		}
 		catch(Exception e)
@@ -33,7 +33,7 @@ public class LuaInterface_LuaConstructorWrap
 		try
 		{
 			ToLua.CheckArgsCount(L, 1);
-			LuaInterface.LuaConstructor obj = (LuaInterface.LuaConstructor)ToLua.CheckObject(L, 1, typeof(LuaInterface.LuaConstructor));
+			LuaConstructor obj = (LuaConstructor)ToLua.CheckObject(L, 1, typeof(LuaConstructor));
 			obj.Destroy();
             ToLua.Destroy(L);
 			return 0;
@@ -42,23 +42,6 @@ public class LuaInterface_LuaConstructorWrap
 		{
 			return LuaDLL.toluaL_exception(L, e);
 		}
-	}
-
-	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int Lua_ToString(IntPtr L)
-	{
-		object obj = ToLua.ToObject(L, 1);
-
-		if (obj != null)
-		{
-			LuaDLL.lua_pushstring(L, obj.ToString());
-		}
-		else
-		{
-			LuaDLL.lua_pushnil(L);
-		}
-
-		return 1;
 	}
 }
 

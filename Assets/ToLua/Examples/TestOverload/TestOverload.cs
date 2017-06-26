@@ -152,6 +152,12 @@ public class TestExport
         return 13;
     }
 
+    public int Test(string[] objs, bool flag)
+    {
+        Debugger.Log("call Test(string[] objs, bool flag)");
+        return 20;
+    }
+
     public int Test(params object[] objs)
     {
         Debugger.Log("call Test(params object[] objs)");
@@ -242,6 +248,12 @@ public class TestExport
     {
         Debugger.Log("call TestExport(Vector3 v)");
     }
+
+    public Nullable<Vector3> TestNullable(Nullable<Vector3> v)
+    {
+        Debugger.Log("call TestNullable(Nullable<Vector3> v)");
+        return v;
+    }
 }
 
 public class TestOverload : MonoBehaviour
@@ -270,7 +282,9 @@ public class TestOverload : MonoBehaviour
             assert(to:TestCheckParamString('1', '2', '3') == '123')
             assert(to:Test(TestExport.Space.World) == 10)        
             print(to.this:get(123))
-            to.this:set(1, 456)           
+            to.this:set(1, 456)          
+            local v = to:TestNullable(Vector3.New(1,2,3)) 
+            print(v.z)
         end
     ";
     
@@ -279,7 +293,7 @@ public class TestOverload : MonoBehaviour
         LuaState state = new LuaState();
         state.Start();
         LuaBinder.Bind(state);
-        Bind(state);
+        Bind(state);        
         state.DoString(script, "TestOverload.cs");
 
         TestExport to = new TestExport();

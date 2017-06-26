@@ -184,7 +184,7 @@ end
 function list:insert(v, iter)
 	assert(v)
 	if not iter then
-		return self:push(value)
+		return self:push(v)
 	end
 	
 	local t = {value = v}
