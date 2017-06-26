@@ -2065,7 +2065,29 @@ public static class ToLuaExport
 
         if ((!md.IsStatic && !beConstruct) || beExtend)
         {
+#if SKIP_TYPE
             CheckObject(head, type, className, 1);
+#else
+            if (md.Name == "Equals")
+            {
+                if (!type.IsValueType && !beCheckTypes)
+                {
+                    CheckObject(head, type, className, 1);
+                }
+                else
+                {                                      
+                    sb.AppendFormat("{0}{1} obj = ({1})ToLua.ToObject(L, 1);\r\n", head, className);                    
+                }
+            }
+            else if (!beCheckTypes)// && methodType == 0)
+            {
+                CheckObject(head, type, className, 1);                
+            }
+            else
+            {
+                ToObject(head, type, className, 1);
+            }
+#endif
         }
 
         for (int j = 0; j < count; j++)
@@ -2454,8 +2476,13 @@ public static class ToLuaExport
 
             if (paramInfos.Length > 1)
             {
+#if !SKIP_TYPE
+                string strParams = GenParamTypes(paramInfos, md);
+                sb.AppendFormat("\t\t\t{0}(TypeChecker.CheckTypes(L, 1, {1}) && TypeChecker.CheckParamsType(L, typeof({2}), {3}, {4}))\r\n", strIf, strParams, str, paramInfos.Length + offset, GetCountStr(paramInfos.Length + offset - 1));
+#else
                 string strParams = GenParamTypes(paramInfos, md, false);
                 sb.AppendFormat("\t\t\t{0}(TypeChecker.CheckTypes<{1}>(L, {2}) && TypeChecker.CheckParamsType<{3}>(L, {4}, {5}))\r\n", strIf, strParams, offset + 1, str, paramInfos.Length + offset, GetCountStr(paramInfos.Length + offset - 1));
+#endif
             }
             else
             {
@@ -2466,11 +2493,19 @@ public static class ToLuaExport
         {
             ParameterInfo[] paramInfos = md.GetParameters();
 
+#if !SKIP_TYPE
+            if (paramInfos.Length + offset > 0)
+            {
+                string strParams = GenParamTypes(paramInfos, md);
+                sb.AppendFormat("\t\t\t{0}(count == {1} && TypeChecker.CheckTypes(L, 1, {2}))\r\n", strIf, paramInfos.Length + offset, strParams);
+            }
+#else
             if (paramInfos.Length > 0)
             {
                 string strParams = GenParamTypes(paramInfos, md, false);
                 sb.AppendFormat("\t\t\t{0}(count == {1} && TypeChecker.CheckTypes<{2}>(L, {3}))\r\n", strIf, paramInfos.Length + offset, strParams, offset + 1);
             }
+#endif
             else
             {
                 beCheckTypes = false;
@@ -2583,77 +2618,6 @@ public static class ToLuaExport
     }
 
     //获取 typeof(string) 这样的名字
-    /*static string GetTypeOf(Type t, string sep)
-    {
-        string str;
-
-        if (t == null)
-        {
-            str = string.Format("null{0}", sep);
-        }
-        else
-        {
-            if (t.IsByRef)
-            {
-                t = t.GetElementType();
-            }
-
-            if (IsNumberEnum(t))
-            {
-                str = string.Format("typeof(uint){0}", sep);
-            }
-            else
-            {
-                str = string.Format("typeof({0}){1}", GetTypeStr(t), sep);
-            }
-        }
-
-        return str;
-    }
-
-    //生成 CheckTypes() 里面的参数列表
-    static string GenParamTypes(ParameterInfo[] p, MethodBase mb, bool addSelf = true)    
-    {
-        StringBuilder sb = new StringBuilder();
-        List<Type> list = new List<Type>();
-        bool isStatic = mb.IsConstructor ? true : mb.IsStatic;
-
-        if (!isStatic && addSelf)
-        {
-            list.Add(type);
-        }
-
-        for (int i = 0; i < p.Length; i++)
-        {
-            if (IsParams(p[i]))
-            {
-                continue;                
-            }
-
-            if (p[i].Attributes != ParameterAttributes.Out)
-            {
-                list.Add(GetGenericBaseType(mb, p[i].ParameterType));
-            }
-            else
-            {
-                Type genericClass = typeof(LuaOut<>);
-                Type t = genericClass.MakeGenericType(p[i].ParameterType);
-                list.Add(t);
-            }
-        }
-
-        for (int i = 0; i < list.Count - 1; i++)
-        {
-            sb.Append(GetTypeOf(list[i], ", "));
-        }
-
-        if (list.Count > 0)
-        {
-            sb.Append(GetTypeOf(list[list.Count - 1], ""));
-        }
-
-        return sb.ToString();
-    }*/
 
     static string GetTypeOf(Type t, string sep)
     {
