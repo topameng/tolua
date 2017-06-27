@@ -1,4 +1,4 @@
-﻿314/*
+﻿/*
 Copyright (c) 2015-2017 topameng(topameng@qq.com)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -187,7 +187,7 @@ namespace LuaInterface
 
     public class LuaDLL
     {
-        public static string version = "1.0.7.315";
+        public static string version = "1.0.7.316";
         public static int LUA_MULTRET = -1;
         public static string[] LuaTypeName = { "none", "nil", "boolean", "lightuserdata", "number", "string", "table", "function", "userdata", "thread" };        
 

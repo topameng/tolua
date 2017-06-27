@@ -161,10 +161,10 @@ public class System_EnumWrap
 				LuaDLL.lua_pushstring(L, o);
 				return 1;
 			}
-			else if (count == 2 && TypeChecker.CheckTypes<string>(L, 2))
+			else if (count == 2)
 			{
 				System.Enum obj = (System.Enum)ToLua.CheckObject<System.Enum>(L, 1);
-				string arg0 = ToLua.ToString(L, 2);
+				string arg0 = ToLua.CheckString(L, 2);
 				string o = obj.ToString(arg0);
 				LuaDLL.lua_pushstring(L, o);
 				return 1;

@@ -144,9 +144,9 @@ public class System_TypeWrap
 		{
 			int count = LuaDLL.lua_gettop(L);
 
-			if (count == 1)
+			if (count == 1 && TypeChecker.CheckTypes<System.Type>(L, 1))
 			{
-				System.Type obj = ToLua.CheckMonoType(L, 1);
+				System.Type obj = (System.Type)ToLua.ToObject(L, 1);
 				System.Type o = obj.GetType();
 				ToLua.Push(L, o);
 				return 1;
@@ -158,19 +158,19 @@ public class System_TypeWrap
 				ToLua.Push(L, o);
 				return 1;
 			}
-			else if (count == 2 && TypeChecker.CheckTypes<string, bool>(L, 1))
+			else if (count == 2)
 			{
-				string arg0 = ToLua.ToString(L, 1);
-				bool arg1 = LuaDLL.lua_toboolean(L, 2);
+				string arg0 = ToLua.CheckString(L, 1);
+				bool arg1 = LuaDLL.luaL_checkboolean(L, 2);
 				System.Type o = System.Type.GetType(arg0, arg1);
 				ToLua.Push(L, o);
 				return 1;
 			}
-			else if (count == 3 && TypeChecker.CheckTypes<string, bool, bool>(L, 1))
+			else if (count == 3)
 			{
-				string arg0 = ToLua.ToString(L, 1);
-				bool arg1 = LuaDLL.lua_toboolean(L, 2);
-				bool arg2 = LuaDLL.lua_toboolean(L, 3);
+				string arg0 = ToLua.CheckString(L, 1);
+				bool arg1 = LuaDLL.luaL_checkboolean(L, 2);
+				bool arg2 = LuaDLL.luaL_checkboolean(L, 3);
 				System.Type o = System.Type.GetType(arg0, arg1, arg2);
 				ToLua.Push(L, o);
 				return 1;
@@ -310,19 +310,19 @@ public class System_TypeWrap
 		{
 			int count = LuaDLL.lua_gettop(L);
 
-			if (count == 2 && TypeChecker.CheckTypes<string>(L, 2))
+			if (count == 2)
 			{
 				System.Type obj = ToLua.CheckMonoType(L, 1);
-				string arg0 = ToLua.ToString(L, 2);
+				string arg0 = ToLua.CheckString(L, 2);
 				System.Type o = obj.GetInterface(arg0);
 				ToLua.Push(L, o);
 				return 1;
 			}
-			else if (count == 3 && TypeChecker.CheckTypes<string, bool>(L, 2))
+			else if (count == 3)
 			{
 				System.Type obj = ToLua.CheckMonoType(L, 1);
-				string arg0 = ToLua.ToString(L, 2);
-				bool arg1 = LuaDLL.lua_toboolean(L, 3);
+				string arg0 = ToLua.CheckString(L, 2);
+				bool arg1 = LuaDLL.luaL_checkboolean(L, 3);
 				System.Type o = obj.GetInterface(arg0, arg1);
 				ToLua.Push(L, o);
 				return 1;
@@ -467,19 +467,19 @@ public class System_TypeWrap
 		{
 			int count = LuaDLL.lua_gettop(L);
 
-			if (count == 2 && TypeChecker.CheckTypes<string>(L, 2))
+			if (count == 2)
 			{
 				System.Type obj = ToLua.CheckMonoType(L, 1);
-				string arg0 = ToLua.ToString(L, 2);
+				string arg0 = ToLua.CheckString(L, 2);
 				System.Type o = obj.GetNestedType(arg0);
 				ToLua.Push(L, o);
 				return 1;
 			}
-			else if (count == 3 && TypeChecker.CheckTypes<string, uint>(L, 2))
+			else if (count == 3)
 			{
 				System.Type obj = ToLua.CheckMonoType(L, 1);
-				string arg0 = ToLua.ToString(L, 2);
-				System.Reflection.BindingFlags arg1 = (System.Reflection.BindingFlags)LuaDLL.lua_tonumber(L, 3);
+				string arg0 = ToLua.CheckString(L, 2);
+				System.Reflection.BindingFlags arg1 = (System.Reflection.BindingFlags)LuaDLL.luaL_checknumber(L, 3);
 				System.Type o = obj.GetNestedType(arg0, arg1);
 				ToLua.Push(L, o);
 				return 1;
@@ -509,10 +509,10 @@ public class System_TypeWrap
 				ToLua.Push(L, o);
 				return 1;
 			}
-			else if (count == 2 && TypeChecker.CheckTypes<uint>(L, 2))
+			else if (count == 2)
 			{
 				System.Type obj = ToLua.CheckMonoType(L, 1);
-				System.Reflection.BindingFlags arg0 = (System.Reflection.BindingFlags)LuaDLL.lua_tonumber(L, 2);
+				System.Reflection.BindingFlags arg0 = (System.Reflection.BindingFlags)LuaDLL.luaL_checknumber(L, 2);
 				System.Type[] o = obj.GetNestedTypes(arg0);
 				ToLua.Push(L, o);
 				return 1;
@@ -585,42 +585,42 @@ public class System_TypeWrap
 		{
 			int count = LuaDLL.lua_gettop(L);
 
-			if (count == 6 && TypeChecker.CheckTypes<string, uint, System.Reflection.Binder, object, object[]>(L, 2))
+			if (count == 6)
 			{
 				System.Type obj = ToLua.CheckMonoType(L, 1);
-				string arg0 = ToLua.ToString(L, 2);
-				System.Reflection.BindingFlags arg1 = (System.Reflection.BindingFlags)LuaDLL.lua_tonumber(L, 3);
-				System.Reflection.Binder arg2 = (System.Reflection.Binder)ToLua.ToObject(L, 4);
+				string arg0 = ToLua.CheckString(L, 2);
+				System.Reflection.BindingFlags arg1 = (System.Reflection.BindingFlags)LuaDLL.luaL_checknumber(L, 3);
+				System.Reflection.Binder arg2 = (System.Reflection.Binder)ToLua.CheckObject<System.Reflection.Binder>(L, 4);
 				object arg3 = ToLua.ToVarObject(L, 5);
-				object[] arg4 = ToLua.ToObjectArray(L, 6);
+				object[] arg4 = ToLua.CheckObjectArray(L, 6);
 				object o = obj.InvokeMember(arg0, arg1, arg2, arg3, arg4);
 				ToLua.Push(L, o);
 				return 1;
 			}
-			else if (count == 7 && TypeChecker.CheckTypes<string, uint, System.Reflection.Binder, object, object[], System.Globalization.CultureInfo>(L, 2))
+			else if (count == 7)
 			{
 				System.Type obj = ToLua.CheckMonoType(L, 1);
-				string arg0 = ToLua.ToString(L, 2);
-				System.Reflection.BindingFlags arg1 = (System.Reflection.BindingFlags)LuaDLL.lua_tonumber(L, 3);
-				System.Reflection.Binder arg2 = (System.Reflection.Binder)ToLua.ToObject(L, 4);
+				string arg0 = ToLua.CheckString(L, 2);
+				System.Reflection.BindingFlags arg1 = (System.Reflection.BindingFlags)LuaDLL.luaL_checknumber(L, 3);
+				System.Reflection.Binder arg2 = (System.Reflection.Binder)ToLua.CheckObject<System.Reflection.Binder>(L, 4);
 				object arg3 = ToLua.ToVarObject(L, 5);
-				object[] arg4 = ToLua.ToObjectArray(L, 6);
-				System.Globalization.CultureInfo arg5 = (System.Globalization.CultureInfo)ToLua.ToObject(L, 7);
+				object[] arg4 = ToLua.CheckObjectArray(L, 6);
+				System.Globalization.CultureInfo arg5 = (System.Globalization.CultureInfo)ToLua.CheckObject<System.Globalization.CultureInfo>(L, 7);
 				object o = obj.InvokeMember(arg0, arg1, arg2, arg3, arg4, arg5);
 				ToLua.Push(L, o);
 				return 1;
 			}
-			else if (count == 9 && TypeChecker.CheckTypes<string, uint, System.Reflection.Binder, object, object[], System.Reflection.ParameterModifier[], System.Globalization.CultureInfo, string[]>(L, 2))
+			else if (count == 9)
 			{
 				System.Type obj = ToLua.CheckMonoType(L, 1);
-				string arg0 = ToLua.ToString(L, 2);
-				System.Reflection.BindingFlags arg1 = (System.Reflection.BindingFlags)LuaDLL.lua_tonumber(L, 3);
-				System.Reflection.Binder arg2 = (System.Reflection.Binder)ToLua.ToObject(L, 4);
+				string arg0 = ToLua.CheckString(L, 2);
+				System.Reflection.BindingFlags arg1 = (System.Reflection.BindingFlags)LuaDLL.luaL_checknumber(L, 3);
+				System.Reflection.Binder arg2 = (System.Reflection.Binder)ToLua.CheckObject<System.Reflection.Binder>(L, 4);
 				object arg3 = ToLua.ToVarObject(L, 5);
-				object[] arg4 = ToLua.ToObjectArray(L, 6);
-				System.Reflection.ParameterModifier[] arg5 = ToLua.ToStructArray<System.Reflection.ParameterModifier>(L, 7);
-				System.Globalization.CultureInfo arg6 = (System.Globalization.CultureInfo)ToLua.ToObject(L, 8);
-				string[] arg7 = ToLua.ToStringArray(L, 9);
+				object[] arg4 = ToLua.CheckObjectArray(L, 6);
+				System.Reflection.ParameterModifier[] arg5 = ToLua.CheckStructArray<System.Reflection.ParameterModifier>(L, 7);
+				System.Globalization.CultureInfo arg6 = (System.Globalization.CultureInfo)ToLua.CheckObject<System.Globalization.CultureInfo>(L, 8);
+				string[] arg7 = ToLua.CheckStringArray(L, 9);
 				object o = obj.InvokeMember(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
 				ToLua.Push(L, o);
 				return 1;
@@ -736,10 +736,10 @@ public class System_TypeWrap
 				ToLua.Push(L, o);
 				return 1;
 			}
-			else if (count == 2 && TypeChecker.CheckTypes<int>(L, 2))
+			else if (count == 2)
 			{
 				System.Type obj = ToLua.CheckMonoType(L, 1);
-				int arg0 = (int)LuaDLL.lua_tonumber(L, 2);
+				int arg0 = (int)LuaDLL.luaL_checknumber(L, 2);
 				System.Type o = obj.MakeArrayType(arg0);
 				ToLua.Push(L, o);
 				return 1;

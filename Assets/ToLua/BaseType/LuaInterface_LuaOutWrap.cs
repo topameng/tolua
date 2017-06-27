@@ -6,7 +6,7 @@ public class LuaInterface_LuaOutWrap
     public static void Register(LuaState L)
     {
         L.BeginPreLoad();
-        L.RegFunction("tolua.out", LuaOpen_ToLua_Out);                   
+        L.RegFunction("tolua.out", LuaOpen_ToLua_Out);
         L.EndPreLoad();
     }
 
@@ -33,7 +33,7 @@ public class LuaInterface_LuaOutWrap
 
             return 1;
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             return LuaDLL.toluaL_exception(L, e);
         }

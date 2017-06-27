@@ -940,58 +940,58 @@ public class System_ArrayWrap
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	static int BinarySearch(IntPtr L)
 	{
-		try
-		{
-			int count = LuaDLL.lua_gettop(L);            
+        try
+        {
+            int count = LuaDLL.lua_gettop(L);
 
-            if (count == 2 && TypeChecker.CheckTypes<System.Array, object>(L, 1))
-			{
-				System.Array arg0 = (System.Array)ToLua.ToObject(L, 1);
+            if (count == 2)
+            {
+                System.Array arg0 = (System.Array)ToLua.CheckObject<System.Array>(L, 1);
                 object arg1 = ToLua.ToVarObject(L, 2, arg0.GetType().GetElementType());
-				int o = System.Array.BinarySearch(arg0, arg1);
-				LuaDLL.lua_pushinteger(L, o);
-				return 1;
-			}
-			else if (count == 3 && TypeChecker.CheckTypes<System.Array, object, System.Collections.IComparer>(L, 1))
-			{
-				System.Array arg0 = (System.Array)ToLua.ToObject(L, 1);
+                int o = System.Array.BinarySearch(arg0, arg1);
+                LuaDLL.lua_pushinteger(L, o);
+                return 1;
+            }
+            else if (count == 3)
+            {
+                System.Array arg0 = (System.Array)ToLua.CheckObject<System.Array>(L, 1);
                 object arg1 = ToLua.ToVarObject(L, 2, arg0.GetType().GetElementType());
-				System.Collections.IComparer arg2 = (System.Collections.IComparer)ToLua.ToObject(L, 3);
-				int o = System.Array.BinarySearch(arg0, arg1, arg2);
-				LuaDLL.lua_pushinteger(L, o);
-				return 1;
-			}
-			else if (count == 4 && TypeChecker.CheckTypes<System.Array, int, int, object>(L, 1))
-			{
-				System.Array arg0 = (System.Array)ToLua.ToObject(L, 1);
-				int arg1 = (int)LuaDLL.lua_tonumber(L, 2);
-				int arg2 = (int)LuaDLL.lua_tonumber(L, 3);
+                System.Collections.IComparer arg2 = (System.Collections.IComparer)ToLua.CheckObject<System.Collections.IComparer>(L, 3);
+                int o = System.Array.BinarySearch(arg0, arg1, arg2);
+                LuaDLL.lua_pushinteger(L, o);
+                return 1;
+            }
+            else if (count == 4)
+            {
+                System.Array arg0 = (System.Array)ToLua.CheckObject<System.Array>(L, 1);
+                int arg1 = (int)LuaDLL.luaL_checknumber(L, 2);
+                int arg2 = (int)LuaDLL.luaL_checknumber(L, 3);
                 object arg3 = ToLua.ToVarObject(L, 4, arg0.GetType().GetElementType());
-				int o = System.Array.BinarySearch(arg0, arg1, arg2, arg3);
-				LuaDLL.lua_pushinteger(L, o);
-				return 1;
-			}
-			else if (count == 5 && TypeChecker.CheckTypes<System.Array, int, int, object, System.Collections.IComparer>(L, 1))
-			{
-				System.Array arg0 = (System.Array)ToLua.ToObject(L, 1);
-				int arg1 = (int)LuaDLL.lua_tonumber(L, 2);
-				int arg2 = (int)LuaDLL.lua_tonumber(L, 3);
+                int o = System.Array.BinarySearch(arg0, arg1, arg2, arg3);
+                LuaDLL.lua_pushinteger(L, o);
+                return 1;
+            }
+            else if (count == 5)
+            {
+                System.Array arg0 = (System.Array)ToLua.CheckObject<System.Array>(L, 1);
+                int arg1 = (int)LuaDLL.luaL_checknumber(L, 2);
+                int arg2 = (int)LuaDLL.luaL_checknumber(L, 3);
                 object arg3 = ToLua.ToVarObject(L, 4, arg0.GetType().GetElementType());
-				System.Collections.IComparer arg4 = (System.Collections.IComparer)ToLua.ToObject(L, 5);
-				int o = System.Array.BinarySearch(arg0, arg1, arg2, arg3, arg4);
-				LuaDLL.lua_pushinteger(L, o);
-				return 1;
-			}
-			else
-			{
-				return LuaDLL.luaL_throw(L, "invalid arguments to method: System.Array.BinarySearch");
-			}
-		}
+                System.Collections.IComparer arg4 = (System.Collections.IComparer)ToLua.CheckObject<System.Collections.IComparer>(L, 5);
+                int o = System.Array.BinarySearch(arg0, arg1, arg2, arg3, arg4);
+                LuaDLL.lua_pushinteger(L, o);
+                return 1;
+            }
+            else
+            {
+                return LuaDLL.luaL_throw(L, "invalid arguments to method: System.Array.BinarySearch");
+            }
+        }
         catch (Exception e)
-		{
-			return LuaDLL.toluaL_exception(L, e);
-		}
-	}
+        {
+            return LuaDLL.toluaL_exception(L, e);
+        }
+    }
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	static int Clear(IntPtr L)
@@ -1031,93 +1031,93 @@ public class System_ArrayWrap
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	static int Copy(IntPtr L)
 	{
-		try
-		{
-			int count = LuaDLL.lua_gettop(L);            
+        try
+        {
+            int count = LuaDLL.lua_gettop(L);
 
-            if (count == 3 && TypeChecker.CheckTypes<System.Array, System.Array, long>(L, 1))
-			{
-				System.Array arg0 = (System.Array)ToLua.ToObject(L, 1);
-				System.Array arg1 = (System.Array)ToLua.ToObject(L, 2);
-                long arg2 = (long)LuaDLL.lua_tonumber(L, 3);
-				System.Array.Copy(arg0, arg1, arg2);
-				return 0;
-			}
-			else if (count == 5 && TypeChecker.CheckTypes<System.Array, long, System.Array, long, long>(L, 1))
-			{
-				System.Array arg0 = (System.Array)ToLua.ToObject(L, 1);
-                long arg1 = (long)LuaDLL.lua_tonumber(L, 2);
-				System.Array arg2 = (System.Array)ToLua.ToObject(L, 3);
-                long arg3 = (long)LuaDLL.lua_tonumber(L, 4);
-                long arg4 = (long)LuaDLL.lua_tonumber(L, 5);
-				System.Array.Copy(arg0, arg1, arg2, arg3, arg4);
-				return 0;
-			}
-			else if (count == 5 && TypeChecker.CheckTypes<System.Array, int, System.Array, int, int>(L, 1))
-			{
-				System.Array arg0 = (System.Array)ToLua.ToObject(L, 1);
-				int arg1 = (int)LuaDLL.lua_tonumber(L, 2);
-				System.Array arg2 = (System.Array)ToLua.ToObject(L, 3);
-				int arg3 = (int)LuaDLL.lua_tonumber(L, 4);
-				int arg4 = (int)LuaDLL.lua_tonumber(L, 5);
-				System.Array.Copy(arg0, arg1, arg2, arg3, arg4);
-				return 0;
-			}
-			else
-			{
-				return LuaDLL.luaL_throw(L, "invalid arguments to method: System.Array.Copy");
-			}
-		}
+            if (count == 3)
+            {
+                System.Array arg0 = (System.Array)ToLua.CheckObject<System.Array>(L, 1);
+                System.Array arg1 = (System.Array)ToLua.CheckObject<System.Array>(L, 2);
+                long arg2 = LuaDLL.tolua_checkint64(L, 3);
+                System.Array.Copy(arg0, arg1, arg2);
+                return 0;
+            }
+            else if (count == 5 && TypeChecker.CheckTypes<long, System.Array, long, long>(L, 2))
+            {
+                System.Array arg0 = (System.Array)ToLua.CheckObject<System.Array>(L, 1);
+                long arg1 = LuaDLL.tolua_toint64(L, 2);
+                System.Array arg2 = (System.Array)ToLua.ToObject(L, 3);
+                long arg3 = LuaDLL.tolua_toint64(L, 4);
+                long arg4 = LuaDLL.tolua_toint64(L, 5);
+                System.Array.Copy(arg0, arg1, arg2, arg3, arg4);
+                return 0;
+            }
+            else if (count == 5 && TypeChecker.CheckTypes<int, System.Array, int, int>(L, 2))
+            {
+                System.Array arg0 = (System.Array)ToLua.CheckObject<System.Array>(L, 1);
+                int arg1 = (int)LuaDLL.lua_tonumber(L, 2);
+                System.Array arg2 = (System.Array)ToLua.ToObject(L, 3);
+                int arg3 = (int)LuaDLL.lua_tonumber(L, 4);
+                int arg4 = (int)LuaDLL.lua_tonumber(L, 5);
+                System.Array.Copy(arg0, arg1, arg2, arg3, arg4);
+                return 0;
+            }
+            else
+            {
+                return LuaDLL.luaL_throw(L, "invalid arguments to method: System.Array.Copy");
+            }
+        }
         catch (Exception e)
-		{
-			return LuaDLL.toluaL_exception(L, e);
-		}
-	}
+        {
+            return LuaDLL.toluaL_exception(L, e);
+        }
+    }
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	static int IndexOf(IntPtr L)
 	{
-		try
-		{
-			int count = LuaDLL.lua_gettop(L);            
+        try
+        {
+            int count = LuaDLL.lua_gettop(L);
 
-            if (count == 2 && TypeChecker.CheckTypes<System.Array, object>(L, 1))
-			{
-				System.Array arg0 = (System.Array)ToLua.ToObject(L, 1);
+            if (count == 2)
+            {
+                System.Array arg0 = (System.Array)ToLua.CheckObject<System.Array>(L, 1);
                 object arg1 = ToLua.ToVarObject(L, 2, arg0.GetType().GetElementType());
-				int o = System.Array.IndexOf(arg0, arg1);
-				LuaDLL.lua_pushinteger(L, o);
-				return 1;
-			}
-			else if (count == 3 && TypeChecker.CheckTypes<System.Array, object, int>(L, 1))
-			{
-				System.Array arg0 = (System.Array)ToLua.ToObject(L, 1);
+                int o = System.Array.IndexOf(arg0, arg1);
+                LuaDLL.lua_pushinteger(L, o);
+                return 1;
+            }
+            else if (count == 3)
+            {
+                System.Array arg0 = (System.Array)ToLua.CheckObject<System.Array>(L, 1);
                 object arg1 = ToLua.ToVarObject(L, 2, arg0.GetType().GetElementType());
-				int arg2 = (int)LuaDLL.lua_tonumber(L, 3);
-				int o = System.Array.IndexOf(arg0, arg1, arg2);
-				LuaDLL.lua_pushinteger(L, o);
-				return 1;
-			}
-			else if (count == 4 && TypeChecker.CheckTypes<System.Array, object, int, int>(L, 1))
-			{
-				System.Array arg0 = (System.Array)ToLua.ToObject(L, 1);
+                int arg2 = (int)LuaDLL.luaL_checknumber(L, 3);
+                int o = System.Array.IndexOf(arg0, arg1, arg2);
+                LuaDLL.lua_pushinteger(L, o);
+                return 1;
+            }
+            else if (count == 4)
+            {
+                System.Array arg0 = (System.Array)ToLua.CheckObject<System.Array>(L, 1);
                 object arg1 = ToLua.ToVarObject(L, 2, arg0.GetType().GetElementType());
-				int arg2 = (int)LuaDLL.lua_tonumber(L, 3);
-				int arg3 = (int)LuaDLL.lua_tonumber(L, 4);
-				int o = System.Array.IndexOf(arg0, arg1, arg2, arg3);
-				LuaDLL.lua_pushinteger(L, o);
-				return 1;
-			}
-			else
-			{
-				return LuaDLL.luaL_throw(L, "invalid arguments to method: System.Array.IndexOf");
-			}
-		}
+                int arg2 = (int)LuaDLL.luaL_checknumber(L, 3);
+                int arg3 = (int)LuaDLL.luaL_checknumber(L, 4);
+                int o = System.Array.IndexOf(arg0, arg1, arg2, arg3);
+                LuaDLL.lua_pushinteger(L, o);
+                return 1;
+            }
+            else
+            {
+                return LuaDLL.luaL_throw(L, "invalid arguments to method: System.Array.IndexOf");
+            }
+        }
         catch (Exception e)
-		{
-			return LuaDLL.toluaL_exception(L, e);
-		}
-	}
+        {
+            return LuaDLL.toluaL_exception(L, e);
+        }
+    }
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	static int Initialize(IntPtr L)
@@ -1138,161 +1138,161 @@ public class System_ArrayWrap
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	static int LastIndexOf(IntPtr L)
 	{
-		try
-		{
-			int count = LuaDLL.lua_gettop(L);            
+        try
+        {
+            int count = LuaDLL.lua_gettop(L);
 
-            if (count == 2 && TypeChecker.CheckTypes<System.Array, object>(L, 1))
-			{
-				System.Array arg0 = (System.Array)ToLua.ToObject(L, 1);
+            if (count == 2)
+            {
+                System.Array arg0 = (System.Array)ToLua.CheckObject<System.Array>(L, 1);
                 object arg1 = ToLua.ToVarObject(L, 2, arg0.GetType().GetElementType());
-				int o = System.Array.LastIndexOf(arg0, arg1);
-				LuaDLL.lua_pushinteger(L, o);
-				return 1;
-			}
-			else if (count == 3 && TypeChecker.CheckTypes<System.Array, object, int>(L, 1))
-			{
-				System.Array arg0 = (System.Array)ToLua.ToObject(L, 1);
+                int o = System.Array.LastIndexOf(arg0, arg1);
+                LuaDLL.lua_pushinteger(L, o);
+                return 1;
+            }
+            else if (count == 3)
+            {
+                System.Array arg0 = (System.Array)ToLua.CheckObject<System.Array>(L, 1);
                 object arg1 = ToLua.ToVarObject(L, 2, arg0.GetType().GetElementType());
-				int arg2 = (int)LuaDLL.lua_tonumber(L, 3);
-				int o = System.Array.LastIndexOf(arg0, arg1, arg2);
-				LuaDLL.lua_pushinteger(L, o);
-				return 1;
-			}
-			else if (count == 4 && TypeChecker.CheckTypes<System.Array, object, int, int>(L, 1))
-			{
-				System.Array arg0 = (System.Array)ToLua.ToObject(L, 1);
+                int arg2 = (int)LuaDLL.luaL_checknumber(L, 3);
+                int o = System.Array.LastIndexOf(arg0, arg1, arg2);
+                LuaDLL.lua_pushinteger(L, o);
+                return 1;
+            }
+            else if (count == 4)
+            {
+                System.Array arg0 = (System.Array)ToLua.CheckObject<System.Array>(L, 1);
                 object arg1 = ToLua.ToVarObject(L, 2, arg0.GetType().GetElementType());
-				int arg2 = (int)LuaDLL.lua_tonumber(L, 3);
-				int arg3 = (int)LuaDLL.lua_tonumber(L, 4);
-				int o = System.Array.LastIndexOf(arg0, arg1, arg2, arg3);
-				LuaDLL.lua_pushinteger(L, o);
-				return 1;
-			}
-			else
-			{
-				return LuaDLL.luaL_throw(L, "invalid arguments to method: System.Array.LastIndexOf");
-			}
-		}
+                int arg2 = (int)LuaDLL.luaL_checknumber(L, 3);
+                int arg3 = (int)LuaDLL.luaL_checknumber(L, 4);
+                int o = System.Array.LastIndexOf(arg0, arg1, arg2, arg3);
+                LuaDLL.lua_pushinteger(L, o);
+                return 1;
+            }
+            else
+            {
+                return LuaDLL.luaL_throw(L, "invalid arguments to method: System.Array.LastIndexOf");
+            }
+        }
         catch (Exception e)
-		{
-			return LuaDLL.toluaL_exception(L, e);
-		}
-	}
+        {
+            return LuaDLL.toluaL_exception(L, e);
+        }
+    }
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	static int Reverse(IntPtr L)
 	{
-		try
-		{
-			int count = LuaDLL.lua_gettop(L);            
+        try
+        {
+            int count = LuaDLL.lua_gettop(L);
 
-            if (count == 1 && TypeChecker.CheckTypes<System.Array>(L, 1))
-			{
-				System.Array arg0 = (System.Array)ToLua.ToObject(L, 1);
-				System.Array.Reverse(arg0);
-				return 0;
-			}
-			else if (count == 3 && TypeChecker.CheckTypes<System.Array, int, int>(L, 1))
-			{
-				System.Array arg0 = (System.Array)ToLua.ToObject(L, 1);
-				int arg1 = (int)LuaDLL.lua_tonumber(L, 2);
-				int arg2 = (int)LuaDLL.lua_tonumber(L, 3);
-				System.Array.Reverse(arg0, arg1, arg2);
-				return 0;
-			}
-			else
-			{
-				return LuaDLL.luaL_throw(L, "invalid arguments to method: System.Array.Reverse");
-			}
-		}
+            if (count == 1)
+            {
+                System.Array arg0 = (System.Array)ToLua.CheckObject<System.Array>(L, 1);
+                System.Array.Reverse(arg0);
+                return 0;
+            }
+            else if (count == 3)
+            {
+                System.Array arg0 = (System.Array)ToLua.CheckObject<System.Array>(L, 1);
+                int arg1 = (int)LuaDLL.luaL_checknumber(L, 2);
+                int arg2 = (int)LuaDLL.luaL_checknumber(L, 3);
+                System.Array.Reverse(arg0, arg1, arg2);
+                return 0;
+            }
+            else
+            {
+                return LuaDLL.luaL_throw(L, "invalid arguments to method: System.Array.Reverse");
+            }
+        }
         catch (Exception e)
-		{
-			return LuaDLL.toluaL_exception(L, e);
-		}
-	}
+        {
+            return LuaDLL.toluaL_exception(L, e);
+        }
+    }
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	static int Sort(IntPtr L)
 	{
-		try
-		{
-			int count = LuaDLL.lua_gettop(L);            
+        try
+        {
+            int count = LuaDLL.lua_gettop(L);
 
-            if (count == 1 && TypeChecker.CheckTypes<System.Array>(L, 1))
-			{
-				System.Array arg0 = (System.Array)ToLua.ToObject(L, 1);
-				System.Array.Sort(arg0);
-				return 0;
-			}
-			else if (count == 2 && TypeChecker.CheckTypes<System.Array, System.Collections.IComparer>(L, 1))
-			{
-				System.Array arg0 = (System.Array)ToLua.ToObject(L, 1);
-				System.Collections.IComparer arg1 = (System.Collections.IComparer)ToLua.ToObject(L, 2);
-				System.Array.Sort(arg0, arg1);
-				return 0;
-			}
-			else if (count == 2 && TypeChecker.CheckTypes<System.Array, System.Array>(L, 1))
-			{
-				System.Array arg0 = (System.Array)ToLua.ToObject(L, 1);
-				System.Array arg1 = (System.Array)ToLua.ToObject(L, 2);
-				System.Array.Sort(arg0, arg1);
-				return 0;
-			}
-			else if (count == 3 && TypeChecker.CheckTypes<System.Array, System.Array, System.Collections.IComparer>(L, 1))
-			{
-				System.Array arg0 = (System.Array)ToLua.ToObject(L, 1);
-				System.Array arg1 = (System.Array)ToLua.ToObject(L, 2);
-				System.Collections.IComparer arg2 = (System.Collections.IComparer)ToLua.ToObject(L, 3);
-				System.Array.Sort(arg0, arg1, arg2);
-				return 0;
-			}
-			else if (count == 3 && TypeChecker.CheckTypes<System.Array, int, int>(L, 1))
-			{
-				System.Array arg0 = (System.Array)ToLua.ToObject(L, 1);
-				int arg1 = (int)LuaDLL.lua_tonumber(L, 2);
-				int arg2 = (int)LuaDLL.lua_tonumber(L, 3);
-				System.Array.Sort(arg0, arg1, arg2);
-				return 0;
-			}
-			else if (count == 4 && TypeChecker.CheckTypes<System.Array, int, int, System.Collections.IComparer>(L, 1))
-			{
-				System.Array arg0 = (System.Array)ToLua.ToObject(L, 1);
-				int arg1 = (int)LuaDLL.lua_tonumber(L, 2);
-				int arg2 = (int)LuaDLL.lua_tonumber(L, 3);
-				System.Collections.IComparer arg3 = (System.Collections.IComparer)ToLua.ToObject(L, 4);
-				System.Array.Sort(arg0, arg1, arg2, arg3);
-				return 0;
-			}
-			else if (count == 4 && TypeChecker.CheckTypes<System.Array, System.Array, int, int>(L, 1))
-			{
-				System.Array arg0 = (System.Array)ToLua.ToObject(L, 1);
-				System.Array arg1 = (System.Array)ToLua.ToObject(L, 2);
-				int arg2 = (int)LuaDLL.lua_tonumber(L, 3);
-				int arg3 = (int)LuaDLL.lua_tonumber(L, 4);
-				System.Array.Sort(arg0, arg1, arg2, arg3);
-				return 0;
-			}
-			else if (count == 5 && TypeChecker.CheckTypes<System.Array, System.Array, int, int, System.Collections.IComparer>(L, 1))
-			{
-				System.Array arg0 = (System.Array)ToLua.ToObject(L, 1);
-				System.Array arg1 = (System.Array)ToLua.ToObject(L, 2);
-				int arg2 = (int)LuaDLL.lua_tonumber(L, 3);
-				int arg3 = (int)LuaDLL.lua_tonumber(L, 4);
-				System.Collections.IComparer arg4 = (System.Collections.IComparer)ToLua.ToObject(L, 5);
-				System.Array.Sort(arg0, arg1, arg2, arg3, arg4);
-				return 0;
-			}
-			else
-			{
-				return LuaDLL.luaL_throw(L, "invalid arguments to method: System.Array.Sort");
-			}
-		}
+            if (count == 1)
+            {
+                System.Array arg0 = (System.Array)ToLua.CheckObject<System.Array>(L, 1);
+                System.Array.Sort(arg0);
+                return 0;
+            }
+            else if (count == 2 && TypeChecker.CheckTypes<System.Collections.IComparer>(L, 2))
+            {
+                System.Array arg0 = (System.Array)ToLua.CheckObject<System.Array>(L, 1);
+                System.Collections.IComparer arg1 = (System.Collections.IComparer)ToLua.ToObject(L, 2);
+                System.Array.Sort(arg0, arg1);
+                return 0;
+            }
+            else if (count == 2 && TypeChecker.CheckTypes<System.Array>(L, 2))
+            {
+                System.Array arg0 = (System.Array)ToLua.CheckObject<System.Array>(L, 1);
+                System.Array arg1 = (System.Array)ToLua.ToObject(L, 2);
+                System.Array.Sort(arg0, arg1);
+                return 0;
+            }
+            else if (count == 3 && TypeChecker.CheckTypes<System.Array, System.Collections.IComparer>(L, 2))
+            {
+                System.Array arg0 = (System.Array)ToLua.CheckObject<System.Array>(L, 1);
+                System.Array arg1 = (System.Array)ToLua.ToObject(L, 2);
+                System.Collections.IComparer arg2 = (System.Collections.IComparer)ToLua.ToObject(L, 3);
+                System.Array.Sort(arg0, arg1, arg2);
+                return 0;
+            }
+            else if (count == 3 && TypeChecker.CheckTypes<int, int>(L, 2))
+            {
+                System.Array arg0 = (System.Array)ToLua.CheckObject<System.Array>(L, 1);
+                int arg1 = (int)LuaDLL.lua_tonumber(L, 2);
+                int arg2 = (int)LuaDLL.lua_tonumber(L, 3);
+                System.Array.Sort(arg0, arg1, arg2);
+                return 0;
+            }
+            else if (count == 4 && TypeChecker.CheckTypes<int, int, System.Collections.IComparer>(L, 2))
+            {
+                System.Array arg0 = (System.Array)ToLua.CheckObject<System.Array>(L, 1);
+                int arg1 = (int)LuaDLL.lua_tonumber(L, 2);
+                int arg2 = (int)LuaDLL.lua_tonumber(L, 3);
+                System.Collections.IComparer arg3 = (System.Collections.IComparer)ToLua.ToObject(L, 4);
+                System.Array.Sort(arg0, arg1, arg2, arg3);
+                return 0;
+            }
+            else if (count == 4 && TypeChecker.CheckTypes<System.Array, int, int>(L, 2))
+            {
+                System.Array arg0 = (System.Array)ToLua.CheckObject<System.Array>(L, 1);
+                System.Array arg1 = (System.Array)ToLua.ToObject(L, 2);
+                int arg2 = (int)LuaDLL.lua_tonumber(L, 3);
+                int arg3 = (int)LuaDLL.lua_tonumber(L, 4);
+                System.Array.Sort(arg0, arg1, arg2, arg3);
+                return 0;
+            }
+            else if (count == 5)
+            {
+                System.Array arg0 = (System.Array)ToLua.CheckObject<System.Array>(L, 1);
+                System.Array arg1 = (System.Array)ToLua.CheckObject<System.Array>(L, 2);
+                int arg2 = (int)LuaDLL.luaL_checknumber(L, 3);
+                int arg3 = (int)LuaDLL.luaL_checknumber(L, 4);
+                System.Collections.IComparer arg4 = (System.Collections.IComparer)ToLua.CheckObject<System.Collections.IComparer>(L, 5);
+                System.Array.Sort(arg0, arg1, arg2, arg3, arg4);
+                return 0;
+            }
+            else
+            {
+                return LuaDLL.luaL_throw(L, "invalid arguments to method: System.Array.Sort");
+            }
+        }
         catch (Exception e)
-		{
-			return LuaDLL.toluaL_exception(L, e);
-		}
-	}
+        {
+            return LuaDLL.toluaL_exception(L, e);
+        }
+    }
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	static int CopyTo(IntPtr L)
