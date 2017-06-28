@@ -20,13 +20,11 @@ tolua#技术讨论群④ 543826216<br>
 
 # Library
 **Debugger** <br>
-https://github.com/topameng/Debugger
-
+https://github.com/topameng/Debugger <br>
 **tolua_runtime** <br>
-https://github.com/topameng/tolua_runtime
-
+https://github.com/topameng/tolua_runtime <br>
 **protoc-gen-lua** <br>
-https://github.com/topameng/protoc-gen-lua
+https://github.com/topameng/protoc-gen-lua <br>
 
 # FrameWork and Demo
 **LuaFrameWork**<br>
@@ -38,6 +36,10 @@ https://github.com/zhangqi-ulua/XlsxToLua<br>
 https://github.com/woshihuo12/UnityHello<br>
 **UWA-ToLua**<br>
 http://uwa-download.oss-cn-beijing.aliyuncs.com/plugins%2FiOS%2FUWA-iOS-ToLua.zip<br>
+
+# Debugger
+**EmmyLua**
+https://github.com/tangzx/IntelliJ-EmmyLua
 **unity_tolua-_zerobrane_api**<br>
 https://github.com/LabOfHoward/unity_tolua-_zerobrane_api
 
@@ -78,6 +80,9 @@ https://github.com/LabOfHoward/unity_tolua-_zerobrane_api
 * print信息，在编辑器点击日志, 能自动打开对应lua文件 <br>
 * 支持unity所有版本 <br>
 
+# 快速入门
+在CustomSetting.cs中添加需要导出的类或者委托，之后点击菜单Lua->Generate All <br>
+
 # 关于反射
 tolua# 不支持动态反射。动态反射对于重载函数有参数匹配问题，函数排序问题，ref,out 参数问题等等。<br>
 tolua#提供的替换方法是:<br>
@@ -87,7 +92,7 @@ tolua#提供的替换方法是:<br>
 # Performance
 |   平台    |   属性读写   | 重载函数  | Vector3构造 |GameObject构造|Vector3归一化|Slerp|
 | :-- 		| :-----------:|:---------:| :---------: |:-----------: |:----------: |:--: |
-| PC  		|  0.0465:0.15 | 0.076:0.19|0.02:0.001   |0.1:0.14		|0.014:0.001  |0.10:0.11|
+| PC  		|  0.0465:0.15 | 0.076:0.12|0.02:0.001   |0.1:0.14		|0.014:0.001  |0.10:0.11|
 | Android   |   0.26:1.03  | 0.39:1.15 |0.2:0.0049   |0.43:0.5		|0.27:0.02	  |0.49:0.16|
 | iOS       |  0.04:0.145  | 0.055:0.146 |0.017:0.05   |0.074:0.08	|0.035:0.11	  |0.078:0.58|
 

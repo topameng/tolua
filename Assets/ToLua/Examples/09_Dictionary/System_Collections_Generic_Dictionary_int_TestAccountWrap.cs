@@ -40,28 +40,28 @@ public class System_Collections_Generic_Dictionary_int_TestAccountWrap
 			if (count == 0)
 			{
 				System.Collections.Generic.Dictionary<int,TestAccount> obj = new System.Collections.Generic.Dictionary<int,TestAccount>();
-				ToLua.PushObject(L, obj);
+				ToLua.PushSealed(L, obj);
 				return 1;
 			}
 			else if (count == 1 && TypeChecker.CheckTypes<int>(L, 1))
 			{
 				int arg0 = (int)LuaDLL.lua_tonumber(L, 1);
 				System.Collections.Generic.Dictionary<int,TestAccount> obj = new System.Collections.Generic.Dictionary<int,TestAccount>(arg0);
-				ToLua.PushObject(L, obj);
+				ToLua.PushSealed(L, obj);
 				return 1;
 			}
 			else if (count == 1 && TypeChecker.CheckTypes<System.Collections.Generic.IDictionary<int,TestAccount>>(L, 1))
 			{
 				System.Collections.Generic.IDictionary<int,TestAccount> arg0 = (System.Collections.Generic.IDictionary<int,TestAccount>)ToLua.ToObject(L, 1);
 				System.Collections.Generic.Dictionary<int,TestAccount> obj = new System.Collections.Generic.Dictionary<int,TestAccount>(arg0);
-				ToLua.PushObject(L, obj);
+				ToLua.PushSealed(L, obj);
 				return 1;
 			}
 			else if (count == 1 && TypeChecker.CheckTypes<System.Collections.Generic.IEqualityComparer<int>>(L, 1))
 			{
 				System.Collections.Generic.IEqualityComparer<int> arg0 = (System.Collections.Generic.IEqualityComparer<int>)ToLua.ToObject(L, 1);
 				System.Collections.Generic.Dictionary<int,TestAccount> obj = new System.Collections.Generic.Dictionary<int,TestAccount>(arg0);
-				ToLua.PushObject(L, obj);
+				ToLua.PushSealed(L, obj);
 				return 1;
 			}
 			else if (count == 2 && TypeChecker.CheckTypes<int, System.Collections.Generic.IEqualityComparer<int>>(L, 1))
@@ -69,7 +69,7 @@ public class System_Collections_Generic_Dictionary_int_TestAccountWrap
 				int arg0 = (int)LuaDLL.lua_tonumber(L, 1);
 				System.Collections.Generic.IEqualityComparer<int> arg1 = (System.Collections.Generic.IEqualityComparer<int>)ToLua.ToObject(L, 2);
 				System.Collections.Generic.Dictionary<int,TestAccount> obj = new System.Collections.Generic.Dictionary<int,TestAccount>(arg0, arg1);
-				ToLua.PushObject(L, obj);
+				ToLua.PushSealed(L, obj);
 				return 1;
 			}
 			else if (count == 2 && TypeChecker.CheckTypes<System.Collections.Generic.IDictionary<int,TestAccount>, System.Collections.Generic.IEqualityComparer<int>>(L, 1))
@@ -77,7 +77,7 @@ public class System_Collections_Generic_Dictionary_int_TestAccountWrap
 				System.Collections.Generic.IDictionary<int,TestAccount> arg0 = (System.Collections.Generic.IDictionary<int,TestAccount>)ToLua.ToObject(L, 1);
 				System.Collections.Generic.IEqualityComparer<int> arg1 = (System.Collections.Generic.IEqualityComparer<int>)ToLua.ToObject(L, 2);
 				System.Collections.Generic.Dictionary<int,TestAccount> obj = new System.Collections.Generic.Dictionary<int,TestAccount>(arg0, arg1);
-				ToLua.PushObject(L, obj);
+				ToLua.PushSealed(L, obj);
 				return 1;
 			}
 			else
@@ -100,7 +100,7 @@ public class System_Collections_Generic_Dictionary_int_TestAccountWrap
 			System.Collections.Generic.Dictionary<int,TestAccount> obj = (System.Collections.Generic.Dictionary<int,TestAccount>)ToLua.CheckObject(L, 1, typeof(System.Collections.Generic.Dictionary<int,TestAccount>));
 			int arg0 = (int)LuaDLL.luaL_checknumber(L, 2);
 			TestAccount o = obj[arg0];
-			ToLua.PushObject(L, o);
+			ToLua.PushSealed(L, o);
 			return 1;
 
 		}
@@ -153,7 +153,7 @@ public class System_Collections_Generic_Dictionary_int_TestAccountWrap
 			System.Collections.Generic.Dictionary<int,TestAccount> obj = (System.Collections.Generic.Dictionary<int,TestAccount>)ToLua.CheckObject(L, 1, typeof(System.Collections.Generic.Dictionary<int,TestAccount>));
 			int arg0 = (int)LuaDLL.luaL_checknumber(L, 2);
 			TestAccount o = obj[arg0];
-			ToLua.PushObject(L, o);
+			ToLua.PushSealed(L, o);
 			return 1;
 		}
 		catch (Exception e)
@@ -314,7 +314,7 @@ public class System_Collections_Generic_Dictionary_int_TestAccountWrap
 			TestAccount arg1 = null;
 			bool o = obj.TryGetValue(arg0, out arg1);
 			LuaDLL.lua_pushboolean(L, o);
-			ToLua.PushObject(L, arg1);
+			ToLua.PushSealed(L, arg1);
 			return 2;
 		}
 		catch (Exception e)

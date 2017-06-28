@@ -73,9 +73,9 @@ public class ToLua_UnityEngine_Object
             LuaException.L = L;
             int count = LuaDLL.lua_gettop(L);
 
-            if (count == 1 && TypeChecker.CheckTypes<UnityEngine.Object>(L, 1))
+            if (count == 1)
             {
-                UnityEngine.Object arg0 = (UnityEngine.Object)ToLua.ToObject(L, 1);
+                UnityEngine.Object arg0 = (UnityEngine.Object)ToLua.CheckObject<UnityEngine.Object>(L, 1);
                 UnityEngine.Object o = UnityEngine.Object.Instantiate(arg0);
 
                 if (LuaDLL.lua_toboolean(L, LuaDLL.lua_upvalueindex(1)))
@@ -94,10 +94,10 @@ public class ToLua_UnityEngine_Object
                 return 1;
             }
 #if UNITY_5_4_OR_NEWER
-            else if (count == 2 && TypeChecker.CheckTypes<UnityEngine.Object, UnityEngine.Transform>(L, 1))
+            else if (count == 2)
             {
-                UnityEngine.Object arg0 = (UnityEngine.Object)ToLua.ToObject(L, 1);
-                UnityEngine.Transform arg1 = (UnityEngine.Transform)ToLua.ToObject(L, 2);
+                UnityEngine.Object arg0 = (UnityEngine.Object)ToLua.CheckObject<UnityEngine.Object>(L, 1);
+                UnityEngine.Transform arg1 = (UnityEngine.Transform)ToLua.CheckObject<UnityEngine.Transform>(L, 2);
                 UnityEngine.Object o = UnityEngine.Object.Instantiate(arg0, arg1);
 
                 if (LuaDLL.lua_toboolean(L, LuaDLL.lua_upvalueindex(1)))
@@ -116,9 +116,9 @@ public class ToLua_UnityEngine_Object
                 return 1;
             }
 #endif
-            else if (count == 3 && TypeChecker.CheckTypes<UnityEngine.Object, UnityEngine.Vector3, UnityEngine.Quaternion>(L, 1))
+            else if (count == 3 && TypeChecker.CheckTypes<UnityEngine.Vector3, UnityEngine.Quaternion>(L, 2))
             {
-                UnityEngine.Object arg0 = (UnityEngine.Object)ToLua.ToObject(L, 1);
+                UnityEngine.Object arg0 = (UnityEngine.Object)ToLua.CheckObject<UnityEngine.Object>(L, 1);
                 UnityEngine.Vector3 arg1 = ToLua.ToVector3(L, 2);
                 UnityEngine.Quaternion arg2 = ToLua.ToQuaternion(L, 3);
                 UnityEngine.Object o = UnityEngine.Object.Instantiate(arg0, arg1, arg2);
@@ -139,9 +139,9 @@ public class ToLua_UnityEngine_Object
                 return 1;
             }
 #if UNITY_5_4_OR_NEWER
-            else if (count == 3 && TypeChecker.CheckTypes<UnityEngine.Object, UnityEngine.Transform, bool>(L, 1))
+            else if (count == 3 && TypeChecker.CheckTypes<UnityEngine.Transform, bool>(L, 2))
             {
-                UnityEngine.Object arg0 = (UnityEngine.Object)ToLua.ToObject(L, 1);
+                UnityEngine.Object arg0 = (UnityEngine.Object)ToLua.CheckObject<UnityEngine.Object>(L, 1);
                 UnityEngine.Transform arg1 = (UnityEngine.Transform)ToLua.ToObject(L, 2);
                 bool arg2 = LuaDLL.lua_toboolean(L, 3);
                 UnityEngine.Object o = UnityEngine.Object.Instantiate(arg0, arg1, arg2);
@@ -161,12 +161,12 @@ public class ToLua_UnityEngine_Object
                 --LuaException.InstantiateCount;
                 return 1;
             }
-            else if (count == 4 && TypeChecker.CheckTypes<UnityEngine.Object, UnityEngine.Vector3, UnityEngine.Quaternion, UnityEngine.Transform>(L, 1))
+            else if (count == 4)
             {
-                UnityEngine.Object arg0 = (UnityEngine.Object)ToLua.ToObject(L, 1);
-                UnityEngine.Vector3 arg1 = ToLua.ToVector3(L, 2);
-                UnityEngine.Quaternion arg2 = ToLua.ToQuaternion(L, 3);
-                UnityEngine.Transform arg3 = (UnityEngine.Transform)ToLua.ToObject(L, 4);
+                UnityEngine.Object arg0 = (UnityEngine.Object)ToLua.CheckObject<UnityEngine.Object>(L, 1);
+                UnityEngine.Vector3 arg1 = ToLua.CheckVector3(L, 2);
+                UnityEngine.Quaternion arg2 = ToLua.CheckQuaternion(L, 3);
+                UnityEngine.Transform arg3 = (UnityEngine.Transform)ToLua.CheckObject<UnityEngine.Transform>(L, 4);
                 UnityEngine.Object o = UnityEngine.Object.Instantiate(arg0, arg1, arg2, arg3);
 
                 if (LuaDLL.lua_toboolean(L, LuaDLL.lua_upvalueindex(1)))

@@ -46,21 +46,21 @@ public class TestExportWrap
 			if (count == 0)
 			{
 				TestExport obj = new TestExport();
-				ToLua.PushObject(L, obj);
+				ToLua.PushSealed(L, obj);
 				return 1;
 			}
 			else if (count == 1 && TypeChecker.CheckTypes<UnityEngine.Vector3>(L, 1))
 			{
 				UnityEngine.Vector3 arg0 = ToLua.ToVector3(L, 1);
 				TestExport obj = new TestExport(arg0);
-				ToLua.PushObject(L, obj);
+				ToLua.PushSealed(L, obj);
 				return 1;
 			}
 			else if (count == 1 && TypeChecker.CheckTypes<UnityEngine.Vector3[]>(L, 1))
 			{
 				UnityEngine.Vector3[] arg0 = ToLua.ToStructArray<UnityEngine.Vector3>(L, 1);
 				TestExport obj = new TestExport(arg0);
-				ToLua.PushObject(L, obj);
+				ToLua.PushSealed(L, obj);
 				return 1;
 			}
 			else if (count == 2 && TypeChecker.CheckTypes<UnityEngine.Vector3, string>(L, 1))
@@ -68,7 +68,7 @@ public class TestExportWrap
 				UnityEngine.Vector3 arg0 = ToLua.ToVector3(L, 1);
 				string arg1 = ToLua.ToString(L, 2);
 				TestExport obj = new TestExport(arg0, arg1);
-				ToLua.PushObject(L, obj);
+				ToLua.PushSealed(L, obj);
 				return 1;
 			}
 			else
@@ -156,10 +156,10 @@ public class TestExportWrap
 				LuaDLL.lua_pushinteger(L, o);
 				return 1;
 			}
-			else if (count == 2 && TypeChecker.CheckTypes<int>(L, 2))
+			else if (count == 2)
 			{
 				TestExport obj = (TestExport)ToLua.CheckObject(L, 1, typeof(TestExport));
-				int arg0 = (int)LuaDLL.lua_tonumber(L, 2);
+				int arg0 = (int)LuaDLL.luaL_checknumber(L, 2);
 				int o = obj[arg0];
 				LuaDLL.lua_pushinteger(L, o);
 				return 1;
@@ -182,18 +182,18 @@ public class TestExportWrap
 		{
 			int count = LuaDLL.lua_gettop(L);
 
-			if (count == 1 && TypeChecker.CheckTypes<double>(L, 1))
+			if (count == 1)
 			{
-				double arg0 = (double)LuaDLL.lua_tonumber(L, 1);
+				double arg0 = (double)LuaDLL.luaL_checknumber(L, 1);
 				int o = TestExport.set_Item(arg0);
 				LuaDLL.lua_pushinteger(L, o);
 				return 1;
 			}
-			else if (count == 3 && TypeChecker.CheckTypes<int, int>(L, 2))
+			else if (count == 3)
 			{
 				TestExport obj = (TestExport)ToLua.CheckObject(L, 1, typeof(TestExport));
-				int arg0 = (int)LuaDLL.lua_tonumber(L, 2);
-				int arg1 = (int)LuaDLL.lua_tonumber(L, 3);
+				int arg0 = (int)LuaDLL.luaL_checknumber(L, 2);
+				int arg1 = (int)LuaDLL.luaL_checknumber(L, 3);
 				obj[arg0] = arg1;
 				return 0;
 			}
@@ -244,26 +244,26 @@ public class TestExportWrap
 		{
 			int count = LuaDLL.lua_gettop(L);
 
-			if (count == 2 && TypeChecker.CheckTypes<string>(L, 2))
+			if (count == 2 && TypeChecker.CheckTypes<TestExport, string>(L, 1))
 			{
-				TestExport obj = (TestExport)ToLua.CheckObject(L, 1, typeof(TestExport));
+				TestExport obj = (TestExport)ToLua.ToObject(L, 1);
 				string arg0 = ToLua.ToString(L, 2);
 				int o = obj.Test(arg0);
 				LuaDLL.lua_pushinteger(L, o);
 				return 1;
 			}
-			else if (count == 2 && TypeChecker.CheckTypes<LuaInterface.LuaOut<int>>(L, 2))
+			else if (count == 2 && TypeChecker.CheckTypes<TestExport, LuaInterface.LuaOut<int>>(L, 1))
 			{
-				TestExport obj = (TestExport)ToLua.CheckObject(L, 1, typeof(TestExport));
+				TestExport obj = (TestExport)ToLua.ToObject(L, 1);
 				int arg0;
 				int o = obj.Test(out arg0);
 				LuaDLL.lua_pushinteger(L, o);
 				LuaDLL.lua_pushinteger(L, arg0);
 				return 2;
 			}
-			else if (count == 2 && TypeChecker.CheckTypes<TestExport.Space>(L, 2))
+			else if (count == 2 && TypeChecker.CheckTypes<TestExport, TestExport.Space>(L, 1))
 			{
-				TestExport obj = (TestExport)ToLua.CheckObject(L, 1, typeof(TestExport));
+				TestExport obj = (TestExport)ToLua.ToObject(L, 1);
 				TestExport.Space arg0 = (TestExport.Space)ToLua.ToObject(L, 2);
 				int o = obj.Test(arg0);
 				LuaDLL.lua_pushinteger(L, o);
@@ -277,84 +277,84 @@ public class TestExportWrap
 				LuaDLL.lua_pushinteger(L, o);
 				return 1;
 			}
-			else if (count == 2 && TypeChecker.CheckTypes<int[,]>(L, 2))
+			else if (count == 2 && TypeChecker.CheckTypes<TestExport, int[,]>(L, 1))
 			{
-				TestExport obj = (TestExport)ToLua.CheckObject(L, 1, typeof(TestExport));
+				TestExport obj = (TestExport)ToLua.ToObject(L, 1);
 				int[,] arg0 = (int[,])ToLua.ToObject(L, 2);
 				int o = obj.Test(arg0);
 				LuaDLL.lua_pushinteger(L, o);
 				return 1;
 			}
-			else if (count == 2 && TypeChecker.CheckTypes<bool>(L, 2))
+			else if (count == 2 && TypeChecker.CheckTypes<TestExport, bool>(L, 1))
 			{
-				TestExport obj = (TestExport)ToLua.CheckObject(L, 1, typeof(TestExport));
+				TestExport obj = (TestExport)ToLua.ToObject(L, 1);
 				bool arg0 = LuaDLL.lua_toboolean(L, 2);
 				int o = obj.Test(arg0);
 				LuaDLL.lua_pushinteger(L, o);
 				return 1;
 			}
-			else if (count == 2 && TypeChecker.CheckTypes<double>(L, 2))
+			else if (count == 2 && TypeChecker.CheckTypes<TestExport, double>(L, 1))
 			{
-				TestExport obj = (TestExport)ToLua.CheckObject(L, 1, typeof(TestExport));
+				TestExport obj = (TestExport)ToLua.ToObject(L, 1);
 				double arg0 = (double)LuaDLL.lua_tonumber(L, 2);
 				int o = obj.Test(arg0);
 				LuaDLL.lua_pushinteger(L, o);
 				return 1;
 			}
-			else if (count == 2 && TypeChecker.CheckTypes<object>(L, 2))
+			else if (count == 2 && TypeChecker.CheckTypes<TestExport, object>(L, 1))
 			{
-				TestExport obj = (TestExport)ToLua.CheckObject(L, 1, typeof(TestExport));
+				TestExport obj = (TestExport)ToLua.ToObject(L, 1);
 				object arg0 = ToLua.ToVarObject(L, 2);
 				int o = obj.Test(arg0);
 				LuaDLL.lua_pushinteger(L, o);
 				return 1;
 			}
-			else if (count == 3 && TypeChecker.CheckTypes<string[], bool>(L, 2))
+			else if (count == 3 && TypeChecker.CheckTypes<TestExport, string[], bool>(L, 1))
 			{
-				TestExport obj = (TestExport)ToLua.CheckObject(L, 1, typeof(TestExport));
+				TestExport obj = (TestExport)ToLua.ToObject(L, 1);
 				string[] arg0 = ToLua.ToStringArray(L, 2);
 				bool arg1 = LuaDLL.lua_toboolean(L, 3);
 				int o = obj.Test(arg0, arg1);
 				LuaDLL.lua_pushinteger(L, o);
 				return 1;
 			}
-			else if (count == 3 && TypeChecker.CheckTypes<int, int>(L, 2))
+			else if (count == 3 && TypeChecker.CheckTypes<TestExport, int, int>(L, 1))
 			{
-				TestExport obj = (TestExport)ToLua.CheckObject(L, 1, typeof(TestExport));
+				TestExport obj = (TestExport)ToLua.ToObject(L, 1);
 				int arg0 = (int)LuaDLL.lua_tonumber(L, 2);
 				int arg1 = (int)LuaDLL.lua_tonumber(L, 3);
 				int o = obj.Test(arg0, arg1);
 				LuaDLL.lua_pushinteger(L, o);
 				return 1;
 			}
-			else if (count == 3 && TypeChecker.CheckTypes<object, string>(L, 2))
+			else if (count == 3 && TypeChecker.CheckTypes<TestExport, object, string>(L, 1))
 			{
-				TestExport obj = (TestExport)ToLua.CheckObject(L, 1, typeof(TestExport));
+				TestExport obj = (TestExport)ToLua.ToObject(L, 1);
 				object arg0 = ToLua.ToVarObject(L, 2);
 				string arg1 = ToLua.ToString(L, 3);
 				int o = obj.Test(arg0, arg1);
 				LuaDLL.lua_pushinteger(L, o);
 				return 1;
 			}
-			else if (TypeChecker.CheckParamsType<int>(L, 2, count - 1))
+			else if (TypeChecker.CheckTypes<TestExport>(L, 1) && TypeChecker.CheckParamsType<int>(L, 2, count - 1))
 			{
-				TestExport obj = (TestExport)ToLua.CheckObject(L, 1, typeof(TestExport));
+				TestExport obj = (TestExport)ToLua.ToObject(L, 1);
 				int[] arg0 = ToLua.ToParamsNumber<int>(L, 2, count - 1);
 				int o = obj.Test(arg0);
 				LuaDLL.lua_pushinteger(L, o);
 				return 1;
 			}
-			else if (TypeChecker.CheckParamsType<string>(L, 2, count - 1))
+			else if (TypeChecker.CheckTypes<TestExport>(L, 1) && TypeChecker.CheckParamsType<string>(L, 2, count - 1))
 			{
-				TestExport obj = (TestExport)ToLua.CheckObject(L, 1, typeof(TestExport));
+				TestExport obj = (TestExport)ToLua.ToObject(L, 1);
 				string[] arg0 = ToLua.ToParamsString(L, 2, count - 1);
 				int o = obj.Test(arg0);
 				LuaDLL.lua_pushinteger(L, o);
 				return 1;
 			}
-			else if (TypeChecker.CheckParamsType<object>(L, 2, count - 1))
+			else if (TypeChecker.CheckTypes<TestExport>(L, 1) && TypeChecker.CheckParamsType<object>(L, 2, count - 1))
 			{
-				TestExport obj = (TestExport)ToLua.CheckObject(L, 1, typeof(TestExport));
+				TestExport obj = (TestExport)ToLua.ToObject(L, 1);
 				object[] arg0 = ToLua.ToParamsObject(L, 2, count - 1);
 				int o = obj.Test(arg0);
 				LuaDLL.lua_pushinteger(L, o);
@@ -427,7 +427,7 @@ public class TestExportWrap
 		{
 			ToLua.CheckArgsCount(L, 2);
 			TestExport obj = (TestExport)ToLua.CheckObject(L, 1, typeof(TestExport));
-			UnityEngine.Component arg0 = (UnityEngine.Component)ToLua.CheckObject(L, 2, typeof(UnityEngine.Component));
+			UnityEngine.Component arg0 = (UnityEngine.Component)ToLua.CheckObject<UnityEngine.Component>(L, 2);
 			int o = obj.TestGeneric(arg0);
 			LuaDLL.lua_pushinteger(L, o);
 			return 1;

@@ -93,7 +93,7 @@ public class System_Collections_Generic_KeyValuePair_int_TestAccountWrap
 			o = ToLua.ToObject(L, 1);
 			System.Collections.Generic.KeyValuePair<int,TestAccount> obj = (System.Collections.Generic.KeyValuePair<int,TestAccount>)o;
 			TestAccount ret = obj.Value;
-			ToLua.PushObject(L, ret);
+			ToLua.PushSealed(L, ret);
 			return 1;
 		}
 		catch(Exception e)
