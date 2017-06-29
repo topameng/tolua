@@ -17,7 +17,7 @@ public class TestEnum
     }
 }
 
-public class TestExport
+public sealed class TestExport
 {
     [LuaByteBufferAttribute]
     public delegate void TestBuffer(byte[] buffer);       
@@ -277,6 +277,8 @@ public class TestOverload : MonoBehaviour
             assert(to:Test('123', 456) == 9)
             assert(to:Test('123', System.Object.New()) == 9)
             assert(to:Test(1,2,3) == 12)            
+            assert(to:Test('hello') == 6)
+            assert(TestExport.Test('hello', 'world') == 7)
             assert(to:TestGeneric(GameObject().transform) == 11)
             assert(to:TestCheckParamNumber(1,2,3) == 6)
             assert(to:TestCheckParamString('1', '2', '3') == '123')
