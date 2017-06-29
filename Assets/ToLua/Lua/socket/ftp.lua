@@ -107,7 +107,7 @@ function metat.__index:port(address, port)
         address, port = self.try(self.server:getsockname())
         self.try(self.server:settimeout(_M.TIMEOUT))
     end
-    local pl = math.mod(port, 256)
+    local pl = port % 256
     local ph = (port - pl)/256
     local arg = string.gsub(string.format("%s,%d,%d", address, ph, pl), "%.", ",")
     self.try(self.tp:command("port", arg))
