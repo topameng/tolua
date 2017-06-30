@@ -38,10 +38,10 @@ https://github.com/woshihuo12/UnityHello<br>
 http://uwa-download.oss-cn-beijing.aliyuncs.com/plugins%2FiOS%2FUWA-iOS-ToLua.zip<br>
 
 # Debugger
-**EmmyLua**
-https://github.com/tangzx/IntelliJ-EmmyLua
+**EmmyLua**<br>
+https://github.com/tangzx/IntelliJ-EmmyLua<br>
 **unity_tolua-_zerobrane_api**<br>
-https://github.com/LabOfHoward/unity_tolua-_zerobrane_api
+https://github.com/LabOfHoward/unity_tolua-_zerobrane_api<br>
 
 # Packages
 　**Basics**　　　　　　　　**Math**　　　　　　**Data Structures**<br>
@@ -72,6 +72,7 @@ https://github.com/LabOfHoward/unity_tolua-_zerobrane_api
 * 支持委托(事件)+-lua function。独有的-操作支持, 支持通过函数接口的Add和Remove委托操作 <br>
 * 支持静态反射操作, 形式同c# <br>
 * 支持peer表，可在lua端扩展导出的userdata <br>
+* 支持自定义struct压入和读取，做到无GC，并且成员无类型限制
 * 支持preloading, 可以通过requie后绑定wrap文件 <br>
 * 支持int64, uint64  <br>
 * 大量的lua数学类型，如Quaternion, Vector3, Mathf等
@@ -82,7 +83,12 @@ https://github.com/LabOfHoward/unity_tolua-_zerobrane_api
 
 # 快速入门
 在CustomSetting.cs中添加需要导出的类或者委托，之后点击菜单Lua->Generate All <br>
-
+```csharp
+LuaState lua = new LuaState();
+lua.Start();
+lua.DoString("print('hello world')");
+lua.Dispose();
+```
 # 关于反射
 tolua# 不支持动态反射。动态反射对于重载函数有参数匹配问题，函数排序问题，ref,out 参数问题等等。<br>
 tolua#提供的替换方法是:<br>
