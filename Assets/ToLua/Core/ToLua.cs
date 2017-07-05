@@ -806,6 +806,16 @@ namespace LuaInterface
             }
         }
 
+        public static Nullable<T> ToNullable<T>(IntPtr L, int stackPos) where T : struct
+        {
+            if (LuaDLL.lua_type(L, stackPos) == LuaTypes.LUA_TNIL)
+            {
+                return null;
+            }
+
+            return StackTraits<T>.To(L, stackPos);
+        }
+
         static object ToObjectVec3(IntPtr L, int stackPos)
         {
             return ToVector3(L, stackPos);
