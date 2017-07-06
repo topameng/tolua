@@ -108,6 +108,7 @@ bug 反馈群: 286510803
 - NEW: 优化了Physics.RayCast调用速度, 以及Check数组优化速度外加扩充
 - NEW: 增加了struct类型自行扩展机制，通过自行扩展注入到tolua系统，快速无GC转换c#类型到lua table
 - NEW: luajit 升级为2.1b3, 并且极大减小在安卓上jit失败情况。
+- NEW: 重载速度提升，相同参数个数，类型相同位置延迟参数类型检查
 
 - FIX: luajit不再因64位分配内存地址报not enough memory. 错误函数调用不在此列。参考http://luajit.org/status.html
 - FIX: 安卓上jit失败造成卡机问题

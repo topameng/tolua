@@ -1685,7 +1685,7 @@ public class System_StringWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index Length on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index Length on a nil value");
 		}
 	}
 }

@@ -49,7 +49,7 @@ public class TestProtoBuffer : LuaClient
        
         function Decoder()  
             local msg = person_pb.Person()
-            msg:ParseFromString(TestProtol.data)            
+            msg:ParseFromString(TestProtol.data)
             --tostring 不会打印默认值
             print('person_pb decoder: '..tostring(msg)..'age: '..msg.age..'\nemail: '..msg.email)
         end

@@ -1347,7 +1347,7 @@ public class System_ArrayWrap
 		}
         catch (Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index LongLength on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index LongLength on a nil value");
 		}
 	}
 
@@ -1366,7 +1366,7 @@ public class System_ArrayWrap
 		}
         catch (Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index Rank on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index Rank on a nil value");
 		}
 	}
 
@@ -1385,7 +1385,7 @@ public class System_ArrayWrap
 		}
         catch (Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index IsSynchronized on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index IsSynchronized on a nil value");
 		}
 	}
 
@@ -1404,7 +1404,7 @@ public class System_ArrayWrap
 		}
         catch (Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index SyncRoot on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index SyncRoot on a nil value");
 		}
 	}
 
@@ -1423,7 +1423,7 @@ public class System_ArrayWrap
 		}
         catch (Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index IsFixedSize on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index IsFixedSize on a nil value");
 		}
 	}
 
@@ -1442,7 +1442,7 @@ public class System_ArrayWrap
 		}
         catch (Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index IsReadOnly on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index IsReadOnly on a nil value");
 		}
 	}
 }
