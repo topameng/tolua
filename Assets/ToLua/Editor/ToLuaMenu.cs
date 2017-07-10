@@ -1021,6 +1021,31 @@ public static class ToLuaMenu
         }        
     }
 
+    static void CopyBuildBat(string path, string tempDir)
+    {
+        if (EditorUserBuildSettings.activeBuildTarget == BuildTarget.StandaloneWindows)
+        {
+            if (IntPtr.Size == 4)
+            {
+                File.Copy(path + "/Luajit/Build.bat", tempDir + "/Build.bat", true);
+            }
+            else if (IntPtr.Size == 8)
+            {
+                File.Copy(path + "/Luajit64/Build.bat", tempDir + "/Build.bat", true);
+            }
+        }
+        else if (EditorUserBuildSettings.activeBuildTarget == BuildTarget.iOS)
+        {
+            //Debug.Log("iOS默认用64位，32位自行考虑");
+            File.Copy(path + "/Luajit64/Build.bat", tempDir + "/Build.bat", true);
+        }
+        else
+        {
+            File.Copy(path + "/Luajit/Build.bat", tempDir + "/Build.bat", true);
+        }
+
+    }
+
     [MenuItem("Lua/Build Lua files to Resources (PC)", false, 53)]
     public static void BuildLuaToResources()
     {
@@ -1030,7 +1055,7 @@ public static class ToLuaMenu
 
         string path = Application.dataPath.Replace('\\', '/');
         path = path.Substring(0, path.LastIndexOf('/'));
-        File.Copy(path + "/Luajit/Build.bat", tempDir +  "/Build.bat", true);
+        CopyBuildBat(path, tempDir);
         CopyLuaBytesFiles(LuaConst.luaDir, tempDir, false);
         Process proc = Process.Start(tempDir + "/Build.bat");
         proc.WaitForExit();
@@ -1049,8 +1074,8 @@ public static class ToLuaMenu
         string destDir = Application.persistentDataPath + "/" + GetOS() + "/Lua/";
 
         string path = Application.dataPath.Replace('\\', '/');
-        path = path.Substring(0, path.LastIndexOf('/'));
-        File.Copy(path + "/Luajit/Build.bat", tempDir + "/Build.bat", true);
+        path = path.Substring(0, path.LastIndexOf('/'));        
+        CopyBuildBat(path, tempDir);
         CopyLuaBytesFiles(LuaConst.luaDir, tempDir, false);
         Process proc = Process.Start(tempDir + "/Build.bat");
         proc.WaitForExit();        
@@ -1141,8 +1166,8 @@ public static class ToLuaMenu
 #endif
 
         string path = Application.dataPath.Replace('\\', '/');
-        path = path.Substring(0, path.LastIndexOf('/'));
-        File.Copy(path + "/Luajit/Build.bat", tempDir + "/Build.bat", true);
+        path = path.Substring(0, path.LastIndexOf('/'));        
+        CopyBuildBat(path, tempDir);
         CopyLuaBytesFiles(LuaConst.luaDir, tempDir, false);
         Process proc = Process.Start(tempDir + "/Build.bat");
         proc.WaitForExit();
@@ -1274,4 +1299,230 @@ public static class ToLuaMenu
         Debug.Log("Clear base type wrap files over");
         AssetDatabase.Refresh();
     }
-}
+
+    [MenuItem("Lua/Gen u3d Wrap Files", false, 103)]
+    public static void U3dBinding()
+    {
+        List<string> dropList = new List<string>
+        {                             
+            //一般情况不需要的类, 编辑器相关的
+            "HideInInspector" ,
+            "ExecuteInEditMode" ,
+            "AddComponentMenu" ,
+            "ContextMenu" ,
+            "RequireComponent" ,
+            "DisallowMultipleComponent" ,
+            "SerializeField" ,
+            "AssemblyIsEditorAssembly" ,
+            "Attribute" ,  //一些列文件，都是编辑器相关的    
+            "FFTWindow" ,
+
+            "Types" ,
+            "UnitySurrogateSelector" ,
+            "TypeInferenceRules" ,
+            "ThreadPriority" ,
+            "Debug" ,        //自定义debugger取代
+            "GenericStack" ,
+
+            //异常，lua无法catch
+            "PlayerPrefsException" ,
+            "UnassignedReferenceException" ,
+            "UnityException" ,
+            "MissingComponentException" ,
+            "MissingReferenceException" ,
+
+            //RPC网络
+            "RPC" ,
+            "Network" ,
+            "MasterServer" ,
+            "BitStream" ,
+            "HostData" ,
+            "ConnectionTesterStatus" ,
+
+            //unity 自带编辑器GUI
+            "GUI" ,
+            "EventType" ,
+            "EventModifiers" ,
+            //"Event",
+            "FontStyle" ,
+            "TextAlignment" ,
+            "TextEditor" ,
+            "TextEditorDblClickSnapping" ,
+            "TextGenerator" ,
+            "TextClipping" ,
+            "TextGenerationSettings" ,
+            "TextAnchor" ,
+            "TextAsset" ,
+            "TextWrapMode" ,
+            "Gizmos" ,
+            "ImagePosition" ,
+            "FocusType" ,
+           
+
+            //地形相关
+            "Terrain" ,
+            "Tree" ,
+            "SplatPrototype" ,
+            "DetailPrototype" ,
+            "DetailRenderMode" ,
+
+            //其他
+            "MeshSubsetCombineUtility" ,
+            "AOT" ,
+            "Random" ,
+            "Mathf" ,
+            "Social" ,
+            "Enumerator" ,
+            "SendMouseEvents" ,
+            "Cursor" ,
+            "Flash" ,
+            "ActionScript" ,
+            "CacheIndex",
+            "QualityLevel",
+            "RaycastCollider",
+            "SerializePrivateVariables",
+            "RaycastCollider",
+           
+   
+            //非通用的类
+            "ADBannerView" ,
+            "ADInterstitialAd" ,
+            "Android" ,
+            "jvalue" ,
+            "iPhone" ,
+            "iOS" ,
+            "CalendarIdentifier" ,
+            "CalendarUnit" ,
+            "CalendarUnit" ,
+            "FullScreenMovieControlMode" ,
+            "FullScreenMovieScalingMode" ,
+            "Handheld" ,
+            "LocalNotification" ,
+            "Motion" ,   //空类
+            "NotificationServices" ,
+            "RemoteNotificationType" ,
+            "RemoteNotification" ,
+            "SamsungTV" ,
+            "TextureCompressionQuality" ,
+            "TouchScreenKeyboardType" ,
+            "TouchScreenKeyboard" ,
+            "MovieTexture" ,
+            
+            //2d 类
+            "AccelerationEventWrap" , //加速
+            "AnimatorUtility" ,
+            "AudioChorusFilter" ,
+            "AudioDistortionFilter" ,
+            "AudioEchoFilter" ,
+            "AudioHighPassFilter" ,
+            "AudioLowPassFilter" ,
+            "AudioReverbFilter" ,
+            "AudioReverbPreset" ,
+            "AudioReverbZone" ,
+            "AudioRolloffMode" ,
+            "AudioSettings" ,
+            "AudioSpeakerMode" ,
+            "AudioType" ,
+            "AudioVelocityUpdateMode" ,
+
+            "Profiler" ,
+            "StaticBatchingUtility" ,
+            "Font" ,
+            "Gyroscope" ,                        //不需要重力感应
+            "ISerializationCallbackReceiver" ,   //u3d 继承的序列化接口，lua不需要
+            "ImageEffectOpaque" ,                //后处理
+            "ImageEffectTransformsToLDR" ,
+            "PrimitiveType" ,                // 暂时不需要 GameObject.CreatePrimitive          
+            "Skybox" ,                       //不会u3d自带的Skybox
+            "SparseTexture" ,                // mega texture 不需要
+            "Plane" ,
+            "PlayerPrefs" ,
+            
+            //不需要轮子碰撞体
+            "WheelCollider" ,
+            "WheelFrictionCurve" ,
+            "WheelHit" ,
+
+            //手机不适用雾
+            "FogMode" ,
+
+            "LightProbeGroup" ,
+            "LightProbes" ,            
+
+            //没用到substance纹理
+            "ProceduralCacheSize" ,
+            "ProceduralLoadingBehavior" ,
+            "ProceduralMaterial" ,
+            "ProceduralOutputType" ,
+            "ProceduralProcessorUsage" ,
+            "ProceduralPropertyDescription" ,
+            "ProceduralPropertyType" ,
+            "ProceduralTexture" ,
+
+            //物理关节系统
+            "JointDriveMode" ,
+            "JointDrive" ,
+            "JointLimits" ,
+            "JointMotor" ,
+            "JointProjectionMode" ,
+            "JointSpring" ,
+            "SoftJointLimit" ,
+            "SpringJoint" ,
+            "HingeJoint" ,
+            "FixedJoint" ,
+            "ConfigurableJoint" ,
+            "CharacterJoint" ,
+            "Joint" ,
+
+            "LODGroup" ,
+            "LOD" ,
+
+            "CrashReport" ,
+            "CombineInstance" ,
+#if UNITY_5_4_OR_NEWER
+            "ParticleEmitter",
+            "ParticleRenderer",
+            "ParticleAnimator",
+            "AnimatorClipInfo",
+            "VRDeviceType",
+            "Particle",
+            "ParticleRenderMode"
+#endif
+        };
+
+        List<BindType> list = new List<BindType>();
+        Assembly assembly = Assembly.Load("UnityEngine");
+        Type[] types = assembly.GetExportedTypes();
+
+        for (int i = 0; i < types.Length; i++)
+        {
+            //不导出： 模版类，event委托, c#协同相关, obsolete 类
+            if (!types[i].IsGenericType && types[i].BaseType != typeof(System.MulticastDelegate) && !typeof(YieldInstruction).IsAssignableFrom(types[i]) && !types[i].IsInterface)
+            {
+                list.Add(CustomSettings._GT(types[i]));
+            }
+            else
+            {
+                Debug.Log("drop generic type " + types[i].ToString());
+            }
+        }
+
+        for (int i = 0; i < dropList.Count; i++)
+        {
+            list.RemoveAll((p) => { return p.type.ToString().Contains(dropList[i]); });
+        }
+
+        for (int i = 0; i < list.Count; i++)
+        {
+            CustomSettings.customTypeList = list.ToArray();
+        }
+
+        beAutoGen = true;
+        GenLuaDelegates();
+        AssetDatabase.Refresh();
+        GenerateClassWraps();
+        GenLuaBinder();
+        beAutoGen = false;
+    }
+
+}            

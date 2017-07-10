@@ -1,7 +1,7 @@
 @echo off
 cd /d %~dp0
 
-if not exist dir (mkdir jit)
+if not exist jit (mkdir jit)
 if not exist Out (mkdir Out)
 
 xcopy /Y /D ..\..\..\Luajit\jit jit
