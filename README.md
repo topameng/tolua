@@ -89,6 +89,7 @@ lua.Start();
 lua.DoString("print('hello world')");
 lua.Dispose();
 ```
+[这里](Assets/ToLua/Examples/README.md)是更多的示例。
 # 关于反射
 tolua# 不支持动态反射。动态反射对于重载函数有参数匹配问题，函数排序问题，ref,out 参数问题等等。<br>
 tolua#提供的替换方法是:<br>

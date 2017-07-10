@@ -19,15 +19,12 @@ local string = string
 local table = table
 local ipairs = ipairs
 local assert =assert
-local tonumber = tonumber
 
 local pb = require "pb"
 local wire_format = require "protobuf.wire_format"
 module "protobuf.encoder"
 
---临时
-function _VarintSize(value)
-    value = tonumber(value)
+function _VarintSize(value)    
     if value <= 0x7f then return 1 end
     if value <= 0x3fff then return 2 end
     if value <= 0x1fffff then return 3 end
@@ -40,8 +37,7 @@ function _VarintSize(value)
     return 10
 end
 
-function _SignedVarintSize(value)
-    value = tonumber(value)
+function _SignedVarintSize(value)    
     if value < 0 then return 10 end
     if value <= 0x7f then return 1 end
     if value <= 0x3fff then return 2 end
@@ -139,11 +135,11 @@ function _FixedSizer(value_size)
 end
 
 Int32Sizer = _SimpleSizer(_SignedVarintSize)
-Int64Sizer = Int32Sizer
+Int64Sizer = _SimpleSizer(pb.signed_varint_size)
 EnumSizer = Int32Sizer
 
 UInt32Sizer = _SimpleSizer(_VarintSize)
-UInt64Sizer = UInt32Sizer 
+UInt64Sizer = _SimpleSizer(pb.varint_size) 
 
 SInt32Sizer = _ModifiedSizer(_SignedVarintSize, wire_format.ZigZagEncode32)
 SInt64Sizer = SInt32Sizer
