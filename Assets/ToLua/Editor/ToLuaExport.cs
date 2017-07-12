@@ -283,11 +283,6 @@ public static class ToLuaExport
             return;
         }
 
-        if (type != iterType && iterType.IsAssignableFrom(type))
-        {
-            return;
-        }
-
         //Debugger.Log("Begin Generate lua Wrap for class {0}", className);        
         sb = new StringBuilder();
         usingList.Add("System");                
@@ -1623,7 +1618,7 @@ public static class ToLuaExport
         {
             sb.AppendFormat("{0}{1} obj = ToLua.CheckMonoType(L, {2});\r\n", head, className, pos);
         }
-        else if (type == typeof(IEnumerator) || typeof(IEnumerator).IsAssignableFrom(type))
+        else if (type == typeof(IEnumerator))
         {
             sb.AppendFormat("{0}{1} obj = ToLua.CheckIter(L, {2});\r\n", head, className, pos);
         }

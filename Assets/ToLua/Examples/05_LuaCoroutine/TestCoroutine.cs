@@ -12,7 +12,7 @@ public class TestCoroutine : MonoBehaviour
 
 	void Awake () 
     {
-#if UNITY_5
+#if UNITY_5 || UNITY_2017
         Application.logMessageReceived += ShowTips;
 #else
         Application.RegisterLogCallback(ShowTips);
@@ -25,7 +25,7 @@ public class TestCoroutine : MonoBehaviour
         looper = gameObject.AddComponent<LuaLooper>();
         looper.luaState = lua;
 
-        lua.DoString(luaFile.text, "TestCoroutine.cs");
+        lua.DoString(luaFile.text, "TestLuaCoroutine.lua");
         LuaFunction f = lua.GetFunction("TestCortinue");
         f.Call();
         f.Dispose();
@@ -37,7 +37,7 @@ public class TestCoroutine : MonoBehaviour
         looper.Destroy();
         lua.Dispose();
         lua = null;
-#if UNITY_5
+#if UNITY_5 || UNITY_2017
         Application.logMessageReceived -= ShowTips;
 #else
         Application.RegisterLogCallback(null);

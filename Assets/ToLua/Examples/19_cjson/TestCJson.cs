@@ -27,7 +27,7 @@ public class TestCJson : LuaClient
 
     protected override void OnLoadFinished()
     {
-#if UNITY_5
+#if UNITY_5 || UNITY_2017
         Application.logMessageReceived += ShowTips;
 #else
         Application.RegisterLogCallback(ShowTips);
@@ -60,7 +60,7 @@ public class TestCJson : LuaClient
     {
         base.OnApplicationQuit();
 
-#if UNITY_5		
+#if UNITY_5 || UNITY_2017	
         Application.logMessageReceived -= ShowTips;
 #else
         Application.RegisterLogCallback(null);
