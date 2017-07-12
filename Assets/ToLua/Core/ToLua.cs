@@ -700,6 +700,7 @@ namespace LuaInterface
                 float dx = (float)LuaDLL.lua_tonumber(L, top + 4);
                 float dy = (float)LuaDLL.lua_tonumber(L, top + 5);
                 float dz = (float)LuaDLL.lua_tonumber(L, top + 6);
+                LuaDLL.lua_settop(L, top);
                 return new Ray(new Vector3(ox, oy, oz), new Vector3(dx, dy, dz));
             }
             else
@@ -721,6 +722,7 @@ namespace LuaInterface
             {
                 Vector3 center = ToVector3(L, top + 1);
                 Vector3 size = ToVector3(L, top + 2);
+                LuaDLL.lua_settop(L, top);
                 return new Bounds(center, size);
             }
             else

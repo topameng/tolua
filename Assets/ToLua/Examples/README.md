@@ -214,7 +214,7 @@ c# 中需要按后面方式调用, 即必须主动传入第一个参数self<br>
         lua.CheckTop();
         lua.Dispose();
     }
-
+``` 
 * luaState["Objs2Spawn"] LuaState通过重载this操作符，访问lua _G表中的变量Objs2Spawn <br>
 * LuaState.GetTable 从lua中获取一个lua table, 可以串式访问比如lua.GetTable("varTable.map.name") 等于 varTable->map->name<br>
 * LuaTable 支持this操作符，但此this不支持串式访问。比如table["map.name"] "map.name" 只是一个key，不是table->map->name <br>

@@ -9,7 +9,12 @@ local type = type
 local Vector3 = Vector3
 local zero = Vector3.zero
 
-local Bounds = {}
+local Bounds = 
+{
+	center = Vector3.zero,
+	extents = Vector3.zero,
+}
+
 local get = tolua.initget(Bounds)
 
 Bounds.__index = function(t,k)
@@ -174,7 +179,7 @@ function Bounds:Destroy()
 	self.size	= nil
 end
 
-Bounds.__tostring = function(self)
+Bounds.__tostring = function(self)	
 	return string.format("Center: %s, Extents %s", tostring(self.center), tostring(self.extents))
 end
 
