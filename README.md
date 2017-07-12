@@ -84,8 +84,8 @@ https://github.com/LabOfHoward/unity_tolua-_zerobrane_api<br>
 * 支持unity所有版本 <br>
 
 # 快速入门
-在CustomSetting.cs中添加需要导出的类或者委托，导出类加入到customTypeList列表，委托加入到customDelegateList列表 <br>
-可以通过设置saveDir变量更改导出目录，默认生成在Assets/Source/Generate/下，之后点击菜单Lua->Generate All。生成绑定文件 <br>
+在CustomSetting.cs中添加需要导出的类或者委托，类加入到customTypeList列表，委托加入到customDelegateList列表 <br>
+通过设置saveDir变量更改导出目录,默认生成在Assets/Source/Generate/下,点击菜单Lua->Generate All,生成绑定文件 <br>
 在LuaConst.cs中配置开发lua文件目录luaDir以及tolua lua文件目录toluaDir <br>
 ```csharp
 LuaState lua = new LuaState();
