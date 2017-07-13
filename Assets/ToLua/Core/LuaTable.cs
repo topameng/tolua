@@ -37,39 +37,39 @@ namespace LuaInterface
         {
             get
             {
-                int oldTop = luaState.LuaGetTop();
+                int top = luaState.LuaGetTop();
 
                 try
                 {
                     luaState.Push(this);
                     luaState.Push(key);
-                    luaState.LuaGetTable(-2);
-                    object ret = luaState.ToVariant(-1);
-                    luaState.LuaSetTop(oldTop);
+                    luaState.LuaGetTable(top + 1);
+                    object ret = luaState.ToVariant(top + 2);
+                    luaState.LuaSetTop(top);
                     return ret;
                 }
                 catch (Exception e)
                 {
-                    luaState.LuaSetTop(oldTop);
+                    luaState.LuaSetTop(top);
                     throw e;                    
                 }                
             }
 
             set
             {
-                int oldTop = luaState.LuaGetTop();
+                int top = luaState.LuaGetTop();
 
                 try
                 {
                     luaState.Push(this);
                     luaState.Push(key);
                     luaState.PushVariant(value);
-                    luaState.LuaSetTable(-3);
-                    luaState.LuaSetTop(oldTop);
+                    luaState.LuaSetTable(top + 1);
+                    luaState.LuaSetTop(top);
                 }
                 catch (Exception e)
                 {
-                    luaState.LuaSetTop(oldTop);
+                    luaState.LuaSetTop(top);
                     throw e;
                 }
             }
@@ -134,7 +134,7 @@ namespace LuaInterface
             {
                 luaState.Push(this);                
                 luaState.LuaRawGetI(top + 1, index);
-                T ret = luaState.CheckValue<T>(top + 1);
+                T ret = luaState.CheckValue<T>(top + 2);
                 luaState.LuaSetTop(top);
                 return ret;
             }
