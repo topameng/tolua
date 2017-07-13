@@ -84,8 +84,8 @@ namespace LuaInterface
                 try
                 {
                     luaState.Push(this);
-                    luaState.LuaRawGetI(-1, key);
-                    object obj = luaState.ToVariant(oldTop + 1);
+                    luaState.LuaRawGetI(oldTop + 1, key);
+                    object obj = luaState.ToVariant(oldTop + 2);
                     luaState.LuaSetTop(oldTop);
                     return obj;
                 }
