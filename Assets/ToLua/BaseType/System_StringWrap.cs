@@ -108,7 +108,7 @@ public class System_StringWrap
 				System.String obj = (System.String)ToLua.CheckObject(L, 1, typeof(System.String));
 				string arg0 = ToLua.CheckString(L, 2);
 				System.StringComparison arg1 = (System.StringComparison)ToLua.CheckObject(L, 3, typeof(System.StringComparison));
-				bool o = obj != null ? obj.Equals(arg0, arg1) : arg0 == null;
+				bool o = obj.Equals(arg0, arg1);
 				LuaDLL.lua_pushboolean(L, o);
 				return 1;
 			}

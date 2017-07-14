@@ -66,7 +66,6 @@ bug 反馈群: 286510803
 - NEW: 支持ZeroBrandStudio调试
 - NEW: luajit2.1 beta1 升级为 luajit2.1 beta2
 - New: 打包lua文件名小写和u5.x一致，加入u5.x打包代码。
-
 - FIX: 修改LuaSocket使用 git 上最新的LuaSocket版本，而不是之前的修改版
 - FIX: 导出的数组支持c#所有数组函数，而不是只有[]和length
 - FIX: 去掉Type类一些无法使用的函数，使用静态反射方案替代
@@ -110,18 +109,10 @@ bug 反馈群: 286510803
 - NEW: 增加了struct类型自行扩展机制，通过自行扩展注入到tolua系统，快速无GC转换c#类型到lua table
 - NEW: luajit 升级为2.1b3, 并且极大减小在安卓上jit失败情况。
 - NEW: 重载速度提升，相同参数个数，类型相同位置延迟参数类型检查
-- NEW: 加入link.xml防止反射泛型模板库丢失函数
-- NEW: 相同个数的重载函数，跳过相同类型的检测，检测放入到执行阶段，有利于性能和错误提示。
-- NEW：调整DelegateFactory规则，必须调用Init初始化
+- NEW: 支持导出带有默认值的函数
 
 - FIX: luajit不再因64位分配内存地址报not enough memory. 错误函数调用不在此列。参考http://luajit.org/status.html
 - FIX: 安卓上jit失败造成卡机问题
 - FIX: 在系统中Instantis对象上的脚本Awake调用LuaFunction失败，通过LuaState.ThrowLuaException时堆栈错误上报出错问题
 - FIX: 修正一些lua脚本中的书写错误
-- FIX：修正protoc-gen-lua 嵌套协议中64位压缩问题，协议压缩中错误提示不正确问题
-- FIX: unity2017 宏编译范围问题
-- FIX：获取Bounds和Ray表之后堆栈平衡问题
-- FIX：增加ToNullable支持Nullable类型
-
-
-
+- FIX: 作为object PushLayerMask问题
