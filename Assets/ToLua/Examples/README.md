@@ -64,7 +64,7 @@ tolua#DoFile函数,跟lua保持一致行为,能多次执行一个文件。tolua#
 
 > **注意:** 虽然有文件加载,但此例子无法发布到手机, 如果ToLua目录不在/Assets目录下, 需要修改代码中的目录位置<br>
 
-## 例子3
+## 例子3 LuaFunction
 展示了如何调用lua的函数, 主要代码如下:
 ``` csharp
     private string script =
@@ -226,7 +226,7 @@ c# 中需要按后面方式调用, 即必须主动传入第一个参数self<br>
 * LuaTable.RawGet(key) 获取t[key]值到c#, 类似于 lua_rawget <br>
 * LuaTable.RawSet(key, value) 等价于t[k] = v的操作, 类似于lua_rawset <br>
 
-## 例子5
+## 例子5 协同一
 展示了如何使用lua协同, lua 代码如下：
 ``` lua
         function fib(n)
@@ -280,6 +280,7 @@ c# 中需要按后面方式调用, 即必须主动传入第一个参数self<br>
             coroutine.stop(coDelay)
         end
 ```
+c#代码如下:
 ``` csharp
         new LuaResLoader();
         lua  = new LuaState();
