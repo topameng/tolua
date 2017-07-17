@@ -40,7 +40,7 @@ public class AccessingArray : MonoBehaviour
 
     void Start()
     {
-#if UNITY_5
+#if UNITY_5 || UNITY_2017
         Application.logMessageReceived += ShowTips;
 #else
         Application.RegisterLogCallback(ShowTips);
@@ -87,7 +87,7 @@ public class AccessingArray : MonoBehaviour
 
     void OnApplicationQuit()
     {
-#if UNITY_5
+#if UNITY_5 || UNITY_2017
         Application.logMessageReceived -= ShowTips;
 #else
         Application.RegisterLogCallback(null);

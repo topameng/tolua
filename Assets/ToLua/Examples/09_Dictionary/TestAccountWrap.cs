@@ -57,7 +57,7 @@ public class TestAccountWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index id on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index id on a nil value");
 		}
 	}
 
@@ -76,7 +76,7 @@ public class TestAccountWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index name on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index name on a nil value");
 		}
 	}
 
@@ -95,7 +95,7 @@ public class TestAccountWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index sex on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index sex on a nil value");
 		}
 	}
 
@@ -114,7 +114,7 @@ public class TestAccountWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index id on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index id on a nil value");
 		}
 	}
 
@@ -133,7 +133,7 @@ public class TestAccountWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index name on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index name on a nil value");
 		}
 	}
 
@@ -152,7 +152,7 @@ public class TestAccountWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index sex on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index sex on a nil value");
 		}
 	}
 }

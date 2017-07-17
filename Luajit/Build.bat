@@ -1,7 +1,7 @@
 @echo off
 cd /d %~dp0
 
-if not exist dir (mkdir jit)
+if not exist jit (mkdir jit)
 if not exist Out (mkdir Out)
 
 xcopy /Y /D ..\..\..\Luajit\jit jit
@@ -18,7 +18,7 @@ for /r %%i in (*.lua) do (
  set v=%%i 
  set v=!v:%~dp0=! 
  call :loop
- ..\..\..\Luajit\luajit.exe -b -g !v! Out\!v!.bytes 
+ ..\..\..\Luajit\luajit32.exe -b -g !v! Out\!v!.bytes 
 )
 
 rd /s/q jit

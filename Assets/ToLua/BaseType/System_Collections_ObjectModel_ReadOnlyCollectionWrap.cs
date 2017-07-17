@@ -125,7 +125,7 @@ public class System_Collections_ObjectModel_ReadOnlyCollectionWrap
         }
         catch (Exception e)
         {
-            return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index Count on a nil value" : e.Message);
+            return LuaDLL.toluaL_exception(L, e, o, "attempt to index Count on a nil value");
         }
     }
 }

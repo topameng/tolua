@@ -37,39 +37,39 @@ namespace LuaInterface
         {
             get
             {
-                int oldTop = luaState.LuaGetTop();
+                int top = luaState.LuaGetTop();
 
                 try
                 {
                     luaState.Push(this);
                     luaState.Push(key);
-                    luaState.LuaGetTable(-2);
-                    object ret = luaState.ToVariant(-1);
-                    luaState.LuaSetTop(oldTop);
+                    luaState.LuaGetTable(top + 1);
+                    object ret = luaState.ToVariant(top + 2);
+                    luaState.LuaSetTop(top);
                     return ret;
                 }
                 catch (Exception e)
                 {
-                    luaState.LuaSetTop(oldTop);
+                    luaState.LuaSetTop(top);
                     throw e;                    
                 }                
             }
 
             set
             {
-                int oldTop = luaState.LuaGetTop();
+                int top = luaState.LuaGetTop();
 
                 try
                 {
                     luaState.Push(this);
                     luaState.Push(key);
                     luaState.PushVariant(value);
-                    luaState.LuaSetTable(-3);
-                    luaState.LuaSetTop(oldTop);
+                    luaState.LuaSetTable(top + 1);
+                    luaState.LuaSetTop(top);
                 }
                 catch (Exception e)
                 {
-                    luaState.LuaSetTop(oldTop);
+                    luaState.LuaSetTop(top);
                     throw e;
                 }
             }
@@ -84,8 +84,8 @@ namespace LuaInterface
                 try
                 {
                     luaState.Push(this);
-                    luaState.LuaRawGetI(-1, key);
-                    object obj = luaState.ToVariant(oldTop + 1);
+                    luaState.LuaRawGetI(oldTop + 1, key);
+                    object obj = luaState.ToVariant(oldTop + 2);
                     luaState.LuaSetTop(oldTop);
                     return obj;
                 }
@@ -134,7 +134,7 @@ namespace LuaInterface
             {
                 luaState.Push(this);                
                 luaState.LuaRawGetI(top + 1, index);
-                T ret = luaState.CheckValue<T>(top + 1);
+                T ret = luaState.CheckValue<T>(top + 2);
                 luaState.LuaSetTop(top);
                 return ret;
             }
@@ -163,16 +163,16 @@ namespace LuaInterface
             }
         }
 
-        public T RawGet<T>(string key)
+        public V RawGet<K, V>(K key)
         {
             int top = luaState.LuaGetTop();
 
             try
             {
                 luaState.Push(this);
-                luaState.Push(key);
+                luaState.PushGeneric(key);
                 luaState.LuaRawGet(top + 1);
-                T ret = luaState.CheckValue<T>(top + 2);
+                V ret = luaState.CheckValue<V>(top + 2);
                 luaState.LuaSetTop(top);
                 return ret;
             }
@@ -183,14 +183,14 @@ namespace LuaInterface
             }
         }
 
-        public void RawSet<T>(string key, T arg)
+        public void RawSet<K, V>(K key, V arg)
         {
             int top = luaState.LuaGetTop();
 
             try
             {
                 luaState.Push(this);
-                luaState.Push(key);
+                luaState.PushGeneric(key);
                 luaState.PushGeneric(arg);
                 luaState.LuaRawSet(top + 1);
                 luaState.LuaSetTop(top);
@@ -738,6 +738,11 @@ namespace LuaInterface
             return new LuaDictTable(this);
         }        
 
+        public LuaDictTable<K, V> ToDictTable<K, V>()
+        {
+            return new LuaDictTable<K, V>(this);
+        }
+
         public LuaTable GetMetaTable()
         {            
             int oldTop = luaState.LuaGetTop();
@@ -981,6 +986,139 @@ namespace LuaInterface
             public void Reset()
             {
                 current = new DictionaryEntry();
+            }
+
+            public void Dispose()
+            {
+                if (state != null)
+                {
+                    state.LuaSetTop(top);
+                    state = null;
+                }
+            }
+        }
+    }
+
+    public struct LuaDictEntry<K, V>
+    {
+        public LuaDictEntry(K key, V value)
+        {
+            Key = key;
+            Value = value;
+        }
+
+        public K Key { get; set; }
+        public V Value { get; set; }
+    }
+
+    public class LuaDictTable<K, V> : IDisposable, IEnumerable<LuaDictEntry<K, V>>
+    {
+        LuaTable table;
+        LuaState state;
+
+        public LuaDictTable(LuaTable table)
+        {
+            table.AddRef();
+            this.table = table;
+            this.state = table.GetLuaState();
+        }
+
+        public void Dispose()
+        {
+            if (table != null)
+            {
+                table.Dispose();
+                table = null;
+            }
+        }
+
+        public V this[K key]
+        {
+            get
+            {
+                return table.RawGet<K, V>(key);
+            }
+
+            set
+            {                
+                table.RawSet(key, value);
+            }
+        }
+
+        public Dictionary<K, V> ToDictionary()
+        {
+            Dictionary<K, V> dict = new Dictionary<K, V>();
+            var iter = GetEnumerator();
+
+            while (iter.MoveNext())
+            {
+                dict.Add(iter.Current.Key, iter.Current.Value);
+            }
+
+            iter.Dispose();
+            return dict;
+        }
+
+        public IEnumerator<LuaDictEntry<K, V>> GetEnumerator()
+        {
+            return new Enumerator(this);
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        class Enumerator : IEnumerator<LuaDictEntry<K, V>>
+        {
+            LuaState state;
+            LuaDictEntry<K, V> current = new LuaDictEntry<K, V>();
+            int top = -1;
+
+            public Enumerator(LuaDictTable<K, V> list)
+            {
+                state = list.state;
+                top = state.LuaGetTop();
+                state.Push(list.table);
+                state.LuaPushNil();
+            }
+
+            public LuaDictEntry<K, V> Current
+            {
+                get
+                {
+                    return current;
+                }
+            }
+
+            object IEnumerator.Current
+            {
+                get
+                {
+                    return Current;
+                }
+            }
+
+            public bool MoveNext()
+            {
+                if (state.LuaNext(-2))
+                {
+                    current = new LuaDictEntry<K, V>();
+                    current.Key = state.CheckValue<K>(-2);
+                    current.Value = state.CheckValue<V>(-1);
+                    state.LuaPop(1);
+                    return true;
+                }
+                else
+                {
+                    current = new LuaDictEntry<K, V>();
+                    return false;
+                }
+            }
+
+            public void Reset()
+            {
+                current = new LuaDictEntry<K, V>();
             }
 
             public void Dispose()

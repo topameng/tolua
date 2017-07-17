@@ -5,8 +5,14 @@
 --------------------------------------------------------------------------------
 local rawget = rawget
 local setmetatable = setmetatable
+local Vector3 = Vector3
 
-local Ray = {}
+local Ray = 
+{
+	direction = Vector3.zero,
+	origin = Vector3.zero,
+}
+
 local get = tolua.initget(Ray)
 
 Ray.__index = function(t,k)

@@ -56,11 +56,18 @@ public sealed class TestExport
         set { Debugger.Log(value); }
     }
 
+    public int this[char index, int pos]
+    {
+        get { return 0; }
+        set { Debugger.Log(value); }
+    }
+
     [LuaByteBufferAttribute]
     public byte[] buffer;
 
     public static int get_Item(string pos) { return 0; }
     public static int get_Item(double pos) { return 0; }
+    public static int get_Item(int i, int j, int k) { return 0; }
 
     public static int set_Item(double pos) { return 0; }
 
@@ -75,11 +82,22 @@ public sealed class TestExport
         return 1;
     }
 
+    public int Test(object o, string str, int n)
+    {
+        Debugger.Log("call Test(object o, string str, int n)");
+        return 111;
+    }
+
     [LuaRenameAttribute(Name = "TestChar")]
     public int Test(char c)
     {
         Debugger.Log("call Test(char c)");
         return 2;
+    }
+
+    public int Test()
+    {
+        return -1;
     }
 
     public int Test(bool b)
@@ -138,7 +156,7 @@ public sealed class TestExport
     {
         Debugger.Log("call Test(object o)");
         return 8;
-    }    
+    }
 
     public int Test(params int[] objs)
     {

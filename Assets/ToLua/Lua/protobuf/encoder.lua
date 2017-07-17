@@ -24,21 +24,31 @@ local pb = require "pb"
 local wire_format = require "protobuf.wire_format"
 module "protobuf.encoder"
 
-function _VarintSize(value)
+function _VarintSize(value)    
     if value <= 0x7f then return 1 end
     if value <= 0x3fff then return 2 end
     if value <= 0x1fffff then return 3 end
     if value <= 0xfffffff then return 4 end
-    return 5 
+    if value <= 0x7ffffffff then return 5 end
+    if value <= 0x3ffffffffff then return 6 end
+    if value <= 0x1ffffffffffff then return 7 end
+    if value <= 0xffffffffffffff then return 8 end
+    if value <= 0x7fffffffffffffff then return 9 end
+    return 10
 end
 
-function _SignedVarintSize(value)
+function _SignedVarintSize(value)    
     if value < 0 then return 10 end
     if value <= 0x7f then return 1 end
     if value <= 0x3fff then return 2 end
     if value <= 0x1fffff then return 3 end
     if value <= 0xfffffff then return 4 end
-    return 5
+    if value <= 0x7ffffffff then return 5 end
+    if value <= 0x3ffffffffff then return 6 end
+    if value <= 0x1ffffffffffff then return 7 end
+    if value <= 0xffffffffffffff then return 8 end
+    if value <= 0x7fffffffffffffff then return 9 end
+    return 10
 end
 
 function _TagSize(field_number)
@@ -125,11 +135,11 @@ function _FixedSizer(value_size)
 end
 
 Int32Sizer = _SimpleSizer(_SignedVarintSize)
-Int64Sizer = Int32Sizer
+Int64Sizer = _SimpleSizer(pb.signed_varint_size)
 EnumSizer = Int32Sizer
 
 UInt32Sizer = _SimpleSizer(_VarintSize)
-UInt64Sizer = UInt32Sizer 
+UInt64Sizer = _SimpleSizer(pb.varint_size) 
 
 SInt32Sizer = _ModifiedSizer(_SignedVarintSize, wire_format.ZigZagEncode32)
 SInt64Sizer = SInt32Sizer
