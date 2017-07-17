@@ -2092,6 +2092,7 @@ namespace LuaInterface
             }
             else
             {
+                LuaDLL.lua_settop(L, top);
                 if (beLogMiss)
                 {
                     Debugger.Log("Lua function {0} not exists", name);
