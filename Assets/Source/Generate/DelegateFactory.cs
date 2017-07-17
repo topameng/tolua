@@ -9,14 +9,11 @@ public class DelegateFactory
 	public static Dictionary<Type, DelegateCreate> dict = new Dictionary<Type, DelegateCreate>();
 	static DelegateFactory factory = new DelegateFactory();
 
-	static DelegateFactory()
+	public static void Init()
 	{
 		Register();
 	}
 
-	public static void Init() { }
-
-	[NoToLuaAttribute]
 	public static void Register()
 	{
 		dict.Clear();
@@ -24,8 +21,7 @@ public class DelegateFactory
 
 
 	}
-
-    [NoToLuaAttribute]
+    
     public static Delegate CreateDelegate(Type t, LuaFunction func = null)
     {
         DelegateCreate Create = null;
@@ -55,8 +51,7 @@ public class DelegateFactory
 
         return Create(null, null, false);        
     }
-
-    [NoToLuaAttribute]
+    
     public static Delegate CreateDelegate(Type t, LuaFunction func, LuaTable self)
     {
         DelegateCreate Create = null;
@@ -86,8 +81,7 @@ public class DelegateFactory
 
         return Create(null, null, true);
     }
-
-    [NoToLuaAttribute]
+    
     public static Delegate RemoveDelegate(Delegate obj, LuaFunction func)
     {
         LuaState state = func.GetLuaState();
@@ -107,8 +101,7 @@ public class DelegateFactory
 
         return obj;
     }
-
-    [NoToLuaAttribute]
+    
     public static Delegate RemoveDelegate(Delegate obj, Delegate dg)
     {
         LuaDelegate remove = dg.Target as LuaDelegate;
