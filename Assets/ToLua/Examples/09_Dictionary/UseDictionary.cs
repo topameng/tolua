@@ -65,7 +65,7 @@ public class UseDictionary : MonoBehaviour
 
 	void Awake () 
     {
-#if UNITY_5
+#if UNITY_5 || UNITY_2017
         Application.logMessageReceived += ShowTips;
 #else
         Application.RegisterLogCallback(ShowTips);
@@ -95,7 +95,7 @@ public class UseDictionary : MonoBehaviour
 
     void OnApplicationQuit()
     {
-#if UNITY_5
+#if UNITY_5 || UNITY_2017
         Application.logMessageReceived -= ShowTips;
 #else
         Application.RegisterLogCallback(null);

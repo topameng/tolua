@@ -454,12 +454,17 @@ namespace LuaInterface
                 FieldInfo listViewFieldInfo = consoleWindowType.GetField("m_ListView", BindingFlags.Instance | BindingFlags.NonPublic);
                 logListView = listViewFieldInfo.GetValue(consoleWindow);
                 logListViewCurrentRow = listViewFieldInfo.FieldType.GetField("row", BindingFlags.Instance | BindingFlags.Public);
-
-                Type logEntriesType = unityEditorAssembly.GetType("UnityEditorInternal.LogEntries");
+#if UNITY_2017
+                Type logEntriesType = unityEditorAssembly.GetType("UnityEditor.LogEntries");
+                LogEntriesGetEntry = logEntriesType.GetMethod("GetEntryInternal", BindingFlags.Static | BindingFlags.Public);
+                Type logEntryType = unityEditorAssembly.GetType("UnityEditor.LogEntry");                
+#else
+                Type logEntriesType = unityEditorAssembly.GetType("UnityEditorInternal.LogEntries");                
                 LogEntriesGetEntry = logEntriesType.GetMethod("GetEntryInternal", BindingFlags.Static | BindingFlags.Public);
                 Type logEntryType = unityEditorAssembly.GetType("UnityEditorInternal.LogEntry");
+#endif
                 logEntry = Activator.CreateInstance(logEntryType);
-                logEntryCondition = logEntryType.GetField("condition", BindingFlags.Instance | BindingFlags.Public);                
+                logEntryCondition = logEntryType.GetField("condition", BindingFlags.Instance | BindingFlags.Public);
             }
 
             return true;
@@ -575,7 +580,7 @@ namespace LuaInterface
         }
 #endif
 #endregion
-    /*-------------------------------------------------------------------------------------------*/
+                /*-------------------------------------------------------------------------------------------*/
 
         public static string ToString(IntPtr L, int stackPos)
         {
@@ -700,6 +705,7 @@ namespace LuaInterface
                 float dx = (float)LuaDLL.lua_tonumber(L, top + 4);
                 float dy = (float)LuaDLL.lua_tonumber(L, top + 5);
                 float dz = (float)LuaDLL.lua_tonumber(L, top + 6);
+                LuaDLL.lua_settop(L, top);
                 return new Ray(new Vector3(ox, oy, oz), new Vector3(dx, dy, dz));
             }
             else
@@ -721,6 +727,7 @@ namespace LuaInterface
             {
                 Vector3 center = ToVector3(L, top + 1);
                 Vector3 size = ToVector3(L, top + 2);
+                LuaDLL.lua_settop(L, top);
                 return new Bounds(center, size);
             }
             else
@@ -804,6 +811,16 @@ namespace LuaInterface
                 int reference = LuaDLL.toluaL_ref(L);
                 return LuaStatic.GetTable(L, reference);
             }
+        }
+
+        public static Nullable<T> ToNullable<T>(IntPtr L, int stackPos) where T : struct
+        {
+            if (LuaDLL.lua_type(L, stackPos) == LuaTypes.LUA_TNIL)
+            {
+                return null;
+            }
+
+            return StackTraits<T>.To(L, stackPos);
         }
 
         static object ToObjectVec3(IntPtr L, int stackPos)
@@ -2736,7 +2753,7 @@ namespace LuaInterface
                 }
                 else if (t == typeof(LayerMask))
                 {
-                    Push(L, (LayerMask)obj);
+                    PushLayerMask(L, (LayerMask)obj);
                 }
                 else
                 {
@@ -2835,5 +2852,43 @@ namespace LuaInterface
                 throw new LuaException(string.Format("no overload for method takes '{0}' arguments", c));
             }
         }  
+
+        public static Delegate CheckDelegate(Type t, IntPtr L, int stackPos)
+        {                        
+            LuaTypes luatype = LuaDLL.lua_type(L, stackPos);
+
+            switch (luatype)
+            {
+                case LuaTypes.LUA_TNIL:
+                    return null;
+                case LuaTypes.LUA_TFUNCTION:
+                    LuaFunction func = ToLua.ToLuaFunction(L, stackPos);
+                    return DelegateFactory.CreateDelegate(t, func);
+                case LuaTypes.LUA_TUSERDATA:
+                    return (Delegate)ToLua.CheckObject(L, stackPos, t);
+                default:
+                    LuaDLL.luaL_typerror(L, stackPos, LuaMisc.GetTypeName(t));
+                    return null;                    
+            }
+        }
+
+        public static Delegate CheckDelegate<T>(IntPtr L, int stackPos)
+        {
+            LuaTypes luatype = LuaDLL.lua_type(L, stackPos);
+
+            switch (luatype)
+            {
+                case LuaTypes.LUA_TNIL:
+                    return null;
+                case LuaTypes.LUA_TFUNCTION:
+                    LuaFunction func = ToLua.ToLuaFunction(L, stackPos);
+                    return DelegateTraits<T>.Create(func);
+                case LuaTypes.LUA_TUSERDATA:
+                    return (Delegate)ToLua.CheckObject(L, stackPos, typeof(T));
+                default:
+                    LuaDLL.luaL_typerror(L, stackPos, TypeTraits<T>.GetTypeName());
+                    return null;
+            }
+        }
     }
 }

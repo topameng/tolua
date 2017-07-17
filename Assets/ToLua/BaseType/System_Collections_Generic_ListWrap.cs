@@ -232,21 +232,9 @@ public class System_Collections_Generic_ListWrap
 		try
 		{
 			ToLua.CheckArgsCount(L, 2);
-            Type argType = null;
-            Delegate arg0 = null;
-            object obj = ToLua.CheckGenericObject(L, 1, typeof(List<>), out argType);            			
-			LuaTypes funcType2 = LuaDLL.lua_type(L, 2);
-
-			if (funcType2 != LuaTypes.LUA_TFUNCTION)
-			{
-				 arg0 = (Delegate)ToLua.CheckObject(L, 2, typeof(System.Predicate<>).MakeGenericType(argType));
-			}
-			else
-			{
-				LuaFunction func = ToLua.ToLuaFunction(L, 2);
-				arg0 = DelegateFactory.CreateDelegate(typeof(System.Predicate<>).MakeGenericType(argType), func);
-			}
-            
+            Type argType = null;            
+            object obj = ToLua.CheckGenericObject(L, 1, typeof(List<>), out argType);
+            Delegate arg0 = ToLua.CheckDelegate(typeof(System.Predicate<>).MakeGenericType(argType), L, 2);       
             bool o = (bool)LuaMethodCache.CallMethod("Exists", obj, arg0);
 			LuaDLL.lua_pushboolean(L, o);
 			return 1;
@@ -263,21 +251,9 @@ public class System_Collections_Generic_ListWrap
 		try
 		{
 			ToLua.CheckArgsCount(L, 2);
-            Type argType = null;
-            Delegate arg0 = null;
-            object obj = ToLua.CheckGenericObject(L, 1, typeof(List<>), out argType);            			
-			LuaTypes funcType2 = LuaDLL.lua_type(L, 2);
-
-			if (funcType2 != LuaTypes.LUA_TFUNCTION)
-			{
-                arg0 = (Delegate)ToLua.CheckObject(L, 2, typeof(System.Predicate<>).MakeGenericType(argType));                
-			}
-			else
-			{
-				LuaFunction func = ToLua.ToLuaFunction(L, 2);
-				arg0 = DelegateFactory.CreateDelegate(typeof(System.Predicate<>).MakeGenericType(argType), func);
-			}
-            
+            Type argType = null;            
+            object obj = ToLua.CheckGenericObject(L, 1, typeof(List<>), out argType);
+            Delegate arg0 = ToLua.CheckDelegate(typeof(System.Predicate<>).MakeGenericType(argType), L, 2);            
             object o = LuaMethodCache.CallMethod("Find", obj, arg0);
             ToLua.Push(L, o);
 			return 1;
@@ -294,21 +270,9 @@ public class System_Collections_Generic_ListWrap
 		try
 		{
 			ToLua.CheckArgsCount(L, 2);
-            Type argType = null;
-            Delegate arg0 = null;
+            Type argType = null;            
             object obj = ToLua.CheckGenericObject(L, 1, typeof(List<>), out argType);
-            LuaTypes funcType2 = LuaDLL.lua_type(L, 2);
-
-			if (funcType2 != LuaTypes.LUA_TFUNCTION)
-			{
-                arg0 = (Delegate)ToLua.CheckObject(L, 2, typeof(System.Predicate<>).MakeGenericType(argType));                
-			}
-			else
-			{
-                LuaFunction func = ToLua.ToLuaFunction(L, 2);
-                arg0 = DelegateFactory.CreateDelegate(typeof(System.Predicate<>).MakeGenericType(argType), func);
-            }
-			
+            Delegate arg0 = ToLua.CheckDelegate(typeof(System.Predicate<>).MakeGenericType(argType), L, 2);
             object o = LuaMethodCache.CallMethod("FindAll", obj, arg0);
 			ToLua.Push(L, o);
 			return 1;
@@ -329,8 +293,8 @@ public class System_Collections_Generic_ListWrap
             object obj = ToLua.CheckGenericObject(L, 1, typeof(List<>), out argType);
 
             if (count == 2)
-			{                               
-				Delegate arg0 = (Delegate)ToLua.CheckObject(L, 2, typeof(System.Predicate<>).MakeGenericType(argType));				
+			{
+                Delegate arg0 = ToLua.CheckDelegate(typeof(System.Predicate<>).MakeGenericType(argType), L, 2);                
                 int o = (int)LuaMethodCache.CallMethod("FindIndex", obj, arg0);
 				LuaDLL.lua_pushinteger(L, o);
 				return 1;
@@ -338,7 +302,7 @@ public class System_Collections_Generic_ListWrap
 			else if (count == 3)
 			{				
 				int arg0 = (int)LuaDLL.luaL_checknumber(L, 2);
-				Delegate arg1 = (Delegate)ToLua.CheckObject(L, 3, typeof(System.Predicate<>).MakeGenericType(argType));
+                Delegate arg1 = ToLua.CheckDelegate(typeof(System.Predicate<>).MakeGenericType(argType), L, 3);                
                 int o = (int)LuaMethodCache.CallMethod("FindIndex", obj, arg0, arg1);                
 				LuaDLL.lua_pushinteger(L, o);
 				return 1;
@@ -346,8 +310,8 @@ public class System_Collections_Generic_ListWrap
 			else if (count == 4)
 			{				
 				int arg0 = (int)LuaDLL.luaL_checknumber(L, 2);
-				int arg1 = (int)LuaDLL.luaL_checknumber(L, 3);
-				Delegate arg2 = (Delegate)ToLua.CheckObject(L, 4, typeof(System.Predicate<>).MakeGenericType(argType));				
+				int arg1 = (int)LuaDLL.luaL_checknumber(L, 3);				
+                Delegate arg2 = ToLua.CheckDelegate(typeof(System.Predicate<>).MakeGenericType(argType), L, 4);                
                 int o = (int)LuaMethodCache.CallMethod("FindIndex", obj, arg0, arg1, arg2);
                 LuaDLL.lua_pushinteger(L, o);
 				return 1;
@@ -369,21 +333,9 @@ public class System_Collections_Generic_ListWrap
 		try
 		{
 			ToLua.CheckArgsCount(L, 2);
-            Type argType = null;
-            Delegate arg0 = null;
-            object obj = ToLua.CheckGenericObject(L, 1, typeof(List<>), out argType);            			
-			LuaTypes funcType2 = LuaDLL.lua_type(L, 2);
-
-            if (funcType2 != LuaTypes.LUA_TFUNCTION)
-            {
-                arg0 = (Delegate)ToLua.CheckObject(L, 2, typeof(System.Predicate<>).MakeGenericType(argType));
-            }
-            else
-            {
-                LuaFunction func = ToLua.ToLuaFunction(L, 2);
-                arg0 = DelegateFactory.CreateDelegate(typeof(System.Predicate<>).MakeGenericType(argType), func);
-            }
-            
+            Type argType = null;            
+            object obj = ToLua.CheckGenericObject(L, 1, typeof(List<>), out argType);
+            Delegate arg0 = ToLua.CheckDelegate(typeof(System.Predicate<>).MakeGenericType(argType), L, 2);            
             object o = LuaMethodCache.CallSingleMethod("FindLast", obj, arg0);
             ToLua.Push(L, o);
 			return 1;
@@ -446,19 +398,7 @@ public class System_Collections_Generic_ListWrap
 			ToLua.CheckArgsCount(L, 2);
             Type argType = null;            
             object obj = ToLua.CheckGenericObject(L, 1, typeof(List<>), out argType);            
-			Delegate arg0 = null;
-			LuaTypes funcType2 = LuaDLL.lua_type(L, 2);
-
-			if (funcType2 != LuaTypes.LUA_TFUNCTION)
-			{
-				 arg0 = (Delegate)ToLua.CheckObject(L, 2, typeof(System.Action<>).MakeGenericType(argType));
-			}
-			else
-			{
-				LuaFunction func = ToLua.ToLuaFunction(L, 2);
-				arg0 = DelegateFactory.CreateDelegate(typeof(System.Action<>).MakeGenericType(argType), func);
-			}
-
+			Delegate arg0 = ToLua.CheckDelegate(typeof(System.Action<>).MakeGenericType(argType), L, 2);	
             LuaMethodCache.CallSingleMethod("ForEach", obj, arg0);
 			return 0;
 		}
@@ -657,19 +597,7 @@ public class System_Collections_Generic_ListWrap
 			ToLua.CheckArgsCount(L, 2);
             Type argType = null;
             object obj = ToLua.CheckGenericObject(L, 1, typeof(List<>), out argType);            
-			Delegate arg0 = null;
-			LuaTypes funcType2 = LuaDLL.lua_type(L, 2);
-
-			if (funcType2 != LuaTypes.LUA_TFUNCTION)
-			{
-				 arg0 = (Delegate)ToLua.CheckObject(L, 2, typeof(System.Predicate<>).MakeGenericType(argType));
-			}
-			else
-			{
-				LuaFunction func = ToLua.ToLuaFunction(L, 2);
-				arg0 = DelegateFactory.CreateDelegate(typeof(System.Predicate<>).MakeGenericType(argType), func);
-			}
-
+			Delegate arg0 = ToLua.CheckDelegate(typeof(System.Predicate<>).MakeGenericType(argType), L, 2);
 			int o = (int)LuaMethodCache.CallSingleMethod("RemoveAll", obj, arg0);
 			LuaDLL.lua_pushinteger(L, o);
 			return 1;
@@ -833,19 +761,7 @@ public class System_Collections_Generic_ListWrap
 			ToLua.CheckArgsCount(L, 2);
             Type argType = null;			
             object obj = ToLua.CheckGenericObject(L, 1, typeof(List<>), out argType);
-            Delegate arg0 = null;
-			LuaTypes funcType2 = LuaDLL.lua_type(L, 2);
-
-			if (funcType2 != LuaTypes.LUA_TFUNCTION)
-			{
-				 arg0 = (Delegate)ToLua.CheckObject(L, 2, typeof(System.Predicate<>).MakeGenericType(argType));
-			}
-			else
-			{
-				LuaFunction func = ToLua.ToLuaFunction(L, 2);
-				arg0 = DelegateFactory.CreateDelegate(typeof(System.Predicate<>).MakeGenericType(argType), func);
-			}
-			
+            Delegate arg0 = ToLua.CheckDelegate(typeof(System.Predicate<>).MakeGenericType(argType), L, 2);
             bool o = (bool)LuaMethodCache.CallSingleMethod("TrueForAll", obj, arg0);
 			LuaDLL.lua_pushboolean(L, o);
 			return 1;
@@ -907,7 +823,7 @@ public class System_Collections_Generic_ListWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index Capacity on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index Capacity on a nil value");
 		}
 	}
 
@@ -925,7 +841,7 @@ public class System_Collections_Generic_ListWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index Count on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index Count on a nil value");
 		}
 	}
 
@@ -943,7 +859,7 @@ public class System_Collections_Generic_ListWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index Capacity on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index Capacity on a nil value");
 		}
 	}
 }

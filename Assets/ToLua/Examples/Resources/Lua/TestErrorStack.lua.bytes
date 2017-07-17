@@ -1,4 +1,4 @@
-﻿function Show()
+function Show()
     error('this is error')                
 end
 

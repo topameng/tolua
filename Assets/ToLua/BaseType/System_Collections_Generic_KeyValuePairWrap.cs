@@ -27,7 +27,7 @@ public class System_Collections_Generic_KeyValuePairWrap
         }
         catch (Exception e)
         {
-            return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index Key on a nil value" : e.Message);
+            return LuaDLL.toluaL_exception(L, e, o, "attempt to index Key on a nil value");
         }
     }
 
@@ -45,7 +45,7 @@ public class System_Collections_Generic_KeyValuePairWrap
         }
         catch (Exception e)
         {
-            return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index Value on a nil value" : e.Message);
+            return LuaDLL.toluaL_exception(L, e, o, "attempt to index Value on a nil value");
         }
     }
 }

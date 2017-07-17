@@ -28,38 +28,14 @@ public class TestEventListenerWrap
 			if (count == 2 && TypeChecker.CheckTypes<TestEventListener.VoidDelegate>(L, 2))
 			{
 				TestEventListener obj = (TestEventListener)ToLua.CheckObject(L, 1, typeof(TestEventListener));
-				TestEventListener.VoidDelegate arg0 = null;
-				LuaTypes funcType2 = LuaDLL.lua_type(L, 2);
-
-				if (funcType2 != LuaTypes.LUA_TFUNCTION)
-				{
-					 arg0 = (TestEventListener.VoidDelegate)ToLua.ToObject(L, 2);
-				}
-				else
-				{
-					LuaFunction func = ToLua.ToLuaFunction(L, 2);
-					arg0 = (TestEventListener.VoidDelegate)DelegateTraits<TestEventListener.VoidDelegate>.Create(func);
-				}
-
+				TestEventListener.VoidDelegate arg0 = (TestEventListener.VoidDelegate)ToLua.ToObject(L, 2);
 				obj.SetOnFinished(arg0);
 				return 0;
 			}
 			else if (count == 2 && TypeChecker.CheckTypes<TestEventListener.OnClick>(L, 2))
 			{
 				TestEventListener obj = (TestEventListener)ToLua.CheckObject(L, 1, typeof(TestEventListener));
-				TestEventListener.OnClick arg0 = null;
-				LuaTypes funcType2 = LuaDLL.lua_type(L, 2);
-
-				if (funcType2 != LuaTypes.LUA_TFUNCTION)
-				{
-					 arg0 = (TestEventListener.OnClick)ToLua.ToObject(L, 2);
-				}
-				else
-				{
-					LuaFunction func = ToLua.ToLuaFunction(L, 2);
-					arg0 = (TestEventListener.OnClick)DelegateTraits<TestEventListener.OnClick>.Create(func);
-				}
-
+				TestEventListener.OnClick arg0 = (TestEventListener.OnClick)ToLua.ToObject(L, 2);
 				obj.SetOnFinished(arg0);
 				return 0;
 			}
@@ -107,7 +83,7 @@ public class TestEventListenerWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index onClick on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index onClick on a nil value");
 		}
 	}
 
@@ -126,7 +102,7 @@ public class TestEventListenerWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index TestFunc on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index TestFunc on a nil value");
 		}
 	}
 
@@ -146,25 +122,13 @@ public class TestEventListenerWrap
 		{
 			o = ToLua.ToObject(L, 1);
 			TestEventListener obj = (TestEventListener)o;
-			TestEventListener.OnClick arg0 = null;
-			LuaTypes funcType2 = LuaDLL.lua_type(L, 2);
-
-			if (funcType2 != LuaTypes.LUA_TFUNCTION)
-			{
-				 arg0 = (TestEventListener.OnClick)ToLua.CheckObject(L, 2, typeof(TestEventListener.OnClick));
-			}
-			else
-			{
-				LuaFunction func = ToLua.ToLuaFunction(L, 2);
-				arg0 = (TestEventListener.OnClick)DelegateTraits<TestEventListener.OnClick>.Create(func);
-			}
-
+			TestEventListener.OnClick arg0 = (TestEventListener.OnClick)ToLua.CheckDelegate<TestEventListener.OnClick>(L, 2);
 			obj.onClick = arg0;
 			return 0;
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index onClick on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index onClick on a nil value");
 		}
 	}
 
@@ -177,25 +141,13 @@ public class TestEventListenerWrap
 		{
 			o = ToLua.ToObject(L, 1);
 			TestEventListener obj = (TestEventListener)o;
-			System.Func<bool> arg0 = null;
-			LuaTypes funcType2 = LuaDLL.lua_type(L, 2);
-
-			if (funcType2 != LuaTypes.LUA_TFUNCTION)
-			{
-				 arg0 = (System.Func<bool>)ToLua.CheckObject(L, 2, typeof(System.Func<bool>));
-			}
-			else
-			{
-				LuaFunction func = ToLua.ToLuaFunction(L, 2);
-				arg0 = (System.Func<bool>)DelegateTraits<System.Func<bool>>.Create(func);
-			}
-
+			System.Func<bool> arg0 = (System.Func<bool>)ToLua.CheckDelegate<System.Func<bool>>(L, 2);
 			obj.TestFunc = arg0;
 			return 0;
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index TestFunc on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index TestFunc on a nil value");
 		}
 	}
 

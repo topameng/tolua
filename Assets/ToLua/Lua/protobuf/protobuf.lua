@@ -787,20 +787,20 @@ local function _AddIsInitializedMethod(message_descriptor, message_meta)
 
         for _,field in ipairs(required_fields) do
             if not message_meta._member.HasField(self, field.name) then
-                errors.append(field.name) 
+                errors[#errors + 1] = field.name
             end
         end
 
         for field, value in message_meta._member.ListFields(self) do
             if field.cpp_type == FieldDescriptor.CPPTYPE_MESSAGE then
                 if field.is_extension then
-                    name = io:format("(%s)", field.full_name)
+                    name = string.format("(%s)", field.full_name)
                 else
                     name = field.name
                 end
                 if field.label == FieldDescriptor.LABEL_REPEATED then
                     for i, element in ipairs(value) do
-                        prefix = io:format("%s[%d].", name, i)
+                        prefix = string.format("%s[%d].", name, i)
                         sub_errors = element:FindInitializationErrors()
                         for _, e in ipairs(sub_errors) do
                             errors[#errors + 1] = prefix .. e

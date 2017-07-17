@@ -27,7 +27,7 @@ public class TestCustomLoader : LuaClient
 
     new void Awake()
     {
-#if UNITY_5
+#if UNITY_5 || UNITY_2017
         Application.logMessageReceived += Logger;
 #else
         Application.RegisterLogCallback(Logger);
@@ -39,7 +39,7 @@ public class TestCustomLoader : LuaClient
     {
         base.OnApplicationQuit();
 
-#if UNITY_5
+#if UNITY_5 || UNITY_2017
         Application.logMessageReceived -= Logger;
 #else
         Application.RegisterLogCallback(null);

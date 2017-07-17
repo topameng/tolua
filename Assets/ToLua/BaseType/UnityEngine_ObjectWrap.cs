@@ -405,7 +405,7 @@ public class UnityEngine_ObjectWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index name on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index name on a nil value");
 		}
 	}
 
@@ -424,7 +424,7 @@ public class UnityEngine_ObjectWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index hideFlags on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index hideFlags on a nil value");
 		}
 	}
 
@@ -443,7 +443,7 @@ public class UnityEngine_ObjectWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index name on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index name on a nil value");
 		}
 	}
 
@@ -462,7 +462,7 @@ public class UnityEngine_ObjectWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index hideFlags on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index hideFlags on a nil value");
 		}
 	}
 }

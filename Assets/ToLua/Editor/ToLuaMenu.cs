@@ -45,9 +45,10 @@ public static class ToLuaMenu
     public static List<Type> dropType = new List<Type>
     {
         typeof(ValueType),                                  //不需要
-#if !UNITY_5
+#if !UNITY_5 && !UNITY_2017
         typeof(Motion),                                     //很多平台只是空类
 #endif
+        typeof(UnityEngine.CustomYieldInstruction),
         typeof(UnityEngine.YieldInstruction),               //无需导出的类      
         typeof(UnityEngine.WaitForEndOfFrame),              //内部支持
         typeof(UnityEngine.WaitForFixedUpdate),
@@ -794,7 +795,7 @@ public static class ToLuaMenu
         string bundleName = subDir == null ? "lua.unity3d" : "lua" + subDir.Replace('/', '_') + ".unity3d";
         bundleName = bundleName.ToLower();
 
-#if UNITY_5        
+#if UNITY_5 || UNITY_2017   
         for (int i = 0; i < files.Length; i++)
         {
             AssetImporter importer = AssetImporter.GetAtPath(files[i]);            
@@ -1021,6 +1022,31 @@ public static class ToLuaMenu
         }        
     }
 
+    static void CopyBuildBat(string path, string tempDir)
+    {
+        if (EditorUserBuildSettings.activeBuildTarget == BuildTarget.StandaloneWindows)
+        {
+            if (IntPtr.Size == 4)
+            {
+                File.Copy(path + "/Luajit/Build.bat", tempDir + "/Build.bat", true);
+            }
+            else if (IntPtr.Size == 8)
+            {
+                File.Copy(path + "/Luajit64/Build.bat", tempDir + "/Build.bat", true);
+            }
+        }
+        else if (EditorUserBuildSettings.activeBuildTarget == BuildTarget.iOS)
+        {
+            //Debug.Log("iOS默认用64位，32位自行考虑");
+            File.Copy(path + "/Luajit64/Build.bat", tempDir + "/Build.bat", true);
+        }
+        else
+        {
+            File.Copy(path + "/Luajit/Build.bat", tempDir + "/Build.bat", true);
+        }
+
+    }
+
     [MenuItem("Lua/Build Lua files to Resources (PC)", false, 53)]
     public static void BuildLuaToResources()
     {
@@ -1030,7 +1056,7 @@ public static class ToLuaMenu
 
         string path = Application.dataPath.Replace('\\', '/');
         path = path.Substring(0, path.LastIndexOf('/'));
-        File.Copy(path + "/Luajit/Build.bat", tempDir +  "/Build.bat", true);
+        CopyBuildBat(path, tempDir);
         CopyLuaBytesFiles(LuaConst.luaDir, tempDir, false);
         Process proc = Process.Start(tempDir + "/Build.bat");
         proc.WaitForExit();
@@ -1049,8 +1075,8 @@ public static class ToLuaMenu
         string destDir = Application.persistentDataPath + "/" + GetOS() + "/Lua/";
 
         string path = Application.dataPath.Replace('\\', '/');
-        path = path.Substring(0, path.LastIndexOf('/'));
-        File.Copy(path + "/Luajit/Build.bat", tempDir + "/Build.bat", true);
+        path = path.Substring(0, path.LastIndexOf('/'));        
+        CopyBuildBat(path, tempDir);
         CopyLuaBytesFiles(LuaConst.luaDir, tempDir, false);
         Process proc = Process.Start(tempDir + "/Build.bat");
         proc.WaitForExit();        
@@ -1079,7 +1105,7 @@ public static class ToLuaMenu
         ClearAllLuaFiles();
         CreateStreamDir(GetOS());
 
-#if !UNITY_5
+#if !UNITY_5 && !UNITY_2017
         string tempDir = CreateStreamDir("Lua");
 #else
         string tempDir = Application.dataPath + "/temp/Lua";
@@ -1096,7 +1122,7 @@ public static class ToLuaMenu
         List<string> dirs = new List<string>();
         GetAllDirs(tempDir, dirs);
 
-#if UNITY_5        
+#if UNITY_5 || UNITY_2017 
         for (int i = 0; i < dirs.Count; i++)
         {
             string str = dirs[i].Remove(0, tempDir.Length);
@@ -1129,7 +1155,7 @@ public static class ToLuaMenu
         ClearAllLuaFiles();                
         CreateStreamDir(GetOS());
 
-#if !UNITY_5
+#if !UNITY_5 && !UNITY_2017
         string tempDir = CreateStreamDir("Lua");
 #else
         string tempDir = Application.dataPath + "/temp/Lua";
@@ -1141,8 +1167,8 @@ public static class ToLuaMenu
 #endif
 
         string path = Application.dataPath.Replace('\\', '/');
-        path = path.Substring(0, path.LastIndexOf('/'));
-        File.Copy(path + "/Luajit/Build.bat", tempDir + "/Build.bat", true);
+        path = path.Substring(0, path.LastIndexOf('/'));        
+        CopyBuildBat(path, tempDir);
         CopyLuaBytesFiles(LuaConst.luaDir, tempDir, false);
         Process proc = Process.Start(tempDir + "/Build.bat");
         proc.WaitForExit();
@@ -1154,7 +1180,7 @@ public static class ToLuaMenu
         List<string> dirs = new List<string>();        
         GetAllDirs(sourceDir, dirs);
 
-#if UNITY_5
+#if UNITY_5 || UNITY_2017
         for (int i = 0; i < dirs.Count; i++)
         {
             string str = dirs[i].Remove(0, sourceDir.Length);

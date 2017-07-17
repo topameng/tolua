@@ -355,7 +355,7 @@ public class System_Collections_Generic_Dictionary_int_TestAccountWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index Count on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index Count on a nil value");
 		}
 	}
 
@@ -374,7 +374,7 @@ public class System_Collections_Generic_Dictionary_int_TestAccountWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index Comparer on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index Comparer on a nil value");
 		}
 	}
 
@@ -393,7 +393,7 @@ public class System_Collections_Generic_Dictionary_int_TestAccountWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index Keys on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index Keys on a nil value");
 		}
 	}
 
@@ -412,7 +412,7 @@ public class System_Collections_Generic_Dictionary_int_TestAccountWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index Values on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index Values on a nil value");
 		}
 	}
 }

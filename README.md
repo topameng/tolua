@@ -19,10 +19,12 @@ ulua&tolua技术交流群3 434341400(已满) <br>
 tolua#技术讨论群④ 543826216<br>
 
 # Library
-**Debugger** <br>
-https://github.com/topameng/Debugger <br>
 **tolua_runtime** <br>
 https://github.com/topameng/tolua_runtime <br>
+**Debugger** <br>
+https://github.com/topameng/Debugger <br>
+**CString** <br>
+https://github.com/topameng/CString <br>
 **protoc-gen-lua** <br>
 https://github.com/topameng/protoc-gen-lua <br>
 
@@ -38,10 +40,10 @@ https://github.com/woshihuo12/UnityHello<br>
 http://uwa-download.oss-cn-beijing.aliyuncs.com/plugins%2FiOS%2FUWA-iOS-ToLua.zip<br>
 
 # Debugger
-**EmmyLua**
-https://github.com/tangzx/IntelliJ-EmmyLua
+**EmmyLua**<br>
+https://github.com/tangzx/IntelliJ-EmmyLua<br>
 **unity_tolua-_zerobrane_api**<br>
-https://github.com/LabOfHoward/unity_tolua-_zerobrane_api
+https://github.com/LabOfHoward/unity_tolua-_zerobrane_api<br>
 
 # Packages
 　**Basics**　　　　　　　　**Math**　　　　　　**Data Structures**<br>
@@ -72,6 +74,7 @@ https://github.com/LabOfHoward/unity_tolua-_zerobrane_api
 * 支持委托(事件)+-lua function。独有的-操作支持, 支持通过函数接口的Add和Remove委托操作 <br>
 * 支持静态反射操作, 形式同c# <br>
 * 支持peer表，可在lua端扩展导出的userdata <br>
+* 支持自定义struct压入和读取，做到无GC，并且成员无类型限制
 * 支持preloading, 可以通过requie后绑定wrap文件 <br>
 * 支持int64, uint64  <br>
 * 大量的lua数学类型，如Quaternion, Vector3, Mathf等
@@ -81,8 +84,16 @@ https://github.com/LabOfHoward/unity_tolua-_zerobrane_api
 * 支持unity所有版本 <br>
 
 # 快速入门
-在CustomSetting.cs中添加需要导出的类或者委托，之后点击菜单Lua->Generate All <br>
-
+在CustomSetting.cs中添加需要导出的类或者委托，类加入到customTypeList列表，委托加入到customDelegateList列表 <br>
+通过设置saveDir变量更改导出目录,默认生成在Assets/Source/Generate/下,点击菜单Lua->Generate All,生成绑定文件 <br>
+在LuaConst.cs中配置开发lua文件目录luaDir以及tolua lua文件目录toluaDir <br>
+```csharp
+LuaState lua = new LuaState();
+lua.Start();
+lua.DoString("print('hello world')");
+lua.Dispose();
+```
+[这里](Assets/ToLua/Examples/README.md)是更多的示例。
 # 关于反射
 tolua# 不支持动态反射。动态反射对于重载函数有参数匹配问题，函数排序问题，ref,out 参数问题等等。<br>
 tolua#提供的替换方法是:<br>

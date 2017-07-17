@@ -1991,10 +1991,10 @@ namespace LuaInterface
             table.Dispose();
             var iter2 = dict.GetEnumerator();
 
-                while (iter2.MoveNext())
-                {
-                    Debugger.Log("map item, k,v is {0}:{1}", iter2.Current.Key, iter2.Current.Value);
-                }                           
+            while (iter2.MoveNext())
+            {
+                Debugger.Log("map item, k,v is {0}:{1}", iter2.Current.Key, iter2.Current.Value);
+            }
 
             iter2.Dispose();
             dict.Dispose();

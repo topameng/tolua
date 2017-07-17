@@ -445,7 +445,7 @@ public class System_DelegateWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index Method on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index Method on a nil value");
 		}
 	}
 
@@ -464,7 +464,7 @@ public class System_DelegateWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index Target on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index Target on a nil value");
 		}
 	}
 }

@@ -279,19 +279,7 @@ public class System_TypeWrap
 		{
 			ToLua.CheckArgsCount(L, 3);
 			System.Type obj = ToLua.CheckMonoType(L, 1);
-			System.Reflection.TypeFilter arg0 = null;
-			LuaTypes funcType2 = LuaDLL.lua_type(L, 2);
-
-			if (funcType2 != LuaTypes.LUA_TFUNCTION)
-			{
-				 arg0 = (System.Reflection.TypeFilter)ToLua.CheckObject(L, 2, typeof(System.Reflection.TypeFilter));
-			}
-			else
-			{
-				LuaFunction func = ToLua.ToLuaFunction(L, 2);
-				arg0 = (System.Reflection.TypeFilter)DelegateTraits<System.Reflection.TypeFilter>.Create(func);
-			}
-
+			System.Reflection.TypeFilter arg0 = (System.Reflection.TypeFilter)ToLua.CheckDelegate<System.Reflection.TypeFilter>(L, 2);
 			object arg1 = ToLua.ToVarObject(L, 3);
 			System.Type[] o = obj.FindInterfaces(arg0, arg1);
 			ToLua.Push(L, o);
@@ -554,19 +542,7 @@ public class System_TypeWrap
 			System.Type obj = ToLua.CheckMonoType(L, 1);
 			System.Reflection.MemberTypes arg0 = (System.Reflection.MemberTypes)ToLua.CheckObject(L, 2, typeof(System.Reflection.MemberTypes));
 			System.Reflection.BindingFlags arg1 = (System.Reflection.BindingFlags)LuaDLL.luaL_checknumber(L, 3);
-			System.Reflection.MemberFilter arg2 = null;
-			LuaTypes funcType4 = LuaDLL.lua_type(L, 4);
-
-			if (funcType4 != LuaTypes.LUA_TFUNCTION)
-			{
-				 arg2 = (System.Reflection.MemberFilter)ToLua.CheckObject(L, 4, typeof(System.Reflection.MemberFilter));
-			}
-			else
-			{
-				LuaFunction func = ToLua.ToLuaFunction(L, 4);
-				arg2 = (System.Reflection.MemberFilter)DelegateTraits<System.Reflection.MemberFilter>.Create(func);
-			}
-
+			System.Reflection.MemberFilter arg2 = (System.Reflection.MemberFilter)ToLua.CheckDelegate<System.Reflection.MemberFilter>(L, 4);
 			object arg3 = ToLua.ToVarObject(L, 5);
 			System.Reflection.MemberInfo[] o = obj.FindMembers(arg0, arg1, arg2, arg3);
 			ToLua.Push(L, o);
@@ -907,7 +883,7 @@ public class System_TypeWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index Assembly on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index Assembly on a nil value");
 		}
 	}
 
@@ -926,7 +902,7 @@ public class System_TypeWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index AssemblyQualifiedName on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index AssemblyQualifiedName on a nil value");
 		}
 	}
 
@@ -945,7 +921,7 @@ public class System_TypeWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index Attributes on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index Attributes on a nil value");
 		}
 	}
 
@@ -964,7 +940,7 @@ public class System_TypeWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index BaseType on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index BaseType on a nil value");
 		}
 	}
 
@@ -983,7 +959,7 @@ public class System_TypeWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index DeclaringType on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index DeclaringType on a nil value");
 		}
 	}
 
@@ -1016,7 +992,7 @@ public class System_TypeWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index FullName on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index FullName on a nil value");
 		}
 	}
 
@@ -1035,7 +1011,7 @@ public class System_TypeWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index GUID on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index GUID on a nil value");
 		}
 	}
 
@@ -1054,7 +1030,7 @@ public class System_TypeWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index HasElementType on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index HasElementType on a nil value");
 		}
 	}
 
@@ -1073,7 +1049,7 @@ public class System_TypeWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index IsAbstract on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index IsAbstract on a nil value");
 		}
 	}
 
@@ -1092,7 +1068,7 @@ public class System_TypeWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index IsAnsiClass on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index IsAnsiClass on a nil value");
 		}
 	}
 
@@ -1111,7 +1087,7 @@ public class System_TypeWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index IsArray on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index IsArray on a nil value");
 		}
 	}
 
@@ -1130,7 +1106,7 @@ public class System_TypeWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index IsAutoClass on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index IsAutoClass on a nil value");
 		}
 	}
 
@@ -1149,7 +1125,7 @@ public class System_TypeWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index IsAutoLayout on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index IsAutoLayout on a nil value");
 		}
 	}
 
@@ -1168,7 +1144,7 @@ public class System_TypeWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index IsByRef on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index IsByRef on a nil value");
 		}
 	}
 
@@ -1187,7 +1163,7 @@ public class System_TypeWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index IsClass on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index IsClass on a nil value");
 		}
 	}
 
@@ -1206,7 +1182,7 @@ public class System_TypeWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index IsCOMObject on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index IsCOMObject on a nil value");
 		}
 	}
 
@@ -1225,7 +1201,7 @@ public class System_TypeWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index IsContextful on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index IsContextful on a nil value");
 		}
 	}
 
@@ -1244,7 +1220,7 @@ public class System_TypeWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index IsEnum on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index IsEnum on a nil value");
 		}
 	}
 
@@ -1263,7 +1239,7 @@ public class System_TypeWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index IsExplicitLayout on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index IsExplicitLayout on a nil value");
 		}
 	}
 
@@ -1282,7 +1258,7 @@ public class System_TypeWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index IsImport on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index IsImport on a nil value");
 		}
 	}
 
@@ -1301,7 +1277,7 @@ public class System_TypeWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index IsInterface on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index IsInterface on a nil value");
 		}
 	}
 
@@ -1320,7 +1296,7 @@ public class System_TypeWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index IsLayoutSequential on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index IsLayoutSequential on a nil value");
 		}
 	}
 
@@ -1339,7 +1315,7 @@ public class System_TypeWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index IsMarshalByRef on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index IsMarshalByRef on a nil value");
 		}
 	}
 
@@ -1358,7 +1334,7 @@ public class System_TypeWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index IsNestedAssembly on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index IsNestedAssembly on a nil value");
 		}
 	}
 
@@ -1377,7 +1353,7 @@ public class System_TypeWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index IsNestedFamANDAssem on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index IsNestedFamANDAssem on a nil value");
 		}
 	}
 
@@ -1396,7 +1372,7 @@ public class System_TypeWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index IsNestedFamily on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index IsNestedFamily on a nil value");
 		}
 	}
 
@@ -1415,7 +1391,7 @@ public class System_TypeWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index IsNestedFamORAssem on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index IsNestedFamORAssem on a nil value");
 		}
 	}
 
@@ -1434,7 +1410,7 @@ public class System_TypeWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index IsNestedPrivate on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index IsNestedPrivate on a nil value");
 		}
 	}
 
@@ -1453,7 +1429,7 @@ public class System_TypeWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index IsNestedPublic on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index IsNestedPublic on a nil value");
 		}
 	}
 
@@ -1472,7 +1448,7 @@ public class System_TypeWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index IsNotPublic on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index IsNotPublic on a nil value");
 		}
 	}
 
@@ -1491,7 +1467,7 @@ public class System_TypeWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index IsPointer on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index IsPointer on a nil value");
 		}
 	}
 
@@ -1510,7 +1486,7 @@ public class System_TypeWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index IsPrimitive on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index IsPrimitive on a nil value");
 		}
 	}
 
@@ -1529,7 +1505,7 @@ public class System_TypeWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index IsPublic on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index IsPublic on a nil value");
 		}
 	}
 
@@ -1548,7 +1524,7 @@ public class System_TypeWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index IsSealed on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index IsSealed on a nil value");
 		}
 	}
 
@@ -1567,7 +1543,7 @@ public class System_TypeWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index IsSerializable on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index IsSerializable on a nil value");
 		}
 	}
 
@@ -1586,7 +1562,7 @@ public class System_TypeWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index IsSpecialName on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index IsSpecialName on a nil value");
 		}
 	}
 
@@ -1605,7 +1581,7 @@ public class System_TypeWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index IsUnicodeClass on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index IsUnicodeClass on a nil value");
 		}
 	}
 
@@ -1624,7 +1600,7 @@ public class System_TypeWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index IsValueType on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index IsValueType on a nil value");
 		}
 	}
 
@@ -1643,7 +1619,7 @@ public class System_TypeWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index MemberType on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index MemberType on a nil value");
 		}
 	}
 
@@ -1662,7 +1638,7 @@ public class System_TypeWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index Module on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index Module on a nil value");
 		}
 	}
 
@@ -1681,7 +1657,7 @@ public class System_TypeWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index Namespace on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index Namespace on a nil value");
 		}
 	}
 
@@ -1700,7 +1676,7 @@ public class System_TypeWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index ReflectedType on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index ReflectedType on a nil value");
 		}
 	}
 
@@ -1719,7 +1695,7 @@ public class System_TypeWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index TypeHandle on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index TypeHandle on a nil value");
 		}
 	}
 
@@ -1738,7 +1714,7 @@ public class System_TypeWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index TypeInitializer on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index TypeInitializer on a nil value");
 		}
 	}
 
@@ -1757,7 +1733,7 @@ public class System_TypeWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index UnderlyingSystemType on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index UnderlyingSystemType on a nil value");
 		}
 	}
 
@@ -1776,7 +1752,7 @@ public class System_TypeWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index ContainsGenericParameters on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index ContainsGenericParameters on a nil value");
 		}
 	}
 
@@ -1795,7 +1771,7 @@ public class System_TypeWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index IsGenericTypeDefinition on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index IsGenericTypeDefinition on a nil value");
 		}
 	}
 
@@ -1814,7 +1790,7 @@ public class System_TypeWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index IsGenericType on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index IsGenericType on a nil value");
 		}
 	}
 
@@ -1833,7 +1809,7 @@ public class System_TypeWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index IsGenericParameter on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index IsGenericParameter on a nil value");
 		}
 	}
 
@@ -1852,7 +1828,7 @@ public class System_TypeWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index IsNested on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index IsNested on a nil value");
 		}
 	}
 
@@ -1871,7 +1847,7 @@ public class System_TypeWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index IsVisible on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index IsVisible on a nil value");
 		}
 	}
 
@@ -1890,7 +1866,7 @@ public class System_TypeWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index GenericParameterPosition on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index GenericParameterPosition on a nil value");
 		}
 	}
 
@@ -1909,7 +1885,7 @@ public class System_TypeWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index GenericParameterAttributes on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index GenericParameterAttributes on a nil value");
 		}
 	}
 
@@ -1928,7 +1904,7 @@ public class System_TypeWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index DeclaringMethod on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index DeclaringMethod on a nil value");
 		}
 	}
 
@@ -1947,7 +1923,7 @@ public class System_TypeWrap
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o == null ? "attempt to index StructLayoutAttribute on a nil value" : e.Message);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index StructLayoutAttribute on a nil value");
 		}
 	}
 }
