@@ -64,7 +64,7 @@ tolua#DoFile函数,跟lua保持一致行为,能多次执行一个文件。tolua#
 
 > **注意:** 虽然有文件加载,但此例子无法发布到手机, 如果ToLua目录不在/Assets目录下, 需要修改代码中的目录位置<br>
 
-## 例子3
+## 例子3 LuaFunction
 展示了如何调用lua的函数, 主要代码如下:
 ``` csharp
     private string script =
@@ -226,4 +226,81 @@ c# 中需要按后面方式调用, 即必须主动传入第一个参数self<br>
 * LuaTable.RawGet(key) 获取t[key]值到c#, 类似于 lua_rawget <br>
 * LuaTable.RawSet(key, value) 等价于t[k] = v的操作, 类似于lua_rawset <br>
 
+## 例子5 协同一
+展示了如何使用lua协同, lua 代码如下：
+``` lua
+        function fib(n)
+            local a, b = 0, 1
+            while n > 0 do
+                a, b = b, a + b
+                n = n - 1
+            end
 
+            return a
+        end
+
+        function CoFunc()
+            print('Coroutine started')    
+            for i = 1, 10, 1 do
+                print(fib(i))                    
+                coroutine.wait(0.1)                     
+            end 
+            print("current frameCount: "..Time.frameCount)
+            coroutine.step()
+            print("yield frameCount: "..Time.frameCount)
+
+            local www = UnityEngine.WWW("http://www.baidu.com")
+            coroutine.www(www)
+            local s = tolua.tolstring(www.bytes)
+            print(s:sub(1, 128))
+            print('Coroutine ended')
+        end
+
+        function TestCortinue() 
+            coroutine.start(CoFunc)
+        end
+
+        local coDelay = nil
+
+        function Delay()
+            local c = 1
+
+            while true do
+                coroutine.wait(1) 
+                print("Count: "..c)
+                c = c + 1
+            end
+        end
+
+        function StartDelay()
+            coDelay = coroutine.start(Delay)
+        end
+
+        function StopDelay()
+            coroutine.stop(coDelay)
+        end
+```
+c#代码如下:
+``` csharp
+        new LuaResLoader();
+        lua  = new LuaState();
+        lua.Start();
+        LuaBinder.Bind(lua);
+        DelegateFactory.Init();         
+        looper = gameObject.AddComponent<LuaLooper>();
+        looper.luaState = lua;
+
+        lua.DoString(luaFile.text, "TestLuaCoroutine.lua");
+        LuaFunction f = lua.GetFunction("TestCortinue");
+        f.Call();
+        f.Dispose();
+        f = null;  
+```         
+* 必须启动LuaLooper驱动协同，这里将一个lua的半双工协同装换为类似unity的全双工协同 <br>
+* fib函数负责计算一个斐那波契n  <br>
+* coroutine.start 启动一个lua协同  <br>
+* coroutine.wait 协同中等待一段时间，单位:秒  <br>
+* coroutine.step 协同中等待一帧.  <br>
+* coroutine.www 等待一个WWW完成. <br>
+* tolua.tolstring 转换byte数组为lua字符串缓冲 <br>
+* coroutine.stop 停止一个正在lua将要执行的协同 <br>

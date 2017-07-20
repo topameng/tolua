@@ -110,9 +110,7 @@ public static class ToLuaExport
     public static Type extendType = null;
 
     public static HashSet<Type> eventSet = new HashSet<Type>();
-
-    public static List<Type> extendList = new List<Type>();
-    static List<_MethodBase> extendMethod = new List<_MethodBase>();    
+    public static List<Type> extendList = new List<Type>();    
 
     public static List<string> memberFilter = new List<string>
     {
@@ -199,6 +197,7 @@ public static class ToLuaExport
                 return method.IsGenericMethod;
             }
         }
+        
 
         MethodBase method;
         ParameterInfo[] args;
@@ -358,12 +357,13 @@ public static class ToLuaExport
             return null;
         }
 
+        public bool BeExtend = false;
+
         public int ProcessParams(int tab, bool beConstruct, int checkTypePos)
         {
-            ParameterInfo[] paramInfos = args;
-            bool beExtend = extendMethod.Contains(this);
+            ParameterInfo[] paramInfos = args;                        
 
-            if (beExtend)
+            if (BeExtend)
             {
                 ParameterInfo[] pt = new ParameterInfo[paramInfos.Length - 1];
                 Array.Copy(paramInfos, 1, pt, 0, pt.Length);
@@ -374,7 +374,7 @@ public static class ToLuaExport
             string head = string.Empty;
             PropertyInfo pi = null;
             int methodType = GetMethodType(method, out pi);
-            int offset = ((method.IsStatic && !beExtend) || beConstruct) ? 1 : 2;
+            int offset = ((method.IsStatic && !BeExtend) || beConstruct) ? 1 : 2;
 
             if (method.Name == "op_Equality")
             {
@@ -386,7 +386,7 @@ public static class ToLuaExport
                 head += "\t";
             }
 
-            if ((!method.IsStatic && !beConstruct) || beExtend)
+            if ((!method.IsStatic && !beConstruct) || BeExtend)
             {
                 if (checkTypePos > 0)
                 {
@@ -476,7 +476,7 @@ public static class ToLuaExport
                 return refList.Count + 1;
             }
 
-            string obj = (method.IsStatic && !beExtend) ? className : "obj";
+            string obj = (method.IsStatic && !BeExtend) ? className : "obj";
             Type retType = GetReturnType();
 
             if (retType == typeof(void))
@@ -643,7 +643,7 @@ public static class ToLuaExport
         nameCounter.Clear();
         events = null;
         getItems.Clear();
-        setItems.Clear();
+        setItems.Clear();        
     }
 
     private static MetaOp GetOp(string name)
@@ -934,6 +934,7 @@ public static class ToLuaExport
             for (int j = 0; j < count + 1; j++)
             {
                 _MethodBase r = new _MethodBase(list[i].Method, length - j);
+                r.BeExtend = list[i].BeExtend;
                 methods.Add(r);                
             }
         }
@@ -4123,7 +4124,7 @@ public static class ToLuaExport
         return false;
     }
 
-    static void ProcessExtendType(Type extendType, List<_MethodBase> list, List<_MethodBase> extendList)
+    static void ProcessExtendType(Type extendType, List<_MethodBase> list)
     {
         HashSet<string> removeSet = new HashSet<string>();
 
@@ -4157,7 +4158,7 @@ public static class ToLuaExport
                     if (!IsObsolete(list2[i]))
                     {
                         _MethodBase mb = new _MethodBase(md);
-                        extendList.Add(mb);
+                        mb.BeExtend = true;                        
                         list.Add(mb);
                     }
                 }
@@ -4174,7 +4175,7 @@ public static class ToLuaExport
 
         for (int i = 0; i < extendList.Count; i++)
         {
-            ProcessExtendType(extendList[i], list, extendMethod);
+            ProcessExtendType(extendList[i], list);
             string nameSpace = GetNameSpace(extendList[i], out temp);
 
             if (!string.IsNullOrEmpty(nameSpace))
