@@ -34,7 +34,6 @@ namespace LuaInterface
 
         static string typeName = string.Empty;                
         static int nilType = -1;
-        static int metaref = -1;
 
         static public void Init(Func<IntPtr, int, bool> check)
         {            
@@ -56,13 +55,7 @@ namespace LuaInterface
 
         static public int GetLuaReference(IntPtr L)
         {
-            if (metaref > 0)
-            {                
-                return metaref;
-            }
-
-            metaref = LuaStatic.GetMetaReference(L, type);
-            return metaref;
+            return LuaStatic.GetMetaReference(L, type);
         }   
 
         static bool DefaultCheck(IntPtr L, int pos)
