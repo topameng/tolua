@@ -34,10 +34,7 @@ namespace LuaInterface
 
         static string typeName = string.Empty;                
         static int nilType = -1;
-#if !MULTI_STATE
         static int metaref = -1;
-        static WeakReference metaRefEnv = null;
-#endif
 
         static public void Init(Func<IntPtr, int, bool> check)
         {            
@@ -59,26 +56,24 @@ namespace LuaInterface
 
         static public int GetLuaReference(IntPtr L)
         {
-#if !MULTI_STATE
-            LuaState curLuaEnv = LuaState.Get(L);
-            LuaState cachedLuaEnv = metaRefEnv != null ? metaRefEnv.Target as LuaState : null;
-            if (cachedLuaEnv != curLuaEnv)
-            {
-                metaref = -1;
-                if (metaRefEnv == null) metaRefEnv = new WeakReference(curLuaEnv);
-                else metaRefEnv.Target = curLuaEnv;
-            }
+#if MULTI_STATE
+            return LuaStatic.GetMetaReference(L, type);
+#else
             if (metaref > 0)
-            {
+            {                
                 return metaref;
             }
 
             metaref = LuaStatic.GetMetaReference(L, type);
+
+            if (metaref > 0)
+            {
+                LuaState.Get(L).OnDestroy += () => { metaref = -1; };
+            }
+
             return metaref;
-#else
-            return LuaStatic.GetMetaReference(L, type);
 #endif
-        }
+        }   
 
         static bool DefaultCheck(IntPtr L, int pos)
         {            

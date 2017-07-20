@@ -48,7 +48,10 @@ public static class ToLuaMenu
 #if !UNITY_5 && !UNITY_2017
         typeof(Motion),                                     //很多平台只是空类
 #endif
+
+#if UNITY_5_3_OR_NEWER
         typeof(UnityEngine.CustomYieldInstruction),
+#endif
         typeof(UnityEngine.YieldInstruction),               //无需导出的类      
         typeof(UnityEngine.WaitForEndOfFrame),              //内部支持
         typeof(UnityEngine.WaitForFixedUpdate),
@@ -795,7 +798,7 @@ public static class ToLuaMenu
         string bundleName = subDir == null ? "lua.unity3d" : "lua" + subDir.Replace('/', '_') + ".unity3d";
         bundleName = bundleName.ToLower();
 
-#if UNITY_5 || UNITY_2017   
+#if UNITY_5 || UNITY_2017
         for (int i = 0; i < files.Length; i++)
         {
             AssetImporter importer = AssetImporter.GetAtPath(files[i]);            
@@ -806,7 +809,7 @@ public static class ToLuaMenu
                 importer.assetBundleVariant = null;                
             }
         }
-#else        
+#else
         List<Object> list = new List<Object>();
 
         for (int i = 0; i < files.Length; i++)
@@ -823,7 +826,7 @@ public static class ToLuaMenu
             File.Delete(output);
             BuildPipeline.BuildAssetBundle(null, list.ToArray(), output, options, EditorUserBuildSettings.activeBuildTarget);            
         }
-#endif        
+#endif
     }
 
     static void ClearAllLuaFiles()
@@ -1122,7 +1125,7 @@ public static class ToLuaMenu
         List<string> dirs = new List<string>();
         GetAllDirs(tempDir, dirs);
 
-#if UNITY_5 || UNITY_2017 
+#if UNITY_5 || UNITY_2017
         for (int i = 0; i < dirs.Count; i++)
         {
             string str = dirs[i].Remove(0, tempDir.Length);
@@ -1145,7 +1148,7 @@ public static class ToLuaMenu
 
         BuildLuaBundle(null, "Assets/StreamingAssets/Lua");
         Directory.Delete(Application.streamingAssetsPath + "/Lua/", true);
-#endif            
+#endif
         AssetDatabase.Refresh();
     }
 

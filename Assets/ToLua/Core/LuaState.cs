@@ -66,6 +66,8 @@ namespace LuaInterface
                 translator.LogGC = value;
             }
         }
+
+        public Action OnDestroy = delegate { };
         
         Dictionary<string, WeakReference> funcMap = new Dictionary<string, WeakReference>();
         Dictionary<int, WeakReference> funcRefMap = new Dictionary<int, WeakReference>();
@@ -1913,6 +1915,7 @@ namespace LuaInterface
 #if MISS_WARNING
                 missSet.Clear();
 #endif
+                OnDestroy();
                 Debugger.Log("LuaState destroy");
             }
 
