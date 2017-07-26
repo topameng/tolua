@@ -90,13 +90,27 @@ function Vector2.Dot(lhs, rhs)
 end
 
 function Vector2.Angle(from, to)
-	local x1 = from.x
-	local y1 = from.y
-	local x2 = to.x
-	local y2 = to.y
-	local len1 = sqrt(x1 * x1 + y1 * y1)
-	local len2 = sqrt(x2 * x2 + y2 * y2)
-	local d = x1 / len1 * x2 / len2 + y1 / len1 * y2 / len2
+	local x1,y1 = from.x, from.y
+	local d = sqrt(x1 * x1 + y1 * y1)
+
+	if d > 1e-5 then
+		x1 = x1/d
+		y1 = y1/d
+	else
+		x1,y1 = 0,0
+	end
+
+	local x2,y2 = to.x, to.y
+	d = sqrt(x2 * x2 + y2 * y2)
+
+	if d > 1e-5 then
+		x2 = x2/d
+		y2 = y2/d
+	else
+		x2,y2 = 0,0
+	end
+
+	d = x1 * x2 + y1 * y2
 
 	if d < -1 then
 		d = -1
