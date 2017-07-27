@@ -53,15 +53,13 @@ Quaternion.__newindex = function(t, name, k)
 end
 
 function Quaternion.New(x, y, z, w)	
-	local quat = {x = x or 0, y = y or 0, z = z or 0, w = w or 0}
-	setmetatable(quat, Quaternion)	
-	return quat
+	return setmetatable({x = x or 0, y = y or 0, z = z or 0, w = w or 0}, Quaternion)	
 end
 
 local _new = Quaternion.New
 
 Quaternion.__call = function(t, x, y, z, w)
-	return _new(x, y, z, w)
+	return setmetatable({x = x or 0, y = y or 0, z = z or 0, w = w or 0}, Quaternion)	
 end
 
 function Quaternion:Set(x,y,z,w)
@@ -106,10 +104,24 @@ function Quaternion.Equals(a, b)
 	return a.x == b.x and a.y == b.y and a.z == b.z and a.w == b.w
 end
 
-function Quaternion.Euler(x, y, z)		
-	local quat = _new()	
-	quat:SetEuler(x,y,z)
-	return quat
+function Quaternion.Euler(x, y, z)
+	x = x * 0.0087266462599716
+    y = y * 0.0087266462599716
+    z = z * 0.0087266462599716
+
+	local sinX = sin(x)
+    local cosX = cos(x)
+    local sinY = sin(y)
+    local cosY = cos(y)
+    local sinZ = sin(z)
+    local cosZ = cos(z)
+
+    local w = cosY * cosX * cosZ + sinY * sinX * sinZ
+    x = cosY * sinX * cosZ + sinY * cosX * sinZ
+    y = sinY * cosX * cosZ - cosY * sinX * sinZ
+    z = cosY * cosX * sinZ - sinY * sinX * cosZ
+
+	return setmetatable({x = x, y = y, z = z, w = w}, Quaternion)
 end
 
 function Quaternion:SetEuler(x, y, z)		

@@ -39,7 +39,7 @@ Vector3.__index = function(t,k)
 end
 
 function Vector3.New(x, y, z)		
-	return setmetatable({x = x or 0, y = y or 0, z = z or 0}, Vector3)
+	return setmetatable({x = x or 0, y = y or 0, z = z or 0}, Vector3)			
 end
 
 local _new = Vector3.New
@@ -321,7 +321,7 @@ function Vector3.Slerp(from, to, t)
 	v1:Div(len1)
 
 	local len 	= (len2 - len1) * t + len1
-	local cosom = dot(v1, v2)
+	local cosom = v1.x * v2.x + v1.y * v2.y + v1.z * v2.z
 	
 	if cosom > 1 - 1e-6 then
 		scale0 = 1 - t
