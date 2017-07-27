@@ -4,8 +4,6 @@ local Normalize = Vector3.Normalize
 --local verbo = require("jit.v")
 --verbo.start()
 
-Debugger.Log("hello world {0}, {1},{2}", 1, 2, 3)
-
 function Test1(transform)	
 	local one = Vector3.one
 	local t = os.clock()

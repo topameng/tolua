@@ -43,20 +43,3 @@ require "System.ValueType"
 require "System.Reflection.BindingFlags"
 
 --require "misc.strict"
-
-if jit then
-	if jit.status() then		
-		local t = os.clock()
-
-		for i=1,10000 do
-			local q1 = Quaternion.Euler(i, i, i)				
-			Quaternion.Slerp(Quaternion.identity, q1, 0.5)		
-		end	
-		
-		jit.flush(true)
-	end	
-
-	if not jit.status() then
-		print("jit off")	
-	end
-end

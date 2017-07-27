@@ -106,16 +106,16 @@ namespace LuaInterface
             }
 
             float time = Time.realtimeSinceStartup;            
-            InitTypeTraits();
-            InitStackTraits();
-            L = LuaNewState();
+            L = LuaNewState();            
             LuaException.Init(L);
             stateMap.Add(L, this);                        
-            OpenToLuaLibs();
+            OpenToLuaLibs();            
             ToLua.OpenLibs(L);
             OpenBaseLibs();
             LuaSetTop(0);
             InitLuaPath();
+            InitTypeTraits();
+            InitStackTraits();
             Debugger.Log("Init lua state cost: {0}", Time.realtimeSinceStartup - time);
         }        
 
@@ -561,7 +561,7 @@ namespace LuaInterface
 #endif
         }
 
-        public object[] DoString(string chunk, string chunkName = "LuaState.cs")
+        public void DoString(string chunk, string chunkName = "LuaState.cs")
         {
 #if UNITY_EDITOR
             if (!beStart)
@@ -570,10 +570,16 @@ namespace LuaInterface
             }
 #endif
             byte[] buffer = Encoding.UTF8.GetBytes(chunk);
-            return LuaLoadBuffer(buffer, chunkName);
-        }        
+            LuaLoadBuffer(buffer, chunkName);
+        }
 
-        public object[] DoFile(string fileName)
+        public T DoString<T>(string chunk, string chunkName = "LuaState.cs")
+        {
+            byte[] buffer = Encoding.UTF8.GetBytes(chunk);
+            return LuaLoadBuffer<T>(buffer, chunkName);
+        }
+
+        public void DoFile(string fileName)
         {
 #if UNITY_EDITOR
             if (!beStart)
@@ -595,7 +601,32 @@ namespace LuaInterface
                 fileName = LuaFileUtils.Instance.FindFile(fileName);
             }
 
-            return LuaLoadBuffer(buffer, fileName);
+            LuaLoadBuffer(buffer, fileName);
+        }
+
+        public T DoFile<T>(string fileName)
+        {
+#if UNITY_EDITOR
+            if (!beStart)
+            {
+                throw new LuaException("you must call Start() first to initialize LuaState");
+            }
+#endif
+            byte[] buffer = LuaFileUtils.Instance.ReadFile(fileName);
+
+            if (buffer == null)
+            {
+                string error = string.Format("cannot open {0}: No such file or directory", fileName);
+                error += LuaFileUtils.Instance.FindFileError(fileName);
+                throw new LuaException(error);
+            }
+
+            if (LuaConst.openLuaDebugger)
+            {
+                fileName = LuaFileUtils.Instance.FindFile(fileName);
+            }
+
+            return LuaLoadBuffer<T>(buffer, fileName);
         }
 
         //注意fileName与lua文件中require一致。
@@ -1328,11 +1359,6 @@ namespace LuaInterface
             ToLua.Push(L, tracker);
         }
 
-        public void PushValue<T>(T v) where T : struct
-        {
-            ToLua.PushValue<T>(L, v);
-        }
-
         public void PushVariant(object obj)
         {
             ToLua.Push(L, obj);
@@ -1346,6 +1372,11 @@ namespace LuaInterface
         public void PushSealed<T>(T o)
         {
             ToLua.PushSealed<T>(L, o);
+        }
+
+        public void PushValue<T>(T v) where T : struct
+        {
+            StackTraits<T>.Push(L, v);
         }
 
         public void PushGeneric<T>(T o)
@@ -2065,7 +2096,26 @@ namespace LuaInterface
             }
         }
 
-        protected object[] LuaLoadBuffer(byte[] buffer, string chunkName)
+        protected void LuaLoadBuffer(byte[] buffer, string chunkName)
+        {
+            LuaDLL.tolua_pushtraceback(L);
+            int oldTop = LuaGetTop();
+
+            if (LuaLoadBuffer(buffer, buffer.Length, chunkName) == 0)
+            {
+                if (LuaPCall(0, LuaDLL.LUA_MULTRET, oldTop) == 0)
+                {                    
+                    LuaSetTop(oldTop - 1);
+                    return;
+                }
+            }
+
+            string err = LuaToString(-1);
+            LuaSetTop(oldTop - 1);                        
+            throw new LuaException(err, LuaException.GetLastError());
+        }
+
+        protected T LuaLoadBuffer<T>(byte[] buffer, string chunkName)
         {
             LuaDLL.tolua_pushtraceback(L);
             int oldTop = LuaGetTop();
@@ -2074,14 +2124,14 @@ namespace LuaInterface
             {
                 if (LuaPCall(0, LuaDLL.LUA_MULTRET, oldTop) == 0)
                 {
-                    object[] result = CheckObjects(oldTop);
+                    T result = CheckValue<T>(oldTop + 1);
                     LuaSetTop(oldTop - 1);
                     return result;
                 }
             }
 
             string err = LuaToString(-1);
-            LuaSetTop(oldTop - 1);                        
+            LuaSetTop(oldTop - 1);
             throw new LuaException(err, LuaException.GetLastError());
         }
 

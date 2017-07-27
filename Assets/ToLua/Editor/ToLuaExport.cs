@@ -357,6 +357,33 @@ public static class ToLuaExport
             return null;
         }
 
+        public string GetTotalName()
+        {
+            string[] ss = new string[args.Length];
+
+            for (int i = 0; i < args.Length; i++)
+            {
+                ss[i] = GetTypeStr(args[i].ParameterType);
+            }
+
+            if (!ToLuaExport.IsGenericMethod(method))
+            {
+                return Name + "(" + string.Join(",", ss) + ")";
+            }
+            else
+            {
+                Type[] gts = method.GetGenericArguments();
+                string[] ts = new string[gts.Length];
+
+                for (int i = 0; i < gts.Length; i++)
+                {
+                    ts[i] = GetTypeStr(gts[i]);
+                }
+
+                return Name + "<" + string.Join(",", ts) + ">" + "(" + string.Join(",", ss) + ")";
+            }
+        }
+
         public bool BeExtend = false;
 
         public int ProcessParams(int tab, bool beConstruct, int checkTypePos)
@@ -1520,7 +1547,7 @@ public static class ToLuaExport
 
             if (IsGenericMethod(m.Method))
             {
-                Debugger.Log("Generic Method {0} cannot be export to lua", m.Name);
+                Debugger.Log("Generic Method {0}.{1} cannot be export to lua", LuaMisc.GetTypeName(type), m.GetTotalName());
                 continue;
             }
 
@@ -1987,6 +2014,11 @@ public static class ToLuaExport
         return -1;
     }
 
+    static bool Is64bit(Type t)
+    {
+        return t == typeof(long) || t == typeof(ulong);
+    }
+
     static int Compare(_MethodBase lhs, _MethodBase rhs)
     {
         int off1 = lhs.IsStatic ? 0 : 1;
@@ -2071,6 +2103,26 @@ public static class ToLuaExport
                 else if (list1[i].ParameterType != typeof(object) && list2[i].ParameterType == typeof(object))
                 {
                     return -1;
+                }
+                else if (list1[i].ParameterType.IsPrimitive && list2[i].ParameterType.IsPrimitive)
+                {
+                    if (Is64bit(list1[i].ParameterType) && !Is64bit(list2[i].ParameterType))
+                    {
+                        return 1;
+                    }
+                    else if (!Is64bit(list1[i].ParameterType) && Is64bit(list2[i].ParameterType))
+                    {
+                        return -1;
+                    }
+                    else if (Is64bit(list1[i].ParameterType) && Is64bit(list2[i].ParameterType))
+                    {
+                        if (list1[i].ParameterType == typeof(ulong))
+                        {
+                            return 1;
+                        }
+
+                        return -1;
+                    }
                 }
             }
 
@@ -2582,8 +2634,8 @@ public static class ToLuaExport
         { typeof(short), 6 },        
         { typeof(uint), 7 },
         { typeof(int), 8 },                
-        { typeof(ulong), 9 },
-        { typeof(long), 10 },
+        //{ typeof(ulong), 9 },
+        //{ typeof(long), 10 },
         { typeof(decimal), 11 },
         { typeof(float), 12 },
         { typeof(double), 13 },
@@ -2644,7 +2696,7 @@ public static class ToLuaExport
                 {
                     s = typeSize[ll[i]] >= typeSize[lr[i]] ? 1 : 2;
                 }
-                else if (ll[i] != lr[i])
+                else if (ll[i] != lr[i] && !ll[i].IsPrimitive && !lr[i].IsPrimitive)
                 {
                     return -1;
                 }
@@ -2667,31 +2719,15 @@ public static class ToLuaExport
         if (index >= 0)
         {
             if (CompareMethod(list[index], r) == 2)
-            {
-                ParameterInfo[] pis = list[index].GetParameters();
-                string[] names = new string[pis.Length];
-
-                for (int i = 0; i < pis.Length; i++)
-                {
-                    names[i] = GetTypeStr(pis[i].ParameterType);
-                }
-
-                Debugger.LogWarning("{0}:{1}({2}) has been dropped as other overload function more match lua", className, r.Name, string.Join(", ", names));
+            {                
+                Debugger.LogWarning("{0}.{1} has been dropped as function {2} more match lua", className, list[index].GetTotalName(), r.GetTotalName());
                 list.RemoveAt(index);
                 list.Add(r);
                 return;
             }
             else
             {
-                ParameterInfo[] pis = r.GetParameters();
-                string[] names = new string[pis.Length];
-
-                for (int i = 0; i < pis.Length; i++)
-                {
-                    names[i] = GetTypeStr(pis[i].ParameterType);
-                }
-
-                Debugger.LogWarning("{0}:{1}({2}) has been dropped as other overload function more match lua", className, r.Name, string.Join(", ", names));
+                Debugger.LogWarning("{0}.{1} has been dropped as function {2} more match lua", className, r.GetTotalName(), list[index].GetTotalName());
                 return;
             }
         }

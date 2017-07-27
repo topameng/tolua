@@ -20,7 +20,7 @@ public class TestLuaThread : MonoBehaviour
                 print('Coroutine started')                
                 local i = 0
                 for i = 0, len, 1 do                    
-                    local flag = coroutine.yield(fib(i))					
+                    local flag = coroutine.yield(fib(i))	                    
                     if not flag then
                         break
                     end                                      
@@ -98,10 +98,11 @@ public class TestLuaThread : MonoBehaviour
 
         if (GUI.Button(new Rect(10, 50, 120, 40), "Resume Thead"))
         {
-            if (thread != null && thread.Resume(true) == (int)LuaThreadStatus.LUA_YIELD)
-            {
-                object[] objs = thread.GetResult();
-                Debugger.Log("lua yield: " + objs[0]);
+            int ret = -1;
+
+            if (thread != null && thread.ResumeRet(true, out ret) == (int)LuaThreadStatus.LUA_YIELD)
+            {                
+                Debugger.Log("lua yield: " + ret);
             }
         }
         else if (GUI.Button(new Rect(10, 150, 120, 40), "Close Thread"))

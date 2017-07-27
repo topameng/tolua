@@ -64,8 +64,9 @@ https://github.com/LabOfHoward/unity_tolua-_zerobrane_api<br>
 * 支持所有unity内部类导出，支持委托类型导出 <br>
 * 支持导出自定义，跳过某个空的基类，修改导出名称等 <br>
 * 支持扩展函数导出 <br>
+* 支持值类型Nullable导出，包括Nullable<Vector3>等 <br>
 * 支持Lua中function转委托，可以区分需要不同委托的参数的重载函数 <br>
-* 支持c# LuaFunction对象转委托， 简化调用方式
+* 支持c# LuaFunction对象转委托， 简化调用方式 <br>
 * 支持重载函数自动折叠, 如： Convert.ToUInt32只导出double参数的函数 <br>
 * 支持重载函数自动排序, object参数执行级最低, 不会出现错误匹配情况 <br>
 * 支持导出函数重命名, 可以分离导出某个重载函数(可以导出被折叠掉的函数) <br>
@@ -88,10 +89,70 @@ https://github.com/LabOfHoward/unity_tolua-_zerobrane_api<br>
 通过设置saveDir变量更改导出目录,默认生成在Assets/Source/Generate/下,点击菜单Lua->Generate All,生成绑定文件 <br>
 在LuaConst.cs中配置开发lua文件目录luaDir以及tolua lua文件目录toluaDir <br>
 ```csharp
+//例子1
 LuaState lua = new LuaState();
 lua.Start();
 lua.DoString("print('hello world')");
 lua.Dispose();
+
+//例子2
+LuaState luaState = null;
+
+void Awake()
+{
+    luaState = LuaClient.GetMainState();
+
+    try
+    {            
+        luaState.Call("UIShop.Awake", false);
+    }
+    catch (Exception e)
+    {
+    	//Awake中必须这样特殊处理异常
+        luaState.ThrowLuaException(e);
+    }
+}
+
+void Start()
+{
+    luaState.Call("UIShop.Start", false);
+}
+```
+```lua
+local go = GameObject('go')
+go:AddComponent(typeof(UnityEngine.ParticleSystem))
+go.transform.position = Vector3.zero
+go.transform:Rotate(Vector3(0,90,0), UnityEngine.Space.World)
+go.transform:Rotate(Vector3(0, 1, 0), 0)
+
+Shop = {}
+
+function Shop:OnClick()
+	print("OnClick")
+end
+
+function Shop:OnToggle()
+	print("OnToggle")
+end
+
+--委托
+local listener = UIEventListener.Get(go)
+listener.onClick = function() print("OnClick") end
+listener.onClick = nil
+listener.onClick = UIEventListener.VoidDelegate(Shop.OnClick, Shop)
+listener.onClick = listener.onClick - UIEventListener.VoidDelegate(Shop.OnClick, Shop)
+
+local toggle = go:GetComponent(typeof(UIToggle))
+EventDelegate.Add(toggle.onChange, EventDelegate.Callback(Shop.OnToggle, Shop))
+EventDelegate.Remove(toggle.onChange, EventDelegate.Callback(Shop.OnToggle, Shop))
+
+--out参数
+local _layer = 2 ^ LayerMask.NameToLayer('Default')
+local flag, hit = UnityEngine.Physics.Raycast(ray, nil, 5000, _layer)
+
+if flag then
+    print('pick from lua, point: '..tostring(hit.point))
+end
 ```
 [这里](Assets/ToLua/Examples/README.md)是更多的示例。
 # 关于反射
