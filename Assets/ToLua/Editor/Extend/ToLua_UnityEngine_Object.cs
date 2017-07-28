@@ -218,6 +218,12 @@ public class ToLua_UnityEngine_Object
 
     }
 
+    [NoToLuaAttribute]
+    public static void DestroyObject(Object obj, float t)
+    {
+
+    }
+
     [UseDefinedAttribute]
     public static void Instantiate(Object original)
     {

@@ -679,7 +679,7 @@ public static class ToLuaMenu
             {
                 Type t1 = CustomSettings.dynamicList[i];
                 BindType bt = backupList.Find((p) => { return p.type == t1; });
-                sb.AppendFormat("\t\tL.AddPreLoad(\"{0}\", LuaOpen_{1}, typeof({0}));\r\n", bt.name, bt.wrapName);
+                if (bt != null) sb.AppendFormat("\t\tL.AddPreLoad(\"{0}\", LuaOpen_{1}, typeof({0}));\r\n", bt.name, bt.wrapName);
             }
 
             sb.AppendLineEx("\t\tL.EndPreLoad();");
@@ -700,7 +700,7 @@ public static class ToLuaMenu
             {
                 Type t = CustomSettings.dynamicList[i];
                 BindType bt = backupList.Find((p) => { return p.type == t; });
-                GenPreLoadFunction(bt, sb);
+                if (bt != null) GenPreLoadFunction(bt, sb);
             }            
         }
 

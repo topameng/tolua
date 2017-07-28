@@ -64,18 +64,18 @@ https://github.com/LabOfHoward/unity_tolua-_zerobrane_api<br>
 * 支持所有unity内部类导出，支持委托类型导出 <br>
 * 支持导出自定义，跳过某个空的基类，修改导出名称等 <br>
 * 支持扩展函数导出 <br>
-* 支持值类型Nullable导出，包括Nullable<Vector3>等 <br>
+* 支持值类型Nullable导出，包括Nullable&lt;Vector3&gt;等 <br>
 * 支持Lua中function转委托，可以区分需要不同委托的参数的重载函数 <br>
-* 支持c# LuaFunction对象转委托， 简化调用方式 <br>
-* 支持重载函数自动折叠, 如： Convert.ToUInt32只导出double参数的函数 <br>
+* 支持c# LuaFunction对象转委托，简化调用方式。 支持无GC的多参数调用形式 <br>
+* 支持重载函数自动折叠, 如：Convert.ToUInt32只导出double参数的函数 <br>
 * 支持重载函数自动排序, object参数执行级最低, 不会出现错误匹配情况 <br>
 * 支持导出函数重命名, 可以分离导出某个重载函数(可以导出被折叠掉的函数) <br>
 * 支持使用编辑器类改写导出规则 <br>
-* 支持this数组访问，索引为int可以通过[]访问，其他可使用obj.get_Item或者obj.this:get()访问数组成员 <br>
-* 支持委托(事件)+-lua function。独有的-操作支持, 支持通过函数接口的Add和Remove委托操作 <br>
+* 支持this数组访问，索引为int可以通过[]访问，其他可使用.get_Item或者.this:get()访问数组成员 <br>
+* 支持委托(事件)+-lua function。支持通过函数接口的Add和Remove委托操作 <br>
 * 支持静态反射操作, 形式同c# <br>
 * 支持peer表，可在lua端扩展导出的userdata <br>
-* 支持自定义struct压入和读取，做到无GC，并且成员无类型限制
+* 支持自定义struct压入和读取，做到无GC，并且结构成员无类型限制
 * 支持preloading, 可以通过requie后绑定wrap文件 <br>
 * 支持int64, uint64  <br>
 * 大量的lua数学类型，如Quaternion, Vector3, Mathf等

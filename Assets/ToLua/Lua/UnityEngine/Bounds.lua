@@ -32,11 +32,11 @@ Bounds.__index = function(t,k)
 end
 
 Bounds.__call = function(t, center, size)
-	return setmetatable({center = center, extents = size * 0.5}}, Bounds)		
+	return setmetatable({center = center, extents = size * 0.5}, Bounds)		
 end
 
 function Bounds.New(center, size)	
-	return setmetatable({center = center, extents = size * 0.5}}, Bounds)		
+	return setmetatable({center = center, extents = size * 0.5}, Bounds)		
 end
 
 function Bounds:Get()
