@@ -21,8 +21,6 @@ _slot.__eq = function (lhs, rhs)
 end
 
 --可用于 Timer 定时器回调函数. 例如Timer.New(slot(self.func, self))
-function slot(func, obj)
-	local st = {func = func, obj = obj}
-	setmetatable(st, _slot)		
-	return st
+function slot(func, obj)	
+	return setmetatable({func = func, obj = obj}, _slot)			
 end

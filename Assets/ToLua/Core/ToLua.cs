@@ -1093,7 +1093,7 @@ namespace LuaInterface
                         return obj;
                     }
 
-                    LuaDLL.luaL_argerror(L, stackPos, string.Format("{0} expected, got {1}", type.FullName, objType.FullName));
+                    LuaDLL.luaL_argerror(L, stackPos, string.Format("{0} expected, got {1}", LuaMisc.GetTypeName(type), LuaMisc.GetTypeName(objType)));
                 }
 
                 return null;
@@ -1103,7 +1103,7 @@ namespace LuaInterface
                 return null;
             }
 
-            LuaDLL.luaL_typerror(L, stackPos, type.FullName);
+            LuaDLL.luaL_typerror(L, stackPos, LuaMisc.GetTypeName(type));
             return null;
         }
 
