@@ -14,6 +14,7 @@ local FrameTimer = FrameTimer
 local CoTimer = CoTimer
 
 local comap = {}
+local pool = {}
 setmetatable(comap, {__mode = "kv"})
 
 function coroutine.start(f, ...)	
@@ -31,14 +32,21 @@ function coroutine.start(f, ...)
 		
 		local action = function()												
 			local flag, msg = resume(co, unpack(args))			
+			timer.func = nil
+			table.insert(pool, timer)
 	
-			if not flag then				
-				timer:Stop()								
+			if not flag then														
 				error(debug.traceback(co, msg))						
 			end		
 		end
 			
-		timer = FrameTimer.New(action, 0, 1)
+		if #pool > 0 then
+			timer = table.remove(pool)
+			timer:Reset(action, 0, 1)
+		else
+			timer = FrameTimer.New(action, 0, 1)
+		end
+		
 		comap[co] = timer
 		timer:Start()		
 	end
@@ -74,15 +82,22 @@ function coroutine.step(t, co, ...)
 	
 	local action = function()						
 		local flag, msg = resume(co, unpack(args))
+		timer.func = nil
+		table.insert(pool, timer)
 	
-		if not flag then							
-			timer:Stop()								
+		if not flag then																			
 			error(debug.traceback(co, msg))
 			return	
 		end		
 	end
 				
-	timer = FrameTimer.New(action, t or 1, 1)
+	if #pool > 0 then
+		timer = table.remove(pool)
+		timer:Reset(action, t or 1, 1)
+	else
+		timer = FrameTimer.New(action, t or 1, 1)
+	end
+
 	comap[co] = timer
 	timer:Start()
 	return yield()
@@ -97,16 +112,23 @@ function coroutine.www(www, co)
 			return		
 		end		
 				
-		timer:Stop()		
-		local flag, msg = resume(co)		
+		timer:Stop()	
+		local flag, msg = resume(co)			
+		timer.func = nil
+		table.insert(pool, timer)	
 			
 		if not flag then												
 			error(debug.traceback(co, msg))			
 			return			
 		end				
 	end		
-					
-	timer = FrameTimer.New(action, 1, -1)	
+				
+	if #pool > 0 then
+		timer = table.remove(pool)
+		timer:Reset(action, 1, -1)
+	else	
+		timer = FrameTimer.New(action, 1, -1)	
+	end
 	comap[co] = timer	
  	timer:Start()
  	return yield()

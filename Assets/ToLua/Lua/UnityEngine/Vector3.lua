@@ -38,14 +38,18 @@ Vector3.__index = function(t,k)
 	return var
 end
 
-function Vector3.New(x, y, z)		
-	return setmetatable({x = x or 0, y = y or 0, z = z or 0}, Vector3)			
+function Vector3.New(x, y, z)				
+	local t = {x = x or 0, y = y or 0, z = z or 0}
+	setmetatable(t, Vector3)						
+	return t
 end
 
 local _new = Vector3.New
 
 Vector3.__call = function(t,x,y,z)
-	return setmetatable({x = x or 0, y = y or 0, z = z or 0}, Vector3)
+	local t = {x = x or 0, y = y or 0, z = z or 0}
+	setmetatable(t, Vector3)					
+	return t
 end
 	
 function Vector3:Set(x,y,z)	
@@ -54,8 +58,8 @@ function Vector3:Set(x,y,z)
 	self.z = z or 0
 end
 
-function Vector3:Get()		
-	return self.x, self.y, self.z	
+function Vector3.Get(v)		
+	return v.x, v.y, v.z	
 end
 
 function Vector3:Clone()

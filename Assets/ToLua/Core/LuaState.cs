@@ -105,7 +105,9 @@ namespace LuaInterface
                 mainState = this;
             }
 
-            float time = Time.realtimeSinceStartup;            
+            float time = Time.realtimeSinceStartup;    
+            InitTypeTraits();
+            InitStackTraits();        
             L = LuaNewState();            
             LuaException.Init(L);
             stateMap.Add(L, this);                        
@@ -114,8 +116,6 @@ namespace LuaInterface
             OpenBaseLibs();
             LuaSetTop(0);
             InitLuaPath();
-            InitTypeTraits();
-            InitStackTraits();
             Debugger.Log("Init lua state cost: {0}", Time.realtimeSinceStartup - time);
         }        
 
