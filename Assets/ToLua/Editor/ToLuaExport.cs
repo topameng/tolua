@@ -3051,7 +3051,7 @@ public static class ToLuaExport
         sb.AppendLineEx("\r\n\t[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]");
         sb.AppendFormat("\tstatic int get_{0}(IntPtr L)\r\n", varName);
         sb.AppendLineEx("\t{");                
-        sb.AppendFormat("\t\tToLua.Push(L, new EventObject(\"{0}.{1}\"));\r\n",GetTypeStr(type), varName);
+        sb.AppendFormat("\t\tToLua.Push(L, new EventObject(typeof({0})));\r\n",GetTypeStr(varType));
         sb.AppendLineEx("\t\treturn 1;");
         sb.AppendLineEx("\t}");
     }
@@ -3161,30 +3161,13 @@ public static class ToLuaExport
 
         sb.AppendLineEx("\t\t\tif (arg0.op == EventOp.Add)");
         sb.AppendLineEx("\t\t\t{");
-        sb.AppendFormat("\t\t\t\t{0} ev = ({0})DelegateTraits<{0}>.Create(arg0.func);\r\n", strVarType);
+        sb.AppendFormat("\t\t\t\t{0} ev = ({0})arg0.func;\r\n", strVarType);
         sb.AppendFormat("\t\t\t\t{0}.{1} += ev;\r\n", objStr, varName);
         sb.AppendLineEx("\t\t\t}");
         sb.AppendLineEx("\t\t\telse if (arg0.op == EventOp.Sub)");
         sb.AppendLineEx("\t\t\t{");
-        sb.AppendFormat("\t\t\t\t{0} ev = ({0})LuaMisc.GetEventHandler({1}, typeof({2}), \"{3}\");\r\n", strVarType, isStatic ? "null" : "obj", className, varName);
-        sb.AppendFormat("\t\t\t\tDelegate[] ds = ev.GetInvocationList();\r\n");
-        sb.AppendLineEx("\t\t\t\tLuaState state = LuaState.Get(L);");
-        sb.AppendLineEx();
-
-        sb.AppendLineEx("\t\t\t\tfor (int i = 0; i < ds.Length; i++)");
-        sb.AppendLineEx("\t\t\t\t{");
-        sb.AppendFormat("\t\t\t\t\tev = ({0})ds[i];\r\n", strVarType);
-        sb.AppendLineEx("\t\t\t\t\tLuaDelegate ld = ev.Target as LuaDelegate;\r\n");
-
-        sb.AppendLineEx("\t\t\t\t\tif (ld != null && ld.func == arg0.func)");
-        sb.AppendLineEx("\t\t\t\t\t{");
-        sb.AppendFormat("\t\t\t\t\t\t{0}.{1} -= ev;\r\n", objStr, varName);        
-        sb.AppendLineEx("\t\t\t\t\t\tstate.DelayDispose(ld.func);");
-        sb.AppendLineEx("\t\t\t\t\t\tbreak;");
-        sb.AppendLineEx("\t\t\t\t\t}");
-        sb.AppendLineEx("\t\t\t\t}\r\n");
-
-        sb.AppendLineEx("\t\t\t\targ0.func.Dispose();");
+        sb.AppendFormat("\t\t\t\t{0} ev = ({0})arg0.func;\r\n", strVarType);
+        sb.AppendFormat("\t\t\t\t{0}.{1} -= ev;\r\n", objStr, varName);
         sb.AppendLineEx("\t\t\t}\r\n");
 
         sb.AppendLineEx("\t\t\treturn 0;");
