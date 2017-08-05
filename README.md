@@ -1,20 +1,15 @@
 ## tolua#
 
-tolua# is a Unity lua static binder solution. the first solution that analyzes code by reflection and generates wrapper classes.
-
-It is a Unity plugin that greatly simplifies the integration of C# code with Lua. which can automatically generate the binding code to access Unity from Lua and map c# constants, variables, functions, properties, classes, and enums to Lua.
-
-tolua# grows up from cstolua. it's goal is to be a powerful development environment for Unity.
-
-Support unity4.6.x and Unity5.x all(copy /Unity5.x/Assets to /Assets)
-
-If you want to test in mobile, first click menu Lua/Copy lua files to Resources. then build it
-
-如果你想在手机上测试，首先点击菜单Lua/Copy lua files to Resources， 之后再build.
+tolua# is a Unity lua static binder solution. the first solution that analyzes code by reflection and generates wrapper classes.<br>
+It is a Unity plugin that greatly simplifies the integration of C# code with Lua. which can automatically generate the binding code to access Unity from Lua and map c# constants, variables, functions, properties, classes, and enums to Lua.<br>
+tolua# grows up from cstolua. it's goal is to be a powerful development environment for Unity.<br>
+Support unity4.6.x and Unity5.x all(copy /Unity5.x/Assets to /Assets) <br>
+If you want to test in mobile, first click menu Lua/Copy lua files to Resources. then build it <br>
+如果你想在手机上测试，首先点击菜单Lua/Copy lua files to Resources， 之后再build. <br>
 
 有bug 可以到QQ群反馈: 286510803. 不闲聊，非bug相关不要加群, 请加讨论群: <br>
 ulua&tolua技术交流群① 341746602(已满) <br>
-ulua_tolua技术讨论群② 469941220 <br>
+ulua_tolua技术讨论群② 469941220(已满)  <br>
 ulua&tolua技术交流群3 434341400(已满) <br>
 tolua#技术讨论群④ 543826216<br>
 
@@ -75,7 +70,7 @@ https://github.com/LabOfHoward/unity_tolua-_zerobrane_api<br>
 * 支持委托(事件)+-lua function。支持通过函数接口的Add和Remove委托操作 <br>
 * 支持静态反射操作, 形式同c# <br>
 * 支持peer表，可在lua端扩展导出的userdata <br>
-* 支持自定义struct压入和读取，做到无GC，并且结构成员无类型限制
+* 支持自定义struct压入和读取，做到无GC，并且结构成员无类型限制, 参考例子24 <br>
 * 支持preloading, 可以通过requie后绑定wrap文件 <br>
 * 支持int64, uint64  <br>
 * 大量的lua数学类型，如Quaternion, Vector3, Mathf等
@@ -140,11 +135,21 @@ local listener = UIEventListener.Get(go)
 listener.onClick = function() print("OnClick") end
 listener.onClick = nil
 listener.onClick = UIEventListener.VoidDelegate(Shop.OnClick, Shop)
+listener.onClick = listener.onClick + UIEventListener.VoidDelegate(Shop.OnClick, Shop)
 listener.onClick = listener.onClick - UIEventListener.VoidDelegate(Shop.OnClick, Shop)
 
 local toggle = go:GetComponent(typeof(UIToggle))
 EventDelegate.Add(toggle.onChange, EventDelegate.Callback(Shop.OnToggle, Shop))
 EventDelegate.Remove(toggle.onChange, EventDelegate.Callback(Shop.OnToggle, Shop))
+
+--事件
+local Client = {}
+
+function Client:Log(str)
+end
+
+Application.logMessageReceived = Application.logMessageReceived + Application.LogCallback(Clent.Log, Client)
+Application.logMessageReceived = Application.logMessageReceived - Application.LogCallback(Clent.Log, Client)
 
 --out参数
 local _layer = 2 ^ LayerMask.NameToLayer('Default')
@@ -159,7 +164,7 @@ end
 tolua# 不支持动态反射。动态反射对于重载函数有参数匹配问题，函数排序问题，ref,out 参数问题等等。<br>
 tolua#提供的替换方法是:<br>
 1. preloading, 把你未来可能需要的类型添加到导出列表customTypeList，同时也添加到dynamicList列表中，这样导出后该类型并不会随binder注册到lua中，你可以通过 require "namespace.classname" 动态注册到lua中，对于非枚举类型tolua#系统也可以在第一次push该类型时动态载入，当然也可在过场动画、资源下载、登录、场景加载或者某个的函数中require这个类型。<br>
-2. 静态反射，参考例子22。通过静态反射支持精确的函数参数匹配和类型检查。不会存在重载函数参数混乱匹配错误问题
+2. 静态反射，参考例子22。通过静态反射支持精确的函数参数匹配和类型检查。不会存在重载函数参数混乱匹配错误问题, 注意iOS必须配置好link.xml
 　
 # Performance
 |   平台    |   属性读写   | 重载函数  | Vector3构造 |GameObject构造|Vector3归一化|Slerp|
@@ -172,7 +177,7 @@ tolua#提供的替换方法是:<br>
 PC: Intel(R) Core(TM) i5-4590 CPU@3.3GHz + 8GB + 64 位win7 + Unity5.4.5p4<br>
 Android: 中兴nubia z9 max(NX512J) + Adnroid5.0.2<br>
 iOS(il2cpp): IPhone6 Plus<br>
-按照1.0.7.355版本更新了测试数据<br>
+按照1.0.7.355版本更新了测试数据, u5相对u4, 安卓上c#有了不小的提升<br>
 # Examples
 参考包内1-24例子
 
