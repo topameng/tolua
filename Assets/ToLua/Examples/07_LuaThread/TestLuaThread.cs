@@ -100,7 +100,7 @@ public class TestLuaThread : MonoBehaviour
         {
             int ret = -1;
 
-            if (thread != null && thread.ResumeRet(true, out ret) == (int)LuaThreadStatus.LUA_YIELD)
+            if (thread != null && thread.Resume(true, out ret) == (int)LuaThreadStatus.LUA_YIELD)
             {                
                 Debugger.Log("lua yield: " + ret);
             }

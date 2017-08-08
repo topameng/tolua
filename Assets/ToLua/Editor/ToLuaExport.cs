@@ -2832,6 +2832,15 @@ public static class ToLuaExport
         return map;
     }
 
+    static void GenOverrideDefinedFunc(MethodBase method)
+    {
+        string name = GetMethodName(method);
+        FieldInfo field = extendType.GetField(name + "Defined");
+        string strfun = field.GetValue(null) as string;
+        sb.AppendLineEx(strfun);        
+        return;
+    }
+
     static _MethodBase GenOverrideFunc(string name)
     {
         List<_MethodBase> list = new List<_MethodBase>();        
@@ -2868,7 +2877,14 @@ public static class ToLuaExport
                                             
         for (int i = 0; i < list.Count; i++)
         {
-            GenOverrideFuncBody(list[i], i == 0, checkTypeMap[i]);
+            if (HasAttribute(list[i].Method, typeof(OverrideDefinedAttribute)))
+            {
+                GenOverrideDefinedFunc(list[i].Method);
+            }
+            else
+            {
+                GenOverrideFuncBody(list[i], i == 0, checkTypeMap[i]);
+            }
         }
 
         sb.AppendLineEx("\t\t\telse");

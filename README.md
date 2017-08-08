@@ -183,3 +183,4 @@ iOS(il2cpp): IPhone6 Plus<br>
 
 # About Lua
 win, android ios using luajit2.1-beta3. macos using luac5.1.5(for u5.x). 
+注意iOS未编译模拟器库，请用真机测试

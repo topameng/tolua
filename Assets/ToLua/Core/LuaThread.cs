@@ -114,7 +114,7 @@ namespace LuaInterface
             return ret;
         }
 
-        public int ResumeRet<R1>(out R1 ret1)
+        public int Resume<R1>(out R1 ret1)
         {
             luaState.Push(this);
             IntPtr L = luaState.LuaToThread(-1);
@@ -135,7 +135,7 @@ namespace LuaInterface
             return ret;
         }
 
-        public int ResumeRet<T1, R1>(T1 arg1, out R1 ret1)
+        public int Resume<T1, R1>(T1 arg1, out R1 ret1)
         {
             luaState.Push(this);
             IntPtr L = luaState.LuaToThread(-1);
@@ -180,7 +180,7 @@ namespace LuaInterface
             return ret;
         }
 
-        public int ResumeRet<T1, T2, T3, R1>(T1 arg1, T2 arg2, T3 arg3, out R1 ret1)
+        public int Resume<T1, T2, T3, R1>(T1 arg1, T2 arg2, T3 arg3, out R1 ret1)
         {
             luaState.Push(this);
             IntPtr L = luaState.LuaToThread(-1);
