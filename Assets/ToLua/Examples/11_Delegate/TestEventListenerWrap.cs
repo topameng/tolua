@@ -109,7 +109,7 @@ public class TestEventListenerWrap
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	static int get_onClickEvent(IntPtr L)
 	{
-		ToLua.Push(L, new EventObject("TestEventListener.onClickEvent"));
+		ToLua.Push(L, new EventObject(typeof(TestEventListener.OnClick)));
 		return 1;
 	}
 
@@ -170,30 +170,14 @@ public class TestEventListenerWrap
 
 			if (arg0.op == EventOp.Add)
 			{
-				TestEventListener.OnClick ev = (TestEventListener.OnClick)DelegateTraits<TestEventListener.OnClick>.Create(arg0.func);
-				obj.onClickEvent += ev;
+                TestEventListener.OnClick ev = (TestEventListener.OnClick)arg0.func;
+                obj.onClickEvent += ev;
 			}
 			else if (arg0.op == EventOp.Sub)
 			{
-				TestEventListener.OnClick ev = (TestEventListener.OnClick)LuaMisc.GetEventHandler(obj, typeof(TestEventListener), "onClickEvent");
-				Delegate[] ds = ev.GetInvocationList();
-				LuaState state = LuaState.Get(L);
-
-				for (int i = 0; i < ds.Length; i++)
-				{
-					ev = (TestEventListener.OnClick)ds[i];
-					LuaDelegate ld = ev.Target as LuaDelegate;
-
-					if (ld != null && ld.func == arg0.func)
-					{
-						obj.onClickEvent -= ev;
-						state.DelayDispose(ld.func);
-						break;
-					}
-				}
-
-				arg0.func.Dispose();
-			}
+                TestEventListener.OnClick ev = (TestEventListener.OnClick)arg0.func;
+                obj.onClickEvent -= ev;
+            }
 
 			return 0;
 		}

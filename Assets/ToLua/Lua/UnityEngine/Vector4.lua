@@ -29,14 +29,11 @@ Vector4.__index = function(t,k)
 end
 
 Vector4.__call = function(t, x, y, z, w)
-	return Vector4.New(x, y, z, w)
+	return setmetatable({x = x or 0, y = y or 0, z = z or 0, w = w or 0}, Vector4)		
 end
 
-function Vector4.New(x, y, z, w)
-	local v = {x = 0, y = 0, z = 0, w = 0}
-	setmetatable(v, Vector4)
-	v:Set(x,y,z,w)
-	return v
+function Vector4.New(x, y, z, w)	
+	return setmetatable({x = x or 0, y = y or 0, z = z or 0, w = w or 0}, Vector4)		
 end
 
 function Vector4:Set(x,y,z,w)

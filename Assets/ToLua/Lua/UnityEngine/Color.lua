@@ -27,13 +27,11 @@ Color.__index = function(t,k)
 end
 
 Color.__call = function(t, r, g, b, a)
-	return Color.New(r, g, b, a)
+	return setmetatable({r = r or 0, g = g or 0, b = b or 0, a = a or 1}, Color)   
 end
 
 function Color.New(r, g, b, a)
-	local v = {r = r or 0, g = g or 0, b = b or 0, a = a or 1}
-	setmetatable(v, Color)
-	return v
+	return setmetatable({r = r or 0, g = g or 0, b = b or 0, a = a or 1}, Color)		
 end
 
 function Color:Set(r, g, b, a)

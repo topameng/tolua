@@ -67,8 +67,8 @@ namespace LuaInterface
                 {
                     bool isRef = list[i].IsByRef;
                     Type t0 = isRef ? list[i].GetElementType() : list[i];
-                    object o = ToLua.CheckVarObject(L, i + offset, t0);
-                    args[i] = TypeChecker.ChangeType(o, t0);
+                    object o = ToLua.CheckVarObject(L, i + offset, t0);                    
+                    args[i] = o;
                 }
             }
             

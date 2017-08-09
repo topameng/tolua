@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using LuaInterface;
+using System;
 
 public class ToLua_UnityEngine_GameObject
 {
@@ -290,6 +291,36 @@ public class ToLua_UnityEngine_GameObject
 		}";
 
 
+    public static string AddComponentDefined = 
+@"		IntPtr L0 = LuaException.L;
+
+        try
+        {
+            ++LuaException.InstantiateCount;
+            LuaException.L = L;
+            ToLua.CheckArgsCount(L, 2);
+			UnityEngine.GameObject obj = (UnityEngine.GameObject)ToLua.CheckObject(L, 1, typeof(UnityEngine.GameObject));
+			System.Type arg0 = ToLua.CheckMonoType(L, 2);
+			UnityEngine.Component o = obj.AddComponent(arg0);
+
+            if (LuaDLL.lua_toboolean(L, LuaDLL.lua_upvalueindex(1)))
+            {
+                string error = LuaDLL.lua_tostring(L, -1);
+                LuaDLL.lua_pop(L, 1);
+                throw new LuaException(error, LuaException.GetLastError());
+            }
+
+            ToLua.Push(L, o);
+            LuaException.L = L0;
+            --LuaException.InstantiateCount;
+            return 1;
+		}
+		catch (Exception e)
+		{
+            LuaException.L = L0;
+            --LuaException.InstantiateCount;
+            return LuaDLL.toluaL_exception(L, e);
+		}";
     [UseDefinedAttribute]
     public void SendMessage(string methodName)
     {
@@ -302,6 +333,12 @@ public class ToLua_UnityEngine_GameObject
 
     [UseDefinedAttribute]
     public void BroadcastMessage(string methodName)
+    {
+
+    }
+
+    [UseDefinedAttribute]
+    public void AddComponent(Type t)
     {
 
     }

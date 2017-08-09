@@ -18,8 +18,8 @@ local rawset = rawset
 local rawget = rawget
 local type = type
 
-local rad2Deg = Mathf.Rad2Deg
-local deg2Rad = Mathf.Deg2Rad
+local rad2Deg = 57.295779513082
+local deg2Rad = 0.017453292519943
 
 local Vector3 = {}
 local get = tolua.initget(Vector3)
@@ -38,16 +38,18 @@ Vector3.__index = function(t,k)
 	return var
 end
 
-function Vector3.New(x, y, z)	
-	local v = {x = x or 0, y = y or 0, z = z or 0}		
-	setmetatable(v, Vector3)		
-	return v
+function Vector3.New(x, y, z)				
+	local t = {x = x or 0, y = y or 0, z = z or 0}
+	setmetatable(t, Vector3)						
+	return t
 end
 
 local _new = Vector3.New
 
 Vector3.__call = function(t,x,y,z)
-	return _new(x,y,z)
+	local t = {x = x or 0, y = y or 0, z = z or 0}
+	setmetatable(t, Vector3)					
+	return t
 end
 	
 function Vector3:Set(x,y,z)	
@@ -56,12 +58,12 @@ function Vector3:Set(x,y,z)
 	self.z = z or 0
 end
 
-function Vector3:Get()		
-	return self.x, self.y, self.z	
+function Vector3.Get(v)		
+	return v.x, v.y, v.z	
 end
 
 function Vector3:Clone()
-	return _new(self.x, self.y, self.z)
+	return setmetatable({x = self.x, y = self.y, z = self.z}, Vector3)
 end
 
 function Vector3.Distance(va, vb)
@@ -94,10 +96,10 @@ function Vector3.Normalize(v)
 	local num = sqrt(x * x + y * y + z * z)	
 	
 	if num > 1e-5 then		
-		return _new(x/num, y/num, z/num)   			
+		return setmetatable({x = x / num, y = y / num, z = z / num}, Vector3)
     end
 	  
-	return _new(0, 0, 0)			
+	return setmetatable({x = 0, y = 0, z = 0}, Vector3)
 end
 
 function Vector3:SetNormalize()
@@ -150,74 +152,6 @@ function Vector3.OrthoNormalize(va, vb, vc)
 	vc:SetNormalize()		
 	return va, vb, vc
 end
-
---[[function Vector3.RotateTowards2(from, to, maxRadiansDelta, maxMagnitudeDelta)	
-	local v2 	= to:Clone()
-	local v1 	= from:Clone()
-	local len2 	= to:Magnitude()
-	local len1 	= from:Magnitude()	
-	v2:Div(len2)
-	v1:Div(len1)
-	
-	local dota	= dot(v1, v2)
-	local angle = acos(dota)			
-	local theta = min(angle, maxRadiansDelta)	
-	local len	= 0
-	
-	if len1 < len2 then
-		len = min(len2, len1 + maxMagnitudeDelta)
-	elseif len1 == len2 then
-		len = len1
-	else
-		len = max(len2, len1 - maxMagnitudeDelta)
-	end
-						    
-    v2:Sub(v1 * dota)
-    v2:SetNormalize()     
-	v2:Mul(sin(theta))
-	v1:Mul(cos(theta))
-	v2:Add(v1)
-	v2:SetNormalize()
-	v2:Mul(len)
-	return v2	
-end
-
-function Vector3.RotateTowards1(from, to, maxRadiansDelta, maxMagnitudeDelta)	
-	local omega, sinom, scale0, scale1, len, theta
-	local v2 	= to:Clone()
-	local v1 	= from:Clone()
-	local len2 	= to:Magnitude()
-	local len1 	= from:Magnitude()	
-	v2:Div(len2)
-	v1:Div(len1)
-	
-	local cosom = dot(v1, v2)
-	
-	if len1 < len2 then
-		len = min(len2, len1 + maxMagnitudeDelta)	
-	elseif len1 == len2 then
-		len = len1
-	else
-		len = max(len2, len1 - maxMagnitudeDelta)
-	end 	
-	
-	if 1 - cosom > 1e-6 then	
-		omega 	= acos(cosom)
-		theta 	= min(omega, maxRadiansDelta)		
-		sinom 	= sin(omega)
-		scale0 	= sin(omega - theta) / sinom
-		scale1 	= sin(theta) / sinom
-		
-		v1:Mul(scale0)
-		v2:Mul(scale1)
-		v2:Add(v1)
-		v2:Mul(len)
-		return v2
-	else 		
-		v1:Mul(len)
-		return v1
-	end			
-end]]
 	
 function Vector3.MoveTowards(current, target, maxDistanceDelta)	
 	local delta = target - current	
@@ -391,7 +325,7 @@ function Vector3.Slerp(from, to, t)
 	v1:Div(len1)
 
 	local len 	= (len2 - len1) * t + len1
-	local cosom = dot(v1, v2)
+	local cosom = v1.x * v2.x + v1.y * v2.y + v1.z * v2.z
 	
 	if cosom > 1 - 1e-6 then
 		scale0 = 1 - t

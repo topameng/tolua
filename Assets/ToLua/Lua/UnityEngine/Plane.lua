@@ -18,11 +18,7 @@ Plane.__call = function(t,v)
 end
 
 function Plane.New(normal, d)
-	local plane = {}	
-	plane.normal = normal:Normalize()
-	plane.distance = d
-	setmetatable(plane, Plane)
-	return plane
+	return setmetatable({normal = normal:Normalize(), distance = d}, Plane)	
 end
 
 function Plane:Get()

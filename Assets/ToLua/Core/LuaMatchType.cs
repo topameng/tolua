@@ -59,7 +59,7 @@ namespace LuaInterface
             switch (luaType)
             {
                 case LuaTypes.LUA_TNUMBER:
-                    return true;
+                    return LuaDLL.lua_tonumber(L, pos) >= 0;
                 case LuaTypes.LUA_TUSERDATA:
                     return LuaDLL.tolua_getvaluetype(L, pos) == LuaValueType.UInt64;                    
                 default:

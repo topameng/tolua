@@ -32,15 +32,11 @@ Bounds.__index = function(t,k)
 end
 
 Bounds.__call = function(t, center, size)
-	return Bounds.New(center, size)
+	return setmetatable({center = center, extents = size * 0.5}, Bounds)		
 end
 
-function Bounds.New(center, size)
-	local bd = {}
-	bd.center = center
-	bd.extents = size * 0.5
-	setmetatable(bd, Bounds)	
-	return bd
+function Bounds.New(center, size)	
+	return setmetatable({center = center, extents = size * 0.5}, Bounds)		
 end
 
 function Bounds:Get()
@@ -81,10 +77,8 @@ function Bounds:Encapsulate(point)
 	self:SetMinMax(Vector3.Min(self:GetMin(), point), Vector3.Max(self:GetMax(), point))
 end
 
-function Bounds:Expand(amount)
-	local t = type(amount)
-	
-	if t == "number" then
+function Bounds:Expand(amount)	
+	if type(amount) == "number" then
 		amount = amount * 0.5
 		self.extents:Add(Vector3.New(amount, amount, amount))
 	else

@@ -10,7 +10,7 @@ public class TestPerformance : MonoBehaviour
     LuaState state = null;        
     private string tips = "";
 
-    private void Awake()
+    private void Start()
     {
 #if UNITY_5 || UNITY_2017
         Application.logMessageReceived += ShowTips;

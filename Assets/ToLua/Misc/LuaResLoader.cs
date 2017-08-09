@@ -86,7 +86,9 @@ public class LuaResLoader : LuaFileUtils
                 sb.Append("\n\tno file '").Append(searchPaths[i]).Append('\'');
             }
 
-            sb.Append("\n\tno file './Resources/").Append(fileName).Append(".lua'");
+            sb.Append("\n\tno file './Resources/").Append(fileName).Append(".lua'")
+              .Append("\n\tno file '").Append(LuaConst.luaResDir).Append('/')
+			  .Append(fileName).Append(".lua'");
             sb = sb.Replace("?", fileName);
 
             return sb.ToString();

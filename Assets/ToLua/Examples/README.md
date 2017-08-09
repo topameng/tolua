@@ -145,8 +145,7 @@ tolua# 简化了lua函数的操作，通过LuaFunction封装(并缓存)一个lua
 
 > **注意:** 无论Call还是PCall只相当于lua中的函数'.'调用。<br>
 请注意':'这种语法糖 self:call(...) == self.call(self, ...） <br>
-c# 中需要按后面方式调用, 即必须主动传入第一个参数self<br>
-如果获取LuaFuntion不使用，直接Dispose会有出错警告，这种情况可以无视。
+c# 中需要按后面方式调用, 即必须主动传入第一个参数self <br>
 
 ## 例子4
 展示了如何访问lua中变量，table的操作

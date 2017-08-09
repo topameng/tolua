@@ -140,7 +140,7 @@ function Mathf.MoveTowards(current, target, maxDelta)
 		return target
 	end
 
-	return current + mathf.sign(target - current) * maxDelta
+	return current + Mathf.Sign(target - current) * maxDelta
 end
 
 function Mathf.MoveTowardsAngle(current, target, maxDelta)

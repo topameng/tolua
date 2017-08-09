@@ -8,32 +8,26 @@ local UpdateBeat = UpdateBeat
 local CoUpdateBeat = CoUpdateBeat
 local Time = Time
 
-Timer = 
-{
-	time	 = 0,
-	duration = 1,
-	loop	 = 1,
-	running	 = false,
-	scale	 = false,
-	func	 = nil,	
-}
+Timer = {}
 
 local Timer = Timer
-local mt = {}
-mt.__index = Timer
+local mt = {__index = Timer}
 
 --scale false 采用deltaTime计时，true 采用 unscaledDeltaTime计时
 function Timer.New(func, duration, loop, scale)
-	local timer = {}
-	scale = scale or false and true
-	setmetatable(timer, mt)	
-	timer:Reset(func, duration, loop, scale)
-	return timer
+	scale = scale or false and true	
+	loop = loop or 1
+	return setmetatable({func = func, duration = duration, time = duration, loop = loop, scale = scale, running = false}, mt)	
 end
 
 function Timer:Start()
 	self.running = true
-	UpdateBeat:Add(self.Update, self)
+
+	if not self.handle then
+		self.handle = UpdateBeat:CreateListener(self.Update, self)
+	end
+
+	UpdateBeat:AddListener(self.handle)	
 end
 
 function Timer:Reset(func, duration, loop, scale)
@@ -41,25 +35,19 @@ function Timer:Reset(func, duration, loop, scale)
 	self.loop		= loop or 1
 	self.scale		= scale
 	self.func		= func
-	self.time		= duration
-	self.running	= false
-	self.count		= Time.frameCount + 1
+	self.time		= duration		
 end
 
 function Timer:Stop()
 	self.running = false
-	UpdateBeat:Remove(self.Update, self)
+	UpdateBeat:RemoveListener(self.handle)	
 end
 
 function Timer:Update()
-	if not self.running then
-		return
-	end
-	
 	local delta = self.scale and Time.deltaTime or Time.unscaledDeltaTime	
 	self.time = self.time - delta
 	
-	if self.time <= 0 and Time.frameCount > self.count then
+	if self.time <= 0 then
 		self.func()
 		
 		if self.loop > 0 then
@@ -76,44 +64,39 @@ function Timer:Update()
 end
 
 --给协同使用的帧计数timer
-FrameTimer = 
-{	
-	count  		= 1,		
-	duration	= 1,
-	loop		= 1,
-	func		= nil,	
-	running	 	= false,
-}
+FrameTimer = {}
 
 local FrameTimer = FrameTimer
-local mt2 = {}
-mt2.__index = FrameTimer
+local mt2 = {__index = FrameTimer}
 
-function FrameTimer.New(func, count, loop)
-	local timer = {}
-	setmetatable(timer, mt2)	
-	timer.count = Time.frameCount + count
-	timer.duration = count
-	timer.loop	= loop
-	timer.func	= func
-	return timer
+function FrameTimer.New(func, count, loop)	
+	local c = Time.frameCount + count
+	loop = loop or 1
+	return setmetatable({func = func, loop = loop, duration = count, count = c, running = false}, mt2)		
 end
 
-function FrameTimer:Start()	
+function FrameTimer:Reset(func, count, loop)
+	self.func = func
+	self.duration = count
+	self.loop = loop
+	self.count = Time.frameCount + count	
+end
+
+function FrameTimer:Start()		
+	if not self.handle then
+		self.handle = CoUpdateBeat:CreateListener(self.Update, self)
+	end
+	
+	CoUpdateBeat:AddListener(self.handle)	
 	self.running = true
-	CoUpdateBeat:Add(self.Update, self)
 end
 
 function FrameTimer:Stop()	
 	self.running = false
-	CoUpdateBeat:Remove(self.Update, self)
+	CoUpdateBeat:RemoveListener(self.handle)	
 end
 
 function FrameTimer:Update()	
-	if not self.running then
-		return
-	end	
-	
 	if Time.frameCount >= self.count then
 		self.func()	
 		
@@ -129,52 +112,39 @@ function FrameTimer:Update()
 	end
 end
 
-CoTimer = 
-{
-	time	 = 0,
-	duration = 1,
-	loop	 = 1,
-	running	 = false,	
-	func	 = nil,	
-}
+CoTimer = {}
 
 local CoTimer = CoTimer
-local mt3 = {}
-mt3.__index = CoTimer
+local mt3 = {__index = CoTimer}
 
-function CoTimer.New(func, duration, loop)
-	local timer = {}
-	setmetatable(timer, mt3)	
-	timer:Reset(func, duration, loop)
-	return timer
+function CoTimer.New(func, duration, loop)	
+	loop = loop or 1
+	return setmetatable({duration = duration, loop = loop, func = func, time = duration, running = false}, mt3)			
 end
 
-function CoTimer:Start()
+function CoTimer:Start()		
+	if not self.handle then	
+		self.handle = CoUpdateBeat:CreateListener(self.Update, self)
+	end
+	
 	self.running = true
-	self.count = Time.frameCount + 1
-	CoUpdateBeat:Add(self.Update, self)
+	CoUpdateBeat:AddListener(self.handle)	
 end
 
 function CoTimer:Reset(func, duration, loop)
 	self.duration 	= duration
 	self.loop		= loop or 1	
 	self.func		= func
-	self.time		= duration
-	self.running	= false
-	self.count		= Time.frameCount + 1
+	self.time		= duration		
 end
 
 function CoTimer:Stop()
 	self.running = false
-	CoUpdateBeat:Remove(self.Update, self)
+	CoUpdateBeat:RemoveListener(self.handle)	
 end
 
-function CoTimer:Update()
-	if not self.running then
-		return
-	end		
-	
-	if self.time <= 0 and Time.frameCount > self.count then
+function CoTimer:Update()	
+	if self.time <= 0 then
 		self.func()		
 		
 		if self.loop > 0 then

@@ -8,7 +8,7 @@ public class ToLua_LuaInterface_EventObject
 @"        try
         {
             EventObject arg0 = (EventObject)ToLua.CheckObject(L, 1, typeof(EventObject));
-            arg0.func = ToLua.CheckLuaFunction(L, 2);
+            arg0.func = ToLua.CheckDelegate(arg0.type, L, 2);
             arg0.op = EventOp.Add;
             ToLua.Push(L, arg0);
             return 1;
@@ -23,7 +23,7 @@ public class ToLua_LuaInterface_EventObject
 @"        try
         {
             EventObject arg0 = (EventObject)ToLua.CheckObject(L, 1, typeof(EventObject));
-            arg0.func = ToLua.CheckLuaFunction(L, 2);
+            arg0.func = ToLua.CheckDelegate(arg0.type, L, 2);
             arg0.op = EventOp.Sub;
             ToLua.Push(L, arg0);
             return 1;

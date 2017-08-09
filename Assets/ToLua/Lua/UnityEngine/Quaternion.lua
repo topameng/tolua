@@ -53,15 +53,17 @@ Quaternion.__newindex = function(t, name, k)
 end
 
 function Quaternion.New(x, y, z, w)	
-	local quat = {x = x or 0, y = y or 0, z = z or 0, w = w or 0}
-	setmetatable(quat, Quaternion)	
-	return quat
+	local t = {x = x or 0, y = y or 0, z = z or 0, w = w or 0}
+	setmetatable(t, Quaternion)	
+	return t
 end
 
 local _new = Quaternion.New
 
 Quaternion.__call = function(t, x, y, z, w)
-	return _new(x, y, z, w)
+	local t = {x = x or 0, y = y or 0, z = z or 0, w = w or 0}
+	setmetatable(t, Quaternion)	
+	return t
 end
 
 function Quaternion:Set(x,y,z,w)
@@ -106,10 +108,21 @@ function Quaternion.Equals(a, b)
 	return a.x == b.x and a.y == b.y and a.z == b.z and a.w == b.w
 end
 
-function Quaternion.Euler(x, y, z)		
-	local quat = _new()	
-	quat:SetEuler(x,y,z)
-	return quat
+function Quaternion.Euler(x, y, z)
+	x = x * 0.0087266462599716
+    y = y * 0.0087266462599716
+    z = z * 0.0087266462599716
+
+	local sinX = sin(x)
+    x = cos(x)
+    local sinY = sin(y)
+    y = cos(y)
+    local sinZ = sin(z)
+    z = cos(z)
+
+    local q = {x = y * sinX * z + sinY * x * sinZ, y = sinY * x * z - y * sinX * sinZ, z = y * x * sinZ - sinY * sinX * z, w = y * x * z + sinY * sinX * sinZ}
+	setmetatable(q, Quaternion)
+	return q
 end
 
 function Quaternion:SetEuler(x, y, z)		
@@ -119,9 +132,9 @@ function Quaternion:SetEuler(x, y, z)
 		x = x.x
 	end
 		
-	x = x * halfDegToRad
-    y = y * halfDegToRad
-    z = z * halfDegToRad
+	x = x * 0.0087266462599716
+    y = y * 0.0087266462599716
+    z = z * 0.0087266462599716
 	
 	local sinX = sin(x)
     local cosX = cos(x)
@@ -199,7 +212,7 @@ local function MatrixToQuaternion(rot, quat)
 		s = 0.5 / s
 		quat.x = (rot[3][2] - rot[2][3]) * s
 		quat.y = (rot[1][3] - rot[3][1]) * s
-		quat.z = (rot[2][1] - rot[1][2]) * s--]]
+		quat.z = (rot[2][1] - rot[1][2]) * s
 		quat:SetNormalize()
 	else
 		local i = 1		
@@ -322,7 +335,7 @@ end
 
 function Quaternion.Lerp(q1, q2, t)
 	t = clamp(t, 0, 1)
-	local q = _new()	
+	local q = {x = 0, y = 0, z = 0, w = 1}	
 	
 	if Quaternion.Dot(q1, q2) < 0 then
 		q.x = q1.x + t * (-q2.x -q1.x)
@@ -336,7 +349,8 @@ function Quaternion.Lerp(q1, q2, t)
 		q.w = q1.w + (q2.w - q1.w) * t
 	end	
 	
-	q:SetNormalize()
+	Quaternion.SetNormalize(q)	
+	setmetatable(q, Quaternion)
 	return q
 end
 
@@ -422,32 +436,38 @@ function Quaternion:SetIdentity()
 	self.w = 1
 end
 
-local function UnclampedSlerp(from, to, t)		
-	local cosAngle = Quaternion.Dot(from, to)
-	
-    if cosAngle < 0 then    
-        cosAngle = -cosAngle
-        to = Quaternion.New(-to.x, -to.y, -to.z, -to.w)
+local function UnclampedSlerp(q1, q2, t)		
+	local dot = q1.x * q2.x + q1.y * q2.y + q1.z * q2.z + q1.w * q2.w
+
+    if dot < 0 then
+        dot = -dot        
+        q2 = setmetatable({x = -q2.x, y = -q2.y, z = -q2.z, w = -q2.w}, Quaternion)        
     end
-    
-    local t1, t2
-    
-    if cosAngle < 0.95 then    
-	    local angle 	= acos(cosAngle)
-		local sinAngle 	= sin(angle)
-        local invSinAngle = 1 / sinAngle
-        t1 = sin((1 - t) * angle) * invSinAngle
-        t2 = sin(t * angle) * invSinAngle    
-		local quat = _new(from.x * t1 + to.x * t2, from.y * t1 + to.y * t2, from.z * t1 + to.z * t2, from.w * t1 + to.w * t2)
-		return quat
-    else    
-		return Quaternion.Lerp(from, to, t)
-    end   	
+
+    if dot < 0.95 then		
+	    local angle = acos(dot)
+        local invSinAngle = 1 / sin(angle)
+        local t1 = sin((1 - t) * angle) * invSinAngle
+        local t2 = sin(t * angle) * invSinAngle
+        q1 = {x = q1.x * t1 + q2.x * t2, y = q1.y * t1 + q2.y * t2, z = q1.z * t1 + q2.z * t2, w = q1.w * t1 + q2.w * t2}
+		setmetatable(q1, Quaternion)		
+		return q1
+	else
+		q1 = {x = q1.x + t * (q2.x - q1.x), y = q1.y + t * (q2.y - q1.y), z = q1.z + t * (q2.z - q1.z), w = q1.w + t * (q2.w - q1.w)}		
+		Quaternion.SetNormalize(q1)		
+		setmetatable(q1, Quaternion)
+		return q1
+    end
 end
 
 
 function Quaternion.Slerp(from, to, t)	
-	t = clamp(t, 0, 1)
+	if t < 0 then
+		t = 0
+	elseif t > 1 then
+		t = 1
+	end
+
 	return UnclampedSlerp(from, to, t)
 end
 
