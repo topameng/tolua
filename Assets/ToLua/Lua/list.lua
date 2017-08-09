@@ -4,7 +4,6 @@
 --      Use, modification and distribution are subject to the "MIT License"
 --------------------------------------------------------------------------------
 local setmetatable = setmetatable
-local assert = assert
 
 local list = {}
 list.__index = list
@@ -23,7 +22,6 @@ function list:clear()
 end
 
 function list:push(value)
-	--assert(value)
 	local node = {value = value, _prev = 0, _next = 0}
 
 	self._prev._next = node
@@ -31,6 +29,7 @@ function list:push(value)
 	node._prev = self._prev
 	self._prev = node
 
+	node.removed = false
 	self.length = self.length + 1
 	return node
 end
@@ -59,6 +58,7 @@ function list:unshift(v)
 	node._next = self._next
 	self._next = node
 
+	node.removed = false
 	self.length = self.length + 1
 	return node
 end
@@ -72,10 +72,11 @@ end
 function list:remove(iter)
 	local _prev = iter._prev
 	local _next = iter._next
-	_next._prev = _prev
-	_prev._next = _next
 
-	if not iter.removed then
+	if iter.removed == false then
+		_next._prev = _prev
+		_prev._next = _next
+
 		self.length = math.max(0, self.length - 1)
 		iter.removed = true
 	end	
@@ -151,6 +152,7 @@ function list:insert(v, iter)
 
 	node._prev = iter
 	iter._next = node
+	node.removed = false
 	self.length = self.length + 1
 	return node
 end
