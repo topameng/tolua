@@ -84,13 +84,13 @@ end
 function list:find(v, iter)
 	iter = iter or self
 
-	while iter do
+	repeat
 		if v == iter.value then
 			return iter
 		else
 			iter = iter._next
 		end		
-	end
+	until iter == self
 
 	return nil
 end
@@ -98,13 +98,13 @@ end
 function list:findlast(v, iter)
 	iter = iter or self
 
-	while iter do
+	repeat
 		if v == iter.value then
 			return iter
 		end
 
 		iter = iter._prev
-	end
+	until iter == self
 
 	return nil
 end
