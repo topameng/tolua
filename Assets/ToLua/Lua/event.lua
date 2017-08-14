@@ -111,33 +111,21 @@ function _event:CreateListener(func, obj)
 end
 
 function _event:AddListener(handle)	
-	if not handle.removed then
-		return false
-	end
-
 	if self.lock then
 		table.insert(self.opList, handle)	
 		handle.op = list.pushnode			
 	else
 		self.list:pushnode(handle)
 	end
-
-	return true
 end
 
 function _event:RemoveListener(handle)		
-	if handle.removed then
-		return false
-	end
-
 	if self.lock and self.current ~= handle then		
 		table.insert(self.opList, handle)		
 		handle.op = list.remove		
 	else
 		self.list:remove(handle)
-	end
-
-	return true
+	end	
 end
 
 function _event:Count()
