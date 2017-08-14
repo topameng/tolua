@@ -116,11 +116,11 @@ function _event:AddListener(handle)
 		handle.op = list.pushnode			
 	else
 		self.list:pushnode(handle)
-	end
+	end	
 end
 
 function _event:RemoveListener(handle)		
-	if self.lock and self.current ~= handle then		
+	if self.lock then		
 		table.insert(self.opList, handle)		
 		handle.op = list.remove		
 	else
