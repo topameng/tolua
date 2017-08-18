@@ -105,9 +105,9 @@ namespace LuaInterface
                 mainState = this;
             }
 
-            float time = Time.realtimeSinceStartup;    
+            float time = Time.realtimeSinceStartup;
             InitTypeTraits();
-            InitStackTraits();        
+            InitStackTraits();
             L = LuaNewState();            
             LuaException.Init(L);
             stateMap.Add(L, this);                        
@@ -1276,6 +1276,8 @@ namespace LuaInterface
                 {
                     return;
                 }
+
+                translator.Destroyudata(index);
             }
 
             index = translator.AddObject(o);
