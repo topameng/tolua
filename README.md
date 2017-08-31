@@ -7,7 +7,7 @@ Support unity4.6.x and Unity5.x all(copy /Unity5.x/Assets to /Assets) <br>
 If you want to test in mobile, first click menu Lua/Copy lua files to Resources. then build it <br>
 如果你想在手机上测试，首先点击菜单Lua/Copy lua files to Resources， 之后再build. <br>
 
-欢迎大家点星支持，谢谢^_^
+欢迎大家点星支持，谢谢^_^<br>
 有bug 可以到QQ群反馈: 286510803. 不闲聊，非bug相关不要加群, 请加讨论群: <br>
 ulua&tolua技术交流群① 341746602(已满) <br>
 ulua_tolua技术讨论群② 469941220(已满)  <br>
