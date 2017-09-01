@@ -1909,7 +1909,6 @@ namespace LuaInterface
         {
             if (IntPtr.Zero != L)
             {
-                LuaGC(LuaGCOptions.LUA_GCCOLLECT, 0);
                 Collect();
 
                 foreach (KeyValuePair<Type, int> kv in metaMap)
