@@ -91,7 +91,7 @@ function _event:Remove(func, obj)
 		if v.func == func and v.obj == obj then
 			if self.lock then
 				table.insert(self.opList, i)
-				node.op = list.remove
+				i.op = list.remove
 			else
 				self.list:remove(i)
 			end

@@ -4,8 +4,8 @@ tolua# is a Unity lua static binder solution. the first solution that analyzes c
 It is a Unity plugin that greatly simplifies the integration of C# code with Lua. which can automatically generate the binding code to access Unity from Lua and map c# constants, variables, functions, properties, classes, and enums to Lua.<br>
 tolua# grows up from cstolua. it's goal is to be a powerful development environment for Unity.<br>
 Support unity4.6.x and Unity5.x all(copy /Unity5.x/Assets to /Assets) <br>
-If you want to test in mobile, first click menu Lua/Copy lua files to Resources. then build it <br>
-如果你想在手机上测试，首先点击菜单Lua/Copy lua files to Resources， 之后再build. <br>
+If you want to test examples(example 1 is excluded)in mobile, first click menu Lua/Copy lua files to Resources. then build it <br>
+如果你想在手机上测试例子(例子1除外)，首先点击菜单Lua/Copy lua files to Resources， 之后再build. <br>
 
 欢迎大家点星支持，谢谢^_^<br>
 有bug 可以到QQ群反馈: 286510803. 不闲聊，非bug相关不要加群, 请加讨论群: <br>
