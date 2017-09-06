@@ -40,7 +40,10 @@ end
 
 function Timer:Stop()
 	self.running = false
-	UpdateBeat:RemoveListener(self.handle)	
+
+	if self.handle then
+		UpdateBeat:RemoveListener(self.handle)	
+	end
 end
 
 function Timer:Update()
@@ -93,7 +96,10 @@ end
 
 function FrameTimer:Stop()	
 	self.running = false
-	CoUpdateBeat:RemoveListener(self.handle)	
+
+	if self.handle then
+		CoUpdateBeat:RemoveListener(self.handle)	
+	end
 end
 
 function FrameTimer:Update()	
@@ -140,7 +146,10 @@ end
 
 function CoTimer:Stop()
 	self.running = false
-	CoUpdateBeat:RemoveListener(self.handle)	
+
+	if self.handle then
+		CoUpdateBeat:RemoveListener(self.handle)	
+	end
 end
 
 function CoTimer:Update()	

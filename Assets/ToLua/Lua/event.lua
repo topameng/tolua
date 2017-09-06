@@ -109,6 +109,8 @@ function _event:CreateListener(func, obj)
 end
 
 function _event:AddListener(handle)	
+	assert(handle)
+
 	if self.lock then		
 		table.insert(self.opList, function() self.list:pushnode(handle) end)		
 	else
@@ -116,7 +118,9 @@ function _event:AddListener(handle)
 	end	
 end
 
-function _event:RemoveListener(handle)		
+function _event:RemoveListener(handle)	
+	assert(handle)	
+
 	if self.lock then		
 		table.insert(self.opList, function() self.list:remove(handle) end)				
 	else
