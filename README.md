@@ -126,12 +126,24 @@ go.transform:DORotate(Vector3(0,0,360), 2, DG.Tweening.RotateMode.FastBeyond360)
 
 Shop = {}
 
+function Shop:Awake()
+    self.OnUpdate = UpdateBeat:CreateListener(Shop.Update, self)
+    UpdateBeat:AddListener(self.OnUpdate)
+end
+
+function Shop:OnDestroy()
+    UpdateBeat:RemoveListener(self.OnUpdate)
+end
+
 function Shop:OnClick()
     print("OnClick")
 end
 
 function Shop:OnToggle()
     print("OnToggle")
+end
+
+function Shop:Update()
 end
 
 --委托
