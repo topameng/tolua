@@ -76,8 +76,8 @@ function _event:Add(func, obj)
 	end	
 
 	if self.lock then
-		local node = {value = func, _prev = 0, _next = 0}
-		table.insert(self.addList, node)
+		local node = {value = func, _prev = 0, _next = 0, removed = true}
+		table.insert(self.opList, function() self.list:pushnode(node) end)			
 		return node
 	else
 		return self.list:push(func)
@@ -88,12 +88,11 @@ end
 function _event:Remove(func, obj)	
 	for i, v in ilist(self.list) do							
 		if v.func == func and v.obj == obj then
-			if self.lock and self.current ~= i then
-				table.insert(self.rmList, i)
+			if self.lock then
+				table.insert(self.opList, function() self.list:remove(i) end)				
 			else
 				self.list:remove(i)
 			end
-
 			break
 		end
 	end		
@@ -106,20 +105,24 @@ function _event:CreateListener(func, obj)
 		func = functor(func, obj)
 	end	
 	
-	return {value = func, _prev = 0, _next = 0}		
+	return {value = func, _prev = 0, _next = 0, removed = true}		
 end
 
-function _event:AddListener(handle)
-	if self.lock then
-		table.insert(self.addList, handle)
+function _event:AddListener(handle)	
+	assert(handle)
+
+	if self.lock then		
+		table.insert(self.opList, function() self.list:pushnode(handle) end)		
 	else
 		self.list:pushnode(handle)
-	end
+	end	
 end
 
-function _event:RemoveListener(handle)		
-	if self.lock and self.current ~= handle then		
-		table.insert(self.rmList, handle)
+function _event:RemoveListener(handle)	
+	assert(handle)	
+
+	if self.lock then		
+		table.insert(self.opList, function() self.list:remove(handle) end)				
 	else
 		self.list:remove(handle)
 	end
@@ -131,8 +134,7 @@ end
 
 function _event:Clear()
 	self.list:clear()
-	self.rmList = {}
-	self.addList = {}
+	self.opList = {}	
 	self.lock = false
 	self.keepSafe = false
 	self.current = nil
@@ -157,12 +159,11 @@ end
 _event.__call = function(self, ...)			
 	local _list = self.list	
 	self.lock = true
-	local ilist = ilist			
-	local flag, msg = false, nil
+	local ilist = ilist				
 
 	for i, f in ilist(_list) do		
 		self.current = i						
-		flag, msg = f(...)
+		local flag, msg = f(...)
 		
 		if not flag then
 			if self.keepSafe then								
@@ -173,23 +174,18 @@ _event.__call = function(self, ...)
 		end
 	end	
 
-	for _, i in ipairs(self.rmList) do							
-		_list:remove(i)		
-	end
-
-	self.rmList = {}
+	local opList = self.opList
+	self.opList = {}
 	self.lock = false		
 
-	for _, i in ipairs(self.addList) do
-		_list:pushnode(i)
+	for _, op in ipairs(opList) do									
+		op()
 	end
-
-	self.addList = {}
-		end
+end
 
 function event(name, safe)
 	safe = safe or false
-	return setmetatable({name = name, keepSafe = safe, lock = false, rmList = {}, addList = {}, list = list:new()}, _event)				
+	return setmetatable({name = name, keepSafe = safe, lock = false, opList = {}, list = list:new()}, _event)				
 end
 
 UpdateBeat 		= event("Update", true)

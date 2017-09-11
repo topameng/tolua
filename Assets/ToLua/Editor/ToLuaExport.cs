@@ -127,6 +127,7 @@ public static class ToLuaExport
         "AnimationClip.isAnimatorMotion",
         "AnimationClip.isHumanMotion",
         "AnimatorOverrideController.PerformOverrideClipListCleanup",
+        "AnimatorControllerParameter.name",
         "Caching.SetNoBackupFlag",
         "Caching.ResetNoBackupFlag",
         "Light.areaSize",
@@ -287,7 +288,7 @@ public static class ToLuaExport
                 else
                 {
                     Type genericClass = typeof(LuaOut<>);
-                    Type t = genericClass.MakeGenericType(args[i].ParameterType);
+                    Type t = genericClass.MakeGenericType(args[i].ParameterType.GetElementType());
                     list.Add(t);
                 }
             }
@@ -4177,16 +4178,20 @@ public static class ToLuaExport
                     {
                         continue;
                     }
-                }
+                }                
 
                 if (IsUseDefinedAttributee(list2[i]))
                 {
-                    list.RemoveAll((md) => { return md.Name == list2[i].Name; });
+                    list.RemoveAll((md) => { return md.Name == list2[i].Name; });                    
                 }
                 else
                 {
                     int index = list.FindIndex((md) => { return IsMethodEqualExtend(md.Method, list2[i]); });
-                    if (index >= 0) list.RemoveAt(index);
+
+                    if (index >= 0)
+                    {                        
+                        list.RemoveAt(index);
+                    }
                 }
 
                 if (!IsObsolete(list2[i]))

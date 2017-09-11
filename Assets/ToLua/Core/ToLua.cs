@@ -1026,6 +1026,10 @@ namespace LuaInterface
 
                 return null;
             }
+            else if (LuaDLL.lua_isnil(L, stackPos))
+            {
+                return null;
+            }
 
             LuaDLL.luaL_typerror(L, stackPos, "Type");
             return null;
@@ -1050,6 +1054,10 @@ namespace LuaInterface
                     LuaDLL.luaL_argerror(L, stackPos, string.Format("Type expected, got {0}", obj.GetType().FullName));
                 }
 
+                return null;
+            }
+            else if (LuaDLL.lua_isnil(L, stackPos))
+            {
                 return null;
             }
 

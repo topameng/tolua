@@ -22,24 +22,25 @@ function list:clear()
 end
 
 function list:push(value)
-	local node = {value = value, _prev = 0, _next = 0}
+	--assert(value)
+	local node = {value = value, _prev = 0, _next = 0, removed = false}
 
 	self._prev._next = node
 	node._next = self
 	node._prev = self._prev
 	self._prev = node
 
-	node.removed = false
 	self.length = self.length + 1
 	return node
 end
 
 function list:pushnode(node)
+	if not node.removed then return end
+
 	self._prev._next = node
 	node._next = self
 	node._prev = self._prev
 	self._prev = node
-
 	node.removed = false
 	self.length = self.length + 1
 end
@@ -51,14 +52,13 @@ function list:pop()
 end
 
 function list:unshift(v)
-	local node = {value = v, _prev = 0, _next = 0}
+	local node = {value = v, _prev = 0, _next = 0, removed = false}
 
 	self._next._prev = node
 	node._prev = self
 	node._next = self._next
 	self._next = node
 
-	node.removed = false
 	self.length = self.length + 1
 	return node
 end
@@ -70,28 +70,27 @@ function list:shift()
 end
 
 function list:remove(iter)
+	if iter.removed then return end
+
 	local _prev = iter._prev
 	local _next = iter._next
-
-	if iter.removed == false then
-		_next._prev = _prev
-		_prev._next = _next
-
-		self.length = math.max(0, self.length - 1)
-		iter.removed = true
-	end	
+	_next._prev = _prev
+	_prev._next = _next
+	
+	self.length = math.max(0, self.length - 1)
+	iter.removed = true
 end
 
 function list:find(v, iter)
 	iter = iter or self
 
-	while iter do
+	repeat
 		if v == iter.value then
 			return iter
 		else
 			iter = iter._next
 		end		
-	end
+	until iter == self
 
 	return nil
 end
@@ -99,13 +98,13 @@ end
 function list:findlast(v, iter)
 	iter = iter or self
 
-	while iter do
+	repeat
 		if v == iter.value then
 			return iter
 		end
 
 		iter = iter._prev
-	end
+	until iter == self
 
 	return nil
 end
@@ -141,7 +140,7 @@ function list:insert(v, iter)
 		return self:push(v)
 	end
 
-	local node = {value = v, _next = 0, _prev = 0}
+	local node = {value = v, _next = 0, _prev = 0, removed = false}
 
 	if iter._next then
 		iter._next._prev = node
@@ -152,7 +151,6 @@ function list:insert(v, iter)
 
 	node._prev = iter
 	iter._next = node
-	node.removed = false
 	self.length = self.length + 1
 	return node
 end
