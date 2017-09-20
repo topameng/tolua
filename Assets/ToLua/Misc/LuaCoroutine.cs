@@ -123,7 +123,7 @@ public static class LuaCoroutine
         state.RegFunction("StopCoroutine", StopCoroutine);
         state.EndModule();
 
-        state.LuaDoString(strCo, "LuaCoroutine.cs");
+        state.LuaDoString(strCo, "@LuaCoroutine.cs");
         mb = behaviour;
     }
 
