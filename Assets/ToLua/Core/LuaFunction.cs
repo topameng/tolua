@@ -365,6 +365,7 @@ namespace LuaInterface
         }
 
         //慎用, 有gc alloc
+        [System.Obsolete("LuaFunction.LazyCall() is obsolete.Use LuaFunction.Invoke()")]
         public object[] LazyCall(params object[] args)
         {
             BeginPCall();
@@ -375,7 +376,7 @@ namespace LuaInterface
                 EndPCall();
                 throw new LuaException("stack overflow");
             }
-
+            
             PushArgs(args);
             PCall();
             object[] objs = luaState.CheckObjects(oldTop);

@@ -1444,6 +1444,7 @@ public static class ToLuaExport
         if (!haveParams)
         {
             int count = paramInfos.Length + offset;
+            if (m.Name == "op_UnaryNegation") count = 2;
             sb.AppendFormat("\t\t\tToLua.CheckArgsCount(L, {0});\r\n", count);
         }
         else
