@@ -527,7 +527,7 @@ namespace LuaInterface
             return LuaDLL.luaL_typerror(L, stackPos, tname, t2);
         }
 
-        public bool LuaDoString(string chunk, string chunkName = "LuaStatePtr.cs")
+        public bool LuaDoString(string chunk, string chunkName = "@LuaStatePtr.cs")
         {
             byte[] buffer = Encoding.UTF8.GetBytes(chunk);
             int status = LuaDLL.luaL_loadbuffer(L, buffer, buffer.Length, chunkName);
