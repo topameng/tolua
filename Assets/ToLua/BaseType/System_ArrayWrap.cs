@@ -2,42 +2,45 @@
 using System;
 using LuaInterface;
 using UnityEngine;
+using System.Runtime.InteropServices;
 
 public class System_ArrayWrap 
 {
 	public static void Register(LuaState L)
 	{
+        IntPtr lazyWrapFunc = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)LazyWrap);
+        IntPtr lazyVarWrapFunc = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)LazyVarWrap);
         L.BeginClass(typeof(Array), typeof(System.Object));
         L.RegFunction(".geti", get_Item);
         L.RegFunction(".seti", set_Item);
-        L.RegFunction("ToTable", ToTable);
-		L.RegFunction("GetLength", GetLength);
-		L.RegFunction("GetLongLength", GetLongLength);
-		L.RegFunction("GetLowerBound", GetLowerBound);
-		L.RegFunction("GetValue", GetValue);
-		L.RegFunction("SetValue", SetValue);
-		L.RegFunction("GetEnumerator", GetEnumerator);
-		L.RegFunction("GetUpperBound", GetUpperBound);
-		L.RegFunction("CreateInstance", CreateInstance);
-		L.RegFunction("BinarySearch", BinarySearch);
-		L.RegFunction("Clear", Clear);
-		L.RegFunction("Clone", Clone);
-		L.RegFunction("Copy", Copy);
-		L.RegFunction("IndexOf", IndexOf);
-		L.RegFunction("Initialize", Initialize);
-		L.RegFunction("LastIndexOf", LastIndexOf);
-		L.RegFunction("Reverse", Reverse);
-		L.RegFunction("Sort", Sort);
-		L.RegFunction("CopyTo", CopyTo);
-		L.RegFunction("ConstrainedCopy", ConstrainedCopy);
+        L.RegLazyFunction("ToTable", lazyWrapFunc);
+		L.RegLazyFunction("GetLength", lazyWrapFunc);
+		L.RegLazyFunction("GetLongLength", lazyWrapFunc);
+		L.RegLazyFunction("GetLowerBound", lazyWrapFunc);
+		L.RegLazyFunction("GetValue", lazyWrapFunc);
+		L.RegLazyFunction("SetValue", lazyWrapFunc);
+		L.RegLazyFunction("GetEnumerator", lazyWrapFunc);
+		L.RegLazyFunction("GetUpperBound", lazyWrapFunc);
+		L.RegLazyFunction("CreateInstance", lazyWrapFunc);
+		L.RegLazyFunction("BinarySearch", lazyWrapFunc);
+		L.RegLazyFunction("Clear", lazyWrapFunc);
+		L.RegLazyFunction("Clone", lazyWrapFunc);
+		L.RegLazyFunction("Copy", lazyWrapFunc);
+		L.RegLazyFunction("IndexOf", lazyWrapFunc);
+		L.RegLazyFunction("Initialize", lazyWrapFunc);
+		L.RegLazyFunction("LastIndexOf", lazyWrapFunc);
+		L.RegLazyFunction("Reverse", lazyWrapFunc);
+		L.RegLazyFunction("Sort", lazyWrapFunc);
+		L.RegLazyFunction("CopyTo", lazyWrapFunc);
+		L.RegLazyFunction("ConstrainedCopy", lazyWrapFunc);
 		L.RegFunction("__tostring", ToLua.op_ToString);
-		L.RegVar("Length", get_Length, null);
-		L.RegVar("LongLength", get_LongLength, null);
-		L.RegVar("Rank", get_Rank, null);
-		L.RegVar("IsSynchronized", get_IsSynchronized, null);
-		L.RegVar("SyncRoot", get_SyncRoot, null);
-		L.RegVar("IsFixedSize", get_IsFixedSize, null);
-		L.RegVar("IsReadOnly", get_IsReadOnly, null);
+		L.RegLazyVar("Length", true, false, lazyVarWrapFunc);
+		L.RegLazyVar("LongLength", true, false, lazyVarWrapFunc);
+		L.RegLazyVar("Rank", true, false, lazyVarWrapFunc);
+		L.RegLazyVar("IsSynchronized", true, false, lazyVarWrapFunc);
+		L.RegLazyVar("SyncRoot", true, false, lazyVarWrapFunc);
+		L.RegLazyVar("IsFixedSize", true, false, lazyVarWrapFunc);
+		L.RegLazyVar("IsReadOnly", true, false, lazyVarWrapFunc);
 		L.EndClass();
 	}
 
@@ -1445,4 +1448,354 @@ public class System_ArrayWrap
 			return LuaDLL.toluaL_exception(L, e, o, "attempt to index IsReadOnly on a nil value");
 		}
 	}
+
+    [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+    static int LazyWrap(IntPtr L)
+    {
+        try
+        {
+            int stackTop = LuaDLL.lua_gettop(L);
+            bool lazy = LuaDLL.luaL_checkboolean(L, stackTop);
+            string key = LuaDLL.lua_tostring(L, stackTop - 1);
+            LuaDLL.lua_pop(L, 2);
+
+            switch (key)
+            {
+                case "ToTable":
+                    if (lazy)
+                    {
+                        IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)ToTable);
+                        LuaDLL.tolua_function(L, "ToTable", fn);
+                        LuaDLL.lua_pop(L, 1);
+                    }
+
+                    return ToTable(L);
+                case "GetLength":
+                    if (lazy)
+                    {
+                        IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)GetLength);
+                        LuaDLL.tolua_function(L, "GetLength", fn);
+                        LuaDLL.lua_pop(L, 1);
+                    }
+
+                    return GetLength(L);
+                case "GetLongLength":
+                    if (lazy)
+                    {
+                        IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)GetLongLength);
+                        LuaDLL.tolua_function(L, "GetLongLength", fn);
+                        LuaDLL.lua_pop(L, 1);
+                    }
+
+                    return GetLongLength(L);
+                case "GetLowerBound":
+                    if (lazy)
+                    {
+                        IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)GetLowerBound);
+                        LuaDLL.tolua_function(L, "GetLowerBound", fn);
+                        LuaDLL.lua_pop(L, 1);
+                    }
+
+                    return GetLowerBound(L);
+                case "GetValue":
+                    if (lazy)
+                    {
+                        IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)GetValue);
+                        LuaDLL.tolua_function(L, "GetValue", fn);
+                        LuaDLL.lua_pop(L, 1);
+                    }
+
+                    return GetValue(L);
+                case "SetValue":
+                    if (lazy)
+                    {
+                        IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)SetValue);
+                        LuaDLL.tolua_function(L, "SetValue", fn);
+                        LuaDLL.lua_pop(L, 1);
+                    }
+
+                    return SetValue(L);
+                case "GetEnumerator":
+                    if (lazy)
+                    {
+                        IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)GetEnumerator);
+                        LuaDLL.tolua_function(L, "GetEnumerator", fn);
+                        LuaDLL.lua_pop(L, 1);
+                    }
+
+                    return GetEnumerator(L);
+                case "GetUpperBound":
+                    if (lazy)
+                    {
+                        IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)GetUpperBound);
+                        LuaDLL.tolua_function(L, "GetUpperBound", fn);
+                        LuaDLL.lua_pop(L, 1);
+                    }
+
+                    return GetUpperBound(L);
+                case "CreateInstance":
+                    if (lazy)
+                    {
+                        IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)CreateInstance);
+                        LuaDLL.tolua_function(L, "CreateInstance", fn);
+                        LuaDLL.lua_pop(L, 1);
+                    }
+
+                    return CreateInstance(L);
+                case "BinarySearch":
+                    if (lazy)
+                    {
+                        IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)BinarySearch);
+                        LuaDLL.tolua_function(L, "BinarySearch", fn);
+                        LuaDLL.lua_pop(L, 1);
+                    }
+
+                    return BinarySearch(L);
+                case "Clear":
+                    if (lazy)
+                    {
+                        IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)Clear);
+                        LuaDLL.tolua_function(L, "Clear", fn);
+                        LuaDLL.lua_pop(L, 1);
+                    }
+
+                    return Clear(L);
+                case "Clone":
+                    if (lazy)
+                    {
+                        IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)Clone);
+                        LuaDLL.tolua_function(L, "Clone", fn);
+                        LuaDLL.lua_pop(L, 1);
+                    }
+
+                    return Clone(L);
+                case "Copy":
+                    if (lazy)
+                    {
+                        IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)Copy);
+                        LuaDLL.tolua_function(L, "Copy", fn);
+                        LuaDLL.lua_pop(L, 1);
+                    }
+
+                    return Copy(L);
+                case "IndexOf":
+                    if (lazy)
+                    {
+                        IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)IndexOf);
+                        LuaDLL.tolua_function(L, "IndexOf", fn);
+                        LuaDLL.lua_pop(L, 1);
+                    }
+
+                    return IndexOf(L);
+                case "Initialize":
+                    if (lazy)
+                    {
+                        IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)Initialize);
+                        LuaDLL.tolua_function(L, "Initialize", fn);
+                        LuaDLL.lua_pop(L, 1);
+                    }
+
+                    return Initialize(L);
+                case "LastIndexOf":
+                    if (lazy)
+                    {
+                        IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)LastIndexOf);
+                        LuaDLL.tolua_function(L, "LastIndexOf", fn);
+                        LuaDLL.lua_pop(L, 1);
+                    }
+
+                    return LastIndexOf(L);
+                case "Reverse":
+                    if (lazy)
+                    {
+                        IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)Reverse);
+                        LuaDLL.tolua_function(L, "Reverse", fn);
+                        LuaDLL.lua_pop(L, 1);
+                    }
+
+                    return Reverse(L);
+                case "Sort":
+                    if (lazy)
+                    {
+                        IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)Sort);
+                        LuaDLL.tolua_function(L, "Sort", fn);
+                        LuaDLL.lua_pop(L, 1);
+                    }
+
+                    return Sort(L);
+                case "CopyTo":
+                    if (lazy)
+                    {
+                        IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)CopyTo);
+                        LuaDLL.tolua_function(L, "CopyTo", fn);
+                        LuaDLL.lua_pop(L, 1);
+                    }
+
+                    return CopyTo(L);
+                case "ConstrainedCopy":
+                    if (lazy)
+                    {
+                        IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)ConstrainedCopy);
+                        LuaDLL.tolua_function(L, "ConstrainedCopy", fn);
+                        LuaDLL.lua_pop(L, 1);
+                    }
+
+                    return ConstrainedCopy(L);
+            }
+            return 0;
+        }
+        catch (Exception e)
+        {
+            return LuaDLL.toluaL_exception(L, e);
+        }
+    }
+
+    [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+    static int LazyVarWrap(IntPtr L)
+    {
+        try
+        {
+            int stackTop = LuaDLL.lua_gettop(L);
+            bool getStatus = LuaDLL.luaL_checkboolean(L, stackTop);
+            bool lazy = LuaDLL.luaL_checkboolean(L, stackTop - 1);
+            string key = LuaDLL.lua_tostring(L, stackTop - 2);
+            LuaDLL.lua_pop(L, 3);
+
+            switch (key)
+            {
+                case "Length":
+                    if (lazy)
+                    {
+                        if (getStatus)
+                        {
+                            IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_Length);
+                            LuaDLL.tolua_variable(L, "Length", fn, IntPtr.Zero);
+                        }
+
+                        LuaDLL.lua_pop(L, 1);
+                    }
+
+                    if (getStatus)
+                    {
+                        return get_Length(L);
+                    }
+
+                    break;
+                case "LongLength":
+                    if (lazy)
+                    {
+                        if (getStatus)
+                        {
+                            IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_LongLength);
+                            LuaDLL.tolua_variable(L, "LongLength", fn, IntPtr.Zero);
+                        }
+
+                        LuaDLL.lua_pop(L, 1);
+                    }
+
+                    if (getStatus)
+                    {
+                        return get_LongLength(L);
+                    }
+
+                    break;
+                case "Rank":
+                    if (lazy)
+                    {
+                        if (getStatus)
+                        {
+                            IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_Rank);
+                            LuaDLL.tolua_variable(L, "Rank", fn, IntPtr.Zero);
+                        }
+
+                        LuaDLL.lua_pop(L, 1);
+                    }
+
+                    if (getStatus)
+                    {
+                        return get_Rank(L);
+                    }
+
+                    break;
+                case "IsSynchronized":
+                    if (lazy)
+                    {
+                        if (getStatus)
+                        {
+                            IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_IsSynchronized);
+                            LuaDLL.tolua_variable(L, "IsSynchronized", fn, IntPtr.Zero);
+                        }
+
+                        LuaDLL.lua_pop(L, 1);
+                    }
+
+                    if (getStatus)
+                    {
+                        return get_IsSynchronized(L);
+                    }
+
+                    break;
+                case "SyncRoot":
+                    if (lazy)
+                    {
+                        if (getStatus)
+                        {
+                            IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_SyncRoot);
+                            LuaDLL.tolua_variable(L, "SyncRoot", fn, IntPtr.Zero);
+                        }
+
+                        LuaDLL.lua_pop(L, 1);
+                    }
+
+                    if (getStatus)
+                    {
+                        return get_SyncRoot(L);
+                    }
+
+                    break;
+                case "IsFixedSize":
+                    if (lazy)
+                    {
+                        if (getStatus)
+                        {
+                            IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_IsFixedSize);
+                            LuaDLL.tolua_variable(L, "IsFixedSize", fn, IntPtr.Zero);
+                        }
+
+                        LuaDLL.lua_pop(L, 1);
+                    }
+
+                    if (getStatus)
+                    {
+                        return get_IsFixedSize(L);
+                    }
+
+                    break;
+
+                case "IsReadOnly":
+                    if (lazy)
+                    {
+                        if (getStatus)
+                        {
+                            IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_IsReadOnly);
+                            LuaDLL.tolua_variable(L, "IsReadOnly", fn, IntPtr.Zero);
+                        }
+
+                        LuaDLL.lua_pop(L, 1);
+                    }
+
+                    if (getStatus)
+                    {
+                        return get_IsReadOnly(L);
+                    }
+
+                    break;
+            }
+            return 0;
+        }
+        catch (Exception e)
+        {
+            return LuaDLL.toluaL_exception(L, e);
+        }
+    }
 }

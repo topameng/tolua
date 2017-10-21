@@ -82,6 +82,11 @@ public static class ToLuaMenu
         typeof(DelegateFactory),                            //无需导出，导出类支持lua函数转换为委托。如UIEventListener.OnClick(luafunc)
     };
 
+    public static HashSet<Type> lazyFeatureInvalidList = new HashSet<Type>
+    {
+        typeof(UnityEngine.Time),
+    };
+
     //可以导出的内部支持类型
     public static List<Type> baseType = new List<Type>
     {
@@ -366,6 +371,15 @@ public static class ToLuaMenu
         for (int i = 0; i < list.Length; i++)
         {
             ToLuaExport.Clear();
+            if (lazyFeatureInvalidList.Contains(list[i].type))
+            {
+                ToLuaExport.enableLazyFeature = false;
+            }
+            else
+            {
+                ToLuaExport.enableLazyFeature = true;
+            }
+
             ToLuaExport.className = list[i].name;
             ToLuaExport.type = list[i].type;
             ToLuaExport.isStaticClass = list[i].IsStatic;            
@@ -1247,6 +1261,15 @@ public static class ToLuaMenu
         for (int i = 0; i < list.Length; i++)
         {
             ToLuaExport.Clear();
+            if (lazyFeatureInvalidList.Contains(list[i].type))
+            {
+                ToLuaExport.enableLazyFeature = false;
+            }
+            else
+            {
+                ToLuaExport.enableLazyFeature = true;
+            }
+
             ToLuaExport.className = list[i].name;
             ToLuaExport.type = list[i].type;
             ToLuaExport.isStaticClass = list[i].IsStatic;

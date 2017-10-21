@@ -1085,6 +1085,8 @@ namespace LuaInterface
 
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
         public static extern void tolua_function(IntPtr L, string name, IntPtr fn);
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void tolua_lazyfunction(IntPtr L, string name, IntPtr fn);
 
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr tolua_tocbuffer(string name, int sz);
@@ -1094,6 +1096,8 @@ namespace LuaInterface
 
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
         public static extern void tolua_variable(IntPtr L, string name, IntPtr get, IntPtr set);
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void tolua_lazyVariable(IntPtr L, string name, bool get, bool set, IntPtr dispacher);
 
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
         public static extern void tolua_constant(IntPtr L, string name, double val);
