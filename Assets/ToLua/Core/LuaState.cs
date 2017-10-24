@@ -1801,6 +1801,46 @@ namespace LuaInterface
             }
         }
 
+        public void NewTable(string fullPath)
+        {
+            string[] path = fullPath.Split(new char[] { '.' });
+            int oldTop = LuaDLL.lua_gettop(L);
+
+            if (path.Length == 1)
+            {
+                LuaDLL.lua_newtable(L);
+                LuaDLL.lua_setglobal(L, fullPath);
+            }
+            else
+            {
+                LuaDLL.lua_getglobal(L, path[0]);
+
+                for (int i = 1; i < path.Length - 1; i++)
+                {
+                    LuaDLL.lua_pushstring(L, path[i]);
+                    LuaDLL.lua_gettable(L, -2);
+                }
+
+                LuaDLL.lua_pushstring(L, path[path.Length - 1]);
+                LuaDLL.lua_newtable(L);
+                LuaDLL.lua_settable(L, -3);
+            }
+
+            LuaDLL.lua_settop(L, oldTop);
+        }
+
+
+        public LuaTable NewTable(int narr = 0, int nrec = 0)
+        {
+            int oldTop = LuaDLL.lua_gettop(L);
+
+            LuaDLL.lua_createtable(L, 0, 0);
+            LuaTable table = ToLua.ToLuaTable(L, oldTop + 1);
+
+            LuaDLL.lua_settop(L, oldTop);
+            return table;
+        }
+
         //慎用
         public void ReLoad(string moduleFileName)
         {
