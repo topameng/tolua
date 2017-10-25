@@ -165,10 +165,8 @@ _event.__call = function(self, ...)
 		self.current = i						
 		local flag, msg = f(...)
 		
-		if not flag then
-			if self.keepSafe then								
-				_list:remove(i)
-			end
+		if not flag then			
+			_list:remove(i)			
 			self.lock = false		
 			error(msg)				
 		end
