@@ -93,15 +93,8 @@ public class TestInherit : MonoBehaviour
         }
 
         time = Time.realtimeSinceStartup - time;
-        Debugger.Log("c# Transform get set cost time: " + time);
-
-        LuaFunction func = lua.GetFunction("Test");
-        func.BeginPCall();
-        func.Push(transform);
-        func.PCall();
-        func.EndPCall();
-
-        lua.CheckTop();
+        Debugger.Log("c# Transform get set cost time: " + time);        
+        lua.Call("Test", transform, true);        
         lua.Dispose();
         lua = null;        
 	}

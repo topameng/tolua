@@ -47,6 +47,10 @@ function Timer:Stop()
 end
 
 function Timer:Update()
+	if not self.running then
+		return
+	end
+
 	local delta = self.scale and Time.deltaTime or Time.unscaledDeltaTime	
 	self.time = self.time - delta
 	
@@ -103,6 +107,10 @@ function FrameTimer:Stop()
 end
 
 function FrameTimer:Update()	
+	if not self.running then
+		return
+	end
+
 	if Time.frameCount >= self.count then
 		self.func()	
 		
@@ -153,6 +161,10 @@ function CoTimer:Stop()
 end
 
 function CoTimer:Update()	
+	if not self.running then
+		return
+	end
+
 	if self.time <= 0 then
 		self.func()		
 		

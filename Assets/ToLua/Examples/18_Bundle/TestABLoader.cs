@@ -91,6 +91,12 @@ public class TestABLoader : MonoBehaviour
 #endif
         LuaFileUtils file = new LuaFileUtils();
         file.beZip = true;
+#if UNITY_ANDROID && UNITY_EDITOR
+        if (IntPtr.Size == 8)
+        {
+            throw new Exception("can't run this in unity5.x process for 64 bits, switch to pc platform, or run it in android mobile");
+        }
+#endif
         StartCoroutine(LoadBundles());
     }
 
