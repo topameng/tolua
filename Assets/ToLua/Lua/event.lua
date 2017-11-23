@@ -172,12 +172,12 @@ _event.__call = function(self, ...)
 		end
 	end	
 
-	local opList = self.opList
-	self.opList = {}
+	local opList = self.opList	
 	self.lock = false		
 
-	for _, op in ipairs(opList) do									
+	for i, op in ipairs(opList) do									
 		op()
+		opList[i] = nil
 	end
 end
 
