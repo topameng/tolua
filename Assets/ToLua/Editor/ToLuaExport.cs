@@ -1665,12 +1665,7 @@ public static class ToLuaExport
     {
         string name = GetMethodName(m.Method);
         sb.AppendFormat("\t\t\t\tcase \"{0}\":\r\n", name);
-        sb.AppendLineEx("\t\t\t\t\tif (lazy)");
-        sb.AppendLineEx("\t\t\t\t\t{");
-        sb.AppendFormat("\t\t\t\t\t\tIntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction){0});\r\n", name == "Register" ? "_Register" : name);
-        sb.AppendFormat("\t\t\t\t\t\tLuaDLL.tolua_function(L, \"{0}\", fn);\r\n", name);
-        sb.AppendLineEx("\t\t\t\t\t\tLuaDLL.lua_pop(L, 1);");
-        sb.AppendLineEx("\t\t\t\t\t}");
+        sb.AppendFormat("\t\t\t\t\tToLua.LazyRegisterFunc(lazy, \"{0}\", {1}, ref L);\r\n", name, name == "Register" ? "_Register" : name);
         sb.AppendLine();
         sb.AppendFormat("\t\t\t\t\treturn {0}(L);\r\n", name == "Register" ? "_Register" : name);
     }
@@ -1699,12 +1694,7 @@ public static class ToLuaExport
         if (ctorList.Count > 0 || type.IsValueType || ctorExtList.Count > 0)
         {
             sb.AppendLineEx("\t\t\t\tcase \"New\":");
-            sb.AppendLineEx("\t\t\t\t\tif (lazy)");
-            sb.AppendLineEx("\t\t\t\t\t{");
-            sb.AppendFormat("\t\t\t\t\t\tIntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)_Create{0});\r\n", wrapClassName);
-            sb.AppendLineEx("\t\t\t\t\t\tLuaDLL.tolua_function(L, \"New\", fn);");
-            sb.AppendLineEx("\t\t\t\t\t\tLuaDLL.lua_pop(L, 1);");
-            sb.AppendLineEx("\t\t\t\t\t}");
+            sb.AppendFormat("\t\t\t\t\tToLua.LazyRegisterFunc(lazy, \"New\", _Create{0}, ref L);\r\n", wrapClassName);
             sb.AppendLine();
             sb.AppendFormat("\t\t\t\t\treturn _Create{0}(L);\r\n", wrapClassName);
         }
@@ -1741,8 +1731,6 @@ public static class ToLuaExport
     static void GenLazyVariableRegisInfo(string name, bool get, bool set, bool checkMethod = false)
     {
         sb.AppendFormat("\t\t\t\tcase \"{0}\":\r\n", name);
-        sb.AppendLineEx("\t\t\t\t\tif (lazy)");
-        sb.AppendLineEx("\t\t\t\t\t{");
 
         _MethodBase md = null;
         string getPrefix = "get_";
@@ -1756,35 +1744,9 @@ public static class ToLuaExport
             setPrefix = md == null ? "set_" : "_set_";
         }
 
-        if (get)
-        {
-            sb.AppendLineEx("\t\t\t\t\t\tif (getStatus)");
-            sb.AppendLineEx("\t\t\t\t\t\t{");
-            sb.AppendFormat("\t\t\t\t\t\t\tIntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction){0});\r\n", getPrefix + name);
-            sb.AppendFormat("\t\t\t\t\t\t\tLuaDLL.tolua_variable(L, \"{0}\", fn, IntPtr.Zero);\r\n", name);
-            sb.AppendLineEx("\t\t\t\t\t\t}");
-        }
-        if (set)
-        {
-            if (get)
-            {
-                sb.AppendLineEx("\t\t\t\t\t\telse");
-                sb.AppendLineEx("\t\t\t\t\t\t{");
-            }
-            else
-            {
-                sb.AppendLineEx("\t\t\t\t\t\tif (!getStatus)");
-                sb.AppendLineEx("\t\t\t\t\t\t{");
-            }
-
-            sb.AppendFormat("\t\t\t\t\t\t\tIntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction){0});\r\n", setPrefix + name);
-            sb.AppendFormat("\t\t\t\t\t\t\tLuaDLL.tolua_variable(L, \"{0}\", IntPtr.Zero, fn);\r\n", name);
-            sb.AppendLineEx("\t\t\t\t\t\t}");
-        }
-
-        sb.AppendLine();
-        sb.AppendLineEx("\t\t\t\t\t\tLuaDLL.lua_pop(L, 1);");
-        sb.AppendLineEx("\t\t\t\t\t}");
+        string getFuncName = get ? getPrefix + name : "null";
+        string setFuncName = set ? setPrefix + name : "null";
+        sb.AppendFormat("\t\t\t\t\tToLua.LazyRegisterVariable(lazy, getStatus, \"{0}\", {1}, {2}, ref L);\r\n", name, getFuncName, setFuncName);
         sb.AppendLine();
 
         if (get)

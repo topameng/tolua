@@ -488,129 +488,59 @@ public class System_DelegateWrap
 			switch (key)
 			{
 				case "CreateDelegate":
-					if (lazy)
-					{
-						IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)CreateDelegate);
-						LuaDLL.tolua_function(L, "CreateDelegate", fn);
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterFunc(lazy, "CreateDelegate", CreateDelegate, ref L);
 
 					return CreateDelegate(L);
 				case "DynamicInvoke":
-					if (lazy)
-					{
-						IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)DynamicInvoke);
-						LuaDLL.tolua_function(L, "DynamicInvoke", fn);
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterFunc(lazy, "DynamicInvoke", DynamicInvoke, ref L);
 
 					return DynamicInvoke(L);
 				case "Clone":
-					if (lazy)
-					{
-						IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)Clone);
-						LuaDLL.tolua_function(L, "Clone", fn);
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterFunc(lazy, "Clone", Clone, ref L);
 
 					return Clone(L);
 				case "GetObjectData":
-					if (lazy)
-					{
-						IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)GetObjectData);
-						LuaDLL.tolua_function(L, "GetObjectData", fn);
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterFunc(lazy, "GetObjectData", GetObjectData, ref L);
 
 					return GetObjectData(L);
 				case "GetInvocationList":
-					if (lazy)
-					{
-						IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)GetInvocationList);
-						LuaDLL.tolua_function(L, "GetInvocationList", fn);
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterFunc(lazy, "GetInvocationList", GetInvocationList, ref L);
 
 					return GetInvocationList(L);
 				case "Combine":
-					if (lazy)
-					{
-						IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)Combine);
-						LuaDLL.tolua_function(L, "Combine", fn);
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterFunc(lazy, "Combine", Combine, ref L);
 
 					return Combine(L);
 				case "Remove":
-					if (lazy)
-					{
-						IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)Remove);
-						LuaDLL.tolua_function(L, "Remove", fn);
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterFunc(lazy, "Remove", Remove, ref L);
 
 					return Remove(L);
 				case "RemoveAll":
-					if (lazy)
-					{
-						IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)RemoveAll);
-						LuaDLL.tolua_function(L, "RemoveAll", fn);
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterFunc(lazy, "RemoveAll", RemoveAll, ref L);
 
 					return RemoveAll(L);
 				case "op_Subtraction":
-					if (lazy)
-					{
-						IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)op_Subtraction);
-						LuaDLL.tolua_function(L, "op_Subtraction", fn);
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterFunc(lazy, "op_Subtraction", op_Subtraction, ref L);
 
 					return op_Subtraction(L);
 				case "op_Addition":
-					if (lazy)
-					{
-						IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)op_Addition);
-						LuaDLL.tolua_function(L, "op_Addition", fn);
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterFunc(lazy, "op_Addition", op_Addition, ref L);
 
 					return op_Addition(L);
 				case "op_Equality":
-					if (lazy)
-					{
-						IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)op_Equality);
-						LuaDLL.tolua_function(L, "op_Equality", fn);
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterFunc(lazy, "op_Equality", op_Equality, ref L);
 
 					return op_Equality(L);
 				case "Destroy":
-					if (lazy)
-					{
-						IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)Destroy);
-						LuaDLL.tolua_function(L, "Destroy", fn);
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterFunc(lazy, "Destroy", Destroy, ref L);
 
 					return Destroy(L);
 				case "GetHashCode":
-					if (lazy)
-					{
-						IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)GetHashCode);
-						LuaDLL.tolua_function(L, "GetHashCode", fn);
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterFunc(lazy, "GetHashCode", GetHashCode, ref L);
 
 					return GetHashCode(L);
 				case "Equals":
-					if (lazy)
-					{
-						IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)Equals);
-						LuaDLL.tolua_function(L, "Equals", fn);
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterFunc(lazy, "Equals", Equals, ref L);
 
 					return Equals(L);
 			}
@@ -636,16 +566,7 @@ public class System_DelegateWrap
 			switch (key)
 			{
 				case "Method":
-					if (lazy)
-					{
-						if (getStatus)
-						{
-							IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_Method);
-							LuaDLL.tolua_variable(L, "Method", fn, IntPtr.Zero);
-						}
-
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterVariable(lazy, getStatus, "Method", get_Method, null, ref L);
 
 					if (getStatus)
 					{
@@ -654,16 +575,7 @@ public class System_DelegateWrap
 
 					break;
 				case "Target":
-					if (lazy)
-					{
-						if (getStatus)
-						{
-							IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_Target);
-							LuaDLL.tolua_variable(L, "Target", fn, IntPtr.Zero);
-						}
-
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterVariable(lazy, getStatus, "Target", get_Target, null, ref L);
 
 					if (getStatus)
 					{

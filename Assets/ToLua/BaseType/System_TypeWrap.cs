@@ -1943,273 +1943,123 @@ public class System_TypeWrap
 			switch (key)
 			{
 				case "Equals":
-					if (lazy)
-					{
-						IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)Equals);
-						LuaDLL.tolua_function(L, "Equals", fn);
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterFunc(lazy, "Equals", Equals, ref L);
 
 					return Equals(L);
 				case "GetType":
-					if (lazy)
-					{
-						IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)GetType);
-						LuaDLL.tolua_function(L, "GetType", fn);
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterFunc(lazy, "GetType", GetType, ref L);
 
 					return GetType(L);
 				case "GetTypeArray":
-					if (lazy)
-					{
-						IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)GetTypeArray);
-						LuaDLL.tolua_function(L, "GetTypeArray", fn);
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterFunc(lazy, "GetTypeArray", GetTypeArray, ref L);
 
 					return GetTypeArray(L);
 				case "GetTypeCode":
-					if (lazy)
-					{
-						IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)GetTypeCode);
-						LuaDLL.tolua_function(L, "GetTypeCode", fn);
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterFunc(lazy, "GetTypeCode", GetTypeCode, ref L);
 
 					return GetTypeCode(L);
 				case "GetTypeFromHandle":
-					if (lazy)
-					{
-						IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)GetTypeFromHandle);
-						LuaDLL.tolua_function(L, "GetTypeFromHandle", fn);
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterFunc(lazy, "GetTypeFromHandle", GetTypeFromHandle, ref L);
 
 					return GetTypeFromHandle(L);
 				case "GetTypeHandle":
-					if (lazy)
-					{
-						IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)GetTypeHandle);
-						LuaDLL.tolua_function(L, "GetTypeHandle", fn);
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterFunc(lazy, "GetTypeHandle", GetTypeHandle, ref L);
 
 					return GetTypeHandle(L);
 				case "IsSubclassOf":
-					if (lazy)
-					{
-						IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)IsSubclassOf);
-						LuaDLL.tolua_function(L, "IsSubclassOf", fn);
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterFunc(lazy, "IsSubclassOf", IsSubclassOf, ref L);
 
 					return IsSubclassOf(L);
 				case "FindInterfaces":
-					if (lazy)
-					{
-						IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)FindInterfaces);
-						LuaDLL.tolua_function(L, "FindInterfaces", fn);
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterFunc(lazy, "FindInterfaces", FindInterfaces, ref L);
 
 					return FindInterfaces(L);
 				case "GetInterface":
-					if (lazy)
-					{
-						IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)GetInterface);
-						LuaDLL.tolua_function(L, "GetInterface", fn);
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterFunc(lazy, "GetInterface", GetInterface, ref L);
 
 					return GetInterface(L);
 				case "GetInterfaceMap":
-					if (lazy)
-					{
-						IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)GetInterfaceMap);
-						LuaDLL.tolua_function(L, "GetInterfaceMap", fn);
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterFunc(lazy, "GetInterfaceMap", GetInterfaceMap, ref L);
 
 					return GetInterfaceMap(L);
 				case "GetInterfaces":
-					if (lazy)
-					{
-						IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)GetInterfaces);
-						LuaDLL.tolua_function(L, "GetInterfaces", fn);
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterFunc(lazy, "GetInterfaces", GetInterfaces, ref L);
 
 					return GetInterfaces(L);
 				case "IsAssignableFrom":
-					if (lazy)
-					{
-						IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)IsAssignableFrom);
-						LuaDLL.tolua_function(L, "IsAssignableFrom", fn);
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterFunc(lazy, "IsAssignableFrom", IsAssignableFrom, ref L);
 
 					return IsAssignableFrom(L);
 				case "IsInstanceOfType":
-					if (lazy)
-					{
-						IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)IsInstanceOfType);
-						LuaDLL.tolua_function(L, "IsInstanceOfType", fn);
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterFunc(lazy, "IsInstanceOfType", IsInstanceOfType, ref L);
 
 					return IsInstanceOfType(L);
 				case "GetArrayRank":
-					if (lazy)
-					{
-						IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)GetArrayRank);
-						LuaDLL.tolua_function(L, "GetArrayRank", fn);
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterFunc(lazy, "GetArrayRank", GetArrayRank, ref L);
 
 					return GetArrayRank(L);
 				case "GetElementType":
-					if (lazy)
-					{
-						IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)GetElementType);
-						LuaDLL.tolua_function(L, "GetElementType", fn);
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterFunc(lazy, "GetElementType", GetElementType, ref L);
 
 					return GetElementType(L);
 				case "GetHashCode":
-					if (lazy)
-					{
-						IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)GetHashCode);
-						LuaDLL.tolua_function(L, "GetHashCode", fn);
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterFunc(lazy, "GetHashCode", GetHashCode, ref L);
 
 					return GetHashCode(L);
 				case "GetNestedType":
-					if (lazy)
-					{
-						IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)GetNestedType);
-						LuaDLL.tolua_function(L, "GetNestedType", fn);
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterFunc(lazy, "GetNestedType", GetNestedType, ref L);
 
 					return GetNestedType(L);
 				case "GetNestedTypes":
-					if (lazy)
-					{
-						IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)GetNestedTypes);
-						LuaDLL.tolua_function(L, "GetNestedTypes", fn);
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterFunc(lazy, "GetNestedTypes", GetNestedTypes, ref L);
 
 					return GetNestedTypes(L);
 				case "GetDefaultMembers":
-					if (lazy)
-					{
-						IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)GetDefaultMembers);
-						LuaDLL.tolua_function(L, "GetDefaultMembers", fn);
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterFunc(lazy, "GetDefaultMembers", GetDefaultMembers, ref L);
 
 					return GetDefaultMembers(L);
 				case "FindMembers":
-					if (lazy)
-					{
-						IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)FindMembers);
-						LuaDLL.tolua_function(L, "FindMembers", fn);
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterFunc(lazy, "FindMembers", FindMembers, ref L);
 
 					return FindMembers(L);
 				case "InvokeMember":
-					if (lazy)
-					{
-						IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)InvokeMember);
-						LuaDLL.tolua_function(L, "InvokeMember", fn);
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterFunc(lazy, "InvokeMember", InvokeMember, ref L);
 
 					return InvokeMember(L);
 				case "ToString":
-					if (lazy)
-					{
-						IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)ToString);
-						LuaDLL.tolua_function(L, "ToString", fn);
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterFunc(lazy, "ToString", ToString, ref L);
 
 					return ToString(L);
 				case "GetGenericArguments":
-					if (lazy)
-					{
-						IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)GetGenericArguments);
-						LuaDLL.tolua_function(L, "GetGenericArguments", fn);
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterFunc(lazy, "GetGenericArguments", GetGenericArguments, ref L);
 
 					return GetGenericArguments(L);
 				case "GetGenericTypeDefinition":
-					if (lazy)
-					{
-						IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)GetGenericTypeDefinition);
-						LuaDLL.tolua_function(L, "GetGenericTypeDefinition", fn);
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterFunc(lazy, "GetGenericTypeDefinition", GetGenericTypeDefinition, ref L);
 
 					return GetGenericTypeDefinition(L);
 				case "MakeGenericType":
-					if (lazy)
-					{
-						IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)MakeGenericType);
-						LuaDLL.tolua_function(L, "MakeGenericType", fn);
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterFunc(lazy, "MakeGenericType", MakeGenericType, ref L);
 
 					return MakeGenericType(L);
 				case "GetGenericParameterConstraints":
-					if (lazy)
-					{
-						IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)GetGenericParameterConstraints);
-						LuaDLL.tolua_function(L, "GetGenericParameterConstraints", fn);
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterFunc(lazy, "GetGenericParameterConstraints", GetGenericParameterConstraints, ref L);
 
 					return GetGenericParameterConstraints(L);
 				case "MakeArrayType":
-					if (lazy)
-					{
-						IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)MakeArrayType);
-						LuaDLL.tolua_function(L, "MakeArrayType", fn);
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterFunc(lazy, "MakeArrayType", MakeArrayType, ref L);
 
 					return MakeArrayType(L);
 				case "MakeByRefType":
-					if (lazy)
-					{
-						IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)MakeByRefType);
-						LuaDLL.tolua_function(L, "MakeByRefType", fn);
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterFunc(lazy, "MakeByRefType", MakeByRefType, ref L);
 
 					return MakeByRefType(L);
 				case "MakePointerType":
-					if (lazy)
-					{
-						IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)MakePointerType);
-						LuaDLL.tolua_function(L, "MakePointerType", fn);
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterFunc(lazy, "MakePointerType", MakePointerType, ref L);
 
 					return MakePointerType(L);
 				case "ReflectionOnlyGetType":
-					if (lazy)
-					{
-						IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)ReflectionOnlyGetType);
-						LuaDLL.tolua_function(L, "ReflectionOnlyGetType", fn);
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterFunc(lazy, "ReflectionOnlyGetType", ReflectionOnlyGetType, ref L);
 
 					return ReflectionOnlyGetType(L);
 			}
@@ -2235,16 +2085,7 @@ public class System_TypeWrap
 			switch (key)
 			{
 				case "Delimiter":
-					if (lazy)
-					{
-						if (getStatus)
-						{
-							IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_Delimiter);
-							LuaDLL.tolua_variable(L, "Delimiter", fn, IntPtr.Zero);
-						}
-
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterVariable(lazy, getStatus, "Delimiter", get_Delimiter, null, ref L);
 
 					if (getStatus)
 					{
@@ -2253,16 +2094,7 @@ public class System_TypeWrap
 
 					break;
 				case "EmptyTypes":
-					if (lazy)
-					{
-						if (getStatus)
-						{
-							IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_EmptyTypes);
-							LuaDLL.tolua_variable(L, "EmptyTypes", fn, IntPtr.Zero);
-						}
-
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterVariable(lazy, getStatus, "EmptyTypes", get_EmptyTypes, null, ref L);
 
 					if (getStatus)
 					{
@@ -2271,16 +2103,7 @@ public class System_TypeWrap
 
 					break;
 				case "FilterAttribute":
-					if (lazy)
-					{
-						if (getStatus)
-						{
-							IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_FilterAttribute);
-							LuaDLL.tolua_variable(L, "FilterAttribute", fn, IntPtr.Zero);
-						}
-
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterVariable(lazy, getStatus, "FilterAttribute", get_FilterAttribute, null, ref L);
 
 					if (getStatus)
 					{
@@ -2289,16 +2112,7 @@ public class System_TypeWrap
 
 					break;
 				case "FilterName":
-					if (lazy)
-					{
-						if (getStatus)
-						{
-							IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_FilterName);
-							LuaDLL.tolua_variable(L, "FilterName", fn, IntPtr.Zero);
-						}
-
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterVariable(lazy, getStatus, "FilterName", get_FilterName, null, ref L);
 
 					if (getStatus)
 					{
@@ -2307,16 +2121,7 @@ public class System_TypeWrap
 
 					break;
 				case "FilterNameIgnoreCase":
-					if (lazy)
-					{
-						if (getStatus)
-						{
-							IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_FilterNameIgnoreCase);
-							LuaDLL.tolua_variable(L, "FilterNameIgnoreCase", fn, IntPtr.Zero);
-						}
-
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterVariable(lazy, getStatus, "FilterNameIgnoreCase", get_FilterNameIgnoreCase, null, ref L);
 
 					if (getStatus)
 					{
@@ -2325,16 +2130,7 @@ public class System_TypeWrap
 
 					break;
 				case "Missing":
-					if (lazy)
-					{
-						if (getStatus)
-						{
-							IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_Missing);
-							LuaDLL.tolua_variable(L, "Missing", fn, IntPtr.Zero);
-						}
-
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterVariable(lazy, getStatus, "Missing", get_Missing, null, ref L);
 
 					if (getStatus)
 					{
@@ -2343,16 +2139,7 @@ public class System_TypeWrap
 
 					break;
 				case "Assembly":
-					if (lazy)
-					{
-						if (getStatus)
-						{
-							IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_Assembly);
-							LuaDLL.tolua_variable(L, "Assembly", fn, IntPtr.Zero);
-						}
-
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterVariable(lazy, getStatus, "Assembly", get_Assembly, null, ref L);
 
 					if (getStatus)
 					{
@@ -2361,16 +2148,7 @@ public class System_TypeWrap
 
 					break;
 				case "AssemblyQualifiedName":
-					if (lazy)
-					{
-						if (getStatus)
-						{
-							IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_AssemblyQualifiedName);
-							LuaDLL.tolua_variable(L, "AssemblyQualifiedName", fn, IntPtr.Zero);
-						}
-
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterVariable(lazy, getStatus, "AssemblyQualifiedName", get_AssemblyQualifiedName, null, ref L);
 
 					if (getStatus)
 					{
@@ -2379,16 +2157,7 @@ public class System_TypeWrap
 
 					break;
 				case "Attributes":
-					if (lazy)
-					{
-						if (getStatus)
-						{
-							IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_Attributes);
-							LuaDLL.tolua_variable(L, "Attributes", fn, IntPtr.Zero);
-						}
-
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterVariable(lazy, getStatus, "Attributes", get_Attributes, null, ref L);
 
 					if (getStatus)
 					{
@@ -2397,16 +2166,7 @@ public class System_TypeWrap
 
 					break;
 				case "BaseType":
-					if (lazy)
-					{
-						if (getStatus)
-						{
-							IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_BaseType);
-							LuaDLL.tolua_variable(L, "BaseType", fn, IntPtr.Zero);
-						}
-
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterVariable(lazy, getStatus, "BaseType", get_BaseType, null, ref L);
 
 					if (getStatus)
 					{
@@ -2415,16 +2175,7 @@ public class System_TypeWrap
 
 					break;
 				case "DeclaringType":
-					if (lazy)
-					{
-						if (getStatus)
-						{
-							IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_DeclaringType);
-							LuaDLL.tolua_variable(L, "DeclaringType", fn, IntPtr.Zero);
-						}
-
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterVariable(lazy, getStatus, "DeclaringType", get_DeclaringType, null, ref L);
 
 					if (getStatus)
 					{
@@ -2433,16 +2184,7 @@ public class System_TypeWrap
 
 					break;
 				case "DefaultBinder":
-					if (lazy)
-					{
-						if (getStatus)
-						{
-							IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_DefaultBinder);
-							LuaDLL.tolua_variable(L, "DefaultBinder", fn, IntPtr.Zero);
-						}
-
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterVariable(lazy, getStatus, "DefaultBinder", get_DefaultBinder, null, ref L);
 
 					if (getStatus)
 					{
@@ -2451,16 +2193,7 @@ public class System_TypeWrap
 
 					break;
 				case "FullName":
-					if (lazy)
-					{
-						if (getStatus)
-						{
-							IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_FullName);
-							LuaDLL.tolua_variable(L, "FullName", fn, IntPtr.Zero);
-						}
-
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterVariable(lazy, getStatus, "FullName", get_FullName, null, ref L);
 
 					if (getStatus)
 					{
@@ -2469,16 +2202,7 @@ public class System_TypeWrap
 
 					break;
 				case "GUID":
-					if (lazy)
-					{
-						if (getStatus)
-						{
-							IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_GUID);
-							LuaDLL.tolua_variable(L, "GUID", fn, IntPtr.Zero);
-						}
-
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterVariable(lazy, getStatus, "GUID", get_GUID, null, ref L);
 
 					if (getStatus)
 					{
@@ -2487,16 +2211,7 @@ public class System_TypeWrap
 
 					break;
 				case "HasElementType":
-					if (lazy)
-					{
-						if (getStatus)
-						{
-							IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_HasElementType);
-							LuaDLL.tolua_variable(L, "HasElementType", fn, IntPtr.Zero);
-						}
-
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterVariable(lazy, getStatus, "HasElementType", get_HasElementType, null, ref L);
 
 					if (getStatus)
 					{
@@ -2505,16 +2220,7 @@ public class System_TypeWrap
 
 					break;
 				case "IsAbstract":
-					if (lazy)
-					{
-						if (getStatus)
-						{
-							IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_IsAbstract);
-							LuaDLL.tolua_variable(L, "IsAbstract", fn, IntPtr.Zero);
-						}
-
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterVariable(lazy, getStatus, "IsAbstract", get_IsAbstract, null, ref L);
 
 					if (getStatus)
 					{
@@ -2523,16 +2229,7 @@ public class System_TypeWrap
 
 					break;
 				case "IsAnsiClass":
-					if (lazy)
-					{
-						if (getStatus)
-						{
-							IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_IsAnsiClass);
-							LuaDLL.tolua_variable(L, "IsAnsiClass", fn, IntPtr.Zero);
-						}
-
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterVariable(lazy, getStatus, "IsAnsiClass", get_IsAnsiClass, null, ref L);
 
 					if (getStatus)
 					{
@@ -2541,16 +2238,7 @@ public class System_TypeWrap
 
 					break;
 				case "IsArray":
-					if (lazy)
-					{
-						if (getStatus)
-						{
-							IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_IsArray);
-							LuaDLL.tolua_variable(L, "IsArray", fn, IntPtr.Zero);
-						}
-
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterVariable(lazy, getStatus, "IsArray", get_IsArray, null, ref L);
 
 					if (getStatus)
 					{
@@ -2559,16 +2247,7 @@ public class System_TypeWrap
 
 					break;
 				case "IsAutoClass":
-					if (lazy)
-					{
-						if (getStatus)
-						{
-							IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_IsAutoClass);
-							LuaDLL.tolua_variable(L, "IsAutoClass", fn, IntPtr.Zero);
-						}
-
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterVariable(lazy, getStatus, "IsAutoClass", get_IsAutoClass, null, ref L);
 
 					if (getStatus)
 					{
@@ -2577,16 +2256,7 @@ public class System_TypeWrap
 
 					break;
 				case "IsAutoLayout":
-					if (lazy)
-					{
-						if (getStatus)
-						{
-							IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_IsAutoLayout);
-							LuaDLL.tolua_variable(L, "IsAutoLayout", fn, IntPtr.Zero);
-						}
-
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterVariable(lazy, getStatus, "IsAutoLayout", get_IsAutoLayout, null, ref L);
 
 					if (getStatus)
 					{
@@ -2595,16 +2265,7 @@ public class System_TypeWrap
 
 					break;
 				case "IsByRef":
-					if (lazy)
-					{
-						if (getStatus)
-						{
-							IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_IsByRef);
-							LuaDLL.tolua_variable(L, "IsByRef", fn, IntPtr.Zero);
-						}
-
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterVariable(lazy, getStatus, "IsByRef", get_IsByRef, null, ref L);
 
 					if (getStatus)
 					{
@@ -2613,16 +2274,7 @@ public class System_TypeWrap
 
 					break;
 				case "IsClass":
-					if (lazy)
-					{
-						if (getStatus)
-						{
-							IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_IsClass);
-							LuaDLL.tolua_variable(L, "IsClass", fn, IntPtr.Zero);
-						}
-
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterVariable(lazy, getStatus, "IsClass", get_IsClass, null, ref L);
 
 					if (getStatus)
 					{
@@ -2631,16 +2283,7 @@ public class System_TypeWrap
 
 					break;
 				case "IsCOMObject":
-					if (lazy)
-					{
-						if (getStatus)
-						{
-							IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_IsCOMObject);
-							LuaDLL.tolua_variable(L, "IsCOMObject", fn, IntPtr.Zero);
-						}
-
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterVariable(lazy, getStatus, "IsCOMObject", get_IsCOMObject, null, ref L);
 
 					if (getStatus)
 					{
@@ -2649,16 +2292,7 @@ public class System_TypeWrap
 
 					break;
 				case "IsContextful":
-					if (lazy)
-					{
-						if (getStatus)
-						{
-							IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_IsContextful);
-							LuaDLL.tolua_variable(L, "IsContextful", fn, IntPtr.Zero);
-						}
-
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterVariable(lazy, getStatus, "IsContextful", get_IsContextful, null, ref L);
 
 					if (getStatus)
 					{
@@ -2667,16 +2301,7 @@ public class System_TypeWrap
 
 					break;
 				case "IsEnum":
-					if (lazy)
-					{
-						if (getStatus)
-						{
-							IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_IsEnum);
-							LuaDLL.tolua_variable(L, "IsEnum", fn, IntPtr.Zero);
-						}
-
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterVariable(lazy, getStatus, "IsEnum", get_IsEnum, null, ref L);
 
 					if (getStatus)
 					{
@@ -2685,16 +2310,7 @@ public class System_TypeWrap
 
 					break;
 				case "IsExplicitLayout":
-					if (lazy)
-					{
-						if (getStatus)
-						{
-							IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_IsExplicitLayout);
-							LuaDLL.tolua_variable(L, "IsExplicitLayout", fn, IntPtr.Zero);
-						}
-
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterVariable(lazy, getStatus, "IsExplicitLayout", get_IsExplicitLayout, null, ref L);
 
 					if (getStatus)
 					{
@@ -2703,16 +2319,7 @@ public class System_TypeWrap
 
 					break;
 				case "IsImport":
-					if (lazy)
-					{
-						if (getStatus)
-						{
-							IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_IsImport);
-							LuaDLL.tolua_variable(L, "IsImport", fn, IntPtr.Zero);
-						}
-
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterVariable(lazy, getStatus, "IsImport", get_IsImport, null, ref L);
 
 					if (getStatus)
 					{
@@ -2721,16 +2328,7 @@ public class System_TypeWrap
 
 					break;
 				case "IsInterface":
-					if (lazy)
-					{
-						if (getStatus)
-						{
-							IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_IsInterface);
-							LuaDLL.tolua_variable(L, "IsInterface", fn, IntPtr.Zero);
-						}
-
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterVariable(lazy, getStatus, "IsInterface", get_IsInterface, null, ref L);
 
 					if (getStatus)
 					{
@@ -2739,16 +2337,7 @@ public class System_TypeWrap
 
 					break;
 				case "IsLayoutSequential":
-					if (lazy)
-					{
-						if (getStatus)
-						{
-							IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_IsLayoutSequential);
-							LuaDLL.tolua_variable(L, "IsLayoutSequential", fn, IntPtr.Zero);
-						}
-
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterVariable(lazy, getStatus, "IsLayoutSequential", get_IsLayoutSequential, null, ref L);
 
 					if (getStatus)
 					{
@@ -2757,16 +2346,7 @@ public class System_TypeWrap
 
 					break;
 				case "IsMarshalByRef":
-					if (lazy)
-					{
-						if (getStatus)
-						{
-							IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_IsMarshalByRef);
-							LuaDLL.tolua_variable(L, "IsMarshalByRef", fn, IntPtr.Zero);
-						}
-
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterVariable(lazy, getStatus, "IsMarshalByRef", get_IsMarshalByRef, null, ref L);
 
 					if (getStatus)
 					{
@@ -2775,16 +2355,7 @@ public class System_TypeWrap
 
 					break;
 				case "IsNestedAssembly":
-					if (lazy)
-					{
-						if (getStatus)
-						{
-							IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_IsNestedAssembly);
-							LuaDLL.tolua_variable(L, "IsNestedAssembly", fn, IntPtr.Zero);
-						}
-
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterVariable(lazy, getStatus, "IsNestedAssembly", get_IsNestedAssembly, null, ref L);
 
 					if (getStatus)
 					{
@@ -2793,16 +2364,7 @@ public class System_TypeWrap
 
 					break;
 				case "IsNestedFamANDAssem":
-					if (lazy)
-					{
-						if (getStatus)
-						{
-							IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_IsNestedFamANDAssem);
-							LuaDLL.tolua_variable(L, "IsNestedFamANDAssem", fn, IntPtr.Zero);
-						}
-
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterVariable(lazy, getStatus, "IsNestedFamANDAssem", get_IsNestedFamANDAssem, null, ref L);
 
 					if (getStatus)
 					{
@@ -2811,16 +2373,7 @@ public class System_TypeWrap
 
 					break;
 				case "IsNestedFamily":
-					if (lazy)
-					{
-						if (getStatus)
-						{
-							IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_IsNestedFamily);
-							LuaDLL.tolua_variable(L, "IsNestedFamily", fn, IntPtr.Zero);
-						}
-
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterVariable(lazy, getStatus, "IsNestedFamily", get_IsNestedFamily, null, ref L);
 
 					if (getStatus)
 					{
@@ -2829,16 +2382,7 @@ public class System_TypeWrap
 
 					break;
 				case "IsNestedFamORAssem":
-					if (lazy)
-					{
-						if (getStatus)
-						{
-							IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_IsNestedFamORAssem);
-							LuaDLL.tolua_variable(L, "IsNestedFamORAssem", fn, IntPtr.Zero);
-						}
-
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterVariable(lazy, getStatus, "IsNestedFamORAssem", get_IsNestedFamORAssem, null, ref L);
 
 					if (getStatus)
 					{
@@ -2847,16 +2391,7 @@ public class System_TypeWrap
 
 					break;
 				case "IsNestedPrivate":
-					if (lazy)
-					{
-						if (getStatus)
-						{
-							IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_IsNestedPrivate);
-							LuaDLL.tolua_variable(L, "IsNestedPrivate", fn, IntPtr.Zero);
-						}
-
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterVariable(lazy, getStatus, "IsNestedPrivate", get_IsNestedPrivate, null, ref L);
 
 					if (getStatus)
 					{
@@ -2865,16 +2400,7 @@ public class System_TypeWrap
 
 					break;
 				case "IsNestedPublic":
-					if (lazy)
-					{
-						if (getStatus)
-						{
-							IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_IsNestedPublic);
-							LuaDLL.tolua_variable(L, "IsNestedPublic", fn, IntPtr.Zero);
-						}
-
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterVariable(lazy, getStatus, "IsNestedPublic", get_IsNestedPublic, null, ref L);
 
 					if (getStatus)
 					{
@@ -2883,16 +2409,7 @@ public class System_TypeWrap
 
 					break;
 				case "IsNotPublic":
-					if (lazy)
-					{
-						if (getStatus)
-						{
-							IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_IsNotPublic);
-							LuaDLL.tolua_variable(L, "IsNotPublic", fn, IntPtr.Zero);
-						}
-
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterVariable(lazy, getStatus, "IsNotPublic", get_IsNotPublic, null, ref L);
 
 					if (getStatus)
 					{
@@ -2901,16 +2418,7 @@ public class System_TypeWrap
 
 					break;
 				case "IsPointer":
-					if (lazy)
-					{
-						if (getStatus)
-						{
-							IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_IsPointer);
-							LuaDLL.tolua_variable(L, "IsPointer", fn, IntPtr.Zero);
-						}
-
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterVariable(lazy, getStatus, "IsPointer", get_IsPointer, null, ref L);
 
 					if (getStatus)
 					{
@@ -2919,16 +2427,7 @@ public class System_TypeWrap
 
 					break;
 				case "IsPrimitive":
-					if (lazy)
-					{
-						if (getStatus)
-						{
-							IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_IsPrimitive);
-							LuaDLL.tolua_variable(L, "IsPrimitive", fn, IntPtr.Zero);
-						}
-
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterVariable(lazy, getStatus, "IsPrimitive", get_IsPrimitive, null, ref L);
 
 					if (getStatus)
 					{
@@ -2937,16 +2436,7 @@ public class System_TypeWrap
 
 					break;
 				case "IsPublic":
-					if (lazy)
-					{
-						if (getStatus)
-						{
-							IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_IsPublic);
-							LuaDLL.tolua_variable(L, "IsPublic", fn, IntPtr.Zero);
-						}
-
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterVariable(lazy, getStatus, "IsPublic", get_IsPublic, null, ref L);
 
 					if (getStatus)
 					{
@@ -2955,16 +2445,7 @@ public class System_TypeWrap
 
 					break;
 				case "IsSealed":
-					if (lazy)
-					{
-						if (getStatus)
-						{
-							IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_IsSealed);
-							LuaDLL.tolua_variable(L, "IsSealed", fn, IntPtr.Zero);
-						}
-
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterVariable(lazy, getStatus, "IsSealed", get_IsSealed, null, ref L);
 
 					if (getStatus)
 					{
@@ -2973,16 +2454,7 @@ public class System_TypeWrap
 
 					break;
 				case "IsSerializable":
-					if (lazy)
-					{
-						if (getStatus)
-						{
-							IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_IsSerializable);
-							LuaDLL.tolua_variable(L, "IsSerializable", fn, IntPtr.Zero);
-						}
-
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterVariable(lazy, getStatus, "IsSerializable", get_IsSerializable, null, ref L);
 
 					if (getStatus)
 					{
@@ -2991,16 +2463,7 @@ public class System_TypeWrap
 
 					break;
 				case "IsSpecialName":
-					if (lazy)
-					{
-						if (getStatus)
-						{
-							IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_IsSpecialName);
-							LuaDLL.tolua_variable(L, "IsSpecialName", fn, IntPtr.Zero);
-						}
-
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterVariable(lazy, getStatus, "IsSpecialName", get_IsSpecialName, null, ref L);
 
 					if (getStatus)
 					{
@@ -3009,16 +2472,7 @@ public class System_TypeWrap
 
 					break;
 				case "IsUnicodeClass":
-					if (lazy)
-					{
-						if (getStatus)
-						{
-							IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_IsUnicodeClass);
-							LuaDLL.tolua_variable(L, "IsUnicodeClass", fn, IntPtr.Zero);
-						}
-
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterVariable(lazy, getStatus, "IsUnicodeClass", get_IsUnicodeClass, null, ref L);
 
 					if (getStatus)
 					{
@@ -3027,16 +2481,7 @@ public class System_TypeWrap
 
 					break;
 				case "IsValueType":
-					if (lazy)
-					{
-						if (getStatus)
-						{
-							IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_IsValueType);
-							LuaDLL.tolua_variable(L, "IsValueType", fn, IntPtr.Zero);
-						}
-
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterVariable(lazy, getStatus, "IsValueType", get_IsValueType, null, ref L);
 
 					if (getStatus)
 					{
@@ -3045,16 +2490,7 @@ public class System_TypeWrap
 
 					break;
 				case "MemberType":
-					if (lazy)
-					{
-						if (getStatus)
-						{
-							IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_MemberType);
-							LuaDLL.tolua_variable(L, "MemberType", fn, IntPtr.Zero);
-						}
-
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterVariable(lazy, getStatus, "MemberType", get_MemberType, null, ref L);
 
 					if (getStatus)
 					{
@@ -3063,16 +2499,7 @@ public class System_TypeWrap
 
 					break;
 				case "Module":
-					if (lazy)
-					{
-						if (getStatus)
-						{
-							IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_Module);
-							LuaDLL.tolua_variable(L, "Module", fn, IntPtr.Zero);
-						}
-
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterVariable(lazy, getStatus, "Module", get_Module, null, ref L);
 
 					if (getStatus)
 					{
@@ -3081,16 +2508,7 @@ public class System_TypeWrap
 
 					break;
 				case "Namespace":
-					if (lazy)
-					{
-						if (getStatus)
-						{
-							IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_Namespace);
-							LuaDLL.tolua_variable(L, "Namespace", fn, IntPtr.Zero);
-						}
-
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterVariable(lazy, getStatus, "Namespace", get_Namespace, null, ref L);
 
 					if (getStatus)
 					{
@@ -3099,16 +2517,7 @@ public class System_TypeWrap
 
 					break;
 				case "ReflectedType":
-					if (lazy)
-					{
-						if (getStatus)
-						{
-							IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_ReflectedType);
-							LuaDLL.tolua_variable(L, "ReflectedType", fn, IntPtr.Zero);
-						}
-
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterVariable(lazy, getStatus, "ReflectedType", get_ReflectedType, null, ref L);
 
 					if (getStatus)
 					{
@@ -3117,16 +2526,7 @@ public class System_TypeWrap
 
 					break;
 				case "TypeHandle":
-					if (lazy)
-					{
-						if (getStatus)
-						{
-							IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_TypeHandle);
-							LuaDLL.tolua_variable(L, "TypeHandle", fn, IntPtr.Zero);
-						}
-
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterVariable(lazy, getStatus, "TypeHandle", get_TypeHandle, null, ref L);
 
 					if (getStatus)
 					{
@@ -3135,16 +2535,7 @@ public class System_TypeWrap
 
 					break;
 				case "TypeInitializer":
-					if (lazy)
-					{
-						if (getStatus)
-						{
-							IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_TypeInitializer);
-							LuaDLL.tolua_variable(L, "TypeInitializer", fn, IntPtr.Zero);
-						}
-
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterVariable(lazy, getStatus, "TypeInitializer", get_TypeInitializer, null, ref L);
 
 					if (getStatus)
 					{
@@ -3153,16 +2544,7 @@ public class System_TypeWrap
 
 					break;
 				case "UnderlyingSystemType":
-					if (lazy)
-					{
-						if (getStatus)
-						{
-							IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_UnderlyingSystemType);
-							LuaDLL.tolua_variable(L, "UnderlyingSystemType", fn, IntPtr.Zero);
-						}
-
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterVariable(lazy, getStatus, "UnderlyingSystemType", get_UnderlyingSystemType, null, ref L);
 
 					if (getStatus)
 					{
@@ -3171,16 +2553,7 @@ public class System_TypeWrap
 
 					break;
 				case "ContainsGenericParameters":
-					if (lazy)
-					{
-						if (getStatus)
-						{
-							IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_ContainsGenericParameters);
-							LuaDLL.tolua_variable(L, "ContainsGenericParameters", fn, IntPtr.Zero);
-						}
-
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterVariable(lazy, getStatus, "ContainsGenericParameters", get_ContainsGenericParameters, null, ref L);
 
 					if (getStatus)
 					{
@@ -3189,16 +2562,7 @@ public class System_TypeWrap
 
 					break;
 				case "IsGenericTypeDefinition":
-					if (lazy)
-					{
-						if (getStatus)
-						{
-							IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_IsGenericTypeDefinition);
-							LuaDLL.tolua_variable(L, "IsGenericTypeDefinition", fn, IntPtr.Zero);
-						}
-
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterVariable(lazy, getStatus, "IsGenericTypeDefinition", get_IsGenericTypeDefinition, null, ref L);
 
 					if (getStatus)
 					{
@@ -3207,16 +2571,7 @@ public class System_TypeWrap
 
 					break;
 				case "IsGenericType":
-					if (lazy)
-					{
-						if (getStatus)
-						{
-							IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_IsGenericType);
-							LuaDLL.tolua_variable(L, "IsGenericType", fn, IntPtr.Zero);
-						}
-
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterVariable(lazy, getStatus, "IsGenericType", get_IsGenericType, null, ref L);
 
 					if (getStatus)
 					{
@@ -3225,16 +2580,7 @@ public class System_TypeWrap
 
 					break;
 				case "IsGenericParameter":
-					if (lazy)
-					{
-						if (getStatus)
-						{
-							IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_IsGenericParameter);
-							LuaDLL.tolua_variable(L, "IsGenericParameter", fn, IntPtr.Zero);
-						}
-
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterVariable(lazy, getStatus, "IsGenericParameter", get_IsGenericParameter, null, ref L);
 
 					if (getStatus)
 					{
@@ -3243,16 +2589,7 @@ public class System_TypeWrap
 
 					break;
 				case "IsNested":
-					if (lazy)
-					{
-						if (getStatus)
-						{
-							IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_IsNested);
-							LuaDLL.tolua_variable(L, "IsNested", fn, IntPtr.Zero);
-						}
-
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterVariable(lazy, getStatus, "IsNested", get_IsNested, null, ref L);
 
 					if (getStatus)
 					{
@@ -3261,16 +2598,7 @@ public class System_TypeWrap
 
 					break;
 				case "IsVisible":
-					if (lazy)
-					{
-						if (getStatus)
-						{
-							IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_IsVisible);
-							LuaDLL.tolua_variable(L, "IsVisible", fn, IntPtr.Zero);
-						}
-
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterVariable(lazy, getStatus, "IsVisible", get_IsVisible, null, ref L);
 
 					if (getStatus)
 					{
@@ -3279,16 +2607,7 @@ public class System_TypeWrap
 
 					break;
 				case "GenericParameterPosition":
-					if (lazy)
-					{
-						if (getStatus)
-						{
-							IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_GenericParameterPosition);
-							LuaDLL.tolua_variable(L, "GenericParameterPosition", fn, IntPtr.Zero);
-						}
-
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterVariable(lazy, getStatus, "GenericParameterPosition", get_GenericParameterPosition, null, ref L);
 
 					if (getStatus)
 					{
@@ -3297,16 +2616,7 @@ public class System_TypeWrap
 
 					break;
 				case "GenericParameterAttributes":
-					if (lazy)
-					{
-						if (getStatus)
-						{
-							IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_GenericParameterAttributes);
-							LuaDLL.tolua_variable(L, "GenericParameterAttributes", fn, IntPtr.Zero);
-						}
-
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterVariable(lazy, getStatus, "GenericParameterAttributes", get_GenericParameterAttributes, null, ref L);
 
 					if (getStatus)
 					{
@@ -3315,16 +2625,7 @@ public class System_TypeWrap
 
 					break;
 				case "DeclaringMethod":
-					if (lazy)
-					{
-						if (getStatus)
-						{
-							IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_DeclaringMethod);
-							LuaDLL.tolua_variable(L, "DeclaringMethod", fn, IntPtr.Zero);
-						}
-
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterVariable(lazy, getStatus, "DeclaringMethod", get_DeclaringMethod, null, ref L);
 
 					if (getStatus)
 					{
@@ -3333,16 +2634,7 @@ public class System_TypeWrap
 
 					break;
 				case "StructLayoutAttribute":
-					if (lazy)
-					{
-						if (getStatus)
-						{
-							IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_StructLayoutAttribute);
-							LuaDLL.tolua_variable(L, "StructLayoutAttribute", fn, IntPtr.Zero);
-						}
-
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterVariable(lazy, getStatus, "StructLayoutAttribute", get_StructLayoutAttribute, null, ref L);
 
 					if (getStatus)
 					{

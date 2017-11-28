@@ -81,21 +81,11 @@ public class System_Collections_IEnumeratorWrap
 			switch (key)
 			{
 				case "MoveNext":
-					if (lazy)
-					{
-						IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)MoveNext);
-						LuaDLL.tolua_function(L, "MoveNext", fn);
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterFunc(lazy, "MoveNext", MoveNext, ref L);
 
 					return MoveNext(L);
 				case "Reset":
-					if (lazy)
-					{
-						IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)Reset);
-						LuaDLL.tolua_function(L, "Reset", fn);
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterFunc(lazy, "Reset", Reset, ref L);
 
 					return Reset(L);
 			}
@@ -121,16 +111,7 @@ public class System_Collections_IEnumeratorWrap
 			switch (key)
 			{
 				case "Current":
-					if (lazy)
-					{
-						if (getStatus)
-						{
-							IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_Current);
-							LuaDLL.tolua_variable(L, "Current", fn, IntPtr.Zero);
-						}
-
-						LuaDLL.lua_pop(L, 1);
-					}
+					ToLua.LazyRegisterVariable(lazy, getStatus, "Current", get_Current, null, ref L);
 
 					if (getStatus)
 					{
