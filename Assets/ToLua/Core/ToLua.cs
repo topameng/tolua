@@ -1433,45 +1433,52 @@ namespace LuaInterface
             return null;
         }
 
-        public static void LazyRegisterFunc(bool lazyState, string funcName, LuaCSFunction func, ref IntPtr luaState)
+        public static int LazyRegisterFunc(bool lazyState, string funcName, LuaCSFunction func, ref IntPtr luaState)
         {
-            if (!lazyState)
+            if (lazyState)
             {
-                return;
+                IntPtr fn = Marshal.GetFunctionPointerForDelegate(func);
+                LuaDLL.tolua_function(luaState, funcName, fn);
+                LuaDLL.lua_pop(luaState, 1);
             }
 
-            IntPtr fn = Marshal.GetFunctionPointerForDelegate(func);
-            LuaDLL.tolua_function(luaState, funcName, fn);
-            LuaDLL.lua_pop(luaState, 1);
+            return func(luaState);
         }
 
-        public static void LazyRegisterVariable(bool lazyState, bool getStatus, string variableName, LuaCSFunction getFunc, LuaCSFunction setFunc, ref IntPtr luaState)
+        public static int LazyRegisterVariable(bool lazyState, bool getStatus, string variableName, LuaCSFunction getFunc, LuaCSFunction setFunc, ref IntPtr luaState)
         {
-            if (!lazyState)
+            if (lazyState)
             {
-                return;
-            }
+                IntPtr fn;
 
-            IntPtr fn;
+                if (getStatus)
+                {
+                    if (getFunc != null)
+                    {
+                        fn = Marshal.GetFunctionPointerForDelegate(getFunc);
+                        LuaDLL.tolua_variable(luaState, variableName, fn, IntPtr.Zero);
+                    }
+                }
+                else
+                {
+                    if (setFunc != null)
+                    {
+                        fn = Marshal.GetFunctionPointerForDelegate(setFunc);
+                        LuaDLL.tolua_variable(luaState, variableName, IntPtr.Zero, fn);
+                    }
+                }
+
+                LuaDLL.lua_pop(luaState, 1);
+            }
 
             if (getStatus)
             {
-                if (getFunc != null)
-                {
-                    fn = Marshal.GetFunctionPointerForDelegate(getFunc);
-                    LuaDLL.tolua_variable(luaState, variableName, fn, IntPtr.Zero);
-                }
+                return getFunc(luaState);
             }
             else
             {
-                if (setFunc != null)
-                {
-                    fn = Marshal.GetFunctionPointerForDelegate(setFunc);
-                    LuaDLL.tolua_variable(luaState, variableName, IntPtr.Zero, fn);
-                }
+                return setFunc(luaState);
             }
-
-            LuaDLL.lua_pop(luaState, 1);
         }
 
         public static UnityEngine.TrackedReference CheckTrackedReference(IntPtr L, int stackPos, Type type)

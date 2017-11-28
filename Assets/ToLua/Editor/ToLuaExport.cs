@@ -1665,9 +1665,7 @@ public static class ToLuaExport
     {
         string name = GetMethodName(m.Method);
         sb.AppendFormat("\t\t\t\tcase \"{0}\":\r\n", name);
-        sb.AppendFormat("\t\t\t\t\tToLua.LazyRegisterFunc(lazy, \"{0}\", {1}, ref L);\r\n", name, name == "Register" ? "_Register" : name);
-        sb.AppendLine();
-        sb.AppendFormat("\t\t\t\t\treturn {0}(L);\r\n", name == "Register" ? "_Register" : name);
+        sb.AppendFormat("\t\t\t\t\treturn ToLua.LazyRegisterFunc(lazy, \"{0}\", {1}, ref L);\r\n", name, name == "Register" ? "_Register" : name);
     }
 
     static void GenLazyWrapFunction()
@@ -1694,9 +1692,7 @@ public static class ToLuaExport
         if (ctorList.Count > 0 || type.IsValueType || ctorExtList.Count > 0)
         {
             sb.AppendLineEx("\t\t\t\tcase \"New\":");
-            sb.AppendFormat("\t\t\t\t\tToLua.LazyRegisterFunc(lazy, \"New\", _Create{0}, ref L);\r\n", wrapClassName);
-            sb.AppendLine();
-            sb.AppendFormat("\t\t\t\t\treturn _Create{0}(L);\r\n", wrapClassName);
+            sb.AppendFormat("\t\t\t\t\treturn ToLua.LazyRegisterFunc(lazy, \"New\", _Create{0}, ref L);\r\n", wrapClassName);
         }
 
         HashSet<string> set = new HashSet<string>();
@@ -1746,38 +1742,7 @@ public static class ToLuaExport
 
         string getFuncName = get ? getPrefix + name : "null";
         string setFuncName = set ? setPrefix + name : "null";
-        sb.AppendFormat("\t\t\t\t\tToLua.LazyRegisterVariable(lazy, getStatus, \"{0}\", {1}, {2}, ref L);\r\n", name, getFuncName, setFuncName);
-        sb.AppendLine();
-
-        if (get)
-        {
-            sb.AppendLineEx("\t\t\t\t\tif (getStatus)");
-            sb.AppendLineEx("\t\t\t\t\t{");
-            sb.AppendFormat("\t\t\t\t\t\treturn {0}(L);\r\n", getPrefix + name);
-            sb.AppendLineEx("\t\t\t\t\t}");
-        }
-        if (set)
-        {
-            if (get)
-            {
-                sb.AppendLineEx("\t\t\t\t\telse");
-                sb.AppendLineEx("\t\t\t\t\t{");
-            }
-            else
-            {
-                sb.AppendLineEx("\t\t\t\t\tif (!getStatus)");
-                sb.AppendLineEx("\t\t\t\t\t{");
-            }
-
-            sb.AppendFormat("\t\t\t\t\t\treturn {0}(L);\r\n", setPrefix + name);
-            sb.AppendLineEx("\t\t\t\t\t}");
-        }
-
-        if (!get || !set)
-        {
-            sb.AppendLine();
-            sb.AppendLineEx("\t\t\t\t\tbreak;");
-        }
+        sb.AppendFormat("\t\t\t\t\treturn ToLua.LazyRegisterVariable(lazy, getStatus, \"{0}\", {1}, {2}, ref L);\r\n", name, getFuncName, setFuncName);
     }
 
     static void GenLazyVariableWrapFunction()

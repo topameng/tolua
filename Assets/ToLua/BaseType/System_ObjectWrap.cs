@@ -169,37 +169,21 @@ public class System_ObjectWrap
 			switch (key)
 			{
 				case "New":
-					ToLua.LazyRegisterFunc(lazy, "New", _CreateSystem_Object, ref L);
-
-					return _CreateSystem_Object(L);
+					return ToLua.LazyRegisterFunc(lazy, "New", _CreateSystem_Object, ref L);
 				case "Equals":
-					ToLua.LazyRegisterFunc(lazy, "Equals", Equals, ref L);
-
-					return Equals(L);
+					return ToLua.LazyRegisterFunc(lazy, "Equals", Equals, ref L);
 				case "GetHashCode":
-					ToLua.LazyRegisterFunc(lazy, "GetHashCode", GetHashCode, ref L);
-
-					return GetHashCode(L);
+					return ToLua.LazyRegisterFunc(lazy, "GetHashCode", GetHashCode, ref L);
 				case "GetType":
-					ToLua.LazyRegisterFunc(lazy, "GetType", GetType, ref L);
-
-					return GetType(L);
+					return ToLua.LazyRegisterFunc(lazy, "GetType", GetType, ref L);
 				case "ToString":
-					ToLua.LazyRegisterFunc(lazy, "ToString", ToString, ref L);
-
-					return ToString(L);
+					return ToLua.LazyRegisterFunc(lazy, "ToString", ToString, ref L);
 				case "ReferenceEquals":
-					ToLua.LazyRegisterFunc(lazy, "ReferenceEquals", ReferenceEquals, ref L);
-
-					return ReferenceEquals(L);
+					return ToLua.LazyRegisterFunc(lazy, "ReferenceEquals", ReferenceEquals, ref L);
 				case "op_Equality":
-					ToLua.LazyRegisterFunc(lazy, "op_Equality", op_Equality, ref L);
-
-					return op_Equality(L);
+					return ToLua.LazyRegisterFunc(lazy, "op_Equality", op_Equality, ref L);
 				case "Destroy":
-					ToLua.LazyRegisterFunc(lazy, "Destroy", Destroy, ref L);
-
-					return Destroy(L);
+					return ToLua.LazyRegisterFunc(lazy, "Destroy", Destroy, ref L);
 			}
 			return 0;
 		}

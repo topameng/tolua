@@ -482,53 +482,29 @@ public class UnityEngine_ObjectWrap
 			switch (key)
 			{
 				case "New":
-					ToLua.LazyRegisterFunc(lazy, "New", _CreateUnityEngine_Object, ref L);
-
-					return _CreateUnityEngine_Object(L);
+					return ToLua.LazyRegisterFunc(lazy, "New", _CreateUnityEngine_Object, ref L);
 				case "FindObjectsOfType":
-					ToLua.LazyRegisterFunc(lazy, "FindObjectsOfType", FindObjectsOfType, ref L);
-
-					return FindObjectsOfType(L);
+					return ToLua.LazyRegisterFunc(lazy, "FindObjectsOfType", FindObjectsOfType, ref L);
 				case "DontDestroyOnLoad":
-					ToLua.LazyRegisterFunc(lazy, "DontDestroyOnLoad", DontDestroyOnLoad, ref L);
-
-					return DontDestroyOnLoad(L);
+					return ToLua.LazyRegisterFunc(lazy, "DontDestroyOnLoad", DontDestroyOnLoad, ref L);
 				case "ToString":
-					ToLua.LazyRegisterFunc(lazy, "ToString", ToString, ref L);
-
-					return ToString(L);
+					return ToLua.LazyRegisterFunc(lazy, "ToString", ToString, ref L);
 				case "GetInstanceID":
-					ToLua.LazyRegisterFunc(lazy, "GetInstanceID", GetInstanceID, ref L);
-
-					return GetInstanceID(L);
+					return ToLua.LazyRegisterFunc(lazy, "GetInstanceID", GetInstanceID, ref L);
 				case "GetHashCode":
-					ToLua.LazyRegisterFunc(lazy, "GetHashCode", GetHashCode, ref L);
-
-					return GetHashCode(L);
+					return ToLua.LazyRegisterFunc(lazy, "GetHashCode", GetHashCode, ref L);
 				case "Equals":
-					ToLua.LazyRegisterFunc(lazy, "Equals", Equals, ref L);
-
-					return Equals(L);
+					return ToLua.LazyRegisterFunc(lazy, "Equals", Equals, ref L);
 				case "FindObjectOfType":
-					ToLua.LazyRegisterFunc(lazy, "FindObjectOfType", FindObjectOfType, ref L);
-
-					return FindObjectOfType(L);
+					return ToLua.LazyRegisterFunc(lazy, "FindObjectOfType", FindObjectOfType, ref L);
 				case "op_Equality":
-					ToLua.LazyRegisterFunc(lazy, "op_Equality", op_Equality, ref L);
-
-					return op_Equality(L);
+					return ToLua.LazyRegisterFunc(lazy, "op_Equality", op_Equality, ref L);
 				case "Instantiate":
-					ToLua.LazyRegisterFunc(lazy, "Instantiate", Instantiate, ref L);
-
-					return Instantiate(L);
+					return ToLua.LazyRegisterFunc(lazy, "Instantiate", Instantiate, ref L);
 				case "DestroyImmediate":
-					ToLua.LazyRegisterFunc(lazy, "DestroyImmediate", DestroyImmediate, ref L);
-
-					return DestroyImmediate(L);
+					return ToLua.LazyRegisterFunc(lazy, "DestroyImmediate", DestroyImmediate, ref L);
 				case "Destroy":
-					ToLua.LazyRegisterFunc(lazy, "Destroy", Destroy, ref L);
-
-					return Destroy(L);
+					return ToLua.LazyRegisterFunc(lazy, "Destroy", Destroy, ref L);
 			}
 			return 0;
 		}
@@ -552,27 +528,9 @@ public class UnityEngine_ObjectWrap
 			switch (key)
 			{
 				case "name":
-					ToLua.LazyRegisterVariable(lazy, getStatus, "name", get_name, set_name, ref L);
-
-					if (getStatus)
-					{
-						return get_name(L);
-					}
-					else
-					{
-						return set_name(L);
-					}
+					return ToLua.LazyRegisterVariable(lazy, getStatus, "name", get_name, set_name, ref L);
 				case "hideFlags":
-					ToLua.LazyRegisterVariable(lazy, getStatus, "hideFlags", get_hideFlags, set_hideFlags, ref L);
-
-					if (getStatus)
-					{
-						return get_hideFlags(L);
-					}
-					else
-					{
-						return set_hideFlags(L);
-					}
+					return ToLua.LazyRegisterVariable(lazy, getStatus, "hideFlags", get_hideFlags, set_hideFlags, ref L);
 			}
 			return 0;
 		}
