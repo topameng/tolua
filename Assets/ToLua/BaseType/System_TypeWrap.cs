@@ -1943,65 +1943,65 @@ public class System_TypeWrap
 			switch (key)
 			{
 				case "Equals":
-					return ToLua.LazyRegisterFunc(lazy, "Equals", Equals, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "Equals", Equals, L);
 				case "GetType":
-					return ToLua.LazyRegisterFunc(lazy, "GetType", GetType, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "GetType", GetType, L);
 				case "GetTypeArray":
-					return ToLua.LazyRegisterFunc(lazy, "GetTypeArray", GetTypeArray, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "GetTypeArray", GetTypeArray, L);
 				case "GetTypeCode":
-					return ToLua.LazyRegisterFunc(lazy, "GetTypeCode", GetTypeCode, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "GetTypeCode", GetTypeCode, L);
 				case "GetTypeFromHandle":
-					return ToLua.LazyRegisterFunc(lazy, "GetTypeFromHandle", GetTypeFromHandle, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "GetTypeFromHandle", GetTypeFromHandle, L);
 				case "GetTypeHandle":
-					return ToLua.LazyRegisterFunc(lazy, "GetTypeHandle", GetTypeHandle, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "GetTypeHandle", GetTypeHandle, L);
 				case "IsSubclassOf":
-					return ToLua.LazyRegisterFunc(lazy, "IsSubclassOf", IsSubclassOf, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "IsSubclassOf", IsSubclassOf, L);
 				case "FindInterfaces":
-					return ToLua.LazyRegisterFunc(lazy, "FindInterfaces", FindInterfaces, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "FindInterfaces", FindInterfaces, L);
 				case "GetInterface":
-					return ToLua.LazyRegisterFunc(lazy, "GetInterface", GetInterface, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "GetInterface", GetInterface, L);
 				case "GetInterfaceMap":
-					return ToLua.LazyRegisterFunc(lazy, "GetInterfaceMap", GetInterfaceMap, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "GetInterfaceMap", GetInterfaceMap, L);
 				case "GetInterfaces":
-					return ToLua.LazyRegisterFunc(lazy, "GetInterfaces", GetInterfaces, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "GetInterfaces", GetInterfaces, L);
 				case "IsAssignableFrom":
-					return ToLua.LazyRegisterFunc(lazy, "IsAssignableFrom", IsAssignableFrom, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "IsAssignableFrom", IsAssignableFrom, L);
 				case "IsInstanceOfType":
-					return ToLua.LazyRegisterFunc(lazy, "IsInstanceOfType", IsInstanceOfType, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "IsInstanceOfType", IsInstanceOfType, L);
 				case "GetArrayRank":
-					return ToLua.LazyRegisterFunc(lazy, "GetArrayRank", GetArrayRank, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "GetArrayRank", GetArrayRank, L);
 				case "GetElementType":
-					return ToLua.LazyRegisterFunc(lazy, "GetElementType", GetElementType, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "GetElementType", GetElementType, L);
 				case "GetHashCode":
-					return ToLua.LazyRegisterFunc(lazy, "GetHashCode", GetHashCode, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "GetHashCode", GetHashCode, L);
 				case "GetNestedType":
-					return ToLua.LazyRegisterFunc(lazy, "GetNestedType", GetNestedType, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "GetNestedType", GetNestedType, L);
 				case "GetNestedTypes":
-					return ToLua.LazyRegisterFunc(lazy, "GetNestedTypes", GetNestedTypes, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "GetNestedTypes", GetNestedTypes, L);
 				case "GetDefaultMembers":
-					return ToLua.LazyRegisterFunc(lazy, "GetDefaultMembers", GetDefaultMembers, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "GetDefaultMembers", GetDefaultMembers, L);
 				case "FindMembers":
-					return ToLua.LazyRegisterFunc(lazy, "FindMembers", FindMembers, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "FindMembers", FindMembers, L);
 				case "InvokeMember":
-					return ToLua.LazyRegisterFunc(lazy, "InvokeMember", InvokeMember, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "InvokeMember", InvokeMember, L);
 				case "ToString":
-					return ToLua.LazyRegisterFunc(lazy, "ToString", ToString, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "ToString", ToString, L);
 				case "GetGenericArguments":
-					return ToLua.LazyRegisterFunc(lazy, "GetGenericArguments", GetGenericArguments, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "GetGenericArguments", GetGenericArguments, L);
 				case "GetGenericTypeDefinition":
-					return ToLua.LazyRegisterFunc(lazy, "GetGenericTypeDefinition", GetGenericTypeDefinition, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "GetGenericTypeDefinition", GetGenericTypeDefinition, L);
 				case "MakeGenericType":
-					return ToLua.LazyRegisterFunc(lazy, "MakeGenericType", MakeGenericType, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "MakeGenericType", MakeGenericType, L);
 				case "GetGenericParameterConstraints":
-					return ToLua.LazyRegisterFunc(lazy, "GetGenericParameterConstraints", GetGenericParameterConstraints, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "GetGenericParameterConstraints", GetGenericParameterConstraints, L);
 				case "MakeArrayType":
-					return ToLua.LazyRegisterFunc(lazy, "MakeArrayType", MakeArrayType, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "MakeArrayType", MakeArrayType, L);
 				case "MakeByRefType":
-					return ToLua.LazyRegisterFunc(lazy, "MakeByRefType", MakeByRefType, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "MakeByRefType", MakeByRefType, L);
 				case "MakePointerType":
-					return ToLua.LazyRegisterFunc(lazy, "MakePointerType", MakePointerType, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "MakePointerType", MakePointerType, L);
 				case "ReflectionOnlyGetType":
-					return ToLua.LazyRegisterFunc(lazy, "ReflectionOnlyGetType", ReflectionOnlyGetType, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "ReflectionOnlyGetType", ReflectionOnlyGetType, L);
 			}
 			return 0;
 		}
@@ -2025,129 +2025,129 @@ public class System_TypeWrap
 			switch (key)
 			{
 				case "Delimiter":
-					return ToLua.LazyRegisterVariable(lazy, getStatus, "Delimiter", get_Delimiter, null, ref L);
+					return ToLua.LazyRegisterVariable(lazy, getStatus, "Delimiter", get_Delimiter, null, L);
 				case "EmptyTypes":
-					return ToLua.LazyRegisterVariable(lazy, getStatus, "EmptyTypes", get_EmptyTypes, null, ref L);
+					return ToLua.LazyRegisterVariable(lazy, getStatus, "EmptyTypes", get_EmptyTypes, null, L);
 				case "FilterAttribute":
-					return ToLua.LazyRegisterVariable(lazy, getStatus, "FilterAttribute", get_FilterAttribute, null, ref L);
+					return ToLua.LazyRegisterVariable(lazy, getStatus, "FilterAttribute", get_FilterAttribute, null, L);
 				case "FilterName":
-					return ToLua.LazyRegisterVariable(lazy, getStatus, "FilterName", get_FilterName, null, ref L);
+					return ToLua.LazyRegisterVariable(lazy, getStatus, "FilterName", get_FilterName, null, L);
 				case "FilterNameIgnoreCase":
-					return ToLua.LazyRegisterVariable(lazy, getStatus, "FilterNameIgnoreCase", get_FilterNameIgnoreCase, null, ref L);
+					return ToLua.LazyRegisterVariable(lazy, getStatus, "FilterNameIgnoreCase", get_FilterNameIgnoreCase, null, L);
 				case "Missing":
-					return ToLua.LazyRegisterVariable(lazy, getStatus, "Missing", get_Missing, null, ref L);
+					return ToLua.LazyRegisterVariable(lazy, getStatus, "Missing", get_Missing, null, L);
 				case "Assembly":
-					return ToLua.LazyRegisterVariable(lazy, getStatus, "Assembly", get_Assembly, null, ref L);
+					return ToLua.LazyRegisterVariable(lazy, getStatus, "Assembly", get_Assembly, null, L);
 				case "AssemblyQualifiedName":
-					return ToLua.LazyRegisterVariable(lazy, getStatus, "AssemblyQualifiedName", get_AssemblyQualifiedName, null, ref L);
+					return ToLua.LazyRegisterVariable(lazy, getStatus, "AssemblyQualifiedName", get_AssemblyQualifiedName, null, L);
 				case "Attributes":
-					return ToLua.LazyRegisterVariable(lazy, getStatus, "Attributes", get_Attributes, null, ref L);
+					return ToLua.LazyRegisterVariable(lazy, getStatus, "Attributes", get_Attributes, null, L);
 				case "BaseType":
-					return ToLua.LazyRegisterVariable(lazy, getStatus, "BaseType", get_BaseType, null, ref L);
+					return ToLua.LazyRegisterVariable(lazy, getStatus, "BaseType", get_BaseType, null, L);
 				case "DeclaringType":
-					return ToLua.LazyRegisterVariable(lazy, getStatus, "DeclaringType", get_DeclaringType, null, ref L);
+					return ToLua.LazyRegisterVariable(lazy, getStatus, "DeclaringType", get_DeclaringType, null, L);
 				case "DefaultBinder":
-					return ToLua.LazyRegisterVariable(lazy, getStatus, "DefaultBinder", get_DefaultBinder, null, ref L);
+					return ToLua.LazyRegisterVariable(lazy, getStatus, "DefaultBinder", get_DefaultBinder, null, L);
 				case "FullName":
-					return ToLua.LazyRegisterVariable(lazy, getStatus, "FullName", get_FullName, null, ref L);
+					return ToLua.LazyRegisterVariable(lazy, getStatus, "FullName", get_FullName, null, L);
 				case "GUID":
-					return ToLua.LazyRegisterVariable(lazy, getStatus, "GUID", get_GUID, null, ref L);
+					return ToLua.LazyRegisterVariable(lazy, getStatus, "GUID", get_GUID, null, L);
 				case "HasElementType":
-					return ToLua.LazyRegisterVariable(lazy, getStatus, "HasElementType", get_HasElementType, null, ref L);
+					return ToLua.LazyRegisterVariable(lazy, getStatus, "HasElementType", get_HasElementType, null, L);
 				case "IsAbstract":
-					return ToLua.LazyRegisterVariable(lazy, getStatus, "IsAbstract", get_IsAbstract, null, ref L);
+					return ToLua.LazyRegisterVariable(lazy, getStatus, "IsAbstract", get_IsAbstract, null, L);
 				case "IsAnsiClass":
-					return ToLua.LazyRegisterVariable(lazy, getStatus, "IsAnsiClass", get_IsAnsiClass, null, ref L);
+					return ToLua.LazyRegisterVariable(lazy, getStatus, "IsAnsiClass", get_IsAnsiClass, null, L);
 				case "IsArray":
-					return ToLua.LazyRegisterVariable(lazy, getStatus, "IsArray", get_IsArray, null, ref L);
+					return ToLua.LazyRegisterVariable(lazy, getStatus, "IsArray", get_IsArray, null, L);
 				case "IsAutoClass":
-					return ToLua.LazyRegisterVariable(lazy, getStatus, "IsAutoClass", get_IsAutoClass, null, ref L);
+					return ToLua.LazyRegisterVariable(lazy, getStatus, "IsAutoClass", get_IsAutoClass, null, L);
 				case "IsAutoLayout":
-					return ToLua.LazyRegisterVariable(lazy, getStatus, "IsAutoLayout", get_IsAutoLayout, null, ref L);
+					return ToLua.LazyRegisterVariable(lazy, getStatus, "IsAutoLayout", get_IsAutoLayout, null, L);
 				case "IsByRef":
-					return ToLua.LazyRegisterVariable(lazy, getStatus, "IsByRef", get_IsByRef, null, ref L);
+					return ToLua.LazyRegisterVariable(lazy, getStatus, "IsByRef", get_IsByRef, null, L);
 				case "IsClass":
-					return ToLua.LazyRegisterVariable(lazy, getStatus, "IsClass", get_IsClass, null, ref L);
+					return ToLua.LazyRegisterVariable(lazy, getStatus, "IsClass", get_IsClass, null, L);
 				case "IsCOMObject":
-					return ToLua.LazyRegisterVariable(lazy, getStatus, "IsCOMObject", get_IsCOMObject, null, ref L);
+					return ToLua.LazyRegisterVariable(lazy, getStatus, "IsCOMObject", get_IsCOMObject, null, L);
 				case "IsContextful":
-					return ToLua.LazyRegisterVariable(lazy, getStatus, "IsContextful", get_IsContextful, null, ref L);
+					return ToLua.LazyRegisterVariable(lazy, getStatus, "IsContextful", get_IsContextful, null, L);
 				case "IsEnum":
-					return ToLua.LazyRegisterVariable(lazy, getStatus, "IsEnum", get_IsEnum, null, ref L);
+					return ToLua.LazyRegisterVariable(lazy, getStatus, "IsEnum", get_IsEnum, null, L);
 				case "IsExplicitLayout":
-					return ToLua.LazyRegisterVariable(lazy, getStatus, "IsExplicitLayout", get_IsExplicitLayout, null, ref L);
+					return ToLua.LazyRegisterVariable(lazy, getStatus, "IsExplicitLayout", get_IsExplicitLayout, null, L);
 				case "IsImport":
-					return ToLua.LazyRegisterVariable(lazy, getStatus, "IsImport", get_IsImport, null, ref L);
+					return ToLua.LazyRegisterVariable(lazy, getStatus, "IsImport", get_IsImport, null, L);
 				case "IsInterface":
-					return ToLua.LazyRegisterVariable(lazy, getStatus, "IsInterface", get_IsInterface, null, ref L);
+					return ToLua.LazyRegisterVariable(lazy, getStatus, "IsInterface", get_IsInterface, null, L);
 				case "IsLayoutSequential":
-					return ToLua.LazyRegisterVariable(lazy, getStatus, "IsLayoutSequential", get_IsLayoutSequential, null, ref L);
+					return ToLua.LazyRegisterVariable(lazy, getStatus, "IsLayoutSequential", get_IsLayoutSequential, null, L);
 				case "IsMarshalByRef":
-					return ToLua.LazyRegisterVariable(lazy, getStatus, "IsMarshalByRef", get_IsMarshalByRef, null, ref L);
+					return ToLua.LazyRegisterVariable(lazy, getStatus, "IsMarshalByRef", get_IsMarshalByRef, null, L);
 				case "IsNestedAssembly":
-					return ToLua.LazyRegisterVariable(lazy, getStatus, "IsNestedAssembly", get_IsNestedAssembly, null, ref L);
+					return ToLua.LazyRegisterVariable(lazy, getStatus, "IsNestedAssembly", get_IsNestedAssembly, null, L);
 				case "IsNestedFamANDAssem":
-					return ToLua.LazyRegisterVariable(lazy, getStatus, "IsNestedFamANDAssem", get_IsNestedFamANDAssem, null, ref L);
+					return ToLua.LazyRegisterVariable(lazy, getStatus, "IsNestedFamANDAssem", get_IsNestedFamANDAssem, null, L);
 				case "IsNestedFamily":
-					return ToLua.LazyRegisterVariable(lazy, getStatus, "IsNestedFamily", get_IsNestedFamily, null, ref L);
+					return ToLua.LazyRegisterVariable(lazy, getStatus, "IsNestedFamily", get_IsNestedFamily, null, L);
 				case "IsNestedFamORAssem":
-					return ToLua.LazyRegisterVariable(lazy, getStatus, "IsNestedFamORAssem", get_IsNestedFamORAssem, null, ref L);
+					return ToLua.LazyRegisterVariable(lazy, getStatus, "IsNestedFamORAssem", get_IsNestedFamORAssem, null, L);
 				case "IsNestedPrivate":
-					return ToLua.LazyRegisterVariable(lazy, getStatus, "IsNestedPrivate", get_IsNestedPrivate, null, ref L);
+					return ToLua.LazyRegisterVariable(lazy, getStatus, "IsNestedPrivate", get_IsNestedPrivate, null, L);
 				case "IsNestedPublic":
-					return ToLua.LazyRegisterVariable(lazy, getStatus, "IsNestedPublic", get_IsNestedPublic, null, ref L);
+					return ToLua.LazyRegisterVariable(lazy, getStatus, "IsNestedPublic", get_IsNestedPublic, null, L);
 				case "IsNotPublic":
-					return ToLua.LazyRegisterVariable(lazy, getStatus, "IsNotPublic", get_IsNotPublic, null, ref L);
+					return ToLua.LazyRegisterVariable(lazy, getStatus, "IsNotPublic", get_IsNotPublic, null, L);
 				case "IsPointer":
-					return ToLua.LazyRegisterVariable(lazy, getStatus, "IsPointer", get_IsPointer, null, ref L);
+					return ToLua.LazyRegisterVariable(lazy, getStatus, "IsPointer", get_IsPointer, null, L);
 				case "IsPrimitive":
-					return ToLua.LazyRegisterVariable(lazy, getStatus, "IsPrimitive", get_IsPrimitive, null, ref L);
+					return ToLua.LazyRegisterVariable(lazy, getStatus, "IsPrimitive", get_IsPrimitive, null, L);
 				case "IsPublic":
-					return ToLua.LazyRegisterVariable(lazy, getStatus, "IsPublic", get_IsPublic, null, ref L);
+					return ToLua.LazyRegisterVariable(lazy, getStatus, "IsPublic", get_IsPublic, null, L);
 				case "IsSealed":
-					return ToLua.LazyRegisterVariable(lazy, getStatus, "IsSealed", get_IsSealed, null, ref L);
+					return ToLua.LazyRegisterVariable(lazy, getStatus, "IsSealed", get_IsSealed, null, L);
 				case "IsSerializable":
-					return ToLua.LazyRegisterVariable(lazy, getStatus, "IsSerializable", get_IsSerializable, null, ref L);
+					return ToLua.LazyRegisterVariable(lazy, getStatus, "IsSerializable", get_IsSerializable, null, L);
 				case "IsSpecialName":
-					return ToLua.LazyRegisterVariable(lazy, getStatus, "IsSpecialName", get_IsSpecialName, null, ref L);
+					return ToLua.LazyRegisterVariable(lazy, getStatus, "IsSpecialName", get_IsSpecialName, null, L);
 				case "IsUnicodeClass":
-					return ToLua.LazyRegisterVariable(lazy, getStatus, "IsUnicodeClass", get_IsUnicodeClass, null, ref L);
+					return ToLua.LazyRegisterVariable(lazy, getStatus, "IsUnicodeClass", get_IsUnicodeClass, null, L);
 				case "IsValueType":
-					return ToLua.LazyRegisterVariable(lazy, getStatus, "IsValueType", get_IsValueType, null, ref L);
+					return ToLua.LazyRegisterVariable(lazy, getStatus, "IsValueType", get_IsValueType, null, L);
 				case "MemberType":
-					return ToLua.LazyRegisterVariable(lazy, getStatus, "MemberType", get_MemberType, null, ref L);
+					return ToLua.LazyRegisterVariable(lazy, getStatus, "MemberType", get_MemberType, null, L);
 				case "Module":
-					return ToLua.LazyRegisterVariable(lazy, getStatus, "Module", get_Module, null, ref L);
+					return ToLua.LazyRegisterVariable(lazy, getStatus, "Module", get_Module, null, L);
 				case "Namespace":
-					return ToLua.LazyRegisterVariable(lazy, getStatus, "Namespace", get_Namespace, null, ref L);
+					return ToLua.LazyRegisterVariable(lazy, getStatus, "Namespace", get_Namespace, null, L);
 				case "ReflectedType":
-					return ToLua.LazyRegisterVariable(lazy, getStatus, "ReflectedType", get_ReflectedType, null, ref L);
+					return ToLua.LazyRegisterVariable(lazy, getStatus, "ReflectedType", get_ReflectedType, null, L);
 				case "TypeHandle":
-					return ToLua.LazyRegisterVariable(lazy, getStatus, "TypeHandle", get_TypeHandle, null, ref L);
+					return ToLua.LazyRegisterVariable(lazy, getStatus, "TypeHandle", get_TypeHandle, null, L);
 				case "TypeInitializer":
-					return ToLua.LazyRegisterVariable(lazy, getStatus, "TypeInitializer", get_TypeInitializer, null, ref L);
+					return ToLua.LazyRegisterVariable(lazy, getStatus, "TypeInitializer", get_TypeInitializer, null, L);
 				case "UnderlyingSystemType":
-					return ToLua.LazyRegisterVariable(lazy, getStatus, "UnderlyingSystemType", get_UnderlyingSystemType, null, ref L);
+					return ToLua.LazyRegisterVariable(lazy, getStatus, "UnderlyingSystemType", get_UnderlyingSystemType, null, L);
 				case "ContainsGenericParameters":
-					return ToLua.LazyRegisterVariable(lazy, getStatus, "ContainsGenericParameters", get_ContainsGenericParameters, null, ref L);
+					return ToLua.LazyRegisterVariable(lazy, getStatus, "ContainsGenericParameters", get_ContainsGenericParameters, null, L);
 				case "IsGenericTypeDefinition":
-					return ToLua.LazyRegisterVariable(lazy, getStatus, "IsGenericTypeDefinition", get_IsGenericTypeDefinition, null, ref L);
+					return ToLua.LazyRegisterVariable(lazy, getStatus, "IsGenericTypeDefinition", get_IsGenericTypeDefinition, null, L);
 				case "IsGenericType":
-					return ToLua.LazyRegisterVariable(lazy, getStatus, "IsGenericType", get_IsGenericType, null, ref L);
+					return ToLua.LazyRegisterVariable(lazy, getStatus, "IsGenericType", get_IsGenericType, null, L);
 				case "IsGenericParameter":
-					return ToLua.LazyRegisterVariable(lazy, getStatus, "IsGenericParameter", get_IsGenericParameter, null, ref L);
+					return ToLua.LazyRegisterVariable(lazy, getStatus, "IsGenericParameter", get_IsGenericParameter, null, L);
 				case "IsNested":
-					return ToLua.LazyRegisterVariable(lazy, getStatus, "IsNested", get_IsNested, null, ref L);
+					return ToLua.LazyRegisterVariable(lazy, getStatus, "IsNested", get_IsNested, null, L);
 				case "IsVisible":
-					return ToLua.LazyRegisterVariable(lazy, getStatus, "IsVisible", get_IsVisible, null, ref L);
+					return ToLua.LazyRegisterVariable(lazy, getStatus, "IsVisible", get_IsVisible, null, L);
 				case "GenericParameterPosition":
-					return ToLua.LazyRegisterVariable(lazy, getStatus, "GenericParameterPosition", get_GenericParameterPosition, null, ref L);
+					return ToLua.LazyRegisterVariable(lazy, getStatus, "GenericParameterPosition", get_GenericParameterPosition, null, L);
 				case "GenericParameterAttributes":
-					return ToLua.LazyRegisterVariable(lazy, getStatus, "GenericParameterAttributes", get_GenericParameterAttributes, null, ref L);
+					return ToLua.LazyRegisterVariable(lazy, getStatus, "GenericParameterAttributes", get_GenericParameterAttributes, null, L);
 				case "DeclaringMethod":
-					return ToLua.LazyRegisterVariable(lazy, getStatus, "DeclaringMethod", get_DeclaringMethod, null, ref L);
+					return ToLua.LazyRegisterVariable(lazy, getStatus, "DeclaringMethod", get_DeclaringMethod, null, L);
 				case "StructLayoutAttribute":
-					return ToLua.LazyRegisterVariable(lazy, getStatus, "StructLayoutAttribute", get_StructLayoutAttribute, null, ref L);
+					return ToLua.LazyRegisterVariable(lazy, getStatus, "StructLayoutAttribute", get_StructLayoutAttribute, null, L);
 			}
 			return 0;
 		}

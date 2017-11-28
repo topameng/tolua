@@ -81,9 +81,9 @@ public class System_Collections_IEnumeratorWrap
 			switch (key)
 			{
 				case "MoveNext":
-					return ToLua.LazyRegisterFunc(lazy, "MoveNext", MoveNext, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "MoveNext", MoveNext, L);
 				case "Reset":
-					return ToLua.LazyRegisterFunc(lazy, "Reset", Reset, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "Reset", Reset, L);
 			}
 			return 0;
 		}
@@ -107,7 +107,7 @@ public class System_Collections_IEnumeratorWrap
 			switch (key)
 			{
 				case "Current":
-					return ToLua.LazyRegisterVariable(lazy, getStatus, "Current", get_Current, null, ref L);
+					return ToLua.LazyRegisterVariable(lazy, getStatus, "Current", get_Current, null, L);
 			}
 			return 0;
 		}

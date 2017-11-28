@@ -1705,91 +1705,91 @@ public class System_StringWrap
 			switch (key)
 			{
 				case "New":
-					return ToLua.LazyRegisterFunc(lazy, "New", _CreateSystem_String, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "New", _CreateSystem_String, L);
 				case "Equals":
-					return ToLua.LazyRegisterFunc(lazy, "Equals", Equals, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "Equals", Equals, L);
 				case "Clone":
-					return ToLua.LazyRegisterFunc(lazy, "Clone", Clone, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "Clone", Clone, L);
 				case "GetTypeCode":
-					return ToLua.LazyRegisterFunc(lazy, "GetTypeCode", GetTypeCode, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "GetTypeCode", GetTypeCode, L);
 				case "CopyTo":
-					return ToLua.LazyRegisterFunc(lazy, "CopyTo", CopyTo, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "CopyTo", CopyTo, L);
 				case "ToCharArray":
-					return ToLua.LazyRegisterFunc(lazy, "ToCharArray", ToCharArray, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "ToCharArray", ToCharArray, L);
 				case "Split":
-					return ToLua.LazyRegisterFunc(lazy, "Split", Split, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "Split", Split, L);
 				case "Substring":
-					return ToLua.LazyRegisterFunc(lazy, "Substring", Substring, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "Substring", Substring, L);
 				case "Trim":
-					return ToLua.LazyRegisterFunc(lazy, "Trim", Trim, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "Trim", Trim, L);
 				case "TrimStart":
-					return ToLua.LazyRegisterFunc(lazy, "TrimStart", TrimStart, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "TrimStart", TrimStart, L);
 				case "TrimEnd":
-					return ToLua.LazyRegisterFunc(lazy, "TrimEnd", TrimEnd, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "TrimEnd", TrimEnd, L);
 				case "Compare":
-					return ToLua.LazyRegisterFunc(lazy, "Compare", Compare, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "Compare", Compare, L);
 				case "CompareTo":
-					return ToLua.LazyRegisterFunc(lazy, "CompareTo", CompareTo, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "CompareTo", CompareTo, L);
 				case "CompareOrdinal":
-					return ToLua.LazyRegisterFunc(lazy, "CompareOrdinal", CompareOrdinal, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "CompareOrdinal", CompareOrdinal, L);
 				case "EndsWith":
-					return ToLua.LazyRegisterFunc(lazy, "EndsWith", EndsWith, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "EndsWith", EndsWith, L);
 				case "IndexOfAny":
-					return ToLua.LazyRegisterFunc(lazy, "IndexOfAny", IndexOfAny, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "IndexOfAny", IndexOfAny, L);
 				case "IndexOf":
-					return ToLua.LazyRegisterFunc(lazy, "IndexOf", IndexOf, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "IndexOf", IndexOf, L);
 				case "LastIndexOf":
-					return ToLua.LazyRegisterFunc(lazy, "LastIndexOf", LastIndexOf, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "LastIndexOf", LastIndexOf, L);
 				case "LastIndexOfAny":
-					return ToLua.LazyRegisterFunc(lazy, "LastIndexOfAny", LastIndexOfAny, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "LastIndexOfAny", LastIndexOfAny, L);
 				case "Contains":
-					return ToLua.LazyRegisterFunc(lazy, "Contains", Contains, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "Contains", Contains, L);
 				case "IsNullOrEmpty":
-					return ToLua.LazyRegisterFunc(lazy, "IsNullOrEmpty", IsNullOrEmpty, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "IsNullOrEmpty", IsNullOrEmpty, L);
 				case "Normalize":
-					return ToLua.LazyRegisterFunc(lazy, "Normalize", Normalize, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "Normalize", Normalize, L);
 				case "IsNormalized":
-					return ToLua.LazyRegisterFunc(lazy, "IsNormalized", IsNormalized, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "IsNormalized", IsNormalized, L);
 				case "Remove":
-					return ToLua.LazyRegisterFunc(lazy, "Remove", Remove, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "Remove", Remove, L);
 				case "PadLeft":
-					return ToLua.LazyRegisterFunc(lazy, "PadLeft", PadLeft, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "PadLeft", PadLeft, L);
 				case "PadRight":
-					return ToLua.LazyRegisterFunc(lazy, "PadRight", PadRight, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "PadRight", PadRight, L);
 				case "StartsWith":
-					return ToLua.LazyRegisterFunc(lazy, "StartsWith", StartsWith, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "StartsWith", StartsWith, L);
 				case "Replace":
-					return ToLua.LazyRegisterFunc(lazy, "Replace", Replace, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "Replace", Replace, L);
 				case "ToLower":
-					return ToLua.LazyRegisterFunc(lazy, "ToLower", ToLower, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "ToLower", ToLower, L);
 				case "ToLowerInvariant":
-					return ToLua.LazyRegisterFunc(lazy, "ToLowerInvariant", ToLowerInvariant, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "ToLowerInvariant", ToLowerInvariant, L);
 				case "ToUpper":
-					return ToLua.LazyRegisterFunc(lazy, "ToUpper", ToUpper, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "ToUpper", ToUpper, L);
 				case "ToUpperInvariant":
-					return ToLua.LazyRegisterFunc(lazy, "ToUpperInvariant", ToUpperInvariant, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "ToUpperInvariant", ToUpperInvariant, L);
 				case "ToString":
-					return ToLua.LazyRegisterFunc(lazy, "ToString", ToString, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "ToString", ToString, L);
 				case "Format":
-					return ToLua.LazyRegisterFunc(lazy, "Format", Format, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "Format", Format, L);
 				case "Copy":
-					return ToLua.LazyRegisterFunc(lazy, "Copy", Copy, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "Copy", Copy, L);
 				case "Concat":
-					return ToLua.LazyRegisterFunc(lazy, "Concat", Concat, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "Concat", Concat, L);
 				case "Insert":
-					return ToLua.LazyRegisterFunc(lazy, "Insert", Insert, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "Insert", Insert, L);
 				case "Intern":
-					return ToLua.LazyRegisterFunc(lazy, "Intern", Intern, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "Intern", Intern, L);
 				case "IsInterned":
-					return ToLua.LazyRegisterFunc(lazy, "IsInterned", IsInterned, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "IsInterned", IsInterned, L);
 				case "Join":
-					return ToLua.LazyRegisterFunc(lazy, "Join", Join, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "Join", Join, L);
 				case "GetEnumerator":
-					return ToLua.LazyRegisterFunc(lazy, "GetEnumerator", GetEnumerator, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "GetEnumerator", GetEnumerator, L);
 				case "GetHashCode":
-					return ToLua.LazyRegisterFunc(lazy, "GetHashCode", GetHashCode, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "GetHashCode", GetHashCode, L);
 				case "op_Equality":
-					return ToLua.LazyRegisterFunc(lazy, "op_Equality", op_Equality, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "op_Equality", op_Equality, L);
 			}
 			return 0;
 		}
@@ -1813,9 +1813,9 @@ public class System_StringWrap
 			switch (key)
 			{
 				case "Empty":
-					return ToLua.LazyRegisterVariable(lazy, getStatus, "Empty", get_Empty, null, ref L);
+					return ToLua.LazyRegisterVariable(lazy, getStatus, "Empty", get_Empty, null, L);
 				case "Length":
-					return ToLua.LazyRegisterVariable(lazy, getStatus, "Length", get_Length, null, ref L);
+					return ToLua.LazyRegisterVariable(lazy, getStatus, "Length", get_Length, null, L);
 			}
 			return 0;
 		}

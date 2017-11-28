@@ -488,33 +488,33 @@ public class System_DelegateWrap
 			switch (key)
 			{
 				case "CreateDelegate":
-					return ToLua.LazyRegisterFunc(lazy, "CreateDelegate", CreateDelegate, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "CreateDelegate", CreateDelegate, L);
 				case "DynamicInvoke":
-					return ToLua.LazyRegisterFunc(lazy, "DynamicInvoke", DynamicInvoke, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "DynamicInvoke", DynamicInvoke, L);
 				case "Clone":
-					return ToLua.LazyRegisterFunc(lazy, "Clone", Clone, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "Clone", Clone, L);
 				case "GetObjectData":
-					return ToLua.LazyRegisterFunc(lazy, "GetObjectData", GetObjectData, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "GetObjectData", GetObjectData, L);
 				case "GetInvocationList":
-					return ToLua.LazyRegisterFunc(lazy, "GetInvocationList", GetInvocationList, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "GetInvocationList", GetInvocationList, L);
 				case "Combine":
-					return ToLua.LazyRegisterFunc(lazy, "Combine", Combine, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "Combine", Combine, L);
 				case "Remove":
-					return ToLua.LazyRegisterFunc(lazy, "Remove", Remove, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "Remove", Remove, L);
 				case "RemoveAll":
-					return ToLua.LazyRegisterFunc(lazy, "RemoveAll", RemoveAll, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "RemoveAll", RemoveAll, L);
 				case "op_Subtraction":
-					return ToLua.LazyRegisterFunc(lazy, "op_Subtraction", op_Subtraction, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "op_Subtraction", op_Subtraction, L);
 				case "op_Addition":
-					return ToLua.LazyRegisterFunc(lazy, "op_Addition", op_Addition, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "op_Addition", op_Addition, L);
 				case "op_Equality":
-					return ToLua.LazyRegisterFunc(lazy, "op_Equality", op_Equality, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "op_Equality", op_Equality, L);
 				case "Destroy":
-					return ToLua.LazyRegisterFunc(lazy, "Destroy", Destroy, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "Destroy", Destroy, L);
 				case "GetHashCode":
-					return ToLua.LazyRegisterFunc(lazy, "GetHashCode", GetHashCode, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "GetHashCode", GetHashCode, L);
 				case "Equals":
-					return ToLua.LazyRegisterFunc(lazy, "Equals", Equals, ref L);
+					return ToLua.LazyRegisterFunc(lazy, "Equals", Equals, L);
 			}
 			return 0;
 		}
@@ -538,9 +538,9 @@ public class System_DelegateWrap
 			switch (key)
 			{
 				case "Method":
-					return ToLua.LazyRegisterVariable(lazy, getStatus, "Method", get_Method, null, ref L);
+					return ToLua.LazyRegisterVariable(lazy, getStatus, "Method", get_Method, null, L);
 				case "Target":
-					return ToLua.LazyRegisterVariable(lazy, getStatus, "Target", get_Target, null, ref L);
+					return ToLua.LazyRegisterVariable(lazy, getStatus, "Target", get_Target, null, L);
 			}
 			return 0;
 		}

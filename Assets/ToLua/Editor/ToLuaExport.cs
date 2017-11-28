@@ -1665,7 +1665,7 @@ public static class ToLuaExport
     {
         string name = GetMethodName(m.Method);
         sb.AppendFormat("\t\t\t\tcase \"{0}\":\r\n", name);
-        sb.AppendFormat("\t\t\t\t\treturn ToLua.LazyRegisterFunc(lazy, \"{0}\", {1}, ref L);\r\n", name, name == "Register" ? "_Register" : name);
+        sb.AppendFormat("\t\t\t\t\treturn ToLua.LazyRegisterFunc(lazy, \"{0}\", {1}, L);\r\n", name, name == "Register" ? "_Register" : name);
     }
 
     static void GenLazyWrapFunction()
@@ -1692,7 +1692,7 @@ public static class ToLuaExport
         if (ctorList.Count > 0 || type.IsValueType || ctorExtList.Count > 0)
         {
             sb.AppendLineEx("\t\t\t\tcase \"New\":");
-            sb.AppendFormat("\t\t\t\t\treturn ToLua.LazyRegisterFunc(lazy, \"New\", _Create{0}, ref L);\r\n", wrapClassName);
+            sb.AppendFormat("\t\t\t\t\treturn ToLua.LazyRegisterFunc(lazy, \"New\", _Create{0}, L);\r\n", wrapClassName);
         }
 
         HashSet<string> set = new HashSet<string>();
@@ -1742,7 +1742,7 @@ public static class ToLuaExport
 
         string getFuncName = get ? getPrefix + name : "null";
         string setFuncName = set ? setPrefix + name : "null";
-        sb.AppendFormat("\t\t\t\t\treturn ToLua.LazyRegisterVariable(lazy, getStatus, \"{0}\", {1}, {2}, ref L);\r\n", name, getFuncName, setFuncName);
+        sb.AppendFormat("\t\t\t\t\treturn ToLua.LazyRegisterVariable(lazy, getStatus, \"{0}\", {1}, {2}, L);\r\n", name, getFuncName, setFuncName);
     }
 
     static void GenLazyVariableWrapFunction()

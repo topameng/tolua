@@ -1433,7 +1433,7 @@ namespace LuaInterface
             return null;
         }
 
-        public static int LazyRegisterFunc(bool lazyState, string funcName, LuaCSFunction func, ref IntPtr luaState)
+        public static int LazyRegisterFunc(bool lazyState, string funcName, LuaCSFunction func, IntPtr luaState)
         {
             if (lazyState)
             {
@@ -1445,7 +1445,7 @@ namespace LuaInterface
             return func(luaState);
         }
 
-        public static int LazyRegisterVariable(bool lazyState, bool getStatus, string variableName, LuaCSFunction getFunc, LuaCSFunction setFunc, ref IntPtr luaState)
+        public static int LazyRegisterVariable(bool lazyState, bool getStatus, string variableName, LuaCSFunction getFunc, LuaCSFunction setFunc, IntPtr luaState)
         {
             if (lazyState)
             {
