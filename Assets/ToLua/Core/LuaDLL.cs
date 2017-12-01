@@ -187,7 +187,7 @@ namespace LuaInterface
 
     public class LuaDLL
     {
-        public static string version = "1.0.7.377";
+        public static string version = "1.0.7.384";
         public static int LUA_MULTRET = -1;
         public static string[] LuaTypeName = { "none", "nil", "boolean", "lightuserdata", "number", "string", "table", "function", "userdata", "thread" };        
 
@@ -773,7 +773,7 @@ namespace LuaInterface
         {
             if (lua_checkstack(L, space) == 0)
             {
-                throw new LuaException(string.Format("stack overflow (%s)", mes));
+                throw new LuaException(string.Format("stack overflow {0}", mes));
             }
         }
 
