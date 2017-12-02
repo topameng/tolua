@@ -637,52 +637,52 @@ namespace LuaInterface
             LuaDLL.toluaL_unref(L, reference);
         }
 
-        public int LuaGetStack(IntPtr L, int level, ref Lua_Debug ar)
+        public int LuaGetStack(int level, ref Lua_Debug ar)
         {
             return LuaDLL.lua_getstack(L, level, ref ar);
         }   
            
-        public int LuaGetInfo(IntPtr L, string what, ref Lua_Debug ar)
+        public int LuaGetInfo(string what, ref Lua_Debug ar)
         {
             return LuaDLL.lua_getinfo(L, what, ref ar);
         }
         
-        public string LuaGetLocal(IntPtr L, ref Lua_Debug ar, int n)
+        public string LuaGetLocal(ref Lua_Debug ar, int n)
         {
             return LuaDLL.lua_getlocal(L, ref ar, n);
         }
         
-        public string LuaSetLocal(IntPtr L, ref Lua_Debug ar, int n)
+        public string LuaSetLocal(ref Lua_Debug ar, int n)
         {
             return LuaDLL.lua_setlocal(L, ref ar, n);
         }
         
-        public string LuaGetUpvalue(IntPtr L, int funcindex, int n)
+        public string LuaGetUpvalue(int funcindex, int n)
         {
             return LuaDLL.lua_getupvalue(L, funcindex, n);
         }
         
-        public string LuaSetUpvalue(IntPtr L, int funcindex, int n)
+        public string LuaSetUpvalue(int funcindex, int n)
         {
             return LuaDLL.lua_setupvalue(L, funcindex, n);
         }
         
-        public int LuaSetHook(IntPtr L, LuaHook func, int mask, int count)
+        public int LuaSetHook(LuaHook func, int mask, int count)
         {
             return LuaDLL.lua_sethook(L, func, mask, count);
         }
         
-        public LuaHook LuaGetHook(IntPtr L)
+        public LuaHook LuaGetHook()
         {
             return LuaDLL.lua_gethook(L);
         }
         
-        public  int LuaGetHookMask(IntPtr L)
+        public  int LuaGetHookMask()
         {
             return LuaDLL.lua_gethookmask(L);
         }
         
-        public int LuaGetHookCount(IntPtr L)
+        public int LuaGetHookCount()
         {
             return LuaDLL.lua_gethookcount(L);
         }
