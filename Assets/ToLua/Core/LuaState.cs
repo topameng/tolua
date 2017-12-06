@@ -370,6 +370,20 @@ namespace LuaInterface
             return 0;
         }
 
+        public static byte GetInjectFlag(int index)
+        {
+            byte result = 0;
+#if !MULTI_STATE
+            if (mainState != null)
+            {
+                result = (byte)LuaDLL.tolua_getInjectFlag(mainState.L, index);
+            }
+#else
+            throw new LuaException("MULTI_STATE Not Support!!!");
+#endif
+            return result;
+        }
+
         string GetToLuaTypeName(Type t)
         {
             if (t.IsGenericType)
