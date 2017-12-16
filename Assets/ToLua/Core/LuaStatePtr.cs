@@ -667,12 +667,12 @@ namespace LuaInterface
             return LuaDLL.lua_setupvalue(L, funcindex, n);
         }
         
-        public int LuaSetHook(LuaHook func, int mask, int count)
+        public int LuaSetHook(LuaHookFunc func, int mask, int count)
         {
             return LuaDLL.lua_sethook(L, func, mask, count);
         }
         
-        public LuaHook LuaGetHook()
+        public LuaHookFunc LuaGetHook()
         {
             return LuaDLL.lua_gethook(L);
         }
