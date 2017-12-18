@@ -1002,6 +1002,7 @@ namespace LuaInterface
     public struct LuaDictEntry<K, V>
     {
         public LuaDictEntry(K key, V value)
+            : this()
         {
             Key = key;
             Value = value;

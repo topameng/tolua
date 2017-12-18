@@ -389,9 +389,9 @@ namespace LuaInterface
             return LuaDLL.lua_status(L);
         }
 
-        public void LuaGC(LuaGCOptions what, int data = 0)
+        public int LuaGC(LuaGCOptions what, int data = 0)
         {
-            LuaDLL.lua_gc(L, what, data);
+            return LuaDLL.lua_gc(L, what, data);
         }
 
         public bool LuaNext(int index)
@@ -635,6 +635,56 @@ namespace LuaInterface
         public void ToLuaUnRef(int reference)
         {
             LuaDLL.toluaL_unref(L, reference);
+        }
+
+        public int LuaGetStack(int level, ref Lua_Debug ar)
+        {
+            return LuaDLL.lua_getstack(L, level, ref ar);
+        }   
+           
+        public int LuaGetInfo(string what, ref Lua_Debug ar)
+        {
+            return LuaDLL.lua_getinfo(L, what, ref ar);
+        }
+        
+        public string LuaGetLocal(ref Lua_Debug ar, int n)
+        {
+            return LuaDLL.lua_getlocal(L, ref ar, n);
+        }
+        
+        public string LuaSetLocal(ref Lua_Debug ar, int n)
+        {
+            return LuaDLL.lua_setlocal(L, ref ar, n);
+        }
+        
+        public string LuaGetUpvalue(int funcindex, int n)
+        {
+            return LuaDLL.lua_getupvalue(L, funcindex, n);
+        }
+        
+        public string LuaSetUpvalue(int funcindex, int n)
+        {
+            return LuaDLL.lua_setupvalue(L, funcindex, n);
+        }
+        
+        public int LuaSetHook(LuaHookFunc func, int mask, int count)
+        {
+            return LuaDLL.lua_sethook(L, func, mask, count);
+        }
+        
+        public LuaHookFunc LuaGetHook()
+        {
+            return LuaDLL.lua_gethook(L);
+        }
+        
+        public  int LuaGetHookMask()
+        {
+            return LuaDLL.lua_gethookmask(L);
+        }
+        
+        public int LuaGetHookCount()
+        {
+            return LuaDLL.lua_gethookcount(L);
         }
     }
 }
