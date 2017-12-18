@@ -65,6 +65,24 @@ namespace LuaInterface
         LUA_ERRERR = 5,
     }
 
+    public enum LuaHookFlag
+    {
+        LUA_HOOKCALL = 0,
+        LUA_HOOKRET	 = 1,
+        LUA_HOOKLINE = 2,
+        LUA_HOOKCOUNT = 3,
+        LUA_HOOKTAILRET = 4,
+    }
+
+    public enum LuaMask
+    {
+        LUA_MASKCALL = 1, //1 << LUA_HOOKCALL
+        LUA_MASKRET	= 2, //(1 << LUA_HOOKRET)
+        LUA_MASKLINE = 4,//	(1 << LUA_HOOKLINE)
+        LUA_MASKCOUNT = 8, //	(1 << LUA_HOOKCOUNT)
+    }
+
+
     public class LuaIndexes
     {
         public static int LUA_REGISTRYINDEX = -10000;
@@ -179,15 +197,15 @@ namespace LuaInterface
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate int LuaCSFunction(IntPtr luaState);        
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    public delegate void LuaHook(IntPtr L, ref Lua_Debug ar);
+    public delegate void LuaHookFunc(IntPtr L, ref Lua_Debug ar);
 #else
     public delegate int LuaCSFunction(IntPtr luaState);    
-    public delegate void LuaHook(IntPtr L, ref Lua_Debug ar);    
+    public delegate void LuaHookFunc(IntPtr L, ref Lua_Debug ar);    
 #endif
 
     public class LuaDLL
     {
-        public static string version = "1.0.7.377";
+        public static string version = "1.0.7.386";
         public static int LUA_MULTRET = -1;
         public static string[] LuaTypeName = { "none", "nil", "boolean", "lightuserdata", "number", "string", "table", "function", "userdata", "thread" };        
 
@@ -618,9 +636,9 @@ namespace LuaInterface
         public static extern string lua_setupvalue(IntPtr L, int funcindex, int n);
 
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int lua_sethook(IntPtr L, LuaHook func, int mask, int count);
+        public static extern int lua_sethook(IntPtr L, LuaHookFunc func, int mask, int count);
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern LuaHook lua_gethook(IntPtr L);
+        public static extern LuaHookFunc lua_gethook(IntPtr L);
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
         public static extern int lua_gethookmask(IntPtr L);
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
@@ -773,7 +791,7 @@ namespace LuaInterface
         {
             if (lua_checkstack(L, space) == 0)
             {
-                throw new LuaException(string.Format("stack overflow (%s)", mes));
+                throw new LuaException(string.Format("stack overflow {0}", mes));
             }
         }
 
