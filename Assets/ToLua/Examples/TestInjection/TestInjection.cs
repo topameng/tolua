@@ -62,6 +62,23 @@ public class TestInjection : MonoBehaviour
             Debug.Log("Property Get Test:" + test.PropertyTest);
             test.PropertyTest = 2;
             Debug.Log("Property Set Test:" + test.PropertyTest);
+
+            System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
+            sw.Start();
+            for (int i = 0; i < 10000000; ++i)
+            {
+                test.NoInject(true, 1);
+            }
+            sw.Stop();
+            long noInjectMethodCostTime = sw.ElapsedMilliseconds;
+            sw.Reset();
+            sw.Start();
+            for (int i = 0; i < 10000000; ++i)
+            {
+                test.Inject(true, 1);
+            }
+            sw.Stop();
+            Debug.Log("time cost ratio:" + (double)sw.ElapsedMilliseconds / noInjectMethodCostTime);
         }
         else
 #endif

@@ -551,6 +551,7 @@ return {
 			[".ctor"] = 250, 
 			[".ctor_bool"] = 251, 
 			["get_PropertyTest"] = 252, 
+			["Inject"] = 416, 
 			["set_PropertyTest"] = 253, 
 			["TestCoroutine"] = 258, 
 			["TestOverload_bool_int"] = 257, 

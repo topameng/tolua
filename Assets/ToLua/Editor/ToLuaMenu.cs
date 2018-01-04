@@ -1003,6 +1003,17 @@ public static class ToLuaMenu
         Debug.Log("Copy lua files over");
     }
 
+    [MenuItem("Lua/Process Example Lua Files For Test On Mobile", false, 51)]
+    public static void CopyExampleLuaFilesToRes()
+    {
+        CopyLuaFilesToRes();
+        string destDir = Application.dataPath + "/Resources";
+        string srcDir = Application.dataPath + "/Tolua/Examples/Resources";
+        CopyDirectory(srcDir, destDir, "*.bytes");
+        AssetDatabase.Refresh();
+        Debug.Log("Copy example lua files over");
+    }
+
     [MenuItem("Lua/Copy Lua  files to Persistent", false, 52)]
     public static void CopyLuaFilesToPersistent()
     {

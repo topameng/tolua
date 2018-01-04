@@ -497,6 +497,7 @@
     <Method Name=".ctor" PublishedName=".ctor" Signature=".ctor" FullSignature="System.Void ToLuaInjectionTest::.ctor()" Index="250" />
     <Method Name=".ctor" PublishedName=".ctor_bool" Signature=".ctor_bool" FullSignature="System.Void ToLuaInjectionTest::.ctor(System.Boolean)" Index="251" />
     <Method Name="get_PropertyTest" PublishedName="get_PropertyTest" Signature="get_PropertyTest" FullSignature="System.Int32 ToLuaInjectionTest::get_PropertyTest()" Index="252" />
+    <Method Name="Inject" PublishedName="Inject" Signature="Inject_bool_int" FullSignature="System.Void ToLuaInjectionTest::Inject(System.Boolean,System.Int32)" Index="416" />
     <Method Name="set_PropertyTest" PublishedName="set_PropertyTest" Signature="set_PropertyTest_int" FullSignature="System.Void ToLuaInjectionTest::set_PropertyTest(System.Int32)" Index="253" />
     <Method Name="TestCoroutine" PublishedName="TestCoroutine" Signature="TestCoroutine_float" FullSignature="System.Collections.IEnumerator ToLuaInjectionTest::TestCoroutine(System.Single)" Index="258" />
     <Method Name="TestOverload" PublishedName="TestOverload_bool_int" Signature="TestOverload_bool_int" FullSignature="System.Void ToLuaInjectionTest::TestOverload(System.Boolean,System.Int32)" Index="257" />

@@ -953,7 +953,7 @@ public static class ToLuaInjection
         sb.Append("return ");
         ToLuaText.TransferDic(temp, sb);
         sb.Remove(sb.Length - 1, 1);
-        File.WriteAllText(CustomSettings.luaDir + "System/Injection/InjectionBridgeInfo.lua", StringBuilderCache.GetStringAndRelease(sb));
+        File.WriteAllText(CustomSettings.baseLuaDir + "System/Injection/InjectionBridgeInfo.lua", StringBuilderCache.GetStringAndRelease(sb));
     }
 
     static int AppendMethod(MethodDefinition method)

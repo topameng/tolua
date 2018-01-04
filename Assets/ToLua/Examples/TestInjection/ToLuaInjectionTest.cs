@@ -80,6 +80,19 @@ public class ToLuaInjectionTest : BaseTest
         Debug.Log("CS:TestOverload");
     }
 
+    [LuaInterface.NoToLua]
+    public void NoInject(bool param1, int param2)
+    {
+        int a = 0;
+        int b = ++a;
+    }
+
+    public void Inject(bool param1, int param2)
+    {
+        int a = 0;
+        int b = ++a;
+    }
+
     public IEnumerator TestCoroutine(float delay)
     {
         Debug.Log("CS:TestCoroutine Run");
