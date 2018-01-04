@@ -137,6 +137,7 @@ public static class ToLuaExport
         "Security.GetChainOfTrustValue",
         "Texture2D.alphaIsTransparency",
         "WWW.movie",
+        "WWW.GetMovieTexture",
         "WebCamTexture.MarkNonReadable",
         "WebCamTexture.isReadable",
         "Graphic.OnRebuildRequested",
@@ -150,6 +151,7 @@ public static class ToLuaExport
         "MonoBehaviour.runInEditMode",
         "TextureFormat.DXT1Crunched",
         "TextureFormat.DXT5Crunched",
+        "Texture.imageContentsHash",
         //NGUI
         "UIInput.ProcessEvent",
         "UIWidget.showHandlesWithMoveTool",
@@ -624,8 +626,8 @@ public static class ToLuaExport
         }
     }
 
-	public static List<MemberInfo> memberInfoFilter = new List<MemberInfo>
-	{
+    public static List<MemberInfo> memberInfoFilter = new List<MemberInfo>
+    {
         //可精确查找一个函数
 		//Type.GetMethod(string name, BindingFlags bindingAttr, Binder binder, CallingConventions callConvention, Type[] types, ParameterModifier[] modifiers);
     };
@@ -742,12 +744,14 @@ public static class ToLuaExport
 
     public static void Generate(string dir)
     {
+#if !EXPORT_INTERFACE
         Type iterType = typeof(System.Collections.IEnumerator);
 
         if (type.IsInterface && type != iterType)
         {
             return;
         }
+#endif
 
         //Debugger.Log("Begin Generate lua Wrap for class {0}", className);        
         sb = new StringBuilder();
@@ -1852,7 +1856,7 @@ public static class ToLuaExport
 
     static string GetPushFunction(Type t, bool isByteBuffer = false)
     {        
-        if (t.IsEnum || t.IsPrimitive || t == typeof(string) || t == typeof(LuaTable) || t == typeof(LuaCSFunction) || t == typeof(LuaThread) 
+        if (t.IsEnum || t.IsPrimitive || t == typeof(string) || t == typeof(LuaTable) || t == typeof(LuaCSFunction) || t == typeof(LuaThread) || t == typeof(LuaFunction)
             || t == typeof(Type) || t == typeof(IntPtr) || typeof(Delegate).IsAssignableFrom(t) || t == typeof(LuaByteBuffer) // || t == typeof(LuaInteger64)
             || t == typeof(Vector3) || t == typeof(Vector2) || t == typeof(Vector4) || t == typeof(Quaternion) || t == typeof(Color) || t == typeof(RaycastHit)
             || t == typeof(Ray) || t == typeof(Touch) || t == typeof(Bounds) || t == typeof(object))
