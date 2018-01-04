@@ -1090,7 +1090,7 @@ public static class ToLuaInjection
                 info.methodFullSignature = methodChild.FindAttributeByName("FullSignature").Value;
                 info.methodIndex = int.Parse(methodChild.FindAttributeByName("Index").Value);
                 typeMethodInfo.Add(info);
-                ++methodCounter;
+                methodCounter = Math.Max(methodCounter, info.methodIndex);
             }
 
             bridgeInfo.Add(typeName, typeMethodInfo);

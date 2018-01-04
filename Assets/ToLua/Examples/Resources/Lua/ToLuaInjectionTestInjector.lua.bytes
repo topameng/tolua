@@ -144,4 +144,5 @@ ToLuaInjectionTestInjector.TestCoroutine = function()
 	-------------------------------------------------------
 end
 
-InjectByName("ToLuaInjectionTest", ToLuaInjectionTestInjector)
+--InjectByName("ToLuaInjectionTest", ToLuaInjectionTestInjector)
+InjectByModule(ToLuaInjectionTest, ToLuaInjectionTestInjector)

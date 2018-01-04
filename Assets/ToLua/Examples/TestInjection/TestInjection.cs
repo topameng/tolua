@@ -19,16 +19,23 @@ public class TestInjection : MonoBehaviour
         luaState = new LuaState();
         luaState.Start();
         LuaBinder.Bind(luaState);
-        luaState.Require("ToLuaInjectionTestInjector");
+        //For InjectByModule
+        //////////////////////////////////////////////////////
+        luaState.BeginModule(null);
+        BaseTestWrap.Register(luaState);
+        ToLuaInjectionTestWrap.Register(luaState);
+        luaState.EndModule();
+        //////////////////////////////////////////////////////
 
 #if ENABLE_LUA_INJECTION
 #if UNITY_EDITOR
-        if (UnityEditor.EditorPrefs.GetInt("InjectStatus") == 1)
+        if (UnityEditor.EditorPrefs.GetInt(Application.dataPath + "InjectStatus") == 1)
         {
 #else
         if (true)
         {
 #endif
+            luaState.Require("ToLuaInjectionTestInjector");
             int counter = 0;
             bool state = true;
             ToLuaInjectionTest test = new ToLuaInjectionTest(true);
@@ -47,7 +54,7 @@ public class TestInjection : MonoBehaviour
         else
 #endif
         {
-            Debug.Log("查看是否开启了宏ENABLE_LUA_INJECTION并执行了菜单命令——\"Lua=>Inject All\"");
+            Debug.LogError("查看是否开启了宏ENABLE_LUA_INJECTION并执行了菜单命令——\"Lua=>Inject All\"");
         }
     }
 

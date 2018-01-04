@@ -19,7 +19,16 @@
   </Type>
   <Type Name="BaseTest">
     <Method Name=".ctor" PublishedName=".ctor" Signature=".ctor" FullSignature="System.Void BaseTest::.ctor()" Index="248" />
+    <Method Name="get_PropertyTest" PublishedName="get_PropertyTest" Signature="get_PropertyTest" FullSignature="System.Int32 BaseTest::get_PropertyTest()" Index="407" />
+    <Method Name="set_PropertyTest" PublishedName="set_PropertyTest" Signature="set_PropertyTest_int" FullSignature="System.Void BaseTest::set_PropertyTest(System.Int32)" Index="408" />
     <Method Name="TestRef" PublishedName="TestRef" Signature="TestRef_int&amp;" FullSignature="System.Int32 BaseTest::TestRef(System.Int32&amp;)" Index="249" />
+  </Type>
+  <Type Name="BaseTestWrap">
+    <Method Name="_CreateBaseTest" PublishedName="_CreateBaseTest" Signature="_CreateBaseTest_IntPtr" FullSignature="System.Int32 BaseTestWrap::_CreateBaseTest(System.IntPtr)" Index="403" />
+    <Method Name="get_PropertyTest" PublishedName="get_PropertyTest" Signature="get_PropertyTest_IntPtr" FullSignature="System.Int32 BaseTestWrap::get_PropertyTest(System.IntPtr)" Index="405" />
+    <Method Name="Register" PublishedName="Register" Signature="Register_LuaState" FullSignature="System.Void BaseTestWrap::Register(LuaInterface.LuaState)" Index="402" />
+    <Method Name="set_PropertyTest" PublishedName="set_PropertyTest" Signature="set_PropertyTest_IntPtr" FullSignature="System.Int32 BaseTestWrap::set_PropertyTest(System.IntPtr)" Index="406" />
+    <Method Name="TestRef" PublishedName="TestRef" Signature="TestRef_IntPtr" FullSignature="System.Int32 BaseTestWrap::TestRef(System.IntPtr)" Index="404" />
   </Type>
   <Type Name="CallLuaFunction">
     <Method Name="CallFunc" PublishedName="CallFunc" Signature="CallFunc" FullSignature="System.Int32 CallLuaFunction::CallFunc()" Index="10" />
@@ -494,6 +503,15 @@
     <Method Name="TestOverload" PublishedName="TestOverload_int_bool" Signature="TestOverload_int_bool" FullSignature="System.Void ToLuaInjectionTest::TestOverload(System.Int32,System.Boolean)" Index="255" />
     <Method Name="TestOverload" PublishedName="TestOverload_int_bool&amp;" Signature="TestOverload_int_bool&amp;" FullSignature="System.Void ToLuaInjectionTest::TestOverload(System.Int32,System.Boolean&amp;)" Index="256" />
     <Method Name="TestRef" PublishedName="TestRef" Signature="TestRef_int&amp;" FullSignature="System.Int32 ToLuaInjectionTest::TestRef(System.Int32&amp;)" Index="254" />
+  </Type>
+  <Type Name="ToLuaInjectionTestWrap">
+    <Method Name="_CreateToLuaInjectionTest" PublishedName="_CreateToLuaInjectionTest" Signature="_CreateToLuaInjectionTest_IntPtr" FullSignature="System.Int32 ToLuaInjectionTestWrap::_CreateToLuaInjectionTest(System.IntPtr)" Index="410" />
+    <Method Name="get_PropertyTest" PublishedName="get_PropertyTest" Signature="get_PropertyTest_IntPtr" FullSignature="System.Int32 ToLuaInjectionTestWrap::get_PropertyTest(System.IntPtr)" Index="414" />
+    <Method Name="Register" PublishedName="Register" Signature="Register_LuaState" FullSignature="System.Void ToLuaInjectionTestWrap::Register(LuaInterface.LuaState)" Index="409" />
+    <Method Name="set_PropertyTest" PublishedName="set_PropertyTest" Signature="set_PropertyTest_IntPtr" FullSignature="System.Int32 ToLuaInjectionTestWrap::set_PropertyTest(System.IntPtr)" Index="415" />
+    <Method Name="TestCoroutine" PublishedName="TestCoroutine" Signature="TestCoroutine_IntPtr" FullSignature="System.Int32 ToLuaInjectionTestWrap::TestCoroutine(System.IntPtr)" Index="413" />
+    <Method Name="TestOverload" PublishedName="TestOverload" Signature="TestOverload_IntPtr" FullSignature="System.Int32 ToLuaInjectionTestWrap::TestOverload(System.IntPtr)" Index="412" />
+    <Method Name="TestRef" PublishedName="TestRef" Signature="TestRef_IntPtr" FullSignature="System.Int32 ToLuaInjectionTestWrap::TestRef(System.IntPtr)" Index="411" />
   </Type>
   <Type Name="UseDictionary">
     <Method Name="Awake" PublishedName="Awake" Signature="Awake" FullSignature="System.Void UseDictionary::Awake()" Index="84" />

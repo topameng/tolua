@@ -3,12 +3,28 @@ using UnityEngine;
 
 public class BaseTest
 {
+    private int propertyTest;
+
     public virtual int TestRef(ref int count)
     {
         Debug.Log("CS:Base TestRef");
         ++count;
 
         return 1;
+    }
+
+    public virtual int PropertyTest
+    {
+        get
+        {
+            Debug.Log("CS: Base PropertyTestGet");
+            return propertyTest;
+        }
+        set
+        {
+            Debug.Log("CS: Base PropertyTestSet");
+            propertyTest = value;
+        }
     }
 }
 
@@ -26,7 +42,7 @@ public class ToLuaInjectionTest : BaseTest
         Debug.Log("CS:Constructor Test " + state);
     }
 
-    public int PropertyTest
+    public override int PropertyTest
     {
         get
         {

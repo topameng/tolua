@@ -219,6 +219,8 @@ namespace LuaInterface
             Debugger.Log("LuaState start");
             OpenBaseLuaLibs();
 #if ENABLE_LUA_INJECTION
+            Push(LuaDLL.tolua_tag());
+            LuaSetGlobal("tolua_tag");
 #if UNITY_EDITOR
             if (UnityEditor.EditorPrefs.GetInt(Application.dataPath + "InjectStatus") == 1)
             { 

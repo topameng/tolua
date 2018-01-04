@@ -23,7 +23,17 @@ return {
 	["BaseTest"] = 
 		{
 			[".ctor"] = 248, 
+			["get_PropertyTest"] = 407, 
+			["set_PropertyTest"] = 408, 
 			["TestRef"] = 249, 
+		},
+	["BaseTestWrap"] = 
+		{
+			["_CreateBaseTest"] = 403, 
+			["get_PropertyTest"] = 405, 
+			["Register"] = 402, 
+			["set_PropertyTest"] = 406, 
+			["TestRef"] = 404, 
 		},
 	["CallLuaFunction"] = 
 		{
@@ -547,6 +557,16 @@ return {
 			["TestOverload_int_bool"] = 255, 
 			["TestOverload_int_bool&"] = 256, 
 			["TestRef"] = 254, 
+		},
+	["ToLuaInjectionTestWrap"] = 
+		{
+			["_CreateToLuaInjectionTest"] = 410, 
+			["get_PropertyTest"] = 414, 
+			["Register"] = 409, 
+			["set_PropertyTest"] = 415, 
+			["TestCoroutine"] = 413, 
+			["TestOverload"] = 412, 
+			["TestRef"] = 411, 
 		},
 	["UseDictionary"] = 
 		{
