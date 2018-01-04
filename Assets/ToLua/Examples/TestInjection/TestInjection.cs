@@ -2,14 +2,26 @@
 using LuaInterface;
 using System.Collections;
 
+[LuaInterface.NoToLua]
 public class TestInjection : MonoBehaviour
 {
     string tips = "";
+    bool m_isMouseDown;
+    int m_fontSize = 28;
+    int m_logFontSize = 0;
+    float scaleThreshold;
     LuaState luaState = null;
+    Color m_normalColor;
+    GUIStyle m_fontStyle;
+    GUIStyle m_windowStyle;
+    Rect m_windowRect;
+    Vector2 m_scrollViewPos;
+    Vector2 m_distance;
 
     // Use this for initialization
     void Start()
     {
+        InitGUI();
 #if UNITY_5 || UNITY_2017
         Application.logMessageReceived += ShowTips;
 #else
@@ -58,6 +70,29 @@ public class TestInjection : MonoBehaviour
         }
     }
 
+    void InitGUI()
+    {
+        m_windowRect.x = 0;
+        m_windowRect.y = 0;
+        m_windowRect.width = Screen.width;
+        m_windowRect.height = Screen.height;
+
+        m_logFontSize = (int)(m_fontSize * Screen.width * Screen.height / (1280 * 720));
+        m_normalColor = Color.white;
+        m_fontStyle = new GUIStyle();
+        m_fontStyle.normal.textColor = m_normalColor;
+        m_fontStyle.fontSize = m_logFontSize;
+
+        //设置窗口颜色
+        m_windowStyle = new GUIStyle();
+        Texture2D windowTexture = new Texture2D(1, 1);
+        windowTexture.SetPixel(0, 0, Color.black);
+        windowTexture.Apply();
+        m_windowStyle.normal.background = windowTexture;
+
+        scaleThreshold = Screen.width / 1100.0f;
+    }
+
     void OnApplicationQuit()
     {
 #if UNITY_5 || UNITY_2017
@@ -69,9 +104,61 @@ public class TestInjection : MonoBehaviour
         luaState = null;
     }
 
+    Vector2 MousePoisition { get { return new Vector2(-Input.mousePosition.x, Input.mousePosition.y); } }
+    //鼠标拖拽控制
+    private void MouseDragView(ref Vector2 viewPos)
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            m_distance = viewPos - MousePoisition;
+            m_isMouseDown = true;
+        }
+        else if (Input.GetMouseButtonUp(0))
+        {
+            m_isMouseDown = false;
+        }
+
+        if (m_isMouseDown)
+        {
+            viewPos = MousePoisition + m_distance;
+        }
+    }
+
+    /// <summary>
+    /// 非常简陋的一个log窗口，不要用到项目中，仅用来示例
+    /// </summary>
+    /// <param name="id"></param>
+    void LogWindow(int id)
+    {
+        GUILayout.BeginHorizontal();
+        if (GUILayout.Button("+", GUILayout.MinHeight(50 * scaleThreshold)))
+        {
+            m_logFontSize = Mathf.Min(64, ++m_logFontSize);
+            m_fontStyle.fontSize = m_logFontSize;
+        }
+        if (GUILayout.Button("-", GUILayout.MinHeight(50 * scaleThreshold)))
+        {
+            m_logFontSize = Mathf.Max(1, --m_logFontSize);
+            m_fontStyle.fontSize = m_logFontSize;
+        }
+        GUILayout.EndHorizontal();
+
+        m_scrollViewPos = GUILayout.BeginScrollView(m_scrollViewPos, false, false);
+
+        MouseDragView(ref m_scrollViewPos);
+
+        GUILayout.Label(tips, m_fontStyle);
+        GUILayout.Space(2);
+        GUILayout.EndScrollView();
+
+        GUILayout.BeginHorizontal();
+        GUILayout.Label(string.Format("Font Size ({0})", m_logFontSize));
+        GUILayout.EndHorizontal();
+    }
+
     void OnGUI()
     {
-        GUI.Label(new Rect(Screen.width / 2 - 300, Screen.height / 2 - 150, 800, 400), tips);
+        m_windowRect = GUI.Window(0, m_windowRect, LogWindow, "Log Window", m_windowStyle);
     }
 
     void ShowTips(string msg, string stackTrace, LogType type)
