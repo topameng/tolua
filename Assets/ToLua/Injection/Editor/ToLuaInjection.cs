@@ -49,18 +49,13 @@ public static class ToLuaInjection
     static OpCode[] ldargs = new OpCode[] { OpCodes.Ldarg_0, OpCodes.Ldarg_1, OpCodes.Ldarg_2, OpCodes.Ldarg_3 };
     static OpCode[] ldcI4s = new OpCode[] { OpCodes.Ldc_I4_1, OpCodes.Ldc_I4_2, OpCodes.Ldc_I4_4, OpCodes.Ldc_I4_8 };
     const string assemblyPath = "./Library/ScriptAssemblies/Assembly-CSharp.dll";
-    const InjectType injectType = InjectType.Before | InjectType.Replace | InjectType.After | InjectType.ReplaceWithPreInvokeBase | InjectType.ReplaceWithPostInvokeBase;
-    const InjectFilter injectIgnoring = InjectFilter.IgnoreGeneric | InjectFilter.IgnoreNoToLuaAttr;//MethodInjectFilter.IgnoreConstructor | MethodInjectFilter.IgnoreGeneric | MethodInjectFilter.IgnoreProperty;
+    const InjectType injectType = InjectType.After | InjectType.Before | InjectType.Replace | InjectType.ReplaceWithPreInvokeBase | InjectType.ReplaceWithPostInvokeBase;
+    const InjectFilter injectIgnoring = InjectFilter.IgnoreGeneric | InjectFilter.IgnoreConstructor;// | InjectFilter.IgnoreNoToLuaAttr | InjectFilter.IgnoreProperty;
     static HashSet<string> dropGenericNameGroup = new HashSet<string>
     {
-        "Singleton`1",
-        "SingleInstance`1",
-        "SingletonPersistent`1",
     };
     static HashSet<string> dropNamespaceGroup = new HashSet<string>
     {
-        "DarkEraMsg",
-        "LitJson",
     };
     static HashSet<string> forceInjectTypeGroup = new HashSet<string>
     {
@@ -370,8 +365,8 @@ public static class ToLuaInjection
         CopyCreatorArgsToCarrier(target, coroutineCarrier);
         FillBegin(coroutineCarrier, methodIndex);
         var fillInjectInfoFunc = GetCoroutineInjectInfoFiller(target, hostField);
-        FillInjectMethod(coroutineCarrier, fillInjectInfoFunc, InjectType.After);
-        FillInjectMethod(coroutineCarrier, fillInjectInfoFunc, InjectType.Before);
+        FillInjectMethod(coroutineCarrier, fillInjectInfoFunc, runtimeInjectType & InjectType.After);
+        FillInjectMethod(coroutineCarrier, fillInjectInfoFunc, runtimeInjectType & InjectType.Before);
     }
 
     static Action<MethodDefinition, InjectType> GetCoroutineInjectInfoFiller(MethodDefinition coroutineCreator, FieldDefinition hostRef)
@@ -672,28 +667,43 @@ public static class ToLuaInjection
         if (!bConfirmPopReturnValue)
         {
             Instruction retIns = il.Create(OpCodes.Ret);
-            Instruction popIns = il.Create(OpCodes.Pop);
-            Instruction start = il.Create(OpCodes.Ldloc, flagDef);
-
-            if (cursor.Previous.OpCode == OpCodes.Nop)
+            if (!injectType.HasFlag(InjectType.Before))
             {
-                cursor.Previous.OpCode = start.OpCode;
-                cursor.Previous.Operand = start.Operand;
-                il.InsertAfter(cursor.Previous, retIns);
+                if (cursor.Previous.OpCode == OpCodes.Nop)
+                {
+                    cursor.Previous.OpCode = retIns.OpCode;
+                    cursor.Previous.Operand = retIns.Operand;
+                    retIns = cursor.Previous;
+                }
+                else
+                {
+                    il.InsertBefore(cursor, retIns);
+                }
             }
             else
             {
-                il.InsertBefore(cursor, retIns);
-                il.InsertBefore(retIns, start);
-            }
+                Instruction start = il.Create(OpCodes.Ldloc, flagDef);
+                if (cursor.Previous.OpCode == OpCodes.Nop)
+                {
+                    cursor.Previous.OpCode = start.OpCode;
+                    cursor.Previous.Operand = start.Operand;
+                    il.InsertAfter(cursor.Previous, retIns);
+                }
+                else
+                {
+                    il.InsertBefore(cursor, retIns);
+                    il.InsertBefore(retIns, start);
+                }
 
-            bool bGotReturnValue = !target.ReturnVoid();
-            if (bGotReturnValue)
-            {
-                il.InsertBefore(cursor, popIns);
+                Instruction popIns = il.Create(OpCodes.Pop);
+                bool bGotReturnValue = !target.ReturnVoid();
+                if (bGotReturnValue)
+                {
+                    il.InsertBefore(cursor, popIns);
+                }
+                il.InsertBefore(retIns, il.Create(ldcI4s[(int)InjectType.Before / 2]));
+                il.InsertBefore(retIns, il.Create(OpCodes.Ble_Un, bGotReturnValue ? popIns : cursor));
             }
-            il.InsertBefore(retIns, il.Create(ldcI4s[(int)InjectType.Before / 2]));
-            il.InsertBefore(retIns, il.Create(OpCodes.Ble_Un, bGotReturnValue ? popIns : cursor));
 
             UpdateSetterResult(target, retIns);
         }
