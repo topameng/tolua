@@ -56,6 +56,7 @@ public static class ToLuaInjection
     };
     static HashSet<string> dropNamespaceGroup = new HashSet<string>
     {
+        “LuaInterface”,
     };
     static HashSet<string> forceInjectTypeGroup = new HashSet<string>
     {
