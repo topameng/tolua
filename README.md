@@ -30,6 +30,7 @@ tolua#的优点在此无需过度阐述，本修改版本只集中描述差异�
 * **支持Lua代码运行时决定Inject方式，比如刚开始只用前置监听，就可以在函数执行前回调到lua一次。后面还有需求可以Lua决定是否整个替换C#的函数实现细节，比较灵活多变**<br>
 * **支持较精确的重载Inject匹配，提高安全验证，具体可以参考下Examples/TestInjection下的TestOverload在ToLuaInjectionTestInjector.lua.bytes文件中的Inject处理**<br>
 * **GC较少**<br>
+* **没改tolua runtime，方便升级**<br>
 * **又给ToLua加了几个隐藏BUG ヽ(ˋ▽ˊ)ノ**<br>
 
 ## 本修改出发目的是想简化Inject工作，减少错误发生，固有些看似粗暴的方式，各位看官还请用会再评价，或者耐心点O(∩_∩)O~
