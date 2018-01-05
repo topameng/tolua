@@ -47,7 +47,9 @@ public class InjectionBlackListGenerator : EditorWindow
         { "*.dll", SearchTypeInAssembly },
     };
 
+#if ENABLE_LUA_INJECTION
     [MenuItem("Lua/Generate LuaInjection BlackList")]
+#endif
     public static void Open()
     {
         GetWindow<InjectionBlackListGenerator>("LuaInjection", true);
