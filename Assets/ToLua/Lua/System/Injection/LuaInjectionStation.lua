@@ -1,29 +1,13 @@
---[[MIT License
-
-Copyright (c) 2018 Jonson
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.]]--
-
+--[[
+--- File:LuaInjectionStation.lua
+--- Created by Jonson
+--- DateTime: 2018/1/2 10:24
+]]--
 
 local pcall = pcall
 local pairs = pairs
 local error = error
+local rawset = rawset
 local rawget = rawget
 local string = string
 local tolua_tag = tolua_tag
@@ -48,17 +32,22 @@ end
 
 local function UpdateFunctionReference(metatable, injectInfo)
 	local oldIndexMetamethod = metatable.__index
-	metatable.__index = function(t, k)
-		--Ignore Overload Function
-		local infoPipeline = rawget(injectInfo, k)
-		if infoPipeline ~= nil then
-			local injectFunction, injectFlag = infoPipeline()
-			if injectFlag == LuaInterface.InjectType.Replace
+	local newMethodGroup = {}
+	for funcName, infoPipeline in pairs(injectInfo) do
+		local injectFunction, injectFlag = infoPipeline()
+		if injectFlag == LuaInterface.InjectType.Replace
 				or injectFlag == LuaInterface.InjectType.ReplaceWithPostInvokeBase
 				or injectFlag == LuaInterface.InjectType.ReplaceWithPreInvokeBase
-			then
-				return injectFunction
-			end
+		then
+			rawset(newMethodGroup, funcName, injectFunction)
+		end
+	end
+
+	metatable.__index = function(t, k)
+		--Ignore Overload Function
+		local injectFunc = rawget(newMethodGroup, k)
+		if injectFunc ~= nil then
+			return injectFunc
 		end
 
 		local status, result = pcall(oldIndexMetamethod, t, k)
