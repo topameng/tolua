@@ -34,4 +34,4 @@ tolua#的优点在此无需过度阐述，本修改版本只集中描述差异�
 * **又给ToLua加了几个隐藏BUG ヽ(ˋ▽ˊ)ノ**<br>
 
 ## 本修改出发目的是想简化Inject工作，减少错误发生，固有些看似粗暴的方式，各位看官还请用会再评价，或者耐心点O(∩_∩)O~
-## 具体使用方式见Wiki
+## 具体使用方式见[Wiki](https://github.com/NewbieGameCoder/tolua/wiki/%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E)
