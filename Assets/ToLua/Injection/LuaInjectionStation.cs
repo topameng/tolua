@@ -35,17 +35,17 @@ namespace LuaInterface
             byte result = INVALID_INJECTION_FLAG;
 
             result = injectionFlagCache[index];
-            if (result == NOT_INJECTION_FLAG)
+            if (result == INVALID_INJECTION_FLAG)
+            {
+                return NOT_INJECTION_FLAG;
+            }
+            else if (result == NOT_INJECTION_FLAG)
             {
                 /// Delay injection not supported
                 if (LuaState.GetInjectInitState(index))
                 {
                     injectionFlagCache[index] = INVALID_INJECTION_FLAG;
                 }
-            }
-            else if (result == INVALID_INJECTION_FLAG)
-            {
-                return NOT_INJECTION_FLAG;
             }
 
             return result;
