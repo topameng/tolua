@@ -1270,7 +1270,7 @@ public static class ToLuaInjection
             }
         }
 
-        if (method.Name.Contains("<") || method.IsUnmanaged || method.IsAbstract || method.IsPInvokeImpl)
+        if (method.Name.Contains("<") || method.IsUnmanaged || method.IsAbstract || method.IsPInvokeImpl || !method.HasBody)
         {
             return false;
         }
