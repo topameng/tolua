@@ -50,9 +50,15 @@ local function UpdateFunctionReference(metatable, injectInfo)
 	local oldIndexMetamethod = metatable.__index
 	metatable.__index = function(t, k)
 		--Ignore Overload Function
-		local v = rawget(injectInfo, k)
-		if v ~= nil then
-			return v
+		local infoPipeline = rawget(injectInfo, k)
+		if infoPipeline ~= nil then
+			local injectFunction, injectFlag = infoPipeline()
+			if injectFlag == LuaInterface.InjectType.Replace
+				or injectFlag == LuaInterface.InjectType.ReplaceWithPostInvokeBase
+				or injectFlag == LuaInterface.InjectType.ReplaceWithPreInvokeBase
+			then
+				return injectFunction
+			end
 		end
 
 		local status, result = pcall(oldIndexMetamethod, t, k)
