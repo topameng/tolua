@@ -259,7 +259,9 @@ public class LuaClient : MonoBehaviour
     {
         return loop;
     }
+
     LuaTable profiler = null;
+
     public void AttachProfiler()
     {
         if (profiler == null)
@@ -274,6 +276,7 @@ public class LuaClient : MonoBehaviour
         {
             profiler.Call("stop", profiler);
             profiler.Dispose();
+            LuaProfiler.Clear();
         }
     }
 }

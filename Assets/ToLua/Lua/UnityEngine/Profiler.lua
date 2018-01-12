@@ -276,7 +276,7 @@ end
 
 function profiler:stop()
     debug.sethook(nil)    
-    self.cache = nil        
+    self.cache = nil          
 end
 
 return profiler
