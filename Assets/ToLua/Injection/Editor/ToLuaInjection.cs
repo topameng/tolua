@@ -1142,7 +1142,7 @@ public static class ToLuaInjection
         if (bInjectionToolUpdated)
         {
             RemoveInjection();
-            EditorPrefs.SetInt(Application.dataPath + "WaitingForInject", 1);
+            EditorPrefs.SetInt(Application.dataPath + "WaitForInjection", 1);
         }
         EnableSymbols = true;
 
