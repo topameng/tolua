@@ -994,6 +994,7 @@ public static class ToLuaInjection
                 if (existInfo.methodFullSignature != methodFullSignature)
                 {
                     EditorUtility.DisplayDialog("警告", typeName + "." + existInfo.methodPublishedName + " 签名跟历史签名不一致，无法增量，Injection中断，请修改函数签名、或者直接删掉InjectionBridgeEditorInfo.xml（该操作会导致无法兼容线上版的包体，需要强制换包）！", "确定");
+                    EditorPrefs.SetInt(Application.dataPath + "WaitForInjection", 0);
                     return -1;
                 }
                 return existInfo.methodIndex;
