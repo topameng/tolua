@@ -552,12 +552,9 @@ public static class ToLuaInjection
     static void CacheResultTable(MethodDefinition target, bool bConfirmPopReturnValue)
     {
         ILProcessor il = target.Body.GetILProcessor();
-        if (target.GotPassedByReferenceParam() || target.IsSetter)
+        if (target.GotPassedByReferenceParam())
         {
-            if (!target.IsSetter || !bConfirmPopReturnValue)
-            {
-                il.InsertBefore(cursor, il.Create(OpCodes.Stloc, GetResultTable(target)));
-            }
+            il.InsertBefore(cursor, il.Create(OpCodes.Stloc, GetResultTable(target)));
         }
     }
 
@@ -572,50 +569,6 @@ public static class ToLuaInjection
         }
 
         return luaTable;
-    }
-
-    static void UpdateSetterResult(MethodDefinition target, Instruction insertPoint)
-    {
-        if (!target.IsSetter)
-        {
-            return;
-        }
-
-        var searchGroup = target.Body.Instructions.Where(ins => ins.OpCode == OpCodes.Stsfld || ins.OpCode == OpCodes.Stfld);
-        bool confuseFlag = false;
-        Instruction setterUpdatedInstruction = null;
-        switch (searchGroup.Count())
-        {
-            case 0:
-                confuseFlag = true;
-                break;
-            case 1:
-                setterUpdatedInstruction = searchGroup.First();
-                break;
-            default:
-                var preCode = target.IsStatic ? OpCodes.Ldarg_0 : OpCodes.Ldarg_1;
-                setterUpdatedInstruction = searchGroup.FirstOrDefault(ins => ins.Previous.OpCode == preCode);
-                confuseFlag = setterUpdatedInstruction == null || searchGroup.Count(ins => ins.Previous.OpCode == preCode) > 1;
-                break;
-        }
-        if (confuseFlag)
-        {
-            Debug.LogWarning(target.DeclaringType.Name + " PropertySet:" + target.Name.Substring(4) + " Confusing By Updating Field!!!Use Reflection In Lua Env To Update Specify Field While In Replace Inject Mode!!!");
-            return;
-        }
-
-        int updateCount = 0;
-        ILProcessor il = target.Body.GetILProcessor();
-        VariableDefinition luaTable = GetResultTable(target);
-        var rawGetGenericMethod = luaTableTypeDef.Methods.Single(method => method.Name == "RawGetIndex");
-        if (setterUpdatedInstruction.OpCode != OpCodes.Stsfld)
-        {
-            il.InsertBefore(insertPoint, il.Create(OpCodes.Ldarg_0));
-        }
-        il.InsertBefore(insertPoint, il.Create(OpCodes.Ldloc, luaTable));
-        il.InsertBefore(insertPoint, il.Create(OpCodes.Ldc_I4, ++updateCount));
-        il.InsertBefore(insertPoint, il.Create(OpCodes.Call, rawGetGenericMethod.MakeGenericMethod(target.Parameters[0].ParameterType)));
-        il.InsertBefore(insertPoint, il.Create(setterUpdatedInstruction.OpCode, setterUpdatedInstruction.Operand as FieldReference));
     }
 
     static void UpdatePassedByReferenceParams(MethodDefinition target, bool bConfirmPopReturnValue)
@@ -705,8 +658,6 @@ public static class ToLuaInjection
                 il.InsertBefore(retIns, il.Create(ldcI4s[(int)InjectType.Before / 2]));
                 il.InsertBefore(retIns, il.Create(OpCodes.Ble_Un, bGotReturnValue ? popIns : cursor));
             }
-
-            UpdateSetterResult(target, retIns);
         }
         else if (cursor.Previous.OpCode == OpCodes.Nop)
         {
@@ -842,8 +793,7 @@ public static class ToLuaInjection
     static void GetLuaInvoker(MethodDefinition prototypeMethod, bool bIgnoreReturnValue, bool bAppendCoroutineState, ref MethodReference invoker)
     {
         bool bRequireResult = prototypeMethod.GotPassedByReferenceParam()
-            || (!bIgnoreReturnValue && !prototypeMethod.ReturnVoid())
-            || (!bIgnoreReturnValue && prototypeMethod.IsSetter);
+            || (!bIgnoreReturnValue && !prototypeMethod.ReturnVoid());
         string methodName = bRequireResult ? "Invoke" : "Call";
         int paramCount = prototypeMethod.Parameters.Count;
         int paramExtraCount = prototypeMethod.HasThis ? 1 : 0;
@@ -879,8 +829,7 @@ public static class ToLuaInjection
             {
                 genericInjectMethod.GenericArguments.Add(intTypeRef);
             }
-            if (prototypeMethod.GotPassedByReferenceParam()
-                || (prototypeMethod.IsSetter && !bIgnoreReturnValue))
+            if (prototypeMethod.GotPassedByReferenceParam())
             {
                 genericInjectMethod.GenericArguments.Add(luaTableTypeDef);
             }
