@@ -122,8 +122,9 @@ public static class ToLuaInjectionHelper
                 }
                 break;
             }
+            else baseMethodDef = null;
 
-            baseType = baseTypeDef.BaseType;
+           baseType = baseTypeDef.BaseType;
         }
 
         return baseMethodDef;
