@@ -32,6 +32,11 @@ namespace LuaInterface
 
         public static byte GetInjectFlag(int index)
         {
+            if (index >= cacheSize)
+            {
+                return NOT_INJECTION_FLAG;
+            }
+			
             byte result = injectionFlagCache[index];
 
             if (result == INVALID_INJECTION_FLAG)

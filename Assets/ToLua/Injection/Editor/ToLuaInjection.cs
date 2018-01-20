@@ -850,26 +850,19 @@ public static class ToLuaInjection
         });
 
         var il = staticConstructor.Body.GetILProcessor();
-        var loadCacheSizeIns = il.Create(OpCodes.Ldc_I4, methodCounter + 1);
         Instruction loadStaticFieldIns = null;
-        do
-        {
-            loadStaticFieldIns = staticConstructor
-                .Body
-                .Instructions
-                .FirstOrDefault(ins =>
-                {
-                    return ins.OpCode == OpCodes.Ldsfld
-                           && (ins.Operand as FieldReference).Name == "cacheSize";
-                });
-
-            if (loadStaticFieldIns == null)
+        loadStaticFieldIns = staticConstructor
+            .Body
+            .Instructions
+            .FirstOrDefault(ins =>
             {
-                break;
-            }
-            il.Replace(loadStaticFieldIns, loadCacheSizeIns);
-        }
-        while (true);
+                return ins.OpCode == OpCodes.Ldsfld
+                       && (ins.Operand as FieldReference).Name == "cacheSize";
+            });
+
+        var loadCacheSizeIns = il.Create(OpCodes.Ldc_I4, methodCounter + 1);
+        il.InsertBefore(loadStaticFieldIns, loadCacheSizeIns);
+        il.InsertBefore(loadStaticFieldIns, il.Create(OpCodes.Stsfld, (loadStaticFieldIns.Operand as FieldReference)));
     }
 
     static void WriteInjectedAssembly(AssemblyDefinition assembly, string assemblyPath)
