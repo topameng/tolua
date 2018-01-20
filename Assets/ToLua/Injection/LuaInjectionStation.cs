@@ -30,13 +30,9 @@ namespace LuaInterface
             injectFunctionCache = new LuaFunction[cacheSize];
         }
 
+        [NoToLua]
         public static byte GetInjectFlag(int index)
         {
-            if (index >= cacheSize)
-            {
-                return NOT_INJECTION_FLAG;
-            }
-			
             byte result = injectionFlagCache[index];
 
             if (result == INVALID_INJECTION_FLAG)
@@ -55,6 +51,7 @@ namespace LuaInterface
             return result;
         }
 
+        [NoToLua]
         public static LuaFunction GetInjectionFunction(int index)
         {
             return injectFunctionCache[index];
@@ -62,6 +59,11 @@ namespace LuaInterface
 
         public static void CacheInjectFunction(int index, byte injectFlag, LuaFunction func)
         {
+            if (index >= cacheSize)
+            {
+                return;
+            }
+
             injectFunctionCache[index] = func;
             injectionFlagCache[index] = injectFlag;
         }
