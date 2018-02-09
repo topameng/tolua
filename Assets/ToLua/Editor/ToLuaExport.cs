@@ -29,6 +29,7 @@ using LuaInterface;
 
 using Object = UnityEngine.Object;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Runtime.CompilerServices;
 
@@ -626,8 +627,8 @@ public static class ToLuaExport
         }
     }
 
-    public static List<MemberInfo> memberInfoFilter = new List<MemberInfo>
-    {
+	public static List<MemberInfo> memberInfoFilter = new List<MemberInfo>
+	{
         //可精确查找一个函数
 		//Type.GetMethod(string name, BindingFlags bindingAttr, Binder binder, CallingConventions callConvention, Type[] types, ParameterModifier[] modifiers);
     };
@@ -1441,9 +1442,19 @@ public static class ToLuaExport
             {
                 sb.AppendLineEx("\t\tIntPtr lazyWrapFunc = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)LazyWrap);");
             }
-            if (fields.Length != 0 || props.Length != 0 || events.Length != 0 || !isStaticClass || baseType != null)
+            if (fields.Length != 0 || props.Length != 0 || events.Length != 0 /*|| !isStaticClass || baseType != null*/)
             {
-                sb.AppendLineEx("\t\tIntPtr lazyVarWrapFunc = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)LazyVarWrap);");
+                bool bGotWrapableVariable = true;
+                if (fields.Length > 0 && (props == null || props.Length == 0) && (events == null || events.Length == 0))
+                {
+                    bool bGotWrapableField = fields.Any(field => !field.IsLiteral || !field.FieldType.IsPrimitive || field.FieldType.IsEnum);
+                    bGotWrapableVariable = bGotWrapableField;
+                }
+
+                if (bGotWrapableVariable)
+                {
+                    sb.AppendLineEx("\t\tIntPtr lazyVarWrapFunc = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)LazyVarWrap);");
+                }
             }
         }
 
@@ -1751,9 +1762,17 @@ public static class ToLuaExport
 
     static void GenLazyVariableWrapFunction()
     {
-        if (fields.Length == 0 && props.Length == 0 && events.Length == 0 && isStaticClass && baseType == null)
+        if (fields.Length == 0 && props.Length == 0 && events.Length == 0 /*&& isStaticClass && baseType == null*/)
         {
             return;
+        }
+        if (fields.Length > 0 && (props == null || props.Length == 0) && (events == null || events.Length == 0))
+        {
+            bool bGotWrapableField = fields.Any(field => !field.IsLiteral || !field.FieldType.IsPrimitive || field.FieldType.IsEnum);
+            if (!bGotWrapableField)
+            {
+                return;
+            }
         }
 
         sb.AppendLineEx("\r\n\t[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]");
