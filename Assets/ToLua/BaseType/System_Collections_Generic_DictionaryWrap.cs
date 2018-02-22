@@ -2,35 +2,32 @@
 using LuaInterface;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
-using System.Runtime.InteropServices;
 using System.Collections;
 
 public class System_Collections_Generic_DictionaryWrap
 {
     public static void Register(LuaState L)
     {
-        IntPtr lazyWrapFunc = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)LazyWrap);
-        IntPtr lazyVarWrapFunc = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)LazyVarWrap);
         L.BeginClass(typeof(Dictionary<,>), typeof(System.Object), "Dictionary");
-        L.RegLazyFunction("get_Item", lazyWrapFunc);
-        L.RegLazyFunction("set_Item", lazyWrapFunc);
+        L.RegFunction("get_Item", get_Item);
+        L.RegFunction("set_Item", set_Item);
         L.RegFunction(".geti", _geti);
         L.RegFunction(".seti", _seti);
-        L.RegLazyFunction("Add", lazyWrapFunc);
-        L.RegLazyFunction("Clear", lazyWrapFunc);
-        L.RegLazyFunction("ContainsKey", lazyWrapFunc);
-        L.RegLazyFunction("ContainsValue", lazyWrapFunc);
-        L.RegLazyFunction("GetObjectData", lazyWrapFunc);
-        L.RegLazyFunction("OnDeserialization", lazyWrapFunc);
-        L.RegLazyFunction("Remove", lazyWrapFunc);
-        L.RegLazyFunction("TryGetValue", lazyWrapFunc);
-        L.RegLazyFunction("GetEnumerator", lazyWrapFunc);
+        L.RegFunction("Add", Add);
+        L.RegFunction("Clear", Clear);
+        L.RegFunction("ContainsKey", ContainsKey);
+        L.RegFunction("ContainsValue", ContainsValue);
+        L.RegFunction("GetObjectData", GetObjectData);
+        L.RegFunction("OnDeserialization", OnDeserialization);
+        L.RegFunction("Remove", Remove);
+        L.RegFunction("TryGetValue", TryGetValue);
+        L.RegFunction("GetEnumerator", GetEnumerator);
         L.RegVar("this", _this, null);
         L.RegFunction("__tostring", ToLua.op_ToString);
-        L.RegLazyVar("Count", true, false, lazyVarWrapFunc);
-        L.RegLazyVar("Comparer", true, false, lazyVarWrapFunc);
-        L.RegLazyVar("Keys", true, false, lazyVarWrapFunc);
-        L.RegLazyVar("Values", true, false, lazyVarWrapFunc);
+        L.RegVar("Count", get_Count, null);
+        L.RegVar("Comparer", get_Comparer, null);
+        L.RegVar("Keys", get_Keys, null);
+        L.RegVar("Values", get_Values, null);
         L.EndClass();
     }
 
@@ -414,221 +411,6 @@ public class System_Collections_Generic_DictionaryWrap
         catch (Exception e)
         {
             return LuaDLL.toluaL_exception(L, e, o, "attempt to index Values on a nil value");
-        }
-    }
-
-
-    [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-    static int LazyWrap(IntPtr L)
-    {
-        try
-        {
-            int stackTop = LuaDLL.lua_gettop(L);
-            bool lazy = LuaDLL.luaL_checkboolean(L, stackTop);
-            string key = LuaDLL.lua_tostring(L, stackTop - 1);
-            LuaDLL.lua_pop(L, 2);
-
-            switch (key)
-            {
-                case "get_Item":
-                    if (lazy)
-                    {
-                        IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_Item);
-                        LuaDLL.tolua_function(L, "get_Item", fn);
-                        LuaDLL.lua_pop(L, 1);
-                    }
-
-                    return get_Item(L);
-                case "set_Item":
-                    if (lazy)
-                    {
-                        IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)set_Item);
-                        LuaDLL.tolua_function(L, "set_Item", fn);
-                        LuaDLL.lua_pop(L, 1);
-                    }
-
-                    return set_Item(L);
-                case "Add":
-                    if (lazy)
-                    {
-                        IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)Add);
-                        LuaDLL.tolua_function(L, "Add", fn);
-                        LuaDLL.lua_pop(L, 1);
-                    }
-
-                    return Add(L);
-                case "Clear":
-                    if (lazy)
-                    {
-                        IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)Clear);
-                        LuaDLL.tolua_function(L, "Clear", fn);
-                        LuaDLL.lua_pop(L, 1);
-                    }
-
-                    return Clear(L);
-                case "ContainsKey":
-                    if (lazy)
-                    {
-                        IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)ContainsKey);
-                        LuaDLL.tolua_function(L, "ContainsKey", fn);
-                        LuaDLL.lua_pop(L, 1);
-                    }
-
-                    return ContainsKey(L);
-                case "ContainsValue":
-                    if (lazy)
-                    {
-                        IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)ContainsValue);
-                        LuaDLL.tolua_function(L, "ContainsValue", fn);
-                        LuaDLL.lua_pop(L, 1);
-                    }
-
-                    return ContainsValue(L);
-                case "GetObjectData":
-                    if (lazy)
-                    {
-                        IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)GetObjectData);
-                        LuaDLL.tolua_function(L, "GetObjectData", fn);
-                        LuaDLL.lua_pop(L, 1);
-                    }
-
-                    return GetObjectData(L);
-                case "OnDeserialization":
-                    if (lazy)
-                    {
-                        IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)OnDeserialization);
-                        LuaDLL.tolua_function(L, "OnDeserialization", fn);
-                        LuaDLL.lua_pop(L, 1);
-                    }
-
-                    return OnDeserialization(L);
-                case "Remove":
-                    if (lazy)
-                    {
-                        IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)Remove);
-                        LuaDLL.tolua_function(L, "Remove", fn);
-                        LuaDLL.lua_pop(L, 1);
-                    }
-
-                    return Remove(L);
-                case "TryGetValue":
-                    if (lazy)
-                    {
-                        IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)TryGetValue);
-                        LuaDLL.tolua_function(L, "TryGetValue", fn);
-                        LuaDLL.lua_pop(L, 1);
-                    }
-
-                    return TryGetValue(L);
-                case "GetEnumerator":
-                    if (lazy)
-                    {
-                        IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)GetEnumerator);
-                        LuaDLL.tolua_function(L, "GetEnumerator", fn);
-                        LuaDLL.lua_pop(L, 1);
-                    }
-
-                    return GetEnumerator(L);
-            }
-            return 0;
-        }
-        catch (Exception e)
-        {
-            return LuaDLL.toluaL_exception(L, e);
-        }
-    }
-
-    [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-    static int LazyVarWrap(IntPtr L)
-    {
-        try
-        {
-            int stackTop = LuaDLL.lua_gettop(L);
-            bool getStatus = LuaDLL.luaL_checkboolean(L, stackTop);
-            bool lazy = LuaDLL.luaL_checkboolean(L, stackTop - 1);
-            string key = LuaDLL.lua_tostring(L, stackTop - 2);
-            LuaDLL.lua_pop(L, 3);
-
-            switch (key)
-            {
-                case "Count":
-                    if (lazy)
-                    {
-                        if (getStatus)
-                        {
-                            IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_Count);
-                            LuaDLL.tolua_variable(L, "Count", fn, IntPtr.Zero);
-                        }
-
-                        LuaDLL.lua_pop(L, 1);
-                    }
-
-                    if (getStatus)
-                    {
-                        return get_Count(L);
-                    }
-
-                    break;
-                case "Comparer":
-                    if (lazy)
-                    {
-                        if (getStatus)
-                        {
-                            IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_Comparer);
-                            LuaDLL.tolua_variable(L, "Comparer", fn, IntPtr.Zero);
-                        }
-
-                        LuaDLL.lua_pop(L, 1);
-                    }
-
-                    if (getStatus)
-                    {
-                        return get_Comparer(L);
-                    }
-
-                    break;
-                case "Keys":
-                    if (lazy)
-                    {
-                        if (getStatus)
-                        {
-                            IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_Keys);
-                            LuaDLL.tolua_variable(L, "Keys", fn, IntPtr.Zero);
-                        }
-
-                        LuaDLL.lua_pop(L, 1);
-                    }
-
-                    if (getStatus)
-                    {
-                        return get_Keys(L);
-                    }
-
-                    break;
-                case "Values":
-                    if (lazy)
-                    {
-                        if (getStatus)
-                        {
-                            IntPtr fn = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)get_Values);
-                            LuaDLL.tolua_variable(L, "Values", fn, IntPtr.Zero);
-                        }
-
-                        LuaDLL.lua_pop(L, 1);
-                    }
-
-                    if (getStatus)
-                    {
-                        return get_Values(L);
-                    }
-
-                    break;
-            }
-            return 0;
-        }
-        catch (Exception e)
-        {
-            return LuaDLL.toluaL_exception(L, e);
         }
     }
 }
