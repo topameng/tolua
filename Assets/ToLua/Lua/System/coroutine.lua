@@ -28,12 +28,12 @@ function coroutine.start(f, ...)
 		end					
 	else
 		local args = {...}
-		local timer = nil
+		local timer = nil		
 		
 		local action = function()												
 			comap[co] = nil
-			local flag, msg = resume(co, unpack(args))			
 			timer.func = nil
+			local flag, msg = resume(co, unpack(args))						
 			table.insert(pool, timer)
 	
 			if not flag then	
@@ -62,7 +62,8 @@ function coroutine.wait(t, co, ...)
 	local timer = nil
 		
 	local action = function()		
-		comap[co] = nil
+		comap[co] = nil		
+		timer.func = nil
 		local flag, msg = resume(co, unpack(args))
 		
 		if not flag then	
@@ -85,8 +86,8 @@ function coroutine.step(t, co, ...)
 	
 	local action = function()	
 		comap[co] = nil					
-		local flag, msg = resume(co, unpack(args))
 		timer.func = nil
+		local flag, msg = resume(co, unpack(args))
 		table.insert(pool, timer)
 	
 		if not flag then	
@@ -119,8 +120,8 @@ function coroutine.www(www, co)
 				
 		comap[co] = nil
 		timer:Stop()		
-		local flag, msg = resume(co)			
 		timer.func = nil
+		local flag, msg = resume(co)			
 		table.insert(pool, timer)	
 			
 		if not flag then												
@@ -141,10 +142,10 @@ function coroutine.www(www, co)
 end
 
 function coroutine.stop(co)
- 	local timer = comap[co]
+ 	local timer = comap[co] 	 	
 
  	if timer ~= nil then
  		comap[co] = nil
- 		timer:Stop() 		
+ 		timer:Stop()  		
  	end
 end
