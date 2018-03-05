@@ -45,7 +45,7 @@ public static class ToLuaMenu
     public static List<Type> dropType = new List<Type>
     {
         typeof(ValueType),                                  //不需要
-#if !UNITY_5 && !UNITY_2017
+#if !UNITY_5 && !UNITY_2017 && !UNITY_2018
         typeof(Motion),                                     //很多平台只是空类
 #endif
 
@@ -798,7 +798,7 @@ public static class ToLuaMenu
         string bundleName = subDir == null ? "lua.unity3d" : "lua" + subDir.Replace('/', '_') + ".unity3d";
         bundleName = bundleName.ToLower();
 
-#if UNITY_5 || UNITY_2017
+#if UNITY_5 || UNITY_2017 || UNITY_2018
         for (int i = 0; i < files.Length; i++)
         {
             AssetImporter importer = AssetImporter.GetAtPath(files[i]);            
@@ -1108,7 +1108,7 @@ public static class ToLuaMenu
         ClearAllLuaFiles();
         CreateStreamDir(GetOS());
 
-#if !UNITY_5 && !UNITY_2017
+#if !UNITY_5 && !UNITY_2017 && !UNITY_2018
         string tempDir = CreateStreamDir("Lua");
 #else
         string tempDir = Application.dataPath + "/temp/Lua";
@@ -1125,7 +1125,7 @@ public static class ToLuaMenu
         List<string> dirs = new List<string>();
         GetAllDirs(tempDir, dirs);
 
-#if UNITY_5 || UNITY_2017
+#if UNITY_5 || UNITY_2017 || UNITY_2018
         for (int i = 0; i < dirs.Count; i++)
         {
             string str = dirs[i].Remove(0, tempDir.Length);
@@ -1158,7 +1158,7 @@ public static class ToLuaMenu
         ClearAllLuaFiles();                
         CreateStreamDir(GetOS());
 
-#if !UNITY_5 && !UNITY_2017
+#if !UNITY_5 && !UNITY_2017 && !UNITY_2018
         string tempDir = CreateStreamDir("Lua");
 #else
         string tempDir = Application.dataPath + "/temp/Lua";
@@ -1183,7 +1183,7 @@ public static class ToLuaMenu
         List<string> dirs = new List<string>();        
         GetAllDirs(sourceDir, dirs);
 
-#if UNITY_5 || UNITY_2017
+#if UNITY_5 || UNITY_2017 || UNITY_2018
         for (int i = 0; i < dirs.Count; i++)
         {
             string str = dirs[i].Remove(0, sourceDir.Length);
