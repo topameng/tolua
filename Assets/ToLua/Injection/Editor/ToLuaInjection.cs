@@ -65,11 +65,7 @@ public static class ToLuaInjection
     static ToLuaInjection()
     {
         LoadAndCheckAssembly(true);
-        var injectionStatus = EditorPrefs.GetInt(Application.dataPath + "WaitForInjection", 0);
-        if (injectionStatus > 0)
-        {
-            InjectAll();
-        }
+        InjectAll();
     }
 
 #if ENABLE_LUA_INJECTION
@@ -81,7 +77,6 @@ public static class ToLuaInjection
         {
             return;
         }
-        EditorPrefs.SetInt(Application.dataPath + "WaitForInjection", 0);
 
         bool bInjectInterupted = !LoadBlackList() || UpdateMonoCecil() || !LoadBridgeEditorInfo();
         if (!bInjectInterupted)
@@ -103,10 +98,10 @@ public static class ToLuaInjection
             EditorUtility.DisplayDialog("警告", "游戏运行过程中无法操作", "确定");
             return;
         }
+
         if (EditorApplication.isCompiling)
         {
             EditorUtility.DisplayDialog("警告", "请等待编辑器编译完成", "确定");
-            EditorPrefs.SetInt(Application.dataPath + "WaitForInjection", 1);
             return;
         }
 
@@ -182,6 +177,7 @@ public static class ToLuaInjection
                 WriteInjectedAssembly(assembly, assemblyPath);
                 EditorApplication.Beep();
                 Debug.Log("Lua Injection Finished!");
+                EditorPrefs.SetInt(Application.dataPath + "InjectStatus", 1);
             }
         }
         catch (Exception e)
@@ -202,10 +198,9 @@ public static class ToLuaInjection
         bool alreadyInjected = EditorPrefs.GetInt(Application.dataPath + "InjectStatus") == 1;
         if (alreadyInjected)
         {
-            Debug.LogError("Already Injected!");
+            Debug.Log("Already Injected!");
             return false;
         }
-        EditorPrefs.SetInt(Application.dataPath + "InjectStatus", 1);
         var injectAttrType = assembly.MainModule.Types.Single(type => type.FullName == "LuaInterface.UseDefinedAttribute");
         var attrCtorInfo = injectAttrType.Methods.Single(method => method.IsConstructor);
         assembly.CustomAttributes.Add(new CustomAttribute(attrCtorInfo));
@@ -806,7 +801,7 @@ public static class ToLuaInjection
 
         if (invoker == null)
         {
-            Debug.LogError(prototypeMethod.FullName + " Got too many parameters!!!Skipped!!!");
+            Debug.Log(prototypeMethod.FullName + " Got too many parameters!!!Skipped!!!");
         }
     }
 
@@ -935,8 +930,7 @@ public static class ToLuaInjection
             {
                 if (existInfo.methodFullSignature != methodFullSignature)
                 {
-                    EditorUtility.DisplayDialog("警告", typeName + "." + existInfo.methodPublishedName + " 签名跟历史签名不一致，无法增量，Injection中断，请修改函数签名、或者直接删掉InjectionBridgeEditorInfo.xml（该操作会导致无法兼容线上版的包体，需要强制换包）！", "确定");
-                    EditorPrefs.SetInt(Application.dataPath + "WaitForInjection", 0);
+                    Debug.LogError(typeName + "." + existInfo.methodPublishedName + " 签名跟历史签名不一致，无法增量，Injection中断，请修改函数签名、或者直接删掉InjectionBridgeEditorInfo.xml（该操作会导致无法兼容线上版的包体，需要强制换包）！");
                     return -1;
                 }
                 return existInfo.methodIndex;
@@ -1066,7 +1060,7 @@ public static class ToLuaInjection
         )
         {
             EnableSymbols = false;
-            Debug.LogError("Haven't found Mono.Cecil.dll!Symbols Will Be Disabled");
+            Debug.Log("Haven't found Mono.Cecil.dll!Symbols Will Be Disabled");
             return false;
         }
 
@@ -1080,11 +1074,10 @@ public static class ToLuaInjection
         bInjectionToolUpdated = TryUpdate(suitedMonoCecilPath, existMonoCecilPath) ? true : bInjectionToolUpdated;
         bInjectionToolUpdated = TryUpdate(suitedMonoCecilPdbPath, existMonoCecilPdbPath) ? true : bInjectionToolUpdated;
         bInjectionToolUpdated = TryUpdate(suitedMonoCecilMdbPath, existMonoCecilMdbPath) ? true : bInjectionToolUpdated;
-        bInjectionToolUpdated = TryUpdate(suitedMonoCecilToolPath, existMonoCecilToolPath) ? true : bInjectionToolUpdated;
+        TryUpdate(suitedMonoCecilToolPath, existMonoCecilToolPath);
         if (bInjectionToolUpdated)
         {
             RemoveInjection();
-            EditorPrefs.SetInt(Application.dataPath + "WaitForInjection", 1);
         }
         EnableSymbols = true;
 
