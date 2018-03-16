@@ -66,14 +66,19 @@ public static class ToLuaInjection
     {
         LoadAndCheckAssembly(true);
         InjectAll();
+
+#if ENABLE_LUA_INJECTION
+        AppDomain.CurrentDomain.DomainUnload += DomainUnload;
+#endif
     }
 
 #if ENABLE_LUA_INJECTION
     [PostProcessScene]
 #endif
-    static void InjectAll()
+    public static void InjectAll()
     {
-        if (Application.isPlaying || EditorApplication.isCompiling)
+        var injectionStatus = EditorPrefs.GetInt(Application.dataPath + "WaitForInjection", 0);
+        if (Application.isPlaying || EditorApplication.isCompiling || injectionStatus == 0)
         {
             return;
         }
@@ -88,10 +93,19 @@ public static class ToLuaInjection
         }
     }
 
+    static void DomainUnload(object sender, System.EventArgs e)
+    {
+        Debug.Log("System_AppDomain_CurrentDomain_DomainUnload");
+        if (BuildPipeline.isBuildingPlayer)
+        {
+            EditorPrefs.SetInt(Application.dataPath + "WaitForInjection", 1);
+        }
+    }
+
 #if ENABLE_LUA_INJECTION
     [MenuItem("Lua/Inject All &i", false, 5)]
 #endif
-    static void InjectByMenu()
+    public static void InjectByMenu()
     {
         if (Application.isPlaying)
         {
@@ -99,6 +113,7 @@ public static class ToLuaInjection
             return;
         }
 
+        EditorPrefs.SetInt(Application.dataPath + "WaitForInjection", 1);
         if (EditorApplication.isCompiling)
         {
             EditorUtility.DisplayDialog("警告", "请等待编辑器编译完成", "确定");
@@ -179,6 +194,8 @@ public static class ToLuaInjection
                 Debug.Log("Lua Injection Finished!");
                 EditorPrefs.SetInt(Application.dataPath + "InjectStatus", 1);
             }
+
+            EditorPrefs.SetInt(Application.dataPath + "WaitForInjection", 0);
         }
         catch (Exception e)
         {
@@ -296,13 +313,13 @@ public static class ToLuaInjection
         offset = targetBody.Instructions.IndexOf(startInsertPos);
     }
 
-    #region GenericMethod
+#region GenericMethod
     static void InjectGenericMethod(AssemblyDefinition assembly, MethodDefinition target, int methodIndex)
     {
     }
-    #endregion GenericMethod
+#endregion GenericMethod
 
-    #region Coroutine
+#region Coroutine
     static void InjectCoroutine(AssemblyDefinition assembly, MethodDefinition target, int methodIndex)
     {
         InjectType runtimeInjectType = GetMethodRuntimeInjectType(target);
@@ -446,9 +463,9 @@ public static class ToLuaInjection
         il.InsertBefore(cursor, il.Create(OpCodes.Ldfld, stateField));
     }
 
-    #endregion Coroutine
+#endregion Coroutine
 
-    #region NormalMethod
+#region NormalMethod
     static void InjectMethod(AssemblyDefinition assembly, MethodDefinition target, int methodIndex)
     {
         FillBegin(target, methodIndex);
@@ -659,7 +676,7 @@ public static class ToLuaInjection
             targetBody.Instructions.Remove(cursor.Previous);
         }
     }
-    #endregion NormalMethod
+#endregion NormalMethod
 
     static void FillArgs(MethodDefinition target, Instruction endPoint, Action<MethodDefinition, Instruction, int> parseReferenceProcess)
     {
@@ -931,6 +948,7 @@ public static class ToLuaInjection
                 if (existInfo.methodFullSignature != methodFullSignature)
                 {
                     Debug.LogError(typeName + "." + existInfo.methodPublishedName + " 签名跟历史签名不一致，无法增量，Injection中断，请修改函数签名、或者直接删掉InjectionBridgeEditorInfo.xml（该操作会导致无法兼容线上版的包体，需要强制换包）！");
+                    EditorPrefs.SetInt(Application.dataPath + "WaitForInjection", 0);
                     return -1;
                 }
                 return existInfo.methodIndex;
@@ -1048,7 +1066,12 @@ public static class ToLuaInjection
     static bool UpdateMonoCecil()
     {
         string appFileName = Environment.GetCommandLineArgs()[0];
-        string directory = Path.GetDirectoryName(appFileName) + "/Data/Managed/";
+        string appPath = Path.GetDirectoryName(appFileName);
+        string directory = appPath + "/Data/Managed/";
+        if (UnityEngine.Application.platform == UnityEngine.RuntimePlatform.OSXEditor)
+        {
+           directory = appPath.Substring(0, appPath.IndexOf("MacOS")) + "Managed/";
+        }
         string suitedMonoCecilPath = directory + "Mono.Cecil.dll";
         string suitedMonoCecilMdbPath = directory + "Mono.Cecil.Mdb.dll";
         string suitedMonoCecilPdbPath = directory + "Mono.Cecil.Pdb.dll";
