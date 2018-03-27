@@ -180,7 +180,7 @@ end
 tolua# 不支持动态反射。动态反射对于重载函数有参数匹配问题，函数排序问题，ref,out 参数问题等等。<br>
 tolua#提供的替换方法是:<br>
 1. preloading, 把你未来可能需要的类型添加到导出列表customTypeList，同时也添加到dynamicList列表中，这样导出后该类型并不会随binder注册到lua中，你可以通过 require "namespace.classname" 动态注册到lua中，对于非枚举类型tolua#系统也可以在第一次push该类型时动态载入，当然也可在过场动画、资源下载、登录、场景加载或者某个的函数中require这个类型。<br>
-2. 静态反射，参考例子22。通过静态反射支持精确的函数参数匹配和类型检查。不会存在重载函数参数混乱匹配错误问题, 注意iOS必须配置好link.xml
+2. 静态反射，参考例子22。通过静态反射支持精确的函数参数匹配和类型检查。不会存在重载函数参数混乱匹配错误问题, 注意iOS必须配置好link.xml<br>
 　
 # Performance
 |   平台    |   属性读写   | 重载函数  | Vector3构造 |GameObject构造|Vector3归一化|Slerp|
