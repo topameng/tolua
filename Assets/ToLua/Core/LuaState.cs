@@ -544,7 +544,7 @@ namespace LuaInterface
             if (mainState != null && mainState.L == ptr)
             {
                 return mainState;
-            }
+            }            
 
             LuaState state = null;
 
@@ -553,7 +553,7 @@ namespace LuaInterface
                 return state;
             }
             else
-            {                
+            {
                 return Get(LuaDLL.tolua_getmainstate(ptr));
             }
 #endif
@@ -1999,11 +1999,12 @@ namespace LuaInterface
                 typeMap.Clear();
                 enumMap.Clear();
                 preLoadMap.Clear();
-                genericSet.Clear();
-                stateMap.Remove(L);
-                LuaClose();
+                genericSet.Clear();                                
+                LuaDLL.lua_close(L);                
                 translator.Dispose();
-                translator = null;                    
+                stateMap.Remove(L);
+                translator = null;
+                L = IntPtr.Zero;
 #if MISS_WARNING
                 missSet.Clear();
 #endif
