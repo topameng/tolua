@@ -625,8 +625,8 @@ public static class ToLuaExport
         }
     }
 
-    public static List<MemberInfo> memberInfoFilter = new List<MemberInfo>
-    {
+	public static List<MemberInfo> memberInfoFilter = new List<MemberInfo>
+	{
         //可精确查找一个函数
 		//Type.GetMethod(string name, BindingFlags bindingAttr, Binder binder, CallingConventions callConvention, Type[] types, ParameterModifier[] modifiers);
     };
@@ -754,7 +754,7 @@ public static class ToLuaExport
 
         //Debugger.Log("Begin Generate lua Wrap for class {0}", className);        
         sb = new StringBuilder();
-        usingList.Add("System");                
+        usingList.Add("System");
 
         if (wrapClassName == "")
         {

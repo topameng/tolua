@@ -1,0 +1,8 @@
+Assets/ToLua/Core/
+Assets/ToLua/Injection/
+Assets/ToLua/Misc/
+Assets/ToLua/Injection/
+Assets/ToLua/Misc/
+H:/OpenSource/toluaSelf/Assets/Plugins/
+H:/OpenSource/toluaSelf/Assets/ToLua/BaseType/
+Assets/Source/Generate/

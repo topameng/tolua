@@ -1113,6 +1113,7 @@ namespace LuaInterface
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
         public static extern void tolua_variable(IntPtr L, string name, IntPtr get, IntPtr set);
 
+
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
         public static extern void tolua_constant(IntPtr L, string name, double val);
 
