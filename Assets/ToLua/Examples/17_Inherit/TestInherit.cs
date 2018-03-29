@@ -56,7 +56,7 @@ public class TestInherit : MonoBehaviour
 
             transform:Translate(1,1,1)                                                                     
                         
-            local child = transform:FindChild('child')
+            local child = transform:Find('child')
             print('child is: ', tostring(child))
             
             if child.parent == transform then            
@@ -73,7 +73,7 @@ public class TestInherit : MonoBehaviour
 
 	void Start () 
     {
-#if UNITY_5 || UNITY_2017
+#if UNITY_5 || UNITY_2017 || UNITY_2018
         Application.logMessageReceived += ShowTips;
 #else
         Application.RegisterLogCallback(ShowTips);
@@ -109,7 +109,7 @@ public class TestInherit : MonoBehaviour
 
     void OnDestroy()
     {
-#if UNITY_5 || UNITY_2017
+#if UNITY_5 || UNITY_2017 || UNITY_2018
         Application.logMessageReceived -= ShowTips;
 #else
         Application.RegisterLogCallback(null);

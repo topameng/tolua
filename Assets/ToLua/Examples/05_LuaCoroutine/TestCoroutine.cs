@@ -12,7 +12,7 @@ public class TestCoroutine : MonoBehaviour
 
 	void Awake () 
     {
-#if UNITY_5 || UNITY_2017
+#if UNITY_5 || UNITY_2017 || UNITY_2018
         Application.logMessageReceived += ShowTips;
 #else
         Application.RegisterLogCallback(ShowTips);
@@ -37,7 +37,7 @@ public class TestCoroutine : MonoBehaviour
         looper.Destroy();
         lua.Dispose();
         lua = null;
-#if UNITY_5 || UNITY_2017
+#if UNITY_5 || UNITY_2017 || UNITY_2018
         Application.logMessageReceived -= ShowTips;
 #else
         Application.RegisterLogCallback(null);
