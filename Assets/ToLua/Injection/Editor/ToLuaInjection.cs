@@ -530,7 +530,7 @@ public static class ToLuaInjection
             il.InsertBefore(end, il.Create(OpCodes.Ldc_I4, (int)curBaseInjectType));
             il.InsertBefore(end, il.Create(OpCodes.Bne_Un, end));
 
-            FillArgs(target, end, null);
+            FillArgs(target, end, PostProcessBaseMethodArg);
             il.InsertBefore(end, il.Create(OpCodes.Call, target.GetBaseMethodInstance()));
             if (!target.ReturnVoid())
             {
@@ -703,6 +703,17 @@ public static class ToLuaInjection
             {
                 parseReferenceProcess(target, endPoint, i);
             }
+        }
+    }
+
+    static void PostProcessBaseMethodArg(MethodDefinition target, Instruction endPoint, int paramIndex)
+    {
+        var declaringType = target.DeclaringType;
+        ILProcessor il = target.Body.GetILProcessor();
+        if (paramIndex == 0 && declaringType.IsValueType)
+        {
+            il.InsertBefore(endPoint, il.Create(OpCodes.Ldobj, declaringType));
+            il.InsertBefore(endPoint, il.Create(OpCodes.Box, declaringType));
         }
     }
 
@@ -1070,7 +1081,7 @@ public static class ToLuaInjection
         string directory = appPath + "/Data/Managed/";
         if (UnityEngine.Application.platform == UnityEngine.RuntimePlatform.OSXEditor)
         {
-           directory = appPath.Substring(0, appPath.IndexOf("MacOS")) + "Managed/";
+            directory = appPath.Substring(0, appPath.IndexOf("MacOS")) + "Managed/";
         }
         string suitedMonoCecilPath = directory + "Mono.Cecil.dll";
         string suitedMonoCecilMdbPath = directory + "Mono.Cecil.Mdb.dll";
