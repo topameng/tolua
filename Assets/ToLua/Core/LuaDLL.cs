@@ -1120,9 +1120,6 @@ namespace LuaInterface
         public static extern void tolua_lazyVariable(IntPtr L, string name, bool get, bool set, IntPtr dispacher);
 
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int tolua_getInjectFlag(IntPtr L, int index);
-
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
         public static extern void tolua_constant(IntPtr L, string name, double val);
 
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]

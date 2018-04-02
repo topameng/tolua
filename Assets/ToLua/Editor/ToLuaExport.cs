@@ -368,7 +368,7 @@ public static class ToLuaExport
 
             for (int i = 0; i < args.Length; i++)
             {
-                ss[i] = GetTypeStr(args[i].ParameterType);
+                ss[i] = GetTypeStr(args[i].GetType());
             }
 
             if (!ToLuaExport.IsGenericMethod(method))
@@ -1369,18 +1369,18 @@ public static class ToLuaExport
                 {
                     _MethodBase md = methods.Find((p) => { return p.Name == "get_" + props[i].Name; });
                     string get = md == null ? "get" : "_get";
-                    md = methods.Find((p) => { return p.Name == "set_" + props[i].Name; });
-                    string set = md == null ? "set" : "_set";
-                    sb.AppendFormat("\t\tL.RegVar(\"{0}\", {1}_{0}, {2}_{0});\r\n", props[i].Name, get, set);
-                }
-                else if (props[i].CanRead)
-                {
-                    _MethodBase md = methods.Find((p) => { return p.Name == "get_" + props[i].Name; });
-                    sb.AppendFormat("\t\tL.RegVar(\"{0}\", {1}_{0}, null);\r\n", props[i].Name, md == null ? "get" : "_get");
-                }
-                else if (props[i].CanWrite)
-                {
-                    _MethodBase md = methods.Find((p) => { return p.Name == "set_" + props[i].Name; });
+                md = methods.Find((p) => { return p.Name == "set_" + props[i].Name; });
+                string set = md == null ? "set" : "_set";
+                sb.AppendFormat("\t\tL.RegVar(\"{0}\", {1}_{0}, {2}_{0});\r\n", props[i].Name, get, set);
+            }
+            else if (props[i].CanRead)
+            {
+                _MethodBase md = methods.Find((p) => { return p.Name == "get_" + props[i].Name; });
+                sb.AppendFormat("\t\tL.RegVar(\"{0}\", {1}_{0}, null);\r\n", props[i].Name, md == null ? "get" : "_get");
+            }
+            else if (props[i].CanWrite)
+            {
+                _MethodBase md = methods.Find((p) => { return p.Name == "set_" + props[i].Name; });
                     sb.AppendFormat("\t\tL.RegVar(\"{0}\", null, {1}_{0});\r\n", props[i].Name, md == null ? "set" : "_set");
                 }
             }

@@ -47,18 +47,21 @@ public class TestInjection : MonoBehaviour
         if (true)
         {
 #endif
+            ///此处Require是示例专用，暖更新的lua代码都要放到LuaInjectionBus.lua中统一require
             luaState.Require("ToLuaInjectionTestInjector");
             int counter = 0;
             bool state = true;
             ToLuaInjectionTest test = new ToLuaInjectionTest(true);
             test = new ToLuaInjectionTest();
             StartCoroutine(test.TestCoroutine(0.3f));
+
             test.TestOverload(1, state);
             test.TestOverload(1, ref state);
-            Debug.Log("ref Test Result :" + state);
+            Debug.Log("TestOverload ref result:" + state);
             test.TestOverload(state, 1);
-            Debug.Log("ref Test Return Value :" + test.TestRef(ref counter));
-            Debug.Log("ref Test Result :" + counter);
+            test.TestRef(ref counter);
+            Debug.Log(string.Format("TestRef return result:{0}; ref result:{1}", test.TestRef(ref counter), counter));
+
             Debug.Log("Property Get Test:" + test.PropertyTest);
             test.PropertyTest = 2;
             Debug.Log("Property Set Test:" + test.PropertyTest);
