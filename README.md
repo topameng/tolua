@@ -28,6 +28,7 @@ tolua#的优点在此无需过度阐述，本修改版本只集中描述差异�
 * **支持较精确的重载Inject匹配，提高安全验证，具体可以参考下Examples/TestInjection下的TestOverload在ToLuaInjectionTestInjector.lua.bytes文件中的Inject处理**<br>
 * **支持“有限”的增量Injection。如果只是新增C#函数、或者删掉旧C#函数，支持不换包2个客户端运行在线上，且重写C#逻辑的Lua代码运行“基本”正常（新增的C#函数被Inject后，只有新版本的客户端才有效；对于老版本的被删掉的C#函数，只有老版本的C#客户端才会调用到重写删掉的C#函数逻辑的Lua代码。其他情况一切正常）**<br>
 * **GC较少**<br>
+* **Injection后相对较小的包体大小改变**<br>
 * **没改tolua runtime，方便升级**<br>
 * **又给ToLua加了几个隐藏BUG ヽ(ˋ▽ˊ)ノ**<br>
 
