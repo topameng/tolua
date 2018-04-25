@@ -23,7 +23,7 @@ local error = error
 local ipairs = ipairs
 local pairs = pairs
 local print = print
-local table = table 
+local table = table
 local string = string
 local tostring = tostring
 local type = type
@@ -285,6 +285,10 @@ local function _DefaultValueConstructorForField(field)
     if field.cpp_type == FieldDescriptor.CPPTYPE_MESSAGE then
         local message_type = field.message_type
         return function (message)
+            if(message_type == nil) then
+              --走到这里说明这个协议依赖的message没有在之前声明，需要调整proto文件顺序
+              print(field.full_name)
+            end
             result = message_type._concrete_class()
             result._SetListener(message._listener_for_children)
             return result
@@ -307,7 +311,7 @@ local function _AttachFieldHelpers(message_meta, field_descriptor)
         local tag_bytes = encoder.TagBytes(field_descriptor.number, wiretype)
         message_meta._decoders_by_tag[tag_bytes] = TYPE_TO_DECODER[field_descriptor.type](field_descriptor.number, is_repeated, is_packed, field_descriptor, field_descriptor._default_constructor)
     end
-  
+
     AddDecoder(FIELD_TYPE_TO_WIRE_TYPE[field_descriptor.type], False)
     if is_repeated and IsTypePackable(field_descriptor.type) then
         AddDecoder(wire_format.WIRETYPE_LENGTH_DELIMITED, True)
@@ -330,7 +334,7 @@ local function _InitMethod(message_meta)
         self._fields = {}
         self._is_present_in_parent = false
         self._listener = listener_mod.NullMessageListener()
-        self._listener_for_children = listener_mod.Listener(self) 
+        self._listener_for_children = listener_mod.Listener(self)
         return setmetatable(self, message_meta)
     end
 end
@@ -364,7 +368,7 @@ local function _AddPropertiesForNonRepeatedCompositeField(field, message_meta)
         local field_value = self._fields[field]
         if field_value == nil then
             field_value = message_type._concrete_class()
-            field_value:_SetListener(self._listener_for_children)            
+            field_value:_SetListener(self._listener_for_children)
             self._fields[field] = field_value
 
             if not self._cached_byte_size_dirty then
@@ -384,7 +388,7 @@ local function _AddPropertiesForNonRepeatedScalarField(field, message)
     local default_value = field.default_value
 
     message._getter[property_name] = function(self)
-        local value =  self._fields[field] 
+        local value =  self._fields[field]
         if value ~= nil then
             return self._fields[field]
         else
@@ -528,7 +532,7 @@ local function _AddListFieldsMethod(message_descriptor, message_meta)
                 while true do
                     local descriptor, value = f(a, i)
                     if descriptor == nil then
-                        return                     
+                        return
                     elseif _IsPresent(descriptor, value) then
                         return descriptor, value
                     end
@@ -563,7 +567,7 @@ local function _AddHasFieldMethod(message_descriptor, message_meta)
 end
 
 local function _AddClearFieldMethod(message_descriptor, message_meta)
-	local singular_fields = {}
+    local singular_fields = {}
     for _, field in ipairs(message_descriptor.fields) do
         if field.label ~= FieldDescriptor.LABEL_REPEATED then
             singular_fields[field.name] = field
@@ -571,16 +575,16 @@ local function _AddClearFieldMethod(message_descriptor, message_meta)
     end
 
     message_meta._member.ClearField = function(self, field_name)
-		field = singular_fields[field_name]
-		if field == nil then
-				error('Protocol message has no singular "'.. field_name.. '" field.')
-		end
+        field = singular_fields[field_name]
+        if field == nil then
+                error('Protocol message has no singular "'.. field_name.. '" field.')
+        end
 
-		if self._fields[field] then
-				self._fields[field] = nil
-		end
-		message_meta._member._Modified(self)
-	end
+        if self._fields[field] then
+                self._fields[field] = nil
+        end
+        message_meta._member._Modified(self)
+    end
 end
 
 local function _AddClearExtensionMethod(message_meta)
@@ -602,7 +606,7 @@ end
 local function _AddStrMethod(message_meta)
     local format = text_format.msg_format
     message_meta.__tostring = function(self)
-        return format(self)    
+        return format(self)
     end
 end
 
@@ -652,14 +656,14 @@ end
 local function _AddSerializeToStringMethod(message_descriptor, message_meta)
     message_meta._member.SerializeToString = function(self)
         if not message_meta._member.IsInitialized(self) then
-            error('Message is missing required fields: ' .. 
+            error('Message is missing required fields: ' ..
                 table.concat(message_meta._member.FindInitializationErrors(self), ','))
         end
         return message_meta._member.SerializePartialToString(self)
     end
     message_meta._member.SerializeToIOString = function(self, iostring)
         if not message_meta._member.IsInitialized(self) then
-            error('Message is missing required fields: ' .. 
+            error('Message is missing required fields: ' ..
                 table.concat(message_meta._member.FindInitializationErrors(self), ','))
         end
         return message_meta._member.SerializePartialToIOString(self, iostring)
@@ -677,10 +681,10 @@ local function _AddSerializePartialToStringMethod(message_descriptor, message_me
     local _serialize_partial_to_iostring = function(self, iostring)
         local w = iostring.write
         local write = function(value)
-            w(iostring, value) 
+            w(iostring, value)
         end
         _internal_serialize(self, write)
-        return 
+        return
     end
 
     local _serialize_partial_to_string = function(self)
@@ -707,7 +711,7 @@ local function _AddMergeFromStringMethod(message_descriptor, message_meta)
     local _internal_parse = function(self, buffer, pos, pend)
         message_meta._member._Modified(self)
         local field_dict = self._fields
-        local tag_bytes, new_pos 
+        local tag_bytes, new_pos
         local field_decoder
         while pos ~= pend do
             tag_bytes, new_pos = ReadTag(buffer, pos)
@@ -724,14 +728,14 @@ local function _AddMergeFromStringMethod(message_descriptor, message_meta)
         end
         return pos
     end
-    message_meta._member._InternalParse = _internal_parse 
+    message_meta._member._InternalParse = _internal_parse
 
     local merge_from_string = function(self, serialized)
         local length = #serialized
         if _internal_parse(self, serialized, 0, length) ~= length then
             error('Unexpected end-group tag.')
         end
-        return length 
+        return length
     end
     message_meta._member.MergeFromString = merge_from_string
 
@@ -751,7 +755,7 @@ local function _AddIsInitializedMethod(message_descriptor, message_meta)
 
     message_meta._member.IsInitialized = function(self, errors)
         for _, field in ipairs(required_fields) do
-            if self._fields[field] == nil or 
+            if self._fields[field] == nil or
                 (field.cpp_type == FieldDescriptor.CPPTYPE_MESSAGE and not self._fields[field]._is_present_in_parent) then
                 if errors ~= nil then
                     errors[#errors + 1] = message_meta._member.FindInitializationErrors(self)
@@ -844,6 +848,44 @@ local function _AddMergeFromMethod(message_meta)
     end
 end
 
+local to_data
+
+to_data = function(self)
+  -- print("[ToData]", tostring(self))
+  local getfield = function(field_desc, field_value)
+    local name = field_desc.name
+    if field_desc.type == FieldDescriptor.TYPE_MESSAGE then
+      -- print("[message]", name, field_value)
+      -- for k, v in pairs(field_value) do
+        -- print(k, v)
+      -- end
+      return to_data(field_value)
+    else
+      -- print("[value]", name, field_value)
+      return field_value
+    end
+  end
+  local d = {}
+  for field, value in self:ListFields() do
+    local name = field.name
+    -- print("[fields]", name, field_value)
+    if field.label == FieldDescriptor.LABEL_REPEATED then
+      d[name] = {}
+      for i, k in ipairs(value) do
+        -- print("[repeated]", i, k)
+        d[name][i] = getfield(field, k)
+      end
+    else
+      d[name] = getfield(field, value)
+    end
+  end
+  return d
+end
+
+local function _AddToDataMethod(message_meta)
+  message_meta._member.ToData = to_data
+end
+
 local function _AddMessageMethods(message_descriptor, message_meta)
     _AddListFieldsMethod(message_descriptor, message_meta)
     _AddHasFieldMethod(message_descriptor, message_meta)
@@ -854,6 +896,8 @@ local function _AddMessageMethods(message_descriptor, message_meta)
     end
     _AddClearMethod(message_descriptor, message_meta)
 --    _AddEqualsMethod(message_descriptor, message_meta)
+    _AddToDataMethod(message_meta)
+    --_AddFromDataMethod(message_meta)
     _AddStrMethod(message_meta)
     _AddSetListenerMethod(message_meta)
     _AddByteSizeMethod(message_descriptor, message_meta)
@@ -880,28 +924,28 @@ end
 local function property_getter(message_meta)
     local getter = message_meta._getter
     local member = message_meta._member
-	
+
     return function (self, property)
-		local g = getter[property]
-		if g then
-		    return g(self)
-		else
-		    return member[property]
-		end
-	end
+        local g = getter[property]
+        if g then
+            return g(self)
+        else
+            return member[property]
+        end
+    end
 end
 
 local function property_setter(message_meta)
-	local setter = message_meta._setter
+    local setter = message_meta._setter
 
-	return function (self, property, value)
-		local s = setter[property]
-		if s then
-			s(self, value)
-		else
-			error(property .. " not found")
-		end
-	end
+    return function (self, property, value)
+        local s = setter[property]
+        if s then
+            s(self, value)
+        else
+            error(property .. " not found")
+        end
+    end
 end
 
 function _AddClassAttributesForNestedExtensions(descriptor, message_meta)
@@ -933,12 +977,12 @@ local function Message(descriptor)
 
     local ns = setmetatable({}, message_meta._member)
     message_meta._member.__call = _InitMethod(message_meta)
-    message_meta._member.__index = message_meta._member 
+    message_meta._member.__index = message_meta._member
     message_meta._member.type = ns
 
     if rawget(descriptor, "_concrete_class") == nil then
         rawset(descriptor, "_concrete_class", ns)
-        for k, field in ipairs(descriptor.fields) do  
+        for k, field in ipairs(descriptor.fields) do
             _AttachFieldHelpers(message_meta, field)
         end
     end
@@ -951,10 +995,51 @@ local function Message(descriptor)
     _AddPrivateHelperMethods(message_meta)
 
     message_meta.__index = property_getter(message_meta)
-    message_meta.__newindex = property_setter(message_meta) 
+    message_meta.__newindex = property_setter(message_meta)
 
-    return ns 
+    return ns
 end
 
-_M.Message = Message
+local from_message
 
+local getMsgType = function(msg)
+  local msgType = type(msg);
+  if msgType == 'table'  then
+    if #msg > 0 then
+        return 'repeat'
+    else
+        return 'message'
+    end
+  else
+    return 'prim';
+  end
+end
+
+from_message = function(self,msg)
+    for key, v in pairs(msg) do
+        local msgType = getMsgType(v)
+        -- print('msgType:',msgType)
+        if msgType == 'repeat'  then
+           -- print('repeat:',key,PrintTable(self[key],20))
+            for _,v1 in pairs(v) do
+                if self[key].add ~=nil then
+                    local g = self[key]:add()
+                    from_message(g,v1)
+                else
+                    self[key]:append(v1)
+                end
+            end
+        elseif msgType == 'message' then
+            from_message(self[key],v)
+        else
+            if  self ~= nil then
+                -- print("self[key] = v",key,v)
+                self[key] = v
+            end
+        end
+    end
+end
+
+_M.FromMessage = from_message
+
+_M.Message = Message
