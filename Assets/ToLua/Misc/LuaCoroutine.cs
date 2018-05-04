@@ -23,6 +23,7 @@ using UnityEngine;
 using LuaInterface;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 
 public static class LuaCoroutine
 {
@@ -112,6 +113,23 @@ public static class LuaCoroutine
         end
         ";
 
+    // Unity YieldInstruction Cache
+    private static readonly WaitForEndOfFrame YieldEndOfFrame = new WaitForEndOfFrame();
+    private static readonly WaitForFixedUpdate YieldFixedUpdate = new WaitForFixedUpdate();
+
+    private static Dictionary<float, WaitForSeconds> waitForSecondsDict = new Dictionary<float, WaitForSeconds>();
+    private static WaitForSeconds GetWaitForSeconds(float sec)
+    {
+        sec = Mathf.Floor(sec * 100) / 100;
+        WaitForSeconds waitForSeconds;
+        if (!waitForSecondsDict.TryGetValue(sec, out waitForSeconds))
+        {
+            waitForSeconds = new WaitForSeconds(sec);
+            waitForSecondsDict.Add(sec, waitForSeconds);
+        }
+        return waitForSeconds;
+    }
+
     public static void Register(LuaState state, MonoBehaviour behaviour)
     {
         state.BeginModule(null);
@@ -171,7 +189,7 @@ public static class LuaCoroutine
 
 	private static IEnumerator CoWaitForSeconds(float sec, LuaFunction func)
     {
-        yield return new WaitForSeconds(sec);
+        yield return GetWaitForSeconds(sec);
         func.Call();
     }
 
@@ -193,7 +211,7 @@ public static class LuaCoroutine
 
 	private static IEnumerator CoWaitForFixedUpdate(LuaFunction func)
     {
-        yield return new WaitForFixedUpdate();
+        yield return YieldFixedUpdate;
         func.Call();
     }
 
@@ -215,7 +233,7 @@ public static class LuaCoroutine
 
 	private static IEnumerator CoWaitForEndOfFrame(LuaFunction func)
     {
-        yield return new WaitForEndOfFrame();
+        yield return YieldEndOfFrame;
         func.Call();
     }
 
