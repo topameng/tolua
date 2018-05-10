@@ -1314,4 +1314,99 @@ public static class ToLuaMenu
         Debug.Log("Clear base type wrap files over");
         AssetDatabase.Refresh();
     }
+
+    [MenuItem("Lua/Enable Lua Injection", false, 102)]
+    static void EnableLuaInjection()
+    {
+        BuildTargetGroup curBuildTargetGroup = BuildPipeline.GetBuildTargetGroup(EditorUserBuildSettings.activeBuildTarget);
+        string existSymbols = PlayerSettings.GetScriptingDefineSymbolsForGroup(curBuildTargetGroup);
+        if (!existSymbols.Contains("ENABLE_LUA_INJECTION"))
+        {
+            PlayerSettings.SetScriptingDefineSymbolsForGroup(curBuildTargetGroup, existSymbols + "ENABLE_LUA_INJECTION;");
+        }
+
+        bool EnableSymbols = false;
+        if (UpdateMonoCecil(ref EnableSymbols, null))
+        {
+            AssetDatabase.Refresh();
+        }
+    }
+
+    public static bool UpdateMonoCecil(ref bool EnableSymbols, System.Action onInjectionToolUpdated)
+    {
+        string appFileName = Environment.GetCommandLineArgs()[0];
+        string appPath = Path.GetDirectoryName(appFileName);
+        string directory = appPath + "/Data/Managed/";
+        if (UnityEngine.Application.platform == UnityEngine.RuntimePlatform.OSXEditor)
+        {
+            directory = appPath.Substring(0, appPath.IndexOf("MacOS")) + "Managed/";
+        }
+        string suitedMonoCecilPath = directory + "Mono.Cecil.dll";
+        string suitedMonoCecilMdbPath = directory + "Mono.Cecil.Mdb.dll";
+        string suitedMonoCecilPdbPath = directory + "Mono.Cecil.Pdb.dll";
+        string suitedMonoCecilToolPath = directory + "Unity.CecilTools.dll";
+
+        if (!File.Exists(suitedMonoCecilPath)
+            && !File.Exists(suitedMonoCecilMdbPath)
+            && !File.Exists(suitedMonoCecilPdbPath)
+        )
+        {
+            EnableSymbols = false;
+            Debug.Log("Haven't found Mono.Cecil.dll!Symbols Will Be Disabled");
+            return false;
+        }
+
+        bool bInjectionToolUpdated = false;
+        string injectionToolPath = CustomSettings.injectionFilesPath + "Editor/";
+        string existMonoCecilPath = injectionToolPath + Path.GetFileName(suitedMonoCecilPath);
+        string existMonoCecilPdbPath = injectionToolPath + Path.GetFileName(suitedMonoCecilPdbPath);
+        string existMonoCecilMdbPath = injectionToolPath + Path.GetFileName(suitedMonoCecilMdbPath);
+        string existMonoCecilToolPath = injectionToolPath + Path.GetFileName(suitedMonoCecilToolPath);
+
+        bInjectionToolUpdated = TryUpdate(suitedMonoCecilPath, existMonoCecilPath) ? true : bInjectionToolUpdated;
+        bInjectionToolUpdated = TryUpdate(suitedMonoCecilPdbPath, existMonoCecilPdbPath) ? true : bInjectionToolUpdated;
+        bInjectionToolUpdated = TryUpdate(suitedMonoCecilMdbPath, existMonoCecilMdbPath) ? true : bInjectionToolUpdated;
+        TryUpdate(suitedMonoCecilToolPath, existMonoCecilToolPath);
+        if (bInjectionToolUpdated && onInjectionToolUpdated != null)
+        {
+            onInjectionToolUpdated();
+        }
+        EnableSymbols = true;
+
+        return bInjectionToolUpdated;
+    }
+
+    static bool TryUpdate(string srcPath, string destPath)
+    {
+        if (GetFileContentMD5(srcPath) != GetFileContentMD5(destPath))
+        {
+            File.Copy(srcPath, destPath, true);
+            return true;
+        }
+
+        return false;
+    }
+
+    static string GetFileContentMD5(string file)
+    {
+        try
+        {
+            FileStream fs = new FileStream(file, FileMode.Open);
+            System.Security.Cryptography.MD5 md5 = new System.Security.Cryptography.MD5CryptoServiceProvider();
+            byte[] retVal = md5.ComputeHash(fs);
+            fs.Close();
+
+            StringBuilder sb = StringBuilderCache.Acquire();
+            for (int i = 0; i < retVal.Length; i++)
+            {
+                sb.Append(retVal[i].ToString("x2"));
+            }
+            return StringBuilderCache.GetStringAndRelease(sb);
+        }
+        catch (System.Exception ex)
+        {
+            Debugger.Log("Md5file() fail, error:" + ex.Message);
+            return string.Empty;
+        }
+    }
 }
