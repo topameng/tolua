@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if ENABLE_LUA_INJECTION
+using System;
 using System.Collections.Generic;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
@@ -386,3 +387,4 @@ public static class ToLuaInjectionHelper
         }
     }
 }
+#endif
