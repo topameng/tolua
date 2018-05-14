@@ -1341,9 +1341,24 @@ public static class ToLuaMenu
         {
             directory = appPath.Substring(0, appPath.IndexOf("MacOS")) + "Managed/";
         }
-        string suitedMonoCecilPath = directory + "Mono.Cecil.dll";
-        string suitedMonoCecilMdbPath = directory + "Mono.Cecil.Mdb.dll";
-        string suitedMonoCecilPdbPath = directory + "Mono.Cecil.Pdb.dll";
+        string suitedMonoCecilPath = directory +
+#if UNITY_2017_1_OR_NEWER
+            "Unity.Cecil.dll";
+#else
+            "Mono.Cecil.dll";
+#endif
+        string suitedMonoCecilMdbPath = directory +
+#if UNITY_2017_1_OR_NEWER
+            "Unity.Cecil.Mdb.dll";
+#else
+            "Mono.Cecil.Mdb.dll";
+#endif
+        string suitedMonoCecilPdbPath = directory +
+#if UNITY_2017_1_OR_NEWER
+            "Unity.Cecil.Pdb.dll";
+#else
+            "Mono.Cecil.Pdb.dll";
+#endif
         string suitedMonoCecilToolPath = directory + "Unity.CecilTools.dll";
 
         if (!File.Exists(suitedMonoCecilPath)
