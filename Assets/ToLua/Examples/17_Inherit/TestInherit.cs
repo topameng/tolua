@@ -73,7 +73,7 @@ public class TestInherit : MonoBehaviour
 
 	void Start () 
     {
-#if UNITY_5 || UNITY_2017 || UNITY_2018
+#if UNITY_5 || UNITY_2017_1_OR_NEWER
         Application.logMessageReceived += ShowTips;
 #else
         Application.RegisterLogCallback(ShowTips);
@@ -109,7 +109,7 @@ public class TestInherit : MonoBehaviour
 
     void OnDestroy()
     {
-#if UNITY_5 || UNITY_2017 || UNITY_2018
+#if UNITY_5 || UNITY_2017_1_OR_NEWER
         Application.logMessageReceived -= ShowTips;
 #else
         Application.RegisterLogCallback(null);

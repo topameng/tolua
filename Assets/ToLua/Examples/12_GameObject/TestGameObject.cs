@@ -30,7 +30,7 @@ public class TestGameObject: MonoBehaviour
 
     void Start()
     {
-#if UNITY_5 || UNITY_2017 || UNITY_2018
+#if UNITY_5 || UNITY_2017_1_OR_NEWER
         Application.logMessageReceived += ShowTips;
 #else
         Application.RegisterLogCallback(ShowTips);
@@ -61,7 +61,7 @@ public class TestGameObject: MonoBehaviour
     {        
         lua.Dispose();
         lua = null;
-#if UNITY_5 || UNITY_2017 || UNITY_2018
+#if UNITY_5 || UNITY_2017_1_OR_NEWER
         Application.logMessageReceived -= ShowTips;
 #else
         Application.RegisterLogCallback(null);

@@ -1,6 +1,6 @@
 local ToLuaInjectionTestInjector = {}
 
-ToLuaInjectionTestInjector[".ctor"] = function()
+--ToLuaInjectionTestInjector[".ctor"] = function()
 	--请注意ToLuaInjection.cs中的injectIgnoring字段已经默认过滤掉了Constructor，如果要测试构造函数的注入，请去掉InjectFilter.IgnoreConstructor这个过滤项
 	-- Only After Does Matter
 	--return function(self)
@@ -11,15 +11,15 @@ ToLuaInjectionTestInjector[".ctor"] = function()
 	--	print("Lua Inject Constructor")
 	--end, LuaInterface.InjectType.Before
 	-------------------------------------------------------
-end
+--end
 
-ToLuaInjectionTestInjector[".ctor_bool"] = function()
+--ToLuaInjectionTestInjector[".ctor_bool"] = function()
 	--请注意ToLuaInjection.cs中的injectIgnoring字段已经默认过滤掉了Constructor，如果要测试构造函数的注入，请去掉InjectFilter.IgnoreConstructor这个过滤项
 	-- Only After Does Matter
 	--return function(self, state)
 	--	print("Lua Inject Constructor_bool " .. tostring(state))
 	--end, LuaInterface.InjectType.After
-end
+--end
 
 ToLuaInjectionTestInjector.set_PropertyTest = function()
 	return function (self, value)
