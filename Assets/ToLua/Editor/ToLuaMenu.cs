@@ -1315,24 +1315,41 @@ public static class ToLuaMenu
         AssetDatabase.Refresh();
     }
 
-    [MenuItem("Lua/Enable Lua Injection", false, 102)]
+    [MenuItem("Lua/Enable Lua Injection &e", false, 102)]
     static void EnableLuaInjection()
     {
         BuildTargetGroup curBuildTargetGroup = BuildPipeline.GetBuildTargetGroup(EditorUserBuildSettings.activeBuildTarget);
         string existSymbols = PlayerSettings.GetScriptingDefineSymbolsForGroup(curBuildTargetGroup);
-        if (!existSymbols.Contains("ENABLE_LUA_INJECTION"))
+        if (!existSymbols.Contains(";ENABLE_LUA_INJECTION"))
         {
-            PlayerSettings.SetScriptingDefineSymbolsForGroup(curBuildTargetGroup, existSymbols + "ENABLE_LUA_INJECTION;");
+            PlayerSettings.SetScriptingDefineSymbolsForGroup(curBuildTargetGroup, existSymbols + ";ENABLE_LUA_INJECTION");
         }
 
         bool EnableSymbols = false;
-        if (UpdateMonoCecil(ref EnableSymbols, null))
+        if (UpdateMonoCecil(ref EnableSymbols))
         {
             AssetDatabase.Refresh();
         }
     }
 
-    public static bool UpdateMonoCecil(ref bool EnableSymbols, System.Action onInjectionToolUpdated)
+#if ENABLE_LUA_INJECTION
+    [MenuItem("Lua/Injection Remove &r", false, 5)]
+#endif
+    static void RemoveInjection()
+    {
+        if (Application.isPlaying)
+        {
+            EditorUtility.DisplayDialog("警告", "游戏运行过程中无法操作", "确定");
+            return;
+        }
+
+        BuildTargetGroup curBuildTargetGroup = BuildPipeline.GetBuildTargetGroup(EditorUserBuildSettings.activeBuildTarget);
+        string existSymbols = PlayerSettings.GetScriptingDefineSymbolsForGroup(curBuildTargetGroup);
+        PlayerSettings.SetScriptingDefineSymbolsForGroup(curBuildTargetGroup, existSymbols.Replace("ENABLE_LUA_INJECTION", ""));
+        Debug.Log("Lua Injection Removed!");
+    }
+
+    public static bool UpdateMonoCecil(ref bool EnableSymbols)
     {
         string appFileName = Environment.GetCommandLineArgs()[0];
         string appPath = Path.GetDirectoryName(appFileName);
@@ -1382,10 +1399,6 @@ public static class ToLuaMenu
         bInjectionToolUpdated = TryUpdate(suitedMonoCecilPdbPath, existMonoCecilPdbPath) ? true : bInjectionToolUpdated;
         bInjectionToolUpdated = TryUpdate(suitedMonoCecilMdbPath, existMonoCecilMdbPath) ? true : bInjectionToolUpdated;
         TryUpdate(suitedMonoCecilToolPath, existMonoCecilToolPath);
-        if (bInjectionToolUpdated && onInjectionToolUpdated != null)
-        {
-            onInjectionToolUpdated();
-        }
         EnableSymbols = true;
 
         return bInjectionToolUpdated;
@@ -1420,7 +1433,7 @@ public static class ToLuaMenu
         }
         catch (System.Exception ex)
         {
-            Debugger.Log("Md5file() fail, error:" + ex.Message);
+            Debugger.LogError("Md5file() fail, error:" + ex.Message);
             return string.Empty;
         }
     }
