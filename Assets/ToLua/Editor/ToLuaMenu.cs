@@ -1320,7 +1320,7 @@ public static class ToLuaMenu
     {
         BuildTargetGroup curBuildTargetGroup = BuildPipeline.GetBuildTargetGroup(EditorUserBuildSettings.activeBuildTarget);
         string existSymbols = PlayerSettings.GetScriptingDefineSymbolsForGroup(curBuildTargetGroup);
-        if (!existSymbols.Contains(";ENABLE_LUA_INJECTION"))
+        if (!existSymbols.Contains("ENABLE_LUA_INJECTION"))
         {
             PlayerSettings.SetScriptingDefineSymbolsForGroup(curBuildTargetGroup, existSymbols + ";ENABLE_LUA_INJECTION");
         }
