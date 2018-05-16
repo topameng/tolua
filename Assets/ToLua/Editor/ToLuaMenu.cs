@@ -45,7 +45,7 @@ public static class ToLuaMenu
     public static List<Type> dropType = new List<Type>
     {
         typeof(ValueType),                                  //不需要
-#if !UNITY_5 && !UNITY_2017 && !UNITY_2018
+#if UNITY_4_6 || UNITY_4_7
         typeof(Motion),                                     //很多平台只是空类
 #endif
 
@@ -812,18 +812,7 @@ public static class ToLuaMenu
         string bundleName = subDir == null ? "lua.unity3d" : "lua" + subDir.Replace('/', '_') + ".unity3d";
         bundleName = bundleName.ToLower();
 
-#if UNITY_5 || UNITY_2017 || UNITY_2018
-        for (int i = 0; i < files.Length; i++)
-        {
-            AssetImporter importer = AssetImporter.GetAtPath(files[i]);            
-
-            if (importer)
-            {
-                importer.assetBundleName = bundleName;
-                importer.assetBundleVariant = null;                
-            }
-        }
-#else
+#if UNITY_4_6 || UNITY_4_7
         List<Object> list = new List<Object>();
 
         for (int i = 0; i < files.Length; i++)
@@ -839,6 +828,17 @@ public static class ToLuaMenu
             string output = string.Format("{0}/{1}/" + bundleName, Application.streamingAssetsPath, GetOS());
             File.Delete(output);
             BuildPipeline.BuildAssetBundle(null, list.ToArray(), output, options, EditorUserBuildSettings.activeBuildTarget);            
+        }
+#else
+        for (int i = 0; i < files.Length; i++)
+        {
+            AssetImporter importer = AssetImporter.GetAtPath(files[i]);
+
+            if (importer)
+            {
+                importer.assetBundleName = bundleName;
+                importer.assetBundleVariant = null;
+            }
         }
 #endif
     }
@@ -1003,17 +1003,6 @@ public static class ToLuaMenu
         Debug.Log("Copy lua files over");
     }
 
-    [MenuItem("Lua/Process Example Lua Files For Test On Mobile", false, 51)]
-    public static void CopyExampleLuaFilesToRes()
-    {
-        CopyLuaFilesToRes();
-        string destDir = Application.dataPath + "/Resources";
-        string srcDir = Application.dataPath + "/Tolua/Examples/Resources";
-        CopyDirectory(srcDir, destDir, "*.bytes");
-        AssetDatabase.Refresh();
-        Debug.Log("Copy example lua files over");
-    }
-
     [MenuItem("Lua/Copy Lua  files to Persistent", false, 52)]
     public static void CopyLuaFilesToPersistent()
     {
@@ -1052,7 +1041,11 @@ public static class ToLuaMenu
 
     static void CopyBuildBat(string path, string tempDir)
     {
-        if (EditorUserBuildSettings.activeBuildTarget == BuildTarget.StandaloneWindows)
+		if (EditorUserBuildSettings.activeBuildTarget == BuildTarget.StandaloneWindows64)
+		{
+			File.Copy(path + "/Luajit64/Build.bat", tempDir + "/Build.bat", true);			
+		}
+		else if (EditorUserBuildSettings.activeBuildTarget == BuildTarget.StandaloneWindows)
         {
             if (IntPtr.Size == 4)
             {
@@ -1063,7 +1056,11 @@ public static class ToLuaMenu
                 File.Copy(path + "/Luajit64/Build.bat", tempDir + "/Build.bat", true);
             }
         }
+#if UNITY_5_3_OR_NEWER        
         else if (EditorUserBuildSettings.activeBuildTarget == BuildTarget.iOS)
+#else
+        else if (EditorUserBuildSettings.activeBuildTarget == BuildTarget.iPhone)
+#endif        
         {
             //Debug.Log("iOS默认用64位，32位自行考虑");
             File.Copy(path + "/Luajit64/Build.bat", tempDir + "/Build.bat", true);
@@ -1133,7 +1130,7 @@ public static class ToLuaMenu
         ClearAllLuaFiles();
         CreateStreamDir(GetOS());
 
-#if !UNITY_5 && !UNITY_2017 && !UNITY_2018
+#if UNITY_4_6 || UNITY_4_7
         string tempDir = CreateStreamDir("Lua");
 #else
         string tempDir = Application.dataPath + "/temp/Lua";
@@ -1150,8 +1147,8 @@ public static class ToLuaMenu
         List<string> dirs = new List<string>();
         GetAllDirs(tempDir, dirs);
 
-#if UNITY_5 || UNITY_2017 || UNITY_2018
-        for (int i = 0; i < dirs.Count; i++)
+#if UNITY_5 || UNITY_5_3_OR_NEWER
+		for (int i = 0; i < dirs.Count; i++)
         {
             string str = dirs[i].Remove(0, tempDir.Length);
             BuildLuaBundle(str.Replace('\\', '/'), "Assets/temp/Lua");
@@ -1183,7 +1180,7 @@ public static class ToLuaMenu
         ClearAllLuaFiles();                
         CreateStreamDir(GetOS());
 
-#if !UNITY_5 && !UNITY_2017 && !UNITY_2018
+#if UNITY_4_6 || UNITY_4_7
         string tempDir = CreateStreamDir("Lua");
 #else
         string tempDir = Application.dataPath + "/temp/Lua";
@@ -1208,8 +1205,8 @@ public static class ToLuaMenu
         List<string> dirs = new List<string>();        
         GetAllDirs(sourceDir, dirs);
 
-#if UNITY_5 || UNITY_2017 || UNITY_2018
-        for (int i = 0; i < dirs.Count; i++)
+#if UNITY_5 || UNITY_5_3_OR_NEWER
+		for (int i = 0; i < dirs.Count; i++)
         {
             string str = dirs[i].Remove(0, sourceDir.Length);
             BuildLuaBundle(str.Replace('\\', '/'), "Assets/temp/Lua/Out");
@@ -1338,24 +1335,41 @@ public static class ToLuaMenu
         AssetDatabase.Refresh();
     }
 
-    [MenuItem("Lua/Enable Lua Injection", false, 102)]
+    [MenuItem("Lua/Enable Lua Injection &e", false, 102)]
     static void EnableLuaInjection()
     {
         BuildTargetGroup curBuildTargetGroup = BuildPipeline.GetBuildTargetGroup(EditorUserBuildSettings.activeBuildTarget);
         string existSymbols = PlayerSettings.GetScriptingDefineSymbolsForGroup(curBuildTargetGroup);
         if (!existSymbols.Contains("ENABLE_LUA_INJECTION"))
         {
-            PlayerSettings.SetScriptingDefineSymbolsForGroup(curBuildTargetGroup, existSymbols + "ENABLE_LUA_INJECTION;");
-        }
+            PlayerSettings.SetScriptingDefineSymbolsForGroup(curBuildTargetGroup, existSymbols + ";ENABLE_LUA_INJECTION");
+}
 
         bool EnableSymbols = false;
-        if (UpdateMonoCecil(ref EnableSymbols, null))
+        if (UpdateMonoCecil(ref EnableSymbols))
         {
             AssetDatabase.Refresh();
         }
     }
 
-    public static bool UpdateMonoCecil(ref bool EnableSymbols, System.Action onInjectionToolUpdated)
+#if ENABLE_LUA_INJECTION
+    [MenuItem("Lua/Injection Remove &r", false, 5)]
+#endif
+    static void RemoveInjection()
+    {
+        if (Application.isPlaying)
+        {
+            EditorUtility.DisplayDialog("警告", "游戏运行过程中无法操作", "确定");
+            return;
+        }
+
+        BuildTargetGroup curBuildTargetGroup = BuildPipeline.GetBuildTargetGroup(EditorUserBuildSettings.activeBuildTarget);
+        string existSymbols = PlayerSettings.GetScriptingDefineSymbolsForGroup(curBuildTargetGroup);
+        PlayerSettings.SetScriptingDefineSymbolsForGroup(curBuildTargetGroup, existSymbols.Replace("ENABLE_LUA_INJECTION", ""));
+        Debug.Log("Lua Injection Removed!");
+    }
+
+    public static bool UpdateMonoCecil(ref bool EnableSymbols)
     {
         string appFileName = Environment.GetCommandLineArgs()[0];
         string appPath = Path.GetDirectoryName(appFileName);
@@ -1405,10 +1419,6 @@ public static class ToLuaMenu
         bInjectionToolUpdated = TryUpdate(suitedMonoCecilPdbPath, existMonoCecilPdbPath) ? true : bInjectionToolUpdated;
         bInjectionToolUpdated = TryUpdate(suitedMonoCecilMdbPath, existMonoCecilMdbPath) ? true : bInjectionToolUpdated;
         TryUpdate(suitedMonoCecilToolPath, existMonoCecilToolPath);
-        if (bInjectionToolUpdated && onInjectionToolUpdated != null)
-        {
-            onInjectionToolUpdated();
-        }
         EnableSymbols = true;
 
         return bInjectionToolUpdated;
@@ -1443,7 +1453,7 @@ public static class ToLuaMenu
         }
         catch (System.Exception ex)
         {
-            Debugger.Log("Md5file() fail, error:" + ex.Message);
+            Debugger.LogError("Md5file() fail, error:" + ex.Message);
             return string.Empty;
         }
     }

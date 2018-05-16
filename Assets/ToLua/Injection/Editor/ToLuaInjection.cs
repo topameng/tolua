@@ -44,6 +44,7 @@ public static class ToLuaInjection
     static MethodReference injectedFuncGetter;
     static HashSet<string> dropTypeGroup = new HashSet<string>();
     static HashSet<string> injectableTypeGroup = new HashSet<string>();
+    static Dictionary<MethodDefinition, VariableDefinition> resultTableGroup = new Dictionary<MethodDefinition, VariableDefinition>();
     static SortedDictionary<string, List<InjectedMethodInfo>> bridgeInfo = new SortedDictionary<string, List<InjectedMethodInfo>>();
     static OpCode[] ldargs = new OpCode[] { OpCodes.Ldarg_0, OpCodes.Ldarg_1, OpCodes.Ldarg_2, OpCodes.Ldarg_3 };
     static OpCode[] ldcI4s = new OpCode[] { OpCodes.Ldc_I4_1, OpCodes.Ldc_I4_2, OpCodes.Ldc_I4_4, OpCodes.Ldc_I4_8 };
@@ -78,7 +79,7 @@ public static class ToLuaInjection
             return;
         }
 
-        bool bInjectInterupted = !LoadBlackList() || ToLuaMenu.UpdateMonoCecil(ref EnableSymbols, RemoveInjection) || !LoadBridgeEditorInfo();
+        bool bInjectInterupted = !LoadBlackList() || ToLuaMenu.UpdateMonoCecil(ref EnableSymbols) || !LoadBridgeEditorInfo();
         if (!bInjectInterupted)
         {
             CacheInjectableTypeGroup();
@@ -114,20 +115,6 @@ public static class ToLuaInjection
         }
 
         InjectAll();
-    }
-
-    [MenuItem("Lua/Injection Remove &r", false, 5)]
-    static void RemoveInjection()
-    {
-        if (Application.isPlaying)
-        {
-            EditorUtility.DisplayDialog("警告", "游戏运行过程中无法操作", "确定");
-            return;
-        }
-
-        MonoScript cMonoScript = MonoImporter.GetAllRuntimeMonoScripts()[0];
-        MonoImporter.SetExecutionOrder(cMonoScript, MonoImporter.GetExecutionOrder(cMonoScript));
-        Debug.Log("Lua Injection Removed!");
     }
 
     static AssemblyDefinition LoadAndCheckAssembly(bool bPulse)
@@ -181,6 +168,7 @@ public static class ToLuaInjection
                 UpdateInjectionCacheSize();
                 ExportInjectionBridgeInfo();
                 WriteInjectedAssembly(assembly, assemblyPath);
+                resultTableGroup.Clear();
                 EditorApplication.Beep();
                 Debug.Log("Lua Injection Finished!");
                 EditorPrefs.SetInt(Application.dataPath + "InjectStatus", 1);
@@ -209,6 +197,7 @@ public static class ToLuaInjection
             Debug.Log("Already Injected!");
             return false;
         }
+        resultTableGroup.Clear();
         var injectAttrType = assembly.MainModule.Types.Single(type => type.FullName == "LuaInterface.UseDefinedAttribute");
         var attrCtorInfo = injectAttrType.Methods.Single(method => method.IsConstructor);
         assembly.CustomAttributes.Add(new CustomAttribute(attrCtorInfo));
@@ -563,12 +552,13 @@ public static class ToLuaInjection
 
     static VariableDefinition GetResultTable(MethodDefinition target)
     {
-        VariableDefinition luaTable = target.Body.Variables.FirstOrDefault(var => var.Name == "__iOutTable");
-
+        VariableDefinition luaTable = null;
+        resultTableGroup.TryGetValue(target, out luaTable);
         if (luaTable == null)
         {
-            luaTable = new VariableDefinition("__iOutTable", luaTableTypeDef);
+            luaTable = new VariableDefinition(luaTableTypeDef);
             target.Body.Variables.Add(luaTable);
+            resultTableGroup.Add(target, luaTable);
         }
 
         return luaTable;
