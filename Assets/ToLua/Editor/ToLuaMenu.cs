@@ -1049,7 +1049,11 @@ public static class ToLuaMenu
                 File.Copy(path + "/Luajit64/Build.bat", tempDir + "/Build.bat", true);
             }
         }
+#if UNITY_4_6 || UNITY_4_7
+		else if (EditorUserBuildSettings.activeBuildTarget == BuildTarget.iPhone)
+#else
         else if (EditorUserBuildSettings.activeBuildTarget == BuildTarget.iOS)
+#endif
         {
             //Debug.Log("iOS默认用64位，32位自行考虑");
             File.Copy(path + "/Luajit64/Build.bat", tempDir + "/Build.bat", true);
@@ -1318,17 +1322,21 @@ public static class ToLuaMenu
     [MenuItem("Lua/Enable Lua Injection &e", false, 102)]
     static void EnableLuaInjection()
     {
-        BuildTargetGroup curBuildTargetGroup = BuildPipeline.GetBuildTargetGroup(EditorUserBuildSettings.activeBuildTarget);
-        string existSymbols = PlayerSettings.GetScriptingDefineSymbolsForGroup(curBuildTargetGroup);
-        if (!existSymbols.Contains("ENABLE_LUA_INJECTION"))
-        {
-            PlayerSettings.SetScriptingDefineSymbolsForGroup(curBuildTargetGroup, existSymbols + ";ENABLE_LUA_INJECTION");
-        }
-
         bool EnableSymbols = false;
         if (UpdateMonoCecil(ref EnableSymbols))
         {
-            AssetDatabase.Refresh();
+#if UNITY_4_6
+			BuildTargetGroup curBuildTargetGroup = EditorUserBuildSettings.selectedBuildTargetGroup;
+#else
+			BuildTargetGroup curBuildTargetGroup = BuildPipeline.GetBuildTargetGroup(EditorUserBuildSettings.activeBuildTarget);
+#endif
+			string existSymbols = PlayerSettings.GetScriptingDefineSymbolsForGroup(curBuildTargetGroup);
+			if (!existSymbols.Contains("ENABLE_LUA_INJECTION"))
+			{
+				PlayerSettings.SetScriptingDefineSymbolsForGroup(curBuildTargetGroup, existSymbols + ";ENABLE_LUA_INJECTION");
+			}
+
+			AssetDatabase.Refresh();
         }
     }
 
@@ -1343,7 +1351,11 @@ public static class ToLuaMenu
             return;
         }
 
-        BuildTargetGroup curBuildTargetGroup = BuildPipeline.GetBuildTargetGroup(EditorUserBuildSettings.activeBuildTarget);
+#if UNITY_4_6
+		BuildTargetGroup curBuildTargetGroup = EditorUserBuildSettings.selectedBuildTargetGroup;
+#else
+		BuildTargetGroup curBuildTargetGroup = BuildPipeline.GetBuildTargetGroup(EditorUserBuildSettings.activeBuildTarget);
+#endif
         string existSymbols = PlayerSettings.GetScriptingDefineSymbolsForGroup(curBuildTargetGroup);
         PlayerSettings.SetScriptingDefineSymbolsForGroup(curBuildTargetGroup, existSymbols.Replace("ENABLE_LUA_INJECTION", ""));
         Debug.Log("Lua Injection Removed!");
@@ -1379,8 +1391,10 @@ public static class ToLuaMenu
         string suitedMonoCecilToolPath = directory + "Unity.CecilTools.dll";
 
         if (!File.Exists(suitedMonoCecilPath)
+#if !UNITY_4_6
             && !File.Exists(suitedMonoCecilMdbPath)
             && !File.Exists(suitedMonoCecilPdbPath)
+#endif
         )
         {
             EnableSymbols = false;
@@ -1396,8 +1410,10 @@ public static class ToLuaMenu
         string existMonoCecilToolPath = injectionToolPath + Path.GetFileName(suitedMonoCecilToolPath);
 
         bInjectionToolUpdated = TryUpdate(suitedMonoCecilPath, existMonoCecilPath) ? true : bInjectionToolUpdated;
+#if !UNITY_4_6
         bInjectionToolUpdated = TryUpdate(suitedMonoCecilPdbPath, existMonoCecilPdbPath) ? true : bInjectionToolUpdated;
         bInjectionToolUpdated = TryUpdate(suitedMonoCecilMdbPath, existMonoCecilMdbPath) ? true : bInjectionToolUpdated;
+#endif
         TryUpdate(suitedMonoCecilToolPath, existMonoCecilToolPath);
         EnableSymbols = true;
 
