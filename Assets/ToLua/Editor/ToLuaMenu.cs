@@ -1325,11 +1325,7 @@ public static class ToLuaMenu
         bool EnableSymbols = false;
         if (UpdateMonoCecil(ref EnableSymbols) != -1)
         {
-#if UNITY_4_6 || UNITY_4_7
 			BuildTargetGroup curBuildTargetGroup = EditorUserBuildSettings.selectedBuildTargetGroup;
-#else
-			BuildTargetGroup curBuildTargetGroup = BuildPipeline.GetBuildTargetGroup(EditorUserBuildSettings.activeBuildTarget);
-#endif
 			string existSymbols = PlayerSettings.GetScriptingDefineSymbolsForGroup(curBuildTargetGroup);
 			if (!existSymbols.Contains("ENABLE_LUA_INJECTION"))
 			{
@@ -1351,11 +1347,7 @@ public static class ToLuaMenu
             return;
         }
 
-#if UNITY_4_6 || UNITY_4_7
 		BuildTargetGroup curBuildTargetGroup = EditorUserBuildSettings.selectedBuildTargetGroup;
-#else
-		BuildTargetGroup curBuildTargetGroup = BuildPipeline.GetBuildTargetGroup(EditorUserBuildSettings.activeBuildTarget);
-#endif
         string existSymbols = PlayerSettings.GetScriptingDefineSymbolsForGroup(curBuildTargetGroup);
         PlayerSettings.SetScriptingDefineSymbolsForGroup(curBuildTargetGroup, existSymbols.Replace("ENABLE_LUA_INJECTION", ""));
         Debug.Log("Lua Injection Removed!");
@@ -1391,7 +1383,7 @@ public static class ToLuaMenu
         string suitedMonoCecilToolPath = directory + "Unity.CecilTools.dll";
 
         if (!File.Exists(suitedMonoCecilPath)
-#if !UNITY_4_6 && !UNITY_4_7
+#if UNITY_5_1 || UNITY_5_2 || UNITY_5_3 || UNITY_5_3_OR_NEWER
             && !File.Exists(suitedMonoCecilMdbPath)
             && !File.Exists(suitedMonoCecilPdbPath)
 #endif
@@ -1409,12 +1401,20 @@ public static class ToLuaMenu
         string existMonoCecilMdbPath = injectionToolPath + Path.GetFileName(suitedMonoCecilMdbPath);
         string existMonoCecilToolPath = injectionToolPath + Path.GetFileName(suitedMonoCecilToolPath);
 
-        bInjectionToolUpdated = TryUpdate(suitedMonoCecilPath, existMonoCecilPath) ? true : bInjectionToolUpdated;
-#if !UNITY_4_6 && !UNITY_4_7
-		bInjectionToolUpdated = TryUpdate(suitedMonoCecilPdbPath, existMonoCecilPdbPath) ? true : bInjectionToolUpdated;
-        bInjectionToolUpdated = TryUpdate(suitedMonoCecilMdbPath, existMonoCecilMdbPath) ? true : bInjectionToolUpdated;
+        try
+        {
+            bInjectionToolUpdated = TryUpdate(suitedMonoCecilPath, existMonoCecilPath) ? true : bInjectionToolUpdated;
+#if UNITY_5_1 || UNITY_5_2 || UNITY_5_3 || UNITY_5_3_OR_NEWER
+            bInjectionToolUpdated = TryUpdate(suitedMonoCecilPdbPath, existMonoCecilPdbPath) ? true : bInjectionToolUpdated;
+            bInjectionToolUpdated = TryUpdate(suitedMonoCecilMdbPath, existMonoCecilMdbPath) ? true : bInjectionToolUpdated;
 #endif
-        TryUpdate(suitedMonoCecilToolPath, existMonoCecilToolPath);
+            TryUpdate(suitedMonoCecilToolPath, existMonoCecilToolPath);
+        }
+        catch (Exception e)
+        {
+            Debug.LogError(e.ToString());
+            return -1;
+        }
         EnableSymbols = true;
 
         return bInjectionToolUpdated ? 1 : 0;
@@ -1433,29 +1433,21 @@ public static class ToLuaMenu
 
     static string GetFileContentMD5(string file)
     {
-        try
-        {
-			if (!File.Exists(file))
-			{
-				return string.Empty;
-			}
+		if (!File.Exists(file))
+		{
+			return string.Empty;
+		}
 
-            FileStream fs = new FileStream(file, FileMode.Open);
-            System.Security.Cryptography.MD5 md5 = new System.Security.Cryptography.MD5CryptoServiceProvider();
-            byte[] retVal = md5.ComputeHash(fs);
-            fs.Close();
+        FileStream fs = new FileStream(file, FileMode.Open);
+        System.Security.Cryptography.MD5 md5 = new System.Security.Cryptography.MD5CryptoServiceProvider();
+        byte[] retVal = md5.ComputeHash(fs);
+        fs.Close();
 
-            StringBuilder sb = StringBuilderCache.Acquire();
-            for (int i = 0; i < retVal.Length; i++)
-            {
-                sb.Append(retVal[i].ToString("x2"));
-            }
-            return StringBuilderCache.GetStringAndRelease(sb);
-        }
-        catch (System.Exception ex)
+        StringBuilder sb = StringBuilderCache.Acquire();
+        for (int i = 0; i < retVal.Length; i++)
         {
-            Debugger.LogError("Md5file() fail, error:" + ex.Message);
-            return string.Empty;
+            sb.Append(retVal[i].ToString("x2"));
         }
+        return StringBuilderCache.GetStringAndRelease(sb);
     }
 }
