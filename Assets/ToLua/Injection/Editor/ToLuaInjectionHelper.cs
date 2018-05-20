@@ -168,7 +168,7 @@ public static class ToLuaInjectionHelper
     public static bool IsGenericMethodDefinition(this MethodDefinition md)
     {
         if (md.HasGenericParameters 
-#if !UNITY_4_6
+#if !UNITY_4_6 && !UNITY_4_7
 		    || md.ContainsGenericParameter
 #endif
 		    )

@@ -1323,9 +1323,9 @@ public static class ToLuaMenu
     static void EnableLuaInjection()
     {
         bool EnableSymbols = false;
-        if (UpdateMonoCecil(ref EnableSymbols))
+        if (UpdateMonoCecil(ref EnableSymbols) != -1)
         {
-#if UNITY_4_6
+#if UNITY_4_6 || UNITY_4_7
 			BuildTargetGroup curBuildTargetGroup = EditorUserBuildSettings.selectedBuildTargetGroup;
 #else
 			BuildTargetGroup curBuildTargetGroup = BuildPipeline.GetBuildTargetGroup(EditorUserBuildSettings.activeBuildTarget);
@@ -1351,7 +1351,7 @@ public static class ToLuaMenu
             return;
         }
 
-#if UNITY_4_6
+#if UNITY_4_6 || UNITY_4_7
 		BuildTargetGroup curBuildTargetGroup = EditorUserBuildSettings.selectedBuildTargetGroup;
 #else
 		BuildTargetGroup curBuildTargetGroup = BuildPipeline.GetBuildTargetGroup(EditorUserBuildSettings.activeBuildTarget);
@@ -1361,7 +1361,7 @@ public static class ToLuaMenu
         Debug.Log("Lua Injection Removed!");
     }
 
-    public static bool UpdateMonoCecil(ref bool EnableSymbols)
+    public static int UpdateMonoCecil(ref bool EnableSymbols)
     {
         string appFileName = Environment.GetCommandLineArgs()[0];
         string appPath = Path.GetDirectoryName(appFileName);
@@ -1391,7 +1391,7 @@ public static class ToLuaMenu
         string suitedMonoCecilToolPath = directory + "Unity.CecilTools.dll";
 
         if (!File.Exists(suitedMonoCecilPath)
-#if !UNITY_4_6
+#if !UNITY_4_6 && !UNITY_4_7
             && !File.Exists(suitedMonoCecilMdbPath)
             && !File.Exists(suitedMonoCecilPdbPath)
 #endif
@@ -1399,7 +1399,7 @@ public static class ToLuaMenu
         {
             EnableSymbols = false;
             Debug.Log("Haven't found Mono.Cecil.dll!Symbols Will Be Disabled");
-            return false;
+            return -1;
         }
 
         bool bInjectionToolUpdated = false;
@@ -1410,14 +1410,14 @@ public static class ToLuaMenu
         string existMonoCecilToolPath = injectionToolPath + Path.GetFileName(suitedMonoCecilToolPath);
 
         bInjectionToolUpdated = TryUpdate(suitedMonoCecilPath, existMonoCecilPath) ? true : bInjectionToolUpdated;
-#if !UNITY_4_6
-        bInjectionToolUpdated = TryUpdate(suitedMonoCecilPdbPath, existMonoCecilPdbPath) ? true : bInjectionToolUpdated;
+#if !UNITY_4_6 && !UNITY_4_7
+		bInjectionToolUpdated = TryUpdate(suitedMonoCecilPdbPath, existMonoCecilPdbPath) ? true : bInjectionToolUpdated;
         bInjectionToolUpdated = TryUpdate(suitedMonoCecilMdbPath, existMonoCecilMdbPath) ? true : bInjectionToolUpdated;
 #endif
         TryUpdate(suitedMonoCecilToolPath, existMonoCecilToolPath);
         EnableSymbols = true;
 
-        return bInjectionToolUpdated;
+        return bInjectionToolUpdated ? 1 : 0;
     }
 
     static bool TryUpdate(string srcPath, string destPath)
@@ -1435,6 +1435,11 @@ public static class ToLuaMenu
     {
         try
         {
+			if (!File.Exists(file))
+			{
+				return string.Empty;
+			}
+
             FileStream fs = new FileStream(file, FileMode.Open);
             System.Security.Cryptography.MD5 md5 = new System.Security.Cryptography.MD5CryptoServiceProvider();
             byte[] retVal = md5.ComputeHash(fs);
