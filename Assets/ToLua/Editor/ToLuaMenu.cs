@@ -1318,14 +1318,14 @@ public static class ToLuaMenu
         bool EnableSymbols = false;
         if (UpdateMonoCecil(ref EnableSymbols) != -1)
         {
-			BuildTargetGroup curBuildTargetGroup = EditorUserBuildSettings.selectedBuildTargetGroup;
-			string existSymbols = PlayerSettings.GetScriptingDefineSymbolsForGroup(curBuildTargetGroup);
-			if (!existSymbols.Contains("ENABLE_LUA_INJECTION"))
-			{
-				PlayerSettings.SetScriptingDefineSymbolsForGroup(curBuildTargetGroup, existSymbols + ";ENABLE_LUA_INJECTION");
-			}
+            BuildTargetGroup curBuildTargetGroup = EditorUserBuildSettings.selectedBuildTargetGroup;
+            string existSymbols = PlayerSettings.GetScriptingDefineSymbolsForGroup(curBuildTargetGroup);
+            if (!existSymbols.Contains("ENABLE_LUA_INJECTION"))
+            {
+                PlayerSettings.SetScriptingDefineSymbolsForGroup(curBuildTargetGroup, existSymbols + ";ENABLE_LUA_INJECTION");
+            }
 
-			AssetDatabase.Refresh();
+            AssetDatabase.Refresh();
         }
     }
 
@@ -1340,7 +1340,7 @@ public static class ToLuaMenu
             return;
         }
 
-		BuildTargetGroup curBuildTargetGroup = EditorUserBuildSettings.selectedBuildTargetGroup;
+        BuildTargetGroup curBuildTargetGroup = EditorUserBuildSettings.selectedBuildTargetGroup;
         string existSymbols = PlayerSettings.GetScriptingDefineSymbolsForGroup(curBuildTargetGroup);
         PlayerSettings.SetScriptingDefineSymbolsForGroup(curBuildTargetGroup, existSymbols.Replace("ENABLE_LUA_INJECTION", ""));
         Debug.Log("Lua Injection Removed!");
@@ -1426,10 +1426,10 @@ public static class ToLuaMenu
 
     static string GetFileContentMD5(string file)
     {
-		if (!File.Exists(file))
-		{
-			return string.Empty;
-		}
+        if (!File.Exists(file))
+        {
+            return string.Empty;
+        }
 
         FileStream fs = new FileStream(file, FileMode.Open);
         System.Security.Cryptography.MD5 md5 = new System.Security.Cryptography.MD5CryptoServiceProvider();
