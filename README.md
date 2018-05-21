@@ -79,6 +79,7 @@ https://github.com/LabOfHoward/unity_tolua-_zerobrane_api<br>
 * 当lua出现异常，能够同时捕获c#端和lua端堆栈，便于调试 <br>
 * print信息，在编辑器点击日志, 能自动打开对应lua文件 <br>
 * 支持unity所有版本 <br>
+* **支持Lua hook C#相代码实现，一定程度上支持利用Lua代码修改C#端代码的bug**（[暖更新使用说明](https://zhuanlan.zhihu.com/p/35124260)） <br>
 
 # 快速入门
 在CustomSetting.cs中添加需要导出的类或者委托，类加入到customTypeList列表，委托加入到customDelegateList列表 <br>
