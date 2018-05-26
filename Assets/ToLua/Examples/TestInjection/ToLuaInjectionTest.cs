@@ -80,11 +80,12 @@ public class ToLuaInjectionTest : BaseTest
         Debug.Log("CS:TestOverload");
     }
 
+#pragma warning disable 0219
     [LuaInterface.NoToLua]
     public void NoInject(bool param1, int param2)
     {
         int a = 0;
-        int b = ++a;
+        int b = ++a;        
     }
 
     public void Inject(bool param1, int param2)
@@ -92,6 +93,7 @@ public class ToLuaInjectionTest : BaseTest
         int a = 0;
         int b = ++a;
     }
+#pragma warning restore 0219
 
     public IEnumerator TestCoroutine(float delay)
     {
