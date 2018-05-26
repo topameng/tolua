@@ -79,7 +79,7 @@ public static class ToLuaInjection
             return;
         }
 
-        bool bInjectInterupted = !LoadBlackList() || ToLuaMenu.UpdateMonoCecil(ref EnableSymbols) || !LoadBridgeEditorInfo();
+        bool bInjectInterupted = !LoadBlackList() || ToLuaMenu.UpdateMonoCecil(ref EnableSymbols) != 0 || !LoadBridgeEditorInfo();
         if (!bInjectInterupted)
         {
             CacheInjectableTypeGroup();
