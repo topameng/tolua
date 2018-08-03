@@ -59,6 +59,7 @@ namespace LuaInterface
         public readonly Dictionary<object, int> objectsBackMap = new Dictionary<object, int>(new CompareObject());
         public readonly LuaObjectPool objects = new LuaObjectPool();
         private List<DelayGC> gcList = new List<DelayGC>();
+        private Action<object> removeDestroyedGameObject;
 
 #if !MULTI_STATE
         private static ObjectTranslator _translator = null;
@@ -70,6 +71,7 @@ namespace LuaInterface
 #if !MULTI_STATE
             _translator = this;
 #endif
+            removeDestroyedGameObject = (obj) => { objectsBackMap.Remove(obj); };
         }
 
         public int AddObject(object obj)
@@ -231,6 +233,11 @@ namespace LuaInterface
                     gcList[i].time = time;
                 }
             }
+        }
+
+        public void StepCollect()
+        {
+            objects.StepCollect(removeDestroyedGameObject);
         }
 
         public void Dispose()
