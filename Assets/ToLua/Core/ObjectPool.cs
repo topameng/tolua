@@ -26,8 +26,8 @@ using System.Collections.Generic;
 namespace LuaInterface
 {
     public class LuaObjectPool
-    {        
-        class PoolNode
+    {
+		private class PoolNode
         {
             public int index;
             public object obj;
@@ -110,7 +110,7 @@ namespace LuaInterface
             if (pos > 0 && pos < count)
             {
                 object o = list[pos].obj;
-                list[pos].obj = null;                
+                list[pos].obj = null;
                 list[pos].index = head.index;
                 head.index = pos;
 
@@ -132,7 +132,7 @@ namespace LuaInterface
             return null;
         }
 
-        public void StepCollect(Action<object> listener)
+        public void StepCollect(Action<object, int> collectListener)
         {
             ++collectedIndex;
             for (int i = 0; i < collectStep; ++i)
@@ -149,9 +149,9 @@ namespace LuaInterface
                 if (o != null && o.Equals(null))
                 {
                     node.obj = null;
-                    if (listener != null)
+                    if (collectListener != null)
                     {
-                        listener(o);
+                        collectListener(o, collectedIndex);
                     }
                 }
             }

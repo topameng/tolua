@@ -56,10 +56,9 @@ namespace LuaInterface
         }
 
         public bool LogGC { get; set; }
-        public readonly Dictionary<object, int> objectsBackMap = new Dictionary<object, int>(new CompareObject());
+        public readonly Dictionary<object, int> objectsBackMap = new Dictionary<object, int>(257, new CompareObject());
         public readonly LuaObjectPool objects = new LuaObjectPool();
         private List<DelayGC> gcList = new List<DelayGC>();
-        private Action<object> removeDestroyedGameObject;
 
 #if !MULTI_STATE
         private static ObjectTranslator _translator = null;
@@ -71,7 +70,6 @@ namespace LuaInterface
 #if !MULTI_STATE
             _translator = this;
 #endif
-            removeDestroyedGameObject = (obj) => { objectsBackMap.Remove(obj); };
         }
 
         public int AddObject(object obj)
@@ -95,8 +93,8 @@ namespace LuaInterface
 #endif
         }
 
-        //fixed 枚举唯一性问题（对象唯一，没有实现__eq操作符）
-        void RemoveObject(object o, int udata)
+		//fixed 枚举唯一性问题（对象唯一，没有实现__eq操作符）
+		private void RemoveObject(object o, int udata)
         {
             int index = -1;
             
@@ -108,7 +106,7 @@ namespace LuaInterface
 
         //lua gc一个对象(lua 库不再引用，但不代表c#没使用)
         public void RemoveObject(int udata)
-        {            
+        {
             //只有lua gc才能移除
             object o = objects.Remove(udata);
 
@@ -119,10 +117,12 @@ namespace LuaInterface
                     RemoveObject(o, udata);
                 }
 
+#if UNITY_EDITOR || APP_DEBUG
                 if (LogGC)
                 {
                     Debugger.Log("gc object {0}, id {1}", o, udata);
                 }
+#endif
             }
         }
 
@@ -143,12 +143,14 @@ namespace LuaInterface
                     RemoveObject(o, udata);
                 }
 
+#if UNITY_EDITOR || APP_DEBUG
                 if (LogGC)
                 {
                     Debugger.Log("destroy object {0}, id {1}", o, udata);
                 }
-            }
-        }
+#endif
+			}
+		}
 
         //Unity Object 延迟删除
         public void DelayDestroy(int id, float time)
@@ -177,7 +179,7 @@ namespace LuaInterface
             objects.Replace(index, o);            
         }
 
-        bool RemoveFromGCList(int id)
+		private bool RemoveFromGCList(int id)
         {
             int index = gcList.FindIndex((p) => { return p.id == id; });
 
@@ -189,9 +191,9 @@ namespace LuaInterface
 
             return false;
         }
-        
-        //延迟删除处理
-        void DestroyUnityObject(int udata, UnityEngine.Object obj)
+
+		//延迟删除处理
+		private void DestroyUnityObject(int udata, UnityEngine.Object obj)
         {
             object o = objects.TryGetValue(udata);
 
@@ -201,13 +203,15 @@ namespace LuaInterface
                 //一定不能Remove, 因为GC还可能再来一次
                 objects.Destroy(udata);     
 
+#if UNITY_EDITOR || APP_DEBUG
                 if (LogGC)
                 {
                     Debugger.Log("destroy object {0}, id {1}", o, udata);
                 }
-            }
+#endif
+			}
 
-            UnityEngine.Object.Destroy(obj);
+			UnityEngine.Object.Destroy(obj);
         }
 
         public void Collect()
@@ -237,7 +241,7 @@ namespace LuaInterface
 
         public void StepCollect()
         {
-            objects.StepCollect(removeDestroyedGameObject);
+            objects.StepCollect(RemoveObject);
         }
 
         public void Dispose()
