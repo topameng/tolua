@@ -26,8 +26,8 @@ using System.Collections.Generic;
 namespace LuaInterface
 {
     public class LuaObjectPool
-    {
-		private class PoolNode
+    {        
+        class PoolNode
         {
             public int index;
             public object obj;
@@ -110,7 +110,7 @@ namespace LuaInterface
             if (pos > 0 && pos < count)
             {
                 object o = list[pos].obj;
-                list[pos].obj = null;
+                list[pos].obj = null;                
                 list[pos].index = head.index;
                 head.index = pos;
 
