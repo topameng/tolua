@@ -82,11 +82,6 @@ public static class ToLuaMenu
         typeof(DelegateFactory),                            //无需导出，导出类支持lua函数转换为委托。如UIEventListener.OnClick(luafunc)
     };
 
-    public static HashSet<Type> lazyFeatureInvalidList = new HashSet<Type>
-    {
-        typeof(UnityEngine.Time),
-    };
-
     //可以导出的内部支持类型
     public static List<Type> baseType = new List<Type>
     {
@@ -371,15 +366,6 @@ public static class ToLuaMenu
         for (int i = 0; i < list.Length; i++)
         {
             ToLuaExport.Clear();
-            if (lazyFeatureInvalidList.Contains(list[i].type))
-            {
-                ToLuaExport.enableLazyFeature = false;
-            }
-            else
-            {
-                ToLuaExport.enableLazyFeature = true;
-            }
-
             ToLuaExport.className = list[i].name;
             ToLuaExport.type = list[i].type;
             ToLuaExport.isStaticClass = list[i].IsStatic;            
@@ -1269,15 +1255,6 @@ public static class ToLuaMenu
         for (int i = 0; i < list.Length; i++)
         {
             ToLuaExport.Clear();
-            if (lazyFeatureInvalidList.Contains(list[i].type))
-            {
-                ToLuaExport.enableLazyFeature = false;
-            }
-            else
-            {
-                ToLuaExport.enableLazyFeature = true;
-            }
-
             ToLuaExport.className = list[i].name;
             ToLuaExport.type = list[i].type;
             ToLuaExport.isStaticClass = list[i].IsStatic;
@@ -1338,16 +1315,16 @@ public static class ToLuaMenu
     [MenuItem("Lua/Enable Lua Injection &e", false, 102)]
     static void EnableLuaInjection()
     {
-        BuildTargetGroup curBuildTargetGroup = BuildPipeline.GetBuildTargetGroup(EditorUserBuildSettings.activeBuildTarget);
-        string existSymbols = PlayerSettings.GetScriptingDefineSymbolsForGroup(curBuildTargetGroup);
-        if (!existSymbols.Contains("ENABLE_LUA_INJECTION"))
-        {
-            PlayerSettings.SetScriptingDefineSymbolsForGroup(curBuildTargetGroup, existSymbols + ";ENABLE_LUA_INJECTION");
-}
-
         bool EnableSymbols = false;
-        if (UpdateMonoCecil(ref EnableSymbols))
+        if (UpdateMonoCecil(ref EnableSymbols) != -1)
         {
+            BuildTargetGroup curBuildTargetGroup = EditorUserBuildSettings.selectedBuildTargetGroup;
+            string existSymbols = PlayerSettings.GetScriptingDefineSymbolsForGroup(curBuildTargetGroup);
+            if (!existSymbols.Contains("ENABLE_LUA_INJECTION"))
+            {
+                PlayerSettings.SetScriptingDefineSymbolsForGroup(curBuildTargetGroup, existSymbols + ";ENABLE_LUA_INJECTION");
+            }
+
             AssetDatabase.Refresh();
         }
     }
@@ -1363,13 +1340,13 @@ public static class ToLuaMenu
             return;
         }
 
-        BuildTargetGroup curBuildTargetGroup = BuildPipeline.GetBuildTargetGroup(EditorUserBuildSettings.activeBuildTarget);
+        BuildTargetGroup curBuildTargetGroup = EditorUserBuildSettings.selectedBuildTargetGroup;
         string existSymbols = PlayerSettings.GetScriptingDefineSymbolsForGroup(curBuildTargetGroup);
         PlayerSettings.SetScriptingDefineSymbolsForGroup(curBuildTargetGroup, existSymbols.Replace("ENABLE_LUA_INJECTION", ""));
         Debug.Log("Lua Injection Removed!");
     }
 
-    public static bool UpdateMonoCecil(ref bool EnableSymbols)
+    public static int UpdateMonoCecil(ref bool EnableSymbols)
     {
         string appFileName = Environment.GetCommandLineArgs()[0];
         string appPath = Path.GetDirectoryName(appFileName);
@@ -1399,13 +1376,15 @@ public static class ToLuaMenu
         string suitedMonoCecilToolPath = directory + "Unity.CecilTools.dll";
 
         if (!File.Exists(suitedMonoCecilPath)
+#if UNITY_5_1 || UNITY_5_2 || UNITY_5_3 || UNITY_5_3_OR_NEWER
             && !File.Exists(suitedMonoCecilMdbPath)
             && !File.Exists(suitedMonoCecilPdbPath)
+#endif
         )
         {
             EnableSymbols = false;
             Debug.Log("Haven't found Mono.Cecil.dll!Symbols Will Be Disabled");
-            return false;
+            return -1;
         }
 
         bool bInjectionToolUpdated = false;
@@ -1415,13 +1394,23 @@ public static class ToLuaMenu
         string existMonoCecilMdbPath = injectionToolPath + Path.GetFileName(suitedMonoCecilMdbPath);
         string existMonoCecilToolPath = injectionToolPath + Path.GetFileName(suitedMonoCecilToolPath);
 
-        bInjectionToolUpdated = TryUpdate(suitedMonoCecilPath, existMonoCecilPath) ? true : bInjectionToolUpdated;
-        bInjectionToolUpdated = TryUpdate(suitedMonoCecilPdbPath, existMonoCecilPdbPath) ? true : bInjectionToolUpdated;
-        bInjectionToolUpdated = TryUpdate(suitedMonoCecilMdbPath, existMonoCecilMdbPath) ? true : bInjectionToolUpdated;
-        TryUpdate(suitedMonoCecilToolPath, existMonoCecilToolPath);
+        try
+        {
+            bInjectionToolUpdated = TryUpdate(suitedMonoCecilPath, existMonoCecilPath) ? true : bInjectionToolUpdated;
+#if UNITY_5_1 || UNITY_5_2 || UNITY_5_3 || UNITY_5_3_OR_NEWER
+            bInjectionToolUpdated = TryUpdate(suitedMonoCecilPdbPath, existMonoCecilPdbPath) ? true : bInjectionToolUpdated;
+            bInjectionToolUpdated = TryUpdate(suitedMonoCecilMdbPath, existMonoCecilMdbPath) ? true : bInjectionToolUpdated;
+#endif
+            TryUpdate(suitedMonoCecilToolPath, existMonoCecilToolPath);
+        }
+        catch (Exception e)
+        {
+            Debug.LogError(e.ToString());
+            return -1;
+        }
         EnableSymbols = true;
 
-        return bInjectionToolUpdated;
+        return bInjectionToolUpdated ? 1 : 0;
     }
 
     static bool TryUpdate(string srcPath, string destPath)
@@ -1437,24 +1426,21 @@ public static class ToLuaMenu
 
     static string GetFileContentMD5(string file)
     {
-        try
+        if (!File.Exists(file))
         {
-            FileStream fs = new FileStream(file, FileMode.Open);
-            System.Security.Cryptography.MD5 md5 = new System.Security.Cryptography.MD5CryptoServiceProvider();
-            byte[] retVal = md5.ComputeHash(fs);
-            fs.Close();
-
-            StringBuilder sb = StringBuilderCache.Acquire();
-            for (int i = 0; i < retVal.Length; i++)
-            {
-                sb.Append(retVal[i].ToString("x2"));
-            }
-            return StringBuilderCache.GetStringAndRelease(sb);
-        }
-        catch (System.Exception ex)
-        {
-            Debugger.LogError("Md5file() fail, error:" + ex.Message);
             return string.Empty;
         }
+
+        FileStream fs = new FileStream(file, FileMode.Open);
+        System.Security.Cryptography.MD5 md5 = new System.Security.Cryptography.MD5CryptoServiceProvider();
+        byte[] retVal = md5.ComputeHash(fs);
+        fs.Close();
+
+        StringBuilder sb = StringBuilderCache.Acquire();
+        for (int i = 0; i < retVal.Length; i++)
+        {
+            sb.Append(retVal[i].ToString("x2"));
+        }
+        return StringBuilderCache.GetStringAndRelease(sb);
     }
 }
