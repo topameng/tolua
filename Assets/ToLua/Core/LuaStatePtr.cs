@@ -221,7 +221,10 @@ namespace LuaInterface
 
         public IntPtr LuaToLString(int index, out int len)
         {
-            return LuaDLL.tolua_tolstring(L, index, out len);
+            UIntPtr crossPlatformUInt;
+            IntPtr ret = LuaDLL.tolua_tolstring(L, index, out crossPlatformUInt);
+            len = (int)crossPlatformUInt.ToUInt32();
+            return ret;
         }
 
         public IntPtr LuaToCFunction(int idx)
