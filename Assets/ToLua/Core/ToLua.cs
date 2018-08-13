@@ -1319,8 +1319,10 @@ namespace LuaInterface
                 }
                 else if (t == typeof(LuaByteBuffer))
                 {
-                    int len = 0;
-                    IntPtr source = LuaDLL.tolua_tolstring(L, stackPos, out len);
+                    UIntPtr crossPlatformUInt;
+                    IntPtr source = LuaDLL.tolua_tolstring(L, stackPos, out crossPlatformUInt);
+                    int len = (int)crossPlatformUInt.ToUInt32();
+
                     return new LuaByteBuffer(source, len);
                 }
                 else if (t == typeof(Vector3))

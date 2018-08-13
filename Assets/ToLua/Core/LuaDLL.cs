@@ -328,8 +328,11 @@ namespace LuaInterface
         }
 
         public static IntPtr lua_tolstring(IntPtr luaState, int index, out int strLen)               //[-0, +0, m]
-        {            
-            return tolua_tolstring(luaState, index, out strLen);
+        {
+            UIntPtr crossPlatformUInt;
+            IntPtr ret = tolua_tolstring(luaState, index, out crossPlatformUInt);
+            strLen = (int)crossPlatformUInt.ToUInt32();
+            return ret;
         }
 
         public static int lua_objlen(IntPtr luaState, int idx)
@@ -589,8 +592,9 @@ namespace LuaInterface
 
         public static string lua_tostring(IntPtr luaState, int index)
         {
-            int len = 0;
-            IntPtr str = tolua_tolstring(luaState, index, out len);
+            UIntPtr crossPlatformUInt;
+            IntPtr str = tolua_tolstring(luaState, index, out crossPlatformUInt);
+            int len = (int)crossPlatformUInt.ToUInt32();
 
             if (str != IntPtr.Zero)
             {
@@ -708,7 +712,9 @@ namespace LuaInterface
 
         public static string luaL_checklstring(IntPtr L, int numArg, out int len)
         {
-            IntPtr str = tolua_tolstring(L, numArg, out len);
+            UIntPtr crossPlatformUInt;
+            IntPtr str = tolua_tolstring(L, numArg, out crossPlatformUInt);
+            len = (int)crossPlatformUInt.ToUInt32();
 
             if (str == IntPtr.Zero)
             {
@@ -1169,7 +1175,7 @@ namespace LuaInterface
         public static extern int tolua_tointeger(IntPtr luaState, int idx);
 
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr tolua_tolstring(IntPtr luaState, int index, out int strLen);
+        public static extern IntPtr tolua_tolstring(IntPtr luaState, int index, out UIntPtr strLen);
 
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
         public static extern void tolua_pushlstring(IntPtr luaState, byte[] str, int size);
