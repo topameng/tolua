@@ -2632,7 +2632,7 @@ namespace LuaInterface
 
         public static void PushSealed<T>(IntPtr L, T o)
         {
-            if (o == null)
+            if (o == null || o.Equals(null))
             {
                 LuaDLL.lua_pushnil(L);
             }
