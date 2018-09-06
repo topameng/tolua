@@ -1710,9 +1710,6 @@ namespace LuaInterface
 
         public int Collect()
         {
-#if ENABLE_STEP_COLLECT
-            translator.StepCollect();
-#endif
             int count = gcList.Count;
 
             if (count > 0)
@@ -1739,6 +1736,11 @@ namespace LuaInterface
             subList.Clear();
             translator.Collect();
             return 0;
+        }
+
+        public void StepCollect()
+        {
+            translator.StepCollect();
         }
 
         public void RefreshDelegateMap()
