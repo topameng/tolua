@@ -1,4 +1,4 @@
-﻿#if ENABLE_LUA_INJECTION
+#if ENABLE_LUA_INJECTION
 using System;
 using System.IO;
 using System.Xml;
@@ -66,12 +66,9 @@ public static class ToLuaInjection
     {
         LoadAndCheckAssembly(true);
         InjectAll();
-
-        AppDomain.CurrentDomain.DomainUnload += DomainUnload;
     }
 
-    [PostProcessScene]
-    public static void InjectAll()
+    static void InjectAll()
     {
         var injectionStatus = EditorPrefs.GetInt(Application.dataPath + "WaitForInjection", 0);
         if (Application.isPlaying || EditorApplication.isCompiling || injectionStatus == 0)
@@ -89,17 +86,30 @@ public static class ToLuaInjection
         }
     }
 
-    static void DomainUnload(object sender, System.EventArgs e)
+    [PostProcessBuildAttribute()]
+    static void OnPostprocessBuild(BuildTarget target, string pathToBuiltProject)
     {
-        Debug.Log("System_AppDomain_CurrentDomain_DomainUnload");
+        var injectionStatus = EditorPrefs.GetInt(Application.dataPath + "WaitForInjection", 0);
+        if (injectionStatus == 0)
+        {
+            Debug.LogError("Inject Failed!!!");
+        }
+        EditorPrefs.SetInt(Application.dataPath + "WaitForInjection", 0);
+    }
+
+    [PostProcessScene]
+    static void OnPostProcessScene()
+    {
         if (BuildPipeline.isBuildingPlayer)
         {
             EditorPrefs.SetInt(Application.dataPath + "WaitForInjection", 1);
         }
+
+        InjectAll();
     }
 
     [MenuItem("Lua/Inject All &i", false, 5)]
-    public static void InjectByMenu()
+    static void InjectByMenu()
     {
         if (Application.isPlaying)
         {
@@ -173,8 +183,6 @@ public static class ToLuaInjection
                 Debug.Log("Lua Injection Finished!");
                 EditorPrefs.SetInt(Application.dataPath + "InjectStatus", 1);
             }
-
-            EditorPrefs.SetInt(Application.dataPath + "WaitForInjection", 0);
         }
         catch (Exception e)
         {
