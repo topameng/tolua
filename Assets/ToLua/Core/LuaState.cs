@@ -1720,6 +1720,8 @@ namespace LuaInterface
 
         public int Collect()
         {
+            translator.StepCollect();
+
             int count = gcList.Count;
 
             if (count > 0)
