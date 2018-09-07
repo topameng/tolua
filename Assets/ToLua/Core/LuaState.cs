@@ -1738,11 +1738,6 @@ namespace LuaInterface
             return 0;
         }
 
-        public void StepCollect()
-        {
-            translator.StepCollect();
-        }
-
         public void RefreshDelegateMap()
         {
             List<long> list = new List<long>();

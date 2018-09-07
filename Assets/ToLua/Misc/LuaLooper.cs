@@ -97,9 +97,6 @@ public class LuaLooper : MonoBehaviour
 
         luaState.LuaPop(1);
         luaState.Collect();
-#if ENABLE_STEP_COLLECT
-        luaState.StepCollect();
-#endif
 #if UNITY_EDITOR
         luaState.CheckTop();
 #endif
