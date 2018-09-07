@@ -964,7 +964,7 @@ public static class ToLuaInjection
         foreach (var param in method.Parameters)
         {
             paramsTypeNameBuilder
-                .Append("_")
+                .Append("-")
                 .Append(ToLuaInjectionHelper.GetTypeName(param.ParameterType));
         }
 
