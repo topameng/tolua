@@ -108,6 +108,15 @@ public static class ToLuaInjection
         InjectAll();
     }
 
+    [DidReloadScripts]
+    static void OnDidReloadScripts()
+    {
+        if (!BuildPipeline.isBuildingPlayer)
+        {
+            EditorPrefs.SetInt(Application.dataPath + "WaitForInjection", 0);
+        }
+    }
+	
     [MenuItem("Lua/Inject All &i", false, 5)]
     static void InjectByMenu()
     {
