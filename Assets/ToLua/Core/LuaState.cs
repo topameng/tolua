@@ -2019,6 +2019,7 @@ namespace LuaInterface
             if (injectionState == this)
             {
                 injectionState = null;
+                LuaInjectionStation.Clear();
             }
 
 #if UNITY_EDITOR
