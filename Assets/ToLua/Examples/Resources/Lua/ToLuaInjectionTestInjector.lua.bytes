@@ -82,33 +82,33 @@ ToLuaInjectionTestInjector.TestRef = function()
 	-------------------------------------------------------
 end
 
-ToLuaInjectionTestInjector.TestOverload_int_bool = function()
+ToLuaInjectionTestInjector["TestOverload-int-bool"] = function()
 	return function (self, count, state)
-		print("Lua Inject TestOverload_int_bool " .. tostring(state))
+		print("Lua Inject TestOverload-int-bool " .. tostring(state))
 	end, LuaInterface.InjectType.After
 end
 
-ToLuaInjectionTestInjector["TestOverload_int_bool&"] = function()
+ToLuaInjectionTestInjector["TestOverload-int-bool&"] = function()
 	--return function (self, param1, param2)
-	--	print("Lua Inject TestOverload_int_bool& ")
+	--	print("Lua Inject TestOverload-int-bool& ")
 	--	return {false}
 	--end, LuaInterface.InjectType.After
 	-------------------------------------------------------
 	--return function (self, param1, param2)
-	--	print("Lua Inject TestOverload_int_bool& ")
+	--	print("Lua Inject TestOverload-int-bool& ")
 	--	return {false}
 	--end, LuaInterface.InjectType.Before
 	-------------------------------------------------------
 	return function (self, param1, param2)
-		print("Lua Inject TestOverload_int_bool& ")
+		print("Lua Inject TestOverload-int-bool& ")
 		return {false}
 	end, LuaInterface.InjectType.Replace
 	-------------------------------------------------------
 end
 
-ToLuaInjectionTestInjector.TestOverload_bool_int = function()
+ToLuaInjectionTestInjector["TestOverload-bool-int"] = function()
 	return function (self, param1, param2)
-		print("Lua Inject TestOverload_bool_int " .. param2)
+		print("Lua Inject TestOverload-bool-int " .. param2)
 	end, LuaInterface.InjectType.After
 end
 
