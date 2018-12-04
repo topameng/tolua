@@ -1127,13 +1127,12 @@ namespace LuaInterface
 
                 if (obj != null)
                 {
-                    Type objType = obj.GetType();
-
                     if (obj is T)
                     {
                         return obj;
                     }
 
+                    Type objType = obj.GetType();
                     LuaDLL.luaL_argerror(L, stackPos, string.Format("{0} expected, got {1}", TypeTraits<T>.GetTypeName(), objType.FullName));
                 }
 
