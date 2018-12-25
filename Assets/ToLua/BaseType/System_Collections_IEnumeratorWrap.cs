@@ -73,10 +73,8 @@ public class System_Collections_IEnumeratorWrap
 	{
 		try
 		{
-			int stackTop = LuaDLL.lua_gettop(L);
-			bool lazy = LuaDLL.luaL_checkboolean(L, stackTop);
-			string key = LuaDLL.lua_tostring(L, stackTop - 1);
-			LuaDLL.lua_pop(L, 2);
+			bool lazy = LuaDLL.luaL_checkboolean(L, LuaDLL.lua_upvalueindex(5));
+			string key = LuaDLL.lua_tostring(L, LuaDLL.lua_upvalueindex(4));
 
 			switch (key)
 			{
@@ -98,11 +96,9 @@ public class System_Collections_IEnumeratorWrap
 	{
 		try
 		{
-			int stackTop = LuaDLL.lua_gettop(L);
-			bool getStatus = LuaDLL.luaL_checkboolean(L, stackTop);
-			bool lazy = LuaDLL.luaL_checkboolean(L, stackTop - 1);
-			string key = LuaDLL.lua_tostring(L, stackTop - 2);
-			LuaDLL.lua_pop(L, 3);
+			bool getStatus = LuaDLL.luaL_checkboolean(L, LuaDLL.lua_upvalueindex(6));
+			bool lazy = LuaDLL.luaL_checkboolean(L, LuaDLL.lua_upvalueindex(5));
+			string key = LuaDLL.lua_tostring(L, LuaDLL.lua_upvalueindex(4));
 
 			switch (key)
 			{

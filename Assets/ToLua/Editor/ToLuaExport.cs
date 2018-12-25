@@ -1698,10 +1698,8 @@ public static class ToLuaExport
         sb.AppendLineEx("\t{");
 
         BeginTry();
-        sb.AppendLineEx("\t\t\tint stackTop = LuaDLL.lua_gettop(L);");
-        sb.AppendLineEx("\t\t\tbool lazy = LuaDLL.luaL_checkboolean(L, stackTop);");
-        sb.AppendLineEx("\t\t\tstring key = LuaDLL.lua_tostring(L, stackTop - 1);");
-        sb.AppendLineEx("\t\t\tLuaDLL.lua_pop(L, 2);");
+        sb.AppendLineEx("\t\t\tbool lazy = LuaDLL.luaL_checkboolean(L, LuaDLL.lua_upvalueindex(5));");
+        sb.AppendLineEx("\t\t\tstring key = LuaDLL.lua_tostring(L, LuaDLL.lua_upvalueindex(4));");
         sb.AppendLine();
         sb.AppendLineEx("\t\t\tswitch (key)");
         sb.AppendLineEx("\t\t\t{");
@@ -1782,11 +1780,9 @@ public static class ToLuaExport
         sb.AppendLineEx("\t{");
 
         BeginTry();
-        sb.AppendLineEx("\t\t\tint stackTop = LuaDLL.lua_gettop(L);");
-        sb.AppendLineEx("\t\t\tbool getStatus = LuaDLL.luaL_checkboolean(L, stackTop);");
-        sb.AppendLineEx("\t\t\tbool lazy = LuaDLL.luaL_checkboolean(L, stackTop - 1);");
-        sb.AppendLineEx("\t\t\tstring key = LuaDLL.lua_tostring(L, stackTop - 2);");
-        sb.AppendLineEx("\t\t\tLuaDLL.lua_pop(L, 3);");
+        sb.AppendLineEx("\t\t\tbool getStatus = LuaDLL.luaL_checkboolean(L, LuaDLL.lua_upvalueindex(6));");
+        sb.AppendLineEx("\t\t\tbool lazy = LuaDLL.luaL_checkboolean(L, LuaDLL.lua_upvalueindex(5));");
+        sb.AppendLineEx("\t\t\tstring key = LuaDLL.lua_tostring(L, LuaDLL.lua_upvalueindex(4));");
         sb.AppendLine();
         sb.AppendLineEx("\t\t\tswitch (key)");
         sb.AppendLineEx("\t\t\t{");

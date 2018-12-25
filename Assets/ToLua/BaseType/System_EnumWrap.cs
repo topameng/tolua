@@ -8,7 +8,6 @@ public class System_EnumWrap
 	public static void Register(LuaState L)
 	{
 		IntPtr lazyWrapFunc = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)LazyWrap);
-		IntPtr lazyVarWrapFunc = Marshal.GetFunctionPointerForDelegate((LuaCSFunction)LazyVarWrap);
 		L.BeginClass(typeof(System.Enum), null);
 		L.RegLazyFunction("GetTypeCode", lazyWrapFunc);
 		L.RegLazyFunction("GetValues", lazyWrapFunc);
@@ -327,10 +326,8 @@ public class System_EnumWrap
 	{
 		try
 		{
-			int stackTop = LuaDLL.lua_gettop(L);
-			bool lazy = LuaDLL.luaL_checkboolean(L, stackTop);
-			string key = LuaDLL.lua_tostring(L, stackTop - 1);
-			LuaDLL.lua_pop(L, 2);
+			bool lazy = LuaDLL.luaL_checkboolean(L, LuaDLL.lua_upvalueindex(5));
+			string key = LuaDLL.lua_tostring(L, LuaDLL.lua_upvalueindex(4));
 
 			switch (key)
 			{
@@ -362,28 +359,6 @@ public class System_EnumWrap
 					return ToLua.LazyRegisterFunc(lazy, "ToObject", ToObject, L);
 				case "ToInt":
 					return ToLua.LazyRegisterFunc(lazy, "ToInt", ToInt, L);
-			}
-			return 0;
-		}
-		catch (Exception e)
-		{
-			return LuaDLL.toluaL_exception(L, e);
-		}
-	}
-
-	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int LazyVarWrap(IntPtr L)
-	{
-		try
-		{
-			int stackTop = LuaDLL.lua_gettop(L);
-			bool getStatus = LuaDLL.luaL_checkboolean(L, stackTop);
-			bool lazy = LuaDLL.luaL_checkboolean(L, stackTop - 1);
-			string key = LuaDLL.lua_tostring(L, stackTop - 2);
-			LuaDLL.lua_pop(L, 3);
-
-			switch (key)
-			{
 			}
 			return 0;
 		}
