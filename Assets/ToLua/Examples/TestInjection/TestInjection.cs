@@ -22,7 +22,7 @@ public class TestInjection : MonoBehaviour
     void Start()
     {
         InitGUI();
-#if UNITY_5 || UNITY_2017
+#if UNITY_5 || UNITY_2017_1_OR_NEWER
         Application.logMessageReceived += ShowTips;
 #else
         Application.RegisterLogCallback(ShowTips);
@@ -59,8 +59,8 @@ public class TestInjection : MonoBehaviour
             test.TestOverload(1, ref state);
             Debug.Log("TestOverload ref result:" + state);
             test.TestOverload(state, 1);
-            test.TestRef(ref counter);
-            Debug.Log(string.Format("TestRef return result:{0}; ref result:{1}", test.TestRef(ref counter), counter));
+            int refResult = test.TestRef(ref counter);
+            Debug.Log(string.Format("TestRef return result:{0}; ref result:{1}", refResult, counter));
 
             Debug.Log("Property Get Test:" + test.PropertyTest);
             test.PropertyTest = 2;
@@ -115,7 +115,7 @@ public class TestInjection : MonoBehaviour
 
     void OnApplicationQuit()
     {
-#if UNITY_5 || UNITY_2017
+#if UNITY_5 || UNITY_2017_1_OR_NEWER
         Application.logMessageReceived -= ShowTips;
 #else
         Application.RegisterLogCallback(null);

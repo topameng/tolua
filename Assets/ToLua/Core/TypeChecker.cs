@@ -213,7 +213,8 @@ namespace LuaInterface
 
         public static T ChangeType<T>(object temp, Type type)
         {
-            if (temp.GetType() == monoType)
+            var tempType = temp.GetType();
+            if (tempType == monoType || type.IsAssignableFrom(tempType))
             {
                 return (T)temp;
             }
@@ -225,9 +226,14 @@ namespace LuaInterface
 
         public static object ChangeType(object temp, Type type)
         {
-            if (temp.GetType() == monoType)
+            var tempType = temp.GetType();
+            if (tempType == monoType)
             {
                 return (Type)temp;
+            }
+            else if (type.IsAssignableFrom(tempType))
+            {
+                return temp;
             }
             else
             {

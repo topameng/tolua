@@ -207,6 +207,9 @@ namespace LuaInterface
 
         void OpenBaseLuaLibs()
         {
+#if UNITY_STANDALONE_OSX
+            this["jit"] = false;
+#endif
             DoFile("tolua.lua");            //tolua table名字已经存在了,不能用require
             LuaUnityLibs.OpenLuaLibs(L);
         }
@@ -495,11 +498,6 @@ namespace LuaInterface
             LuaDLL.tolua_function(L, name, fn);            
         }
 
-        public void RegLazyFunction(string name, IntPtr func)
-        {
-            LuaDLL.tolua_lazyfunction(L, name, func);
-        }
-
         public void RegVar(string name, LuaCSFunction get, LuaCSFunction set)
         {            
             IntPtr fget = IntPtr.Zero;
@@ -516,11 +514,6 @@ namespace LuaInterface
             }
 
             LuaDLL.tolua_variable(L, name, fget, fset);
-        }
-
-        public void RegLazyVar(string name, bool get, bool set, IntPtr dispacher)
-        {
-            LuaDLL.tolua_lazyVariable(L, name, get, set, dispacher);
         }
 
         public void RegConstant(string name, double d)
@@ -1750,6 +1743,11 @@ namespace LuaInterface
             return 0;
         }
 
+        public void StepCollect()
+        {
+            translator.StepCollect();
+        }
+
         public void RefreshDelegateMap()
         {
             List<long> list = new List<long>();
@@ -2031,6 +2029,7 @@ namespace LuaInterface
             if (injectionState == this)
             {
                 injectionState = null;
+                LuaInjectionStation.Clear();
             }
 
 #if UNITY_EDITOR

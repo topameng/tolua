@@ -20,7 +20,7 @@ namespace LuaInterface
         public const byte NOT_INJECTION_FLAG = 0;
         public const byte INVALID_INJECTION_FLAG = byte.MaxValue;
 
-        static int cacheSize;
+        static int cacheSize = 0;
         static byte[] injectionFlagCache;
         static LuaFunction[] injectFunctionCache;
 
@@ -66,6 +66,15 @@ namespace LuaInterface
 
             injectFunctionCache[index] = func;
             injectionFlagCache[index] = injectFlag;
+        }
+
+        public static void Clear()
+        {
+            for (int i = 0, len = injectionFlagCache.Length; i < len; ++i)
+            {
+                injectionFlagCache[i] = 0;
+                injectFunctionCache[i] = null;
+            }
         }
     }
 }

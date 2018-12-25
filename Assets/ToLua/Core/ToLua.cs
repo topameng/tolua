@@ -455,7 +455,7 @@ namespace LuaInterface
                 FieldInfo listViewFieldInfo = consoleWindowType.GetField("m_ListView", BindingFlags.Instance | BindingFlags.NonPublic);
                 logListView = listViewFieldInfo.GetValue(consoleWindow);
                 logListViewCurrentRow = listViewFieldInfo.FieldType.GetField("row", BindingFlags.Instance | BindingFlags.Public);
-#if UNITY_2017
+#if UNITY_2017_1_OR_NEWER
                 Type logEntriesType = unityEditorAssembly.GetType("UnityEditor.LogEntries");
                 LogEntriesGetEntry = logEntriesType.GetMethod("GetEntryInternal", BindingFlags.Static | BindingFlags.Public);
                 Type logEntryType = unityEditorAssembly.GetType("UnityEditor.LogEntry");                
@@ -1431,54 +1431,6 @@ namespace LuaInterface
 
             LuaDLL.luaL_typerror(L, stackPos, type.FullName);
             return null;
-        }
-
-        public static int LazyRegisterFunc(bool lazyState, string funcName, LuaCSFunction func, IntPtr luaState)
-        {
-            if (lazyState)
-            {
-                IntPtr fn = Marshal.GetFunctionPointerForDelegate(func);
-                LuaDLL.tolua_function(luaState, funcName, fn);
-                LuaDLL.lua_pop(luaState, 1);
-            }
-
-            return func(luaState);
-        }
-
-        public static int LazyRegisterVariable(bool lazyState, bool getStatus, string variableName, LuaCSFunction getFunc, LuaCSFunction setFunc, IntPtr luaState)
-        {
-            if (lazyState)
-            {
-                IntPtr fn;
-
-                if (getStatus)
-                {
-                    if (getFunc != null)
-                    {
-                        fn = Marshal.GetFunctionPointerForDelegate(getFunc);
-                        LuaDLL.tolua_variable(luaState, variableName, fn, IntPtr.Zero);
-                    }
-                }
-                else
-                {
-                    if (setFunc != null)
-                    {
-                        fn = Marshal.GetFunctionPointerForDelegate(setFunc);
-                        LuaDLL.tolua_variable(luaState, variableName, IntPtr.Zero, fn);
-                    }
-                }
-
-                LuaDLL.lua_pop(luaState, 1);
-            }
-
-            if (getStatus)
-            {
-                return getFunc(luaState);
-            }
-            else
-            {
-                return setFunc(luaState);
-            }
         }
 
         public static UnityEngine.TrackedReference CheckTrackedReference(IntPtr L, int stackPos, Type type)

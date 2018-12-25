@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if ENABLE_LUA_INJECTION
+using System;
 using System.Collections.Generic;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
@@ -166,7 +167,11 @@ public static class ToLuaInjectionHelper
 
     public static bool IsGenericMethodDefinition(this MethodDefinition md)
     {
-        if (md.HasGenericParameters || md.ContainsGenericParameter)
+        if (md.HasGenericParameters
+#if UNITY_5_2 || UNITY_5_3 || UNITY_5_3_OR_NEWER
+            || md.ContainsGenericParameter
+#endif
+            )
         {
             return true;
         }
@@ -386,3 +391,4 @@ public static class ToLuaInjectionHelper
         }
     }
 }
+#endif
