@@ -146,6 +146,7 @@ function coroutine.stop(co)
 
  	if timer ~= nil then
  		comap[co] = nil
- 		timer:Stop()  		
+ 		timer:Stop()  	
+ 		timer.func = nil	
  	end
 end

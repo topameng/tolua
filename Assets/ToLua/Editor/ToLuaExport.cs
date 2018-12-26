@@ -155,6 +155,8 @@ public static class ToLuaExport
         "TextureFormat.DXT1Crunched",
         "TextureFormat.DXT5Crunched",
         "Texture.imageContentsHash",
+        "QualitySettings.streamingMipmapsMaxLevelReduction",
+        "QualitySettings.streamingMipmapsRenderersPerFrame",
         //NGUI
         "UIInput.ProcessEvent",
         "UIWidget.showHandlesWithMoveTool",
