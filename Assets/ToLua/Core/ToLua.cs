@@ -267,6 +267,11 @@ namespace LuaInterface
                         throw new LuaException(error, LuaException.GetLastError());
                     }
                 }
+				else
+				{
+					string err = LuaDLL.lua_tostring(L, -1);
+					throw new LuaException(err, LuaException.GetLastError());
+				}
 
                 return LuaDLL.lua_gettop(L) - n;
             }
