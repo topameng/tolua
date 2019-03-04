@@ -33,7 +33,7 @@ function coroutine.start(f, ...)
 		local action = function()												
 			comap[co] = nil
 			timer.func = nil
-			local flag, msg = resume(co, unpack(args))						
+			local flag, msg = resume(co, unpack(args, 1, table.maxn(args)))						
 			table.insert(pool, timer)
 	
 			if not flag then	
@@ -64,7 +64,7 @@ function coroutine.wait(t, co, ...)
 	local action = function()		
 		comap[co] = nil		
 		timer.func = nil
-		local flag, msg = resume(co, unpack(args))
+		local flag, msg = resume(co, unpack(args, 1, table.maxn(args)))
 		
 		if not flag then	
 			timer:Stop()						
@@ -87,7 +87,7 @@ function coroutine.step(t, co, ...)
 	local action = function()	
 		comap[co] = nil					
 		timer.func = nil
-		local flag, msg = resume(co, unpack(args))
+		local flag, msg = resume(co, unpack(args, 1, table.maxn(args)))
 		table.insert(pool, timer)
 	
 		if not flag then	
