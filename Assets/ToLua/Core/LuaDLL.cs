@@ -193,7 +193,7 @@ namespace LuaInterface
         }        
     }
 
-#if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
+#if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN || UNITY_WSA_10_0
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate int LuaCSFunction(IntPtr luaState);        
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]

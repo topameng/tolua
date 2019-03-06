@@ -135,6 +135,7 @@ public static class ToLuaExport
         "Light.lightmapBakeType",
 		"Light.shadowAngle",
 		"Light.shadowRadius",
+		"Light.SetLightDirty",
 		"Security.GetChainOfTrustValue",
         "Texture2D.alphaIsTransparency",
         "WWW.movie",
@@ -154,14 +155,16 @@ public static class ToLuaExport
         "TextureFormat.DXT5Crunched",
         "Texture.imageContentsHash",
         "QualitySettings.streamingMipmapsMaxLevelReduction",
-        "QualitySettings.streamingMipmapsRenderersPerFrame",
+        "QualitySettings.streamingMipmapsRenderersPerFrame",		
         //NGUI
         "UIInput.ProcessEvent",
         "UIWidget.showHandlesWithMoveTool",
         "UIWidget.showHandles",
         "Input.IsJoystickPreconfigured",
-        "UIDrawCall.isActive"
-    };
+        "UIDrawCall.isActive",
+		"Dictionary.TryAdd",
+		"KeyValuePair.Deconstruct"
+	};
 
     class _MethodBase
     {
@@ -632,11 +635,29 @@ public static class ToLuaExport
 	public static List<MemberInfo> memberInfoFilter = new List<MemberInfo>
 	{
         //可精确查找一个函数
-		//Type.GetMethod(string name, BindingFlags bindingAttr, Binder binder, CallingConventions callConvention, Type[] types, ParameterModifier[] modifiers);
+		//Type.GetMethod(string name, BindingFlags bindingAttr, Binder binder, CallingConventions callConvention, Type[] types, ParameterModifier[] modifiers);		
     };
 
     public static bool IsMemberFilter(MemberInfo mi)
     {
+		if (type.IsGenericType)
+		{
+			Type genericType = type.GetGenericTypeDefinition();
+
+			if (genericType == typeof(Dictionary<,>) && mi.Name == "Remove")
+			{
+				MethodBase mb = (MethodBase)mi;
+				return mb.GetParameters().Length == 2;
+			}
+
+			if (genericType == typeof(Dictionary<,>) || genericType == typeof(KeyValuePair<,>))
+			{
+				string str = genericType.Name;				
+				str = str.Substring(0, str.IndexOf("`"));
+				return memberFilter.Contains(str + "." + mi.Name);
+			}			
+		}
+
 		return memberInfoFilter.Contains(mi) || memberFilter.Contains(type.Name + "." + mi.Name);
     }
 
@@ -1719,41 +1740,55 @@ public static class ToLuaExport
         return count;
     }
 
-    static void InitCtorList()
-    {
-        if (isStaticClass || type.IsAbstract || typeof(MonoBehaviour).IsAssignableFrom(type))
-        {
-            return;
-        }
+	static void InitCtorList()
+	{
+		if (isStaticClass || type.IsAbstract || typeof(MonoBehaviour).IsAssignableFrom(type))
+		{
+			return;
+		}
 
-        ConstructorInfo[] constructors = type.GetConstructors(BindingFlags.Instance | binding);
+		ConstructorInfo[] constructors = type.GetConstructors(BindingFlags.Instance | binding);
 
-        if (extendType != null)
-        {
-            ConstructorInfo[] ctorExtends = extendType.GetConstructors(BindingFlags.Instance | binding);
+		if (extendType != null)
+		{
+			ConstructorInfo[] ctorExtends = extendType.GetConstructors(BindingFlags.Instance | binding);
 
-            if (HasAttribute(ctorExtends[0], typeof(UseDefinedAttribute)))
-            {
-                ctorExtList.AddRange(ctorExtends);
-            }
-        }
+			if (HasAttribute(ctorExtends[0], typeof(UseDefinedAttribute)))
+			{
+				ctorExtList.AddRange(ctorExtends);
+			}
+		}
 
-        if (constructors.Length == 0)
-        {
-            return;
-        }        
+		if (constructors.Length == 0)
+		{
+			return;
+		}
 
-        for (int i = 0; i < constructors.Length; i++)
-        {                        
-            if (IsObsolete(constructors[i]))
-            {
-                continue;
-            }
+		bool isGenericType = type.IsGenericType;
+		Type genericType = isGenericType ? type.GetGenericTypeDefinition() : null;
+		Type dictType = typeof(Dictionary<,>);
 
-            int count = GetDefalutParamCount(constructors[i]);
-            int length = constructors[i].GetParameters().Length;
+		for (int i = 0; i < constructors.Length; i++)
+		{
+			if (IsObsolete(constructors[i]))
+			{
+				continue;
+			}
 
-            for (int j = 0; j < count + 1; j++)
+			int count = GetDefalutParamCount(constructors[i]);
+			int length = constructors[i].GetParameters().Length;
+
+			if (genericType == dictType && length >= 1)
+			{
+				Type pt = constructors[i].GetParameters()[0].ParameterType;
+
+				if (pt.IsGenericType && pt.GetGenericTypeDefinition() == typeof(System.Collections.Generic.IEnumerable<>))
+				{
+					continue;
+				}
+			}
+
+			for (int j = 0; j < count + 1; j++)
             {
                 _MethodBase r = new _MethodBase(constructors[i], length - j);
                 int index = ctorList.FindIndex((p) => { return CompareMethod(p, r) >= 0; });
