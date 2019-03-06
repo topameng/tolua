@@ -1764,7 +1764,8 @@ public static class ToLuaExport
 			return;
 		}
 
-		Type genericType = type.GetGenericTypeDefinition();
+		bool isGenericType = type.IsGenericType;
+		Type genericType = isGenericType ? type.GetGenericTypeDefinition() : null;
 		Type dictType = typeof(Dictionary<,>);
 
 		for (int i = 0; i < constructors.Length; i++)
