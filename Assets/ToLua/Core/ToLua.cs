@@ -1635,7 +1635,7 @@ namespace LuaInterface
                     {
                         LuaDLL.lua_rawgeti(L, stackPos, i);                        
 
-                        if (LuaDLL.lua_type(L, pos) != LuaTypes.LUA_TNUMBER)
+                        if (!TypeTraits<T>.Check(L, pos))
                         {
                             LuaDLL.lua_pop(L, 1);
                             LuaDLL.luaL_typerror(L, stackPos, TypeTraits<T[]>.GetTypeName());
@@ -2015,7 +2015,7 @@ namespace LuaInterface
                     {
                         LuaDLL.lua_rawgeti(L, stackPos, i);
 
-                        if (LuaDLL.lua_type(L, pos) != LuaTypes.LUA_TNUMBER)
+                        if (!TypeTraits<T>.Check(L, pos))
                         {
                             LuaDLL.lua_pop(L, 1);
                             LuaDLL.luaL_typerror(L, stackPos, TypeTraits<T[]>.GetTypeName());
