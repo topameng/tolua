@@ -822,7 +822,7 @@ public static class ToLuaInjection
         paramCount += paramExtraCount;
         invoker = luaFunctionTypeDef.Methods.FirstOrDefault(method =>
         {
-            return method.Name == methodName && method.Parameters.Count == paramCount;
+            return method.Name == methodName && method.Parameters.Count == paramCount && bRequireResult == !method.ReturnVoid();
         });
 
         if (invoker == null)
