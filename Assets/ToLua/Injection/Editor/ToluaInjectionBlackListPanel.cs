@@ -313,14 +313,21 @@ public class InjectionBlackListGenerator : EditorWindow
             return;
         }
 
-        foreach (Type t in assembly.GetTypes())
+        try
         {
-            bool bNotPrimitiveType = t.IsClass || (t.IsValueType && !t.IsPrimitive && !t.IsEnum);
-            bool bCustomType = bNotPrimitiveType && !t.FullName.Contains("<");
-            if (bCustomType && !typeSet.Contains(t.FullName) && !t.ContainsGenericParameters)
+            foreach (Type t in assembly.GetTypes())
             {
-                typeSet.Add(t.FullName);
+                bool bNotPrimitiveType = t.IsClass || (t.IsValueType && !t.IsPrimitive && !t.IsEnum);
+                bool bCustomType = bNotPrimitiveType && !t.FullName.Contains("<");
+                if (bCustomType && !typeSet.Contains(t.FullName) && !t.ContainsGenericParameters)
+                {
+                    typeSet.Add(t.FullName);
+                }
             }
+        }
+        catch (Exception e)
+        {
+            Debug.LogError(e.ToString());
         }
     }
 
