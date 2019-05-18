@@ -104,15 +104,7 @@ public static class ToLuaInjectionHelper
             }
 
             var baseTypeDef = baseType.Resolve();
-            baseMethodDef = baseTypeDef.Methods.FirstOrDefault(method =>
-            {
-                return method.Name == target.Name
-                    && target.Parameters
-                        .Select(param => param.ParameterType.FullName)
-                        .SequenceEqual(method.Parameters.Select(param => param.ParameterType.FullName))
-                    && method.ReturnType.FullName == target.ReturnType.FullName;
-            });
-
+            baseMethodDef = MetadataResolver.GetMethod(baseTypeDef.Methods, target);
             if (baseMethodDef != null && !baseMethodDef.IsAbstract)
             {
                 if (baseType.IsGenericInstance)
