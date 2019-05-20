@@ -82,6 +82,11 @@ public static class ToLuaMenu
         typeof(DelegateFactory),                            //无需导出，导出类支持lua函数转换为委托。如UIEventListener.OnClick(luafunc)
     };
 
+    public static HashSet<Type> lazyFeatureInvalidList = new HashSet<Type>
+    {
+        typeof(UnityEngine.Time),
+    };
+
     //可以导出的内部支持类型
     public static List<Type> baseType = new List<Type>
     {
@@ -366,6 +371,15 @@ public static class ToLuaMenu
         for (int i = 0; i < list.Length; i++)
         {
             ToLuaExport.Clear();
+            if (lazyFeatureInvalidList.Contains(list[i].type))
+            {
+                ToLuaExport.enableLazyFeature = false;
+            }
+            else
+            {
+                ToLuaExport.enableLazyFeature = true;
+            }
+
             ToLuaExport.className = list[i].name;
             ToLuaExport.type = list[i].type;
             ToLuaExport.isStaticClass = list[i].IsStatic;            
@@ -989,6 +1003,17 @@ public static class ToLuaMenu
         Debug.Log("Copy lua files over");
     }
 
+    [MenuItem("Lua/Process Example Lua Files For Test On Mobile", false, 51)]
+    public static void CopyExampleLuaFilesToRes()
+    {
+        CopyLuaFilesToRes();
+        string destDir = Application.dataPath + "/Resources";
+        string srcDir = Application.dataPath + "/Tolua/Examples/Resources";
+        CopyDirectory(srcDir, destDir, "*.bytes");
+        AssetDatabase.Refresh();
+        Debug.Log("Copy example lua files over");
+    }
+
     [MenuItem("Lua/Copy Lua  files to Persistent", false, 52)]
     public static void CopyLuaFilesToPersistent()
     {
@@ -1255,6 +1280,15 @@ public static class ToLuaMenu
         for (int i = 0; i < list.Length; i++)
         {
             ToLuaExport.Clear();
+            if (lazyFeatureInvalidList.Contains(list[i].type))
+            {
+                ToLuaExport.enableLazyFeature = false;
+            }
+            else
+            {
+                ToLuaExport.enableLazyFeature = true;
+            }
+
             ToLuaExport.className = list[i].name;
             ToLuaExport.type = list[i].type;
             ToLuaExport.isStaticClass = list[i].IsStatic;
