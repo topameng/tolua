@@ -10,6 +10,7 @@ using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Unity.CecilTools;
 using Unity.CecilTools.Extensions;
+using CustomCecilRocks; 
 using System.Reflection;
 using LuaInterface;
 using UnityEditor.Callbacks;
@@ -325,9 +326,11 @@ public static class ToLuaInjection
             return;
         }
 
+        target.Body.SimplifyMacros();
         FillBegin(target, methodIndex);
         FillReplaceCoroutine(target, runtimeInjectType & InjectType.Replace);
         FillCoroutineMonitor(target, runtimeInjectType & (~InjectType.Replace), methodIndex);
+        target.Body.OptimizeMacros();
     }
 
     static void FillReplaceCoroutine(MethodDefinition target, InjectType runtimeInjectType)
@@ -465,10 +468,12 @@ public static class ToLuaInjection
 #region NormalMethod
     static void InjectMethod(AssemblyDefinition assembly, MethodDefinition target, int methodIndex)
     {
+        target.Body.SimplifyMacros();
         FillBegin(target, methodIndex);
         InjectType runtimeInjectType = GetMethodRuntimeInjectType(target);
         FillInjectMethod(target, FillInjectInfo, runtimeInjectType & InjectType.After);
         FillInjectMethod(target, FillInjectInfo, runtimeInjectType & (~InjectType.After));
+        target.Body.OptimizeMacros();
     }
 
     static void FillInjectMethod(MethodDefinition target, Action<MethodDefinition, InjectType> fillInjectInfo, InjectType runtimeInjectType)
