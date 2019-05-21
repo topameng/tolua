@@ -1,38 +1,204 @@
 ## tolua#
-tolua#的优点在此无需过度阐述，本修改版本只集中描述差异化的修改。<br>
-源版本传送门：https://github.com/topameng/tolua<br>
-本修改版本Plugins库传送门：https://github.com/NewbieGameCoder/tolua_runtime
 
-# 关于Lua"暖更新"C#逻辑
-* 对！这次加入了lua函数运行时决定监听C#函数开始执行、监听C#函数return结束、替换整个C#函数实现的特性。 <br>
-#### 支持Inject的C#函数类型如下：<br>
- * 构造函数（只支持后置监听。第一自己会调用父类构造，第二替换的情况不多，能善后就足够了)<br>
- * 属性访问器（支持前置监听、后置监听、整体替换、替换并提前调用次父类函数、替换并结束后调用次父类函数。Lua函数替换属性set函数后，需要自己利用反射修改相关类对象的Field）<br>
- * 普通静态、非静态函数（支持前置监听、后置监听、整体替换、替换并提前调用次父类函数、替换并结束后调用次父类函数。底层工具能按照指定格式自动更新C#函数ref、out参数,具体看例子。）<br>
- * 协程(只支持前置监听，后置监听，整体替换。监听的时候，可以监听到协程的状态，比如执行到哪段代码了，不过比较难理解，需要自行摸索。其实一运行demo的example，看到TestCoroutine的打印，应该就能大概明白怎么跟踪协程的状态了。)<br>
-#### 不支持Inject的C#函数类型如下：<br>
- * 静态构造函数（技术上支持，被我默认屏蔽。就算Inject后，也不稳定，因为静态构造只调用一次，且调用的时候不一定lua环境初始化好了，且对修bug的作用不是很大）<br>
- * 析构函数（技术上支持，被我默认屏蔽。使用情况较少，且会拉扯C# gc，析构函数应该尽量避免跟业务逻辑打交道）<br>
- * 运算符重载（对修BUG之类的用处不大）<br>
- * 事件的Add、Remove（对修BUG之类的用处不大，反射可以解决大部分需求）<br>
- * unsafe函数（对修BUG之类的用处不大，多用于工具性代码，比如网络库）<br>
- * 匿名函数（我懒，跟Inject协程类似，较复杂）<br>
- * 迭代器IEnumerable函数（我懒，跟Inject协程类似，且对修BUG用处不大，多见于工具性代码）<br>
- * MonoBehaviour的构造函数默认不Inject<br>
- * ScriptableObject的构造函数默认不Inject<br>
- * 泛型函数（已有技术原型实现，多见于工具性代码，且本身特性已经被“重复”验证了多次逻辑的正确性，延后抽空弄泛型展开）<br>
- * 日后补上其他不支持的函数类型<br>
-#### 特性：<br>
-* **配合提供的以文件夹中的所有cs文件为单位的，黑名单生成工具，以及一些命名空间Drop列表等过滤措施，“半全量”Inject所有C#函数，避免眼睛找瞎。当然代码文件会变大些，我自己的项目3.5M的代码dll文件，Inject后，多了700多KB(Inject了“所有”的构造函数，“所有”的属性访问器函数)，Il2cpp后更多，个人视自己的过滤情况而定O(∩_∩)O~**<br>
-* **支持Lua代码运行时决定Inject方式，比如刚开始只用前置监听，就可以在函数执行前回调到lua一次。后面还有需求可以Lua决定是否整个替换C#的函数实现细节，比较灵活多变**<br>
-* **支持较精确的重载Inject匹配，提高安全验证，具体可以参考下Examples/TestInjection下的TestOverload在ToLuaInjectionTestInjector.lua.bytes文件中的Inject处理**<br>
-* **支持“有限”的增量Injection。如果只是新增C#函数、或者删掉旧C#函数，支持不换包2个客户端运行在线上，且重写C#逻辑的Lua代码运行“基本”正常（新增的C#函数被Inject后，只有新版本的客户端才有效；对于老版本的被删掉的C#函数，只有老版本的C#客户端才会调用到重写删掉的C#函数逻辑的Lua代码。其他情况一切正常）**<br>
-* **GC较少**<br>
-* **没改tolua runtime，方便升级**<br>
+tolua# is a Unity lua static binder solution. the first solution that analyzes code by reflection and generates wrapper classes.<br>
+It is a Unity plugin that greatly simplifies the integration of C# code with Lua. which can automatically generate the binding code to access Unity from Lua and map c# constants, variables, functions, properties, classes, and enums to Lua.<br>
+tolua# grows up from cstolua. it's goal is to be a powerful development environment for Unity.<br>
+Support unity4.6.x and Unity5.x all(copy /Unity5.x/Assets to /Assets) <br>
+If you want to test examples(example 1 is excluded)in mobile, first click menu Lua/Copy lua files to Resources. then build it <br>
+如果你想在手机上测试例子(例子1除外)，首先点击菜单Lua/Copy lua files to Resources， 之后再build. <br>
 
-## 本修改目前国内、台湾、英文双平台上线稳定运行
-## 本修改出发目的是想简化Inject工作，减少错误发生O(∩_∩)O~。具体使用方式见[Wiki](https://github.com/NewbieGameCoder/tolua/wiki/%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E)
+欢迎大家点星支持，谢谢^_^<br>
+有bug 可以到QQ群286510803反馈。 可以加讨论群: <br>
+ulua&tolua技术交流群① 341746602(已满) <br>
+ulua&tolua技术讨论群② 469941220(已满)  <br>
+tolua#技术讨论群④ 543826216(已满)<br>
+tolua#技术群 286510803<br>
 
-# 关于Wrap速度的修改
-* 用过tolua#的可能经历过，Lua环境初始化的时候，LuaBinder类的Bind花费了大量时间（比如4s），自己需要添加额外的逻辑，分散C#相关模块wrap进lua环境的时机（当然tolua#已经集成了一个PreLoad的概念能解决大部分的问题，某个模块只有在被用到的时候，才会动态整个wrap进lua环境，注意是整个）。而本工程的修改则更进一步，相对于原版用一点点且是一次性的性能消耗，离散C#任意一个模块的函数的wrap时机、变量的wrap时机，使得C#的函数、变量只有在lua端访问的时候才会wrap进lua环境，从而较大的改善某一个时间段整体的wrap速度。目前我自己的工程在编辑器上能获得3.5倍提升，其他工程视项目而定，如果lua环境初始化时候，访问C#各个模块的频率没我自己项目的高，那么会获得更大的提升。<br>
-* 本条修改可以查看ToLuaExport类里面的enableLazyFeature开启流程，自定义自己的修改。目前是ToLuaMenu里面自动生成代码的时候，自动帮你开了。如果自己修改成完全不用这个特性，那么本修改版本就是原汁原味的ToLua#，我尽量做到不改经过时间验证的整体逻辑，包括runtime库也是新添函数，不改tolua#库已有的逻辑代码。<br>
+
+# Library
+**tolua_runtime** <br>
+https://github.com/topameng/tolua_runtime <br>
+**Debugger** <br>
+https://github.com/topameng/Debugger <br>
+**CString** <br>
+https://github.com/topameng/CString <br>
+**protoc-gen-lua** <br>
+https://github.com/topameng/protoc-gen-lua <br>
+
+# FrameWork and Demo
+**LuaFrameWork**<br>
+https://github.com/jarjin/LuaFramework_NGUI <br>
+https://github.com/jarjin/LuaFramework_UGUI <br>
+**XlsxToLua**<br>
+https://github.com/zhangqi-ulua/XlsxToLua<br>
+**UnityHello**<br>
+https://github.com/woshihuo12/UnityHello<br>
+**UWA-ToLua**<br>
+http://uwa-download.oss-cn-beijing.aliyuncs.com/plugins%2FiOS%2FUWA-iOS-ToLua.zip<br>
+
+# Debugger
+**EmmyLua**<br>
+https://github.com/tangzx/IntelliJ-EmmyLua<br>
+**unity_tolua-_zerobrane_api**<br>
+https://github.com/LabOfHoward/unity_tolua-_zerobrane_api<br>
+
+# Packages
+　**Basics**　　　　　　　　**Math**　　　　　　**Data Structures**<br>
+　luabitop　　　　　　　Quaternion　　　　　　　list<br>
+　 struct　　　　　　　 　Vector3　　　　　　　　event<br>
+　 int64　　　　 　　　  　Vector4　　　　　　　　slot<br>
+　 Time　　　　 　　　  　Vector2<br>
+**Networking**　　　　 　　　Ray<br>
+　luasocket　　　　 　　　 Color<br>
+　**Parsing**　　　　 　　　Bounds<br>
+　lpeg　　 　　 　　　 　  　Mathf<br>
+　**Protol**　　　　　 　 　　 Touch<br>
+　pblua　　　 　　 　 　RaycastHit<br>
+# 特性
+* 自动生成绑定代码文件，非反射调用 <br>
+* 大量内建基础类型支持，如枚举，委托，事件，Type, 数组，迭代器等 <br>
+* 支持多种协同形式 <br>
+* 支持所有unity内部类导出，支持委托类型导出 <br>
+* 支持导出自定义，跳过某个空的基类，修改导出名称等 <br>
+* 支持扩展函数自定义导出, 比如DoTween <br>
+* 支持值类型Nullable导出，包括Nullable&lt;Vector3&gt;等 <br>
+* 支持Lua中function转委托，可以区分需要不同委托的参数的重载函数 <br>
+* 支持c# LuaFunction对象转委托，简化调用方式。 支持无GC的多参数调用形式 <br>
+* 支持重载函数自动折叠, 如:Convert.ToUInt32只导出double参数的函数 <br>
+* 支持重载函数自动排序, 如:参数个数相同, object参数执行级最低, 不会出现错误匹配情况 <br>
+* 支持导出函数重命名, 可以分离导出某个重载函数(可以导出被折叠掉的函数) <br>
+* 支持使用编辑器类改写导出规则 <br>
+* 支持this数组访问，索引为int可以通过[]访问，其他可使用.get_Item或者.this:get()访问数组成员 <br>
+* 支持委托(事件)+-lua function。支持通过函数接口的Add和Remove委托操作 <br>
+* 支持静态反射操作, 形式同c# <br>
+* 支持peer表，可在lua端扩展导出的userdata <br>
+* 支持自定义struct压入和读取，做到无GC，并且结构成员无类型限制, 参考例子24 <br>
+* 支持preloading, 可以通过requie后绑定wrap文件 <br>
+* 支持int64, uint64  <br>
+* 大量的lua数学类型，如Quaternion, Vector3, Mathf等
+* 包含第三方lua扩展，包括luasocket, struct, lpeg, utf8, pb等库 <br>
+* 当lua出现异常，能够同时捕获c#端和lua端堆栈，便于调试 <br>
+* print信息，在编辑器点击日志, 能自动打开对应lua文件 <br>
+* 支持unity所有版本 <br>
+* **支持Lua hook C#相代码实现，一定程度上支持利用Lua代码修改C#端代码的bug**（[暖更新使用说明](https://zhuanlan.zhihu.com/p/35124260)） <br>
+
+# 快速入门
+在CustomSetting.cs中添加需要导出的类或者委托，类加入到customTypeList列表，委托加入到customDelegateList列表 <br>
+通过设置saveDir变量更改导出目录,默认生成在Assets/Source/Generate/下,点击菜单Lua->Generate All,生成绑定文件 <br>
+在LuaConst.cs中配置开发lua文件目录luaDir以及tolua lua文件目录toluaDir <br>
+```csharp
+//例子1
+LuaState lua = new LuaState();
+lua.Start();
+lua.DoString("print('hello world')");
+lua.Dispose();
+
+//例子2
+LuaState luaState = null;
+
+void Awake()
+{
+    luaState = LuaClient.GetMainState();
+
+    try
+    {            
+        luaState.Call("UIShop.Awake", false);
+    }
+    catch (Exception e)
+    {
+        //Awake中必须这样特殊处理异常
+        luaState.ThrowLuaException(e);
+    }
+}
+
+void Start()
+{
+    luaState.Call("UIShop.Start", false);
+}
+```
+```lua
+local go = GameObject('go')
+go:AddComponent(typeof(UnityEngine.ParticleSystem))
+go.transform.position = Vector3.zero
+go.transform:Rotate(Vector3(0,90,0), UnityEngine.Space.World)
+go.transform:Rotate(Vector3(0, 1, 0), 0)
+
+--DoTween 需要在CustomSetting导出前定义USING_DOTWEENING宏，或者取消相关注释
+go.transform:DORotate(Vector3(0,0,360), 2, DG.Tweening.RotateMode.FastBeyond360)
+
+Shop = {}
+
+function Shop:Awake()
+    self.OnUpdate = UpdateBeat:CreateListener(Shop.Update, self)
+    UpdateBeat:AddListener(self.OnUpdate)
+end
+
+function Shop:OnDestroy()
+    UpdateBeat:RemoveListener(self.OnUpdate)
+end
+
+function Shop:OnClick()
+    print("OnClick")
+end
+
+function Shop:OnToggle()
+    print("OnToggle")
+end
+
+function Shop:Update()
+end
+
+--委托
+local listener = UIEventListener.Get(go)
+listener.onClick = function() print("OnClick") end
+listener.onClick = nil
+listener.onClick = UIEventListener.VoidDelegate(Shop.OnClick, Shop)
+listener.onClick = listener.onClick + UIEventListener.VoidDelegate(Shop.OnClick, Shop)
+listener.onClick = listener.onClick - UIEventListener.VoidDelegate(Shop.OnClick, Shop)
+
+local toggle = go:GetComponent(typeof(UIToggle))
+EventDelegate.Add(toggle.onChange, EventDelegate.Callback(Shop.OnToggle, Shop))
+EventDelegate.Remove(toggle.onChange, EventDelegate.Callback(Shop.OnToggle, Shop))
+
+--事件
+local Client = {}
+
+function Client:Log(str)
+end
+
+Application.logMessageReceived = Application.logMessageReceived + Application.LogCallback(Clent.Log, Client)
+Application.logMessageReceived = Application.logMessageReceived - Application.LogCallback(Clent.Log, Client)
+
+--out参数
+local _layer = 2 ^ LayerMask.NameToLayer('Default')
+local flag, hit = UnityEngine.Physics.Raycast(ray, nil, 5000, _layer)
+
+if flag then
+    print('pick from lua, point: '..tostring(hit.point))
+end
+```
+[这里](Assets/ToLua/Examples/README.md)是更多的示例。
+# 关于反射
+tolua# 不支持动态反射。动态反射对于重载函数有参数匹配问题，函数排序问题，ref,out 参数问题等等。<br>
+tolua#提供的替换方法是:<br>
+1. preloading, 把你未来可能需要的类型添加到导出列表customTypeList，同时也添加到dynamicList列表中，这样导出后该类型并不会随binder注册到lua中，你可以通过 require "namespace.classname" 动态注册到lua中，对于非枚举类型tolua#系统也可以在第一次push该类型时动态载入，当然也可在过场动画、资源下载、登录、场景加载或者某个的函数中require这个类型。<br>
+2. 静态反射，参考例子22。通过静态反射支持精确的函数参数匹配和类型检查。不会存在重载函数参数混乱匹配错误问题, 注意iOS必须配置好link.xml<br>
+
+# Performance
+|   平台    |   属性读写   | 重载函数  | Vector3构造 |GameObject构造|Vector3归一化|Slerp|
+| :-- 		| :-----------:|:---------:| :---------: |:-----------: |:----------: |:--: |
+| PC  		|  0.0465:0.15 | 0.076:0.12|0.02:0.001   |0.1:0.14		|0.014:0.001  |0.10:0.11|
+| Android   |   0.16:1.1  | 0.28:0.76 |0.17:0.00035   |0.43:0.5		|0.21:0.02	  |0.3:0.06|
+| iOS       |  0.04:0.145  | 0.055:0.11 |0.017:0.05   |0.074:0.08	|0.035:0.11	  |0.078:0.5|
+
+测试结果为C#:Lua. 环境不同会略有差异。可用数字倍率做参考<br>
+PC: Intel(R) Core(TM) i5-4590 CPU@3.3GHz + 8GB + 64 位win7 + Unity5.4.5p4<br>
+Android: 中兴nubia z9 max(NX512J) + Adnroid5.0.2<br>
+iOS(il2cpp): IPhone6 Plus<br>
+按照1.0.7.355版本更新了测试数据, u5相对u4, 安卓上c#有了不小的提升<br>
+# Examples
+参考包内1-24例子
+
+# About Lua
+win, android ios using luajit2.1-beta3. macos using luac5.1.5(for u5.x). 
+注意iOS未编译模拟器库，请用真机测试
