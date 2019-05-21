@@ -495,6 +495,11 @@ namespace LuaInterface
             LuaDLL.tolua_function(L, name, fn);            
         }
 
+        public void RegLazyFunction(string name, IntPtr func)
+        {
+            LuaDLL.tolua_lazyfunction(L, name, func);
+        }
+
         public void RegVar(string name, LuaCSFunction get, LuaCSFunction set)
         {            
             IntPtr fget = IntPtr.Zero;
@@ -511,6 +516,11 @@ namespace LuaInterface
             }
 
             LuaDLL.tolua_variable(L, name, fget, fset);
+        }
+
+        public void RegLazyVar(string name, bool get, bool set, IntPtr dispacher)
+        {
+            LuaDLL.tolua_lazyVariable(L, name, get, set, dispacher);
         }
 
         public void RegConstant(string name, double d)
@@ -1710,6 +1720,8 @@ namespace LuaInterface
 
         public int Collect()
         {
+            translator.StepCollect();
+
             int count = gcList.Count;
 
             if (count > 0)
