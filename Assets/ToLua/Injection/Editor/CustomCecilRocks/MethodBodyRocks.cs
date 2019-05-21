@@ -1,3 +1,4 @@
+#if ENABLE_LUA_INJECTION
 //
 // Author:
 //   Jb Evain (jbevain@gmail.com)
@@ -426,3 +427,4 @@ namespace CustomCecilRocks {
 		}
 	}
 }
+#endif
