@@ -163,8 +163,7 @@ public static class ToLuaExport
         "Input.IsJoystickPreconfigured",
         "UIDrawCall.isActive",
 		"Dictionary.TryAdd",
-		"KeyValuePair.Deconstruct",
-		"ParticleSystem.SetJob"
+		"KeyValuePair.Deconstruct"
 	};
 
     class _MethodBase
