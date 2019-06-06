@@ -21,6 +21,7 @@ SOFTWARE.
 */
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Reflection;
 
 namespace LuaInterface
@@ -48,7 +49,8 @@ namespace LuaInterface
             LuaDLL.lua_getglobal(L, "tolua");
 
             LuaDLL.lua_pushstring(L, "findtype");
-            LuaDLL.lua_pushcfunction(L, FindType);
+            LuaCSFunction func = FindType;
+            LuaDLL.lua_pushcfunction(L, Marshal.GetFunctionPointerForDelegate(func));
             LuaDLL.lua_rawset(L, -3);
 
             LuaDLL.lua_pushstring(L, "loadassembly");            

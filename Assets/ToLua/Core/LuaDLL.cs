@@ -85,9 +85,11 @@ namespace LuaInterface
 
     public class LuaIndexes
     {
-        public static int LUA_REGISTRYINDEX = -10000;
+        public static int LUA_REGISTRYINDEX = LuaDLL.lua_registryindex();
+#if !LUA_5_3_OR_NEWER
         public static int LUA_ENVIRONINDEX  = -10001;
         public static int LUA_GLOBALSINDEX  = -10002;
+#endif
     }
 
     public class LuaRIDX
@@ -244,13 +246,10 @@ namespace LuaInterface
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
         public static extern int luaopen_cjson_safe(IntPtr L);
 
-        /*
-         ** pseudo-indices
-         */
-        public static int lua_upvalueindex(int i)
-        {
-            return LuaIndexes.LUA_GLOBALSINDEX - i;
-        }
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int lua_upvalueindex(int idex);
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int lua_registryindex();
 
         /*
          * state manipulation
@@ -422,8 +421,13 @@ namespace LuaInterface
 
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
         public static extern int lua_getmetatable(IntPtr luaState, int objIndex);
+#if LUA_5_3_OR_NEWER
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int lua_getuservalue(IntPtr luaState, int idx);
+#else
+		[DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
         public static extern void lua_getfenv(IntPtr luaState, int idx);
+#endif
 
         /*
          * set functions (stack -> Lua)
@@ -452,8 +456,20 @@ namespace LuaInterface
         public static extern void lua_rawseti(IntPtr luaState, int tableIndex, int index);          //[-1, +0, m]
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
         public static extern void lua_setmetatable(IntPtr luaState, int objIndex);
+#if LUA_5_3_OR_NEWER
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int lua_setfenv(IntPtr luaState, int stackPos);
+        public static extern void lua_setuservalue(IntPtr luaState, int idx);
+        
+#else
+		[DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int lua_setfenv(IntPtr luaState, int idx);
+#endif
+		[DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int lua_pushglobaltable(IntPtr luaState);
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void lua_rawget_global(IntPtr luaState, string key);
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr lua_findtable_in_global(IntPtr luaState, string key);
 
         /*
          * `load' and `call' functions (load and run Lua code)
@@ -510,17 +526,10 @@ namespace LuaInterface
             LuaDLL.lua_createtable(luaState, 0, 0);
         }
 
-        public static void lua_register(IntPtr luaState, string name, LuaCSFunction func)
-        {
-            lua_pushcfunction(luaState, func);
-            lua_setglobal(luaState, name);
-        }
-
-        public static void lua_pushcfunction(IntPtr luaState, LuaCSFunction func)
-        {
-            IntPtr fn = Marshal.GetFunctionPointerForDelegate(func);
-            lua_pushcclosure(luaState, fn, 0);
-        }
+		[DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+		public static extern void lua_register(IntPtr luaState, string name, IntPtr func);
+		[DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+		public static extern void lua_pushcfunction(IntPtr luaState, IntPtr func);
 
         public static bool lua_isfunction(IntPtr luaState, int n)
         {
@@ -563,15 +572,11 @@ namespace LuaInterface
             return lua_type(luaState, n) <= LuaTypes.LUA_TNIL;
         }
 
-        public static void lua_setglobal(IntPtr luaState, string name)
-        {
-            lua_setfield(luaState, LuaIndexes.LUA_GLOBALSINDEX, name);
-        }
 
-        public static void lua_getglobal(IntPtr luaState, string name)
-        {
-            lua_getfield(luaState, LuaIndexes.LUA_GLOBALSINDEX, name);
-        }
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+		public static extern void lua_setglobal(IntPtr luaState, string name);
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+		public static extern void lua_getglobal(IntPtr luaState, string name);
 
         public static string lua_ptrtostring(IntPtr str, int len)
         {

@@ -70,7 +70,7 @@ namespace LuaInterface
 
         public int LuaUpValueIndex(int i)
         {
-            return LuaIndexes.LUA_GLOBALSINDEX - i;
+            return LuaDLL.lua_upvalueindex(i);
         }
 
         public IntPtr LuaNewState()
@@ -80,12 +80,14 @@ namespace LuaInterface
 
         public void LuaOpenJit()
         {
+#if !LUA_5_3_OR_NEWER
             if (!LuaDLL.luaL_dostring(L, jit))
             {
                 string str = LuaDLL.lua_tostring(L, -1);
                 LuaDLL.lua_settop(L, 0);
                 throw new Exception(str);
-            }            
+            }        
+#endif    
         }
 
         public void LuaClose()
@@ -329,10 +331,12 @@ namespace LuaInterface
             return LuaDLL.lua_getmetatable(L, idx);
         }
 
+#if !LUA_5_3_OR_NEWER
         public void LuaGetEnv(int idx)
         {
             LuaDLL.lua_getfenv(L, idx);
         }
+#endif
 
         public void LuaSetTable(int idx)
         {
@@ -359,10 +363,12 @@ namespace LuaInterface
             LuaDLL.lua_setmetatable(L, objIndex);
         }
 
+#if !LUA_5_3_OR_NEWER
         public void LuaSetEnv(int idx)
         {
             LuaDLL.lua_setfenv(L, idx);
         }
+#endif
 
         public void LuaCall(int nArgs, int nResults)
         {
@@ -463,8 +469,7 @@ namespace LuaInterface
 
         public void LuaRawGlobal(string name)
         {
-            LuaDLL.lua_pushstring(L, name);
-            LuaDLL.lua_rawget(L, LuaIndexes.LUA_GLOBALSINDEX);
+            LuaDLL.lua_rawget_global(L, name);
         }
 
         public void LuaSetGlobal(string name)

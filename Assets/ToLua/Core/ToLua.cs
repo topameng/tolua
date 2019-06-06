@@ -81,11 +81,13 @@ namespace LuaInterface
             LuaDLL.lua_getglobal(L, "tolua");
 
             LuaDLL.lua_pushstring(L, "isnull");
-            LuaDLL.lua_pushcfunction(L, IsNull);
+            LuaCSFunction func = IsNull;
+            LuaDLL.lua_pushcfunction(L, Marshal.GetFunctionPointerForDelegate(func));
             LuaDLL.lua_rawset(L, -3);
 
             LuaDLL.lua_pushstring(L, "typeof");
-            LuaDLL.lua_pushcfunction(L, GetClassType);
+            func = GetClassType;
+            LuaDLL.lua_pushcfunction(L, Marshal.GetFunctionPointerForDelegate(func));
             LuaDLL.lua_rawset(L, -3);
 
             LuaDLL.lua_pushstring(L, "tolstring");
@@ -108,7 +110,7 @@ namespace LuaInterface
             LuaDLL.lua_pop(L, 1);
 
             LuaDLL.tolua_pushudata(L, 1);
-            LuaDLL.lua_setfield(L, LuaIndexes.LUA_GLOBALSINDEX, "null");
+            LuaDLL.lua_setglobal(L, "null");
 
 #if UNITY_EDITOR
             GetToLuaInstanceID();
@@ -121,10 +123,15 @@ namespace LuaInterface
         static void AddLuaLoader(IntPtr L)
         {
             LuaDLL.lua_getglobal(L, "package");
+#if LUA_5_3_OR_NEWER
+            LuaDLL.lua_getfield(L, -1, "searchers");
+#else
             LuaDLL.lua_getfield(L, -1, "loaders");
+#endif
             LuaDLL.tolua_pushcfunction(L, Loader);
 
-            for (int i = LuaDLL.lua_objlen(L, -2) + 1; i > 2; i--)
+            int i = LuaDLL.lua_objlen(L, -2) + 1;
+            for (; i > 2; i--)
             {
                 LuaDLL.lua_rawgeti(L, -2, i - 1);
                 LuaDLL.lua_rawseti(L, -3, i);

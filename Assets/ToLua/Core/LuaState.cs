@@ -288,7 +288,7 @@ namespace LuaInterface
 
             if (string.IsNullOrEmpty(name))
             {
-                LuaDLL.lua_pushvalue(L, LuaIndexes.LUA_GLOBALSINDEX);
+                LuaDLL.lua_pushglobaltable(L);
                 ++beginCount;
                 return top;
             }
@@ -1805,7 +1805,8 @@ namespace LuaInterface
                 if (pos > 0)
                 {
                     string tableName = fullPath.Substring(0, pos);
-                    IntPtr p = LuaFindTable(LuaIndexes.LUA_GLOBALSINDEX, tableName);
+                    // IntPtr p = LuaFindTable(LuaIndexes.LUA_GLOBALSINDEX, tableName);
+                    IntPtr p = LuaDLL.lua_findtable_in_global(L, tableName);
 
                     if (p == IntPtr.Zero)
                     {
