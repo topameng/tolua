@@ -131,6 +131,11 @@ namespace LuaInterface
             LuaDLL.lua_insert(L, idx);
         }
 
+        public bool LuaIsThread(int inx)
+        {
+            return LuaDLL.lua_isthread(L, inx);
+        }
+
         public void LuaReplace(int idx)
         {
             LuaDLL.lua_replace(L, idx);
@@ -208,7 +213,7 @@ namespace LuaInterface
 
         public int LuaToInteger(int idx)
         {
-            return LuaDLL.lua_tointeger(L, idx);
+            return LuaDLL.tolua_tointeger(L, idx);
         }
 
         public bool LuaToBoolean(int idx)
@@ -385,9 +390,22 @@ namespace LuaInterface
             return LuaDLL.lua_yield(L, nresults);
         }
 
+        public int LuaResumeThread(IntPtr thread, int narg)
+        {
+#if LUA_5_3_OR_NEWER
+            return LuaDLL.lua_resume(thread, L, narg);
+#else
+            return LuaDLL.lua_resume(thread, narg);
+#endif
+        }
+
         public int LuaResume(int narg)
         {
+#if LUA_5_3_OR_NEWER
+            return LuaDLL.lua_resume(L, IntPtr.Zero, narg);
+#else
             return LuaDLL.lua_resume(L, narg);
+#endif
         }
 
         public int LuaStatus()

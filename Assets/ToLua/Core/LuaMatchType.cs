@@ -32,6 +32,11 @@ namespace LuaInterface
             return LuaDLL.lua_type(L, pos) == LuaTypes.LUA_TNUMBER;
         }
 
+        public bool CheckInteger(IntPtr L, int pos)
+        {
+            return LuaDLL.lua_isinteger(L, pos) != 0;
+        }
+
         public bool CheckBool(IntPtr L, int pos)
         {
             return LuaDLL.lua_type(L, pos) == LuaTypes.LUA_TBOOLEAN;
@@ -39,6 +44,9 @@ namespace LuaInterface
 
         public bool CheckLong(IntPtr L, int pos)
         {
+#if LUA_5_3_OR_NEWER
+            return CheckInteger(L, pos);
+#else
             LuaTypes luaType = LuaDLL.lua_type(L, pos);
 
             switch (luaType)
@@ -49,11 +57,15 @@ namespace LuaInterface
                     return LuaDLL.tolua_getvaluetype(L, pos) == LuaValueType.Int64;                    
                 default:
                     return false;
-            }                        
+            }
+#endif
         }
 
         public bool CheckULong(IntPtr L, int pos)
         {
+#if LUA_5_3_OR_NEWER
+            return CheckInteger(L, pos);
+#else
             LuaTypes luaType = LuaDLL.lua_type(L, pos);
 
             switch (luaType)
@@ -65,12 +77,19 @@ namespace LuaInterface
                 default:
                     return false;
             }
+#endif
         }
 
         public bool CheckNullNumber(IntPtr L, int pos)
         {
             LuaTypes luaType = LuaDLL.lua_type(L, pos);
             return luaType == LuaTypes.LUA_TNUMBER || luaType == LuaTypes.LUA_TNIL;
+        }
+
+        public bool CheckNullInteger(IntPtr L, int pos)
+        {
+            LuaTypes luaType;
+            return LuaDLL.lua_isinteger(L, pos) != 0 || (luaType = LuaDLL.lua_type(L, pos)) == LuaTypes.LUA_TNIL;
         }
 
         public bool CheckNullBool(IntPtr L, int pos)
@@ -81,7 +100,11 @@ namespace LuaInterface
 
         public bool CheckNullLong(IntPtr L, int pos)
         {
-            LuaTypes luaType = LuaDLL.lua_type(L, pos);
+            LuaTypes luaType;
+#if LUA_5_3_OR_NEWER
+            return CheckInteger(L, pos) || (luaType = LuaDLL.lua_type(L, pos)) == LuaTypes.LUA_TNIL;
+#else
+            luaType = LuaDLL.lua_type(L, pos);
 
             switch (luaType)
             {
@@ -94,23 +117,29 @@ namespace LuaInterface
                 default:
                     return false;
             }
+#endif
         }
 
         public bool CheckNullULong(IntPtr L, int pos)
         {
-            LuaTypes luaType = LuaDLL.lua_type(L, pos);
+            LuaTypes luaType;
+#if LUA_5_3_OR_NEWER
+            return CheckInteger(L, pos) || (luaType = LuaDLL.lua_type(L, pos)) == LuaTypes.LUA_TNIL;
+#else
+            luaType = LuaDLL.lua_type(L, pos);
 
             switch (luaType)
             {
                 case LuaTypes.LUA_TNIL:
                     return true;
                 case LuaTypes.LUA_TNUMBER:
-                    return true;
+                    return LuaDLL.lua_tonumber(L, pos) >= 0;
                 case LuaTypes.LUA_TUSERDATA:
                     return LuaDLL.tolua_getvaluetype(L, pos) == LuaValueType.UInt64;                    
                 default:
                     return false;
             }
+#endif
         }
 
         public bool CheckString(IntPtr L, int pos)

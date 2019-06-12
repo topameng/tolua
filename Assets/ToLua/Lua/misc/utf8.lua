@@ -1,3 +1,4 @@
+local sutf8 = utf8
 local utf8 = {}
 
 --byte index of the next char after the char at byte index i, followed by a valid flag for the char at byte index i.
@@ -32,14 +33,23 @@ function utf8.byte_indices(s, previ)
 	return utf8.next, s, previ
 end
 
---number of chars in string
-function utf8.len(s)
-	assert(s, "bad argument #1 to 'len' (string expected, got nil)")
-	local len = 0
-	for _ in utf8.byte_indices(s) do
-		len = len + 1
+if sutf8 then
+	utf8.len = sutf8.len
+	utf8.offset = sutf8.offset
+	utf8.codepoint = sutf8.codepoint
+	utf8.char = sutf8.char
+	utf8.codes = sutf8.codes
+	utf8.charpattern = sutf8.charpattern
+else
+	--number of chars in string
+	utf8.len = function (s)
+		assert(s, "bad argument #1 to 'len' (string expected, got nil)")
+		local len = 0
+		for _ in utf8.byte_indices(s) do
+			len = len + 1
+		end
+		return len
 	end
-	return len
 end
 
 --byte index given char index. nil if the index is outside the string.

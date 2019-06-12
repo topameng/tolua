@@ -30,43 +30,43 @@ namespace LuaInterface
     {
         public sbyte ToSByte(IntPtr L, int stackPos)
         {
-            double ret = LuaDLL.lua_tonumber(L, stackPos);
+            int ret = LuaDLL.tolua_tointeger(L, stackPos);
             return Convert.ToSByte(ret);
         }
 
         public byte ToByte(IntPtr L, int stackPos)
         {
-            double ret = LuaDLL.lua_tonumber(L, stackPos);
+            int ret = LuaDLL.tolua_tointeger(L, stackPos);
             return Convert.ToByte(ret);
         }
 
         public short ToInt16(IntPtr L, int stackPos)
         {
-            double ret = LuaDLL.lua_tonumber(L, stackPos);
+            int ret = LuaDLL.tolua_tointeger(L, stackPos);
             return Convert.ToInt16(ret);
         }
 
         public ushort ToUInt16(IntPtr L, int stackPos)
         {
-            double ret = LuaDLL.lua_tonumber(L, stackPos);
+            int ret = LuaDLL.tolua_tointeger(L, stackPos);
             return Convert.ToUInt16(ret);
         }
 
         public char ToChar(IntPtr L, int stackPos)
         {
-            double ret = LuaDLL.lua_tonumber(L, stackPos);
+            int ret = LuaDLL.tolua_tointeger(L, stackPos);
             return Convert.ToChar(ret);
         }
 
         public int ToInt32(IntPtr L, int stackPos)
         {
-            double ret = LuaDLL.lua_tonumber(L, stackPos);
+            int ret = LuaDLL.tolua_tointeger(L, stackPos);
             return Convert.ToInt32(ret);
         }
 
         public uint ToUInt32(IntPtr L, int stackPos)
         {
-            double ret = LuaDLL.lua_tonumber(L, stackPos);
+            int ret = LuaDLL.tolua_tointeger(L, stackPos);
             return Convert.ToUInt32(ret);
         }
 
@@ -119,43 +119,43 @@ namespace LuaInterface
 
         public sbyte CheckSByte(IntPtr L, int stackPos)
         {
-            double ret = LuaDLL.luaL_checknumber(L, stackPos);
+            int ret = LuaDLL.luaL_checkinteger(L, stackPos);
             return Convert.ToSByte(ret);
         }
 
         public byte CheckByte(IntPtr L, int stackPos)
         {
-            double ret = LuaDLL.luaL_checknumber(L, stackPos);
+            int ret = LuaDLL.luaL_checkinteger(L, stackPos);
             return Convert.ToByte(ret);
         }
 
         public short CheckInt16(IntPtr L, int stackPos)
         {
-            double ret = LuaDLL.luaL_checknumber(L, stackPos);
+            int ret = LuaDLL.luaL_checkinteger(L, stackPos);
             return Convert.ToInt16(ret);
         }
 
         public ushort CheckUInt16(IntPtr L, int stackPos)
         {
-            double ret = LuaDLL.luaL_checknumber(L, stackPos);
+            int ret = LuaDLL.luaL_checkinteger(L, stackPos);
             return Convert.ToUInt16(ret);
         }
 
         public char CheckChar(IntPtr L, int stackPos)
         {
-            double ret = LuaDLL.luaL_checknumber(L, stackPos);
+            int ret = LuaDLL.luaL_checkinteger(L, stackPos);
             return Convert.ToChar(ret);
         }
 
         public int CheckInt32(IntPtr L, int stackPos)
         {
-            double ret = LuaDLL.luaL_checknumber(L, stackPos);
+            int ret = LuaDLL.luaL_checkinteger(L, stackPos);
             return Convert.ToInt32(ret);
         }
 
         public uint CheckUInt32(IntPtr L, int stackPos)
         {
-            double ret = LuaDLL.luaL_checknumber(L, stackPos);
+            int ret = LuaDLL.luaL_checkinteger(L, stackPos);
             return Convert.ToUInt32(ret);
         }
 
@@ -214,37 +214,37 @@ namespace LuaInterface
 
         public void Push(IntPtr L, sbyte n)
         {
-            LuaDLL.lua_pushnumber(L, n);
+            LuaDLL.lua_pushinteger(L, n);
         }
 
         public void Push(IntPtr L, byte n)
         {
-            LuaDLL.lua_pushnumber(L, n);
+            LuaDLL.lua_pushinteger(L, n);
         }
 
         public void Push(IntPtr L, short n)
         {
-            LuaDLL.lua_pushnumber(L, n);
+            LuaDLL.lua_pushinteger(L, n);
         }
 
         public void Push(IntPtr L, ushort n)
         {
-            LuaDLL.lua_pushnumber(L, n);
+            LuaDLL.lua_pushinteger(L, n);
         }
 
         public void Push(IntPtr L, char n)
         {
-            LuaDLL.lua_pushnumber(L, n);
+            LuaDLL.lua_pushinteger(L, n);
         }
 
         public void Push(IntPtr L, int n)
         {
-            LuaDLL.lua_pushnumber(L, n);
+            LuaDLL.lua_pushinteger(L, n);
         }
 
         public void Push(IntPtr L, uint n)
         {
-            LuaDLL.lua_pushnumber(L, n);
+            LuaDLL.lua_pushinteger(L, n);
         }
 
         public void Push(IntPtr L, decimal n)
@@ -328,7 +328,7 @@ namespace LuaInterface
                 return null;
             }
 
-            double ret = LuaDLL.lua_tonumber(L, stackPos);
+            int ret = LuaDLL.tolua_tointeger(L, stackPos);
             return Convert.ToSByte(ret);
         }
 
@@ -339,7 +339,7 @@ namespace LuaInterface
                 return null;
             }
 
-            double ret = LuaDLL.lua_tonumber(L, stackPos);
+            int ret = LuaDLL.tolua_tointeger(L, stackPos);
             return Convert.ToByte(ret);
         }
 
@@ -350,7 +350,7 @@ namespace LuaInterface
                 return null;
             }
 
-            double ret = LuaDLL.lua_tonumber(L, stackPos);
+            int ret = LuaDLL.tolua_tointeger(L, stackPos);
             return Convert.ToInt16(ret);
         }
 
@@ -361,7 +361,7 @@ namespace LuaInterface
                 return null;
             }
 
-            double ret = LuaDLL.lua_tonumber(L, stackPos);
+            int ret = LuaDLL.tolua_tointeger(L, stackPos);
             return Convert.ToUInt16(ret);
         }
 
@@ -372,7 +372,7 @@ namespace LuaInterface
                 return null;
             }
 
-            double ret = LuaDLL.lua_tonumber(L, stackPos);
+            int ret = LuaDLL.tolua_tointeger(L, stackPos);
             return Convert.ToChar(ret);
         }
 
@@ -383,7 +383,7 @@ namespace LuaInterface
                 return null;
             }
 
-            double ret = LuaDLL.lua_tonumber(L, stackPos);
+            int ret = LuaDLL.tolua_tointeger(L, stackPos);
             return Convert.ToInt32(ret);
         }
 
@@ -394,7 +394,7 @@ namespace LuaInterface
                 return null;
             }
 
-            double ret = LuaDLL.lua_tonumber(L, stackPos);
+            int ret = LuaDLL.tolua_tointeger(L, stackPos);
             return Convert.ToUInt32(ret);
         }
 
@@ -637,7 +637,7 @@ namespace LuaInterface
                 return null;
             }
 
-            double ret = LuaDLL.luaL_checknumber(L, stackPos);
+            int ret = LuaDLL.luaL_checkinteger(L, stackPos);
             return Convert.ToSByte(ret);
         }
 
@@ -648,7 +648,7 @@ namespace LuaInterface
                 return null;
             }
 
-            double ret = LuaDLL.luaL_checknumber(L, stackPos);
+            int ret = LuaDLL.luaL_checkinteger(L, stackPos);
             return Convert.ToByte(ret);
         }
 
@@ -659,7 +659,7 @@ namespace LuaInterface
                 return null;
             }
 
-            double ret = LuaDLL.luaL_checknumber(L, stackPos);
+            int ret = LuaDLL.luaL_checkinteger(L, stackPos);
             return Convert.ToInt16(ret);
         }
 
@@ -670,7 +670,7 @@ namespace LuaInterface
                 return null;
             }
 
-            double ret = LuaDLL.luaL_checknumber(L, stackPos);
+            int ret = LuaDLL.luaL_checkinteger(L, stackPos);
             return Convert.ToUInt16(ret);
         }
 
@@ -681,7 +681,7 @@ namespace LuaInterface
                 return null;
             }
 
-            double ret = LuaDLL.luaL_checknumber(L, stackPos);
+            int ret = LuaDLL.luaL_checkinteger(L, stackPos);
             return Convert.ToChar(ret);
         }
 
@@ -692,7 +692,7 @@ namespace LuaInterface
                 return null;
             }
 
-            double ret = LuaDLL.luaL_checknumber(L, stackPos);
+            int ret = LuaDLL.luaL_checkinteger(L, stackPos);
             return Convert.ToInt32(ret);
         }
 
@@ -703,7 +703,7 @@ namespace LuaInterface
                 return null;
             }
 
-            double ret = LuaDLL.luaL_checknumber(L, stackPos);
+            int ret = LuaDLL.luaL_checkinteger(L, stackPos);
             return Convert.ToUInt32(ret);
         }
 
@@ -937,7 +937,7 @@ namespace LuaInterface
             }
             else
             {
-                LuaDLL.lua_pushnumber(L, n.Value);
+                LuaDLL.lua_pushinteger(L, n.Value);
             }
         }
 
@@ -949,7 +949,7 @@ namespace LuaInterface
             }
             else
             {
-                LuaDLL.lua_pushnumber(L, n.Value);
+                LuaDLL.lua_pushinteger(L, n.Value);
             }
         }
 
@@ -961,7 +961,7 @@ namespace LuaInterface
             }
             else
             {
-                LuaDLL.lua_pushnumber(L, n.Value);
+                LuaDLL.lua_pushinteger(L, n.Value);
             }
         }
 
@@ -973,7 +973,7 @@ namespace LuaInterface
             }
             else
             {
-                LuaDLL.lua_pushnumber(L, n.Value);
+                LuaDLL.lua_pushinteger(L, n.Value);
             }
         }
 
@@ -985,7 +985,7 @@ namespace LuaInterface
             }
             else
             {
-                LuaDLL.lua_pushnumber(L, n.Value);
+                LuaDLL.lua_pushinteger(L, n.Value);
             }
         }
 
@@ -997,7 +997,7 @@ namespace LuaInterface
             }
             else
             {
-                LuaDLL.lua_pushnumber(L, n.Value);
+                LuaDLL.lua_pushinteger(L, n.Value);
             }
         }
 
@@ -1009,7 +1009,7 @@ namespace LuaInterface
             }
             else
             {
-                LuaDLL.lua_pushnumber(L, n.Value);
+                LuaDLL.lua_pushinteger(L, n.Value);
             }
         }
 

@@ -632,7 +632,7 @@ namespace LuaInterface
                 return null;
             }
 
-            stackPos = LuaDLL.abs_index(L, stackPos);
+            // stackPos = LuaDLL.lua_absindex(L, stackPos);
             LuaDLL.lua_pushvalue(L, stackPos);
             int reference = LuaDLL.toluaL_ref(L);
             return LuaStatic.GetFunction(L, reference);
@@ -647,7 +647,7 @@ namespace LuaInterface
                 return null;
             }
 
-            stackPos = LuaDLL.abs_index(L, stackPos);
+            // stackPos = LuaDLL.lua_absindex(L, stackPos);
             LuaDLL.lua_pushvalue(L, stackPos);
             int reference = LuaDLL.toluaL_ref(L);
             return LuaStatic.GetTable(L, reference);
@@ -662,7 +662,7 @@ namespace LuaInterface
                 return null;
             }
 
-            stackPos = LuaDLL.abs_index(L, stackPos);
+            // stackPos = LuaDLL.lua_absindex(L, stackPos);
             LuaDLL.lua_pushvalue(L, stackPos);
             int reference = LuaDLL.toluaL_ref(L);
             return LuaStatic.GetLuaThread(L, reference);
@@ -707,7 +707,7 @@ namespace LuaInterface
         {
             int top = LuaDLL.lua_gettop(L);
             LuaStatic.GetUnpackRayRef(L);
-            stackPos = LuaDLL.abs_index(L, stackPos);
+            stackPos = LuaDLL.lua_absindex(L, stackPos);
             LuaDLL.lua_pushvalue(L, stackPos);
 
             if (LuaDLL.lua_pcall(L, 1, 6, 0) == 0)
@@ -733,7 +733,7 @@ namespace LuaInterface
         {
             int top = LuaDLL.lua_gettop(L);
             LuaStatic.GetUnpackBounds(L);
-            stackPos = LuaDLL.abs_index(L, stackPos);
+            stackPos = LuaDLL.lua_absindex(L, stackPos);
             LuaDLL.lua_pushvalue(L, stackPos);
 
             if (LuaDLL.lua_pcall(L, 1, 2, 0) == 0)
@@ -810,7 +810,7 @@ namespace LuaInterface
 
         public static object ToVarTable(IntPtr L, int stackPos)
         {
-            stackPos = LuaDLL.abs_index(L, stackPos);
+            // stackPos = LuaDLL.lua_absindex(L, stackPos);
             int ret = LuaDLL.tolua_getvaluetype(L, stackPos);
             LuaTableToVar _ToObject = ToVarMap[ret];
 
@@ -885,7 +885,7 @@ namespace LuaInterface
                 case LuaTypes.LUA_TNIL:
                     return null;
                 case LuaTypes.LUA_TFUNCTION:
-                    stackPos = LuaDLL.abs_index(L, stackPos);
+                    // stackPos = LuaDLL.lua_absindex(L, stackPos);
                     LuaDLL.lua_pushvalue(L, stackPos);
                     int reference = LuaDLL.toluaL_ref(L);
                     return LuaStatic.GetFunction(L, reference);
@@ -904,7 +904,7 @@ namespace LuaInterface
                 case LuaTypes.LUA_TNIL:
                     return null;
                 case LuaTypes.LUA_TTABLE:
-                    stackPos = LuaDLL.abs_index(L, stackPos);
+                    // stackPos = LuaDLL.lua_absindex(L, stackPos);
                     LuaDLL.lua_pushvalue(L, stackPos);
                     int reference = LuaDLL.toluaL_ref(L);
                     return LuaStatic.GetTable(L, reference);
@@ -923,7 +923,7 @@ namespace LuaInterface
                 case LuaTypes.LUA_TNIL:
                     return null;
                 case LuaTypes.LUA_TTHREAD:
-                    stackPos = LuaDLL.abs_index(L, stackPos);
+                    // stackPos = LuaDLL.lua_absindex(L, stackPos);
                     LuaDLL.lua_pushvalue(L, stackPos);
                     int reference = LuaDLL.toluaL_ref(L);
                     return LuaStatic.GetLuaThread(L, reference);
@@ -942,17 +942,17 @@ namespace LuaInterface
                 case LuaTypes.LUA_TNIL:
                     return null;
                 case LuaTypes.LUA_TFUNCTION:
-                    stackPos = LuaDLL.abs_index(L, stackPos);
+                    // stackPos = LuaDLL.lua_absindex(L, stackPos);
                     LuaDLL.lua_pushvalue(L, stackPos);
                     int ref1 = LuaDLL.toluaL_ref(L);
                     return LuaStatic.GetFunction(L, ref1);
                 case LuaTypes.LUA_TTABLE:
-                    stackPos = LuaDLL.abs_index(L, stackPos);
+                    // stackPos = LuaDLL.lua_absindex(L, stackPos);
                     LuaDLL.lua_pushvalue(L, stackPos);
                     int ref2 = LuaDLL.toluaL_ref(L);
                     return LuaStatic.GetTable(L, ref2);
                 case LuaTypes.LUA_TTHREAD:
-                    stackPos = LuaDLL.abs_index(L, stackPos);
+                    // stackPos = LuaDLL.lua_absindex(L, stackPos);
                     LuaDLL.lua_pushvalue(L, stackPos);
                     int ref3 = LuaDLL.toluaL_ref(L);
                     return LuaStatic.GetLuaThread(L, ref3);
@@ -1870,7 +1870,7 @@ namespace LuaInterface
 
             while (pos < count)
             {
-                list[pos++] = (char)LuaDLL.lua_tointeger(L, stackPos++);                                 
+                list[pos++] = (char)LuaDLL.tolua_tointeger(L, stackPos++);                                 
             }
 
             return list;

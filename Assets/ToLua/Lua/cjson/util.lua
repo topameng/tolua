@@ -1,3 +1,4 @@
+local unpack = unpack or table.unpack
 local json = require "cjson"
 
 -- Various common routines used by the Lua CJSON package

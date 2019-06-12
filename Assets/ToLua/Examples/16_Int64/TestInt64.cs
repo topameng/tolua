@@ -41,10 +41,10 @@ public class TestInt64 : MonoBehaviour
 
                 print('----------------------------uint64-----------------------------')
                 x = uint64.new('18446744073709551615')                                
-                print('uint64 max is: '..tostring(x))
+                print('uint64 max is: '..uint64.tostring(x))
                 l, h = uint64.tonum2(x)      
-                str = tostring(uint64.new(l, h))
-                print(str..':'..tostring(x)..' low:'..l..' high:'..h)     
+                str = uint64.tostring(uint64.new(l, h))
+                print(str..':'..uint64.tostring(x)..' low:'..l..' high:'..h)     
 
                 return y
             end

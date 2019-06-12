@@ -683,6 +683,19 @@ namespace LuaInterface
             }
         }
 
+        public int CheckInteger()
+        {
+            try
+            {
+                return luaState.LuaCheckInteger(stackPos++);
+            }
+            catch (Exception e)
+            {
+                EndPCall();
+                throw e;
+            }
+        }
+
         public bool CheckBoolean()
         {
             try
