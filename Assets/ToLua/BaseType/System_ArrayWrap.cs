@@ -510,11 +510,11 @@ public class System_ArrayWrap
 
                             return 1;
                         case "System.UInt64":
-                            long[] ularray = obj as long[];
+                            ulong[] ularray = obj as ulong[];
 
                             for (int i = 0; i < ularray.Length; i++)
                             {
-                                long ulret = ularray[i];
+                                ulong ulret = ularray[i];
                                 LuaDLL.tolua_pushuint64(L, ulret);
                                 LuaDLL.lua_rawseti(L, -2, i + 1);
                             }
