@@ -1311,60 +1311,60 @@ namespace LuaInterface
                     t = ts[0];
                 }
 
-                if (t == typeof(bool))
+                string typeFullName = t.FullName;
+                switch (typeFullName)
                 {
-                    return LuaDLL.luaL_checkboolean(L, stackPos);
+                    case "System.Boolean":
+                        return LuaDLL.luaL_checkboolean(L, stackPos);
+                    case "System.Int64":
+                        return LuaDLL.tolua_checkint64(L, stackPos);
+                    case "System.UInt64":
+                        return LuaDLL.tolua_checkuint64(L, stackPos);
+                    case "LuaInterface.LuaByteBuffer":
+                        int len = 0;
+                        IntPtr source = LuaDLL.tolua_tolstring(L, stackPos, out len);
+                        return new LuaByteBuffer(source, len);
+                    case "UnityEngine.Vector3":
+                        return CheckVector3(L, stackPos);
+                    case "UnityEngine.Quaternion":
+                        return CheckQuaternion(L, stackPos);
+                    case "UnityEngine.Vector2":
+                        return CheckVector2(L, stackPos);
+                    case "UnityEngine.Vector4":
+                        return CheckVector4(L, stackPos);
+                    case "UnityEngine.Color":
+                        return CheckColor(L, stackPos);
+                    case "UnityEngine.Ray":
+                        return CheckRay(L, stackPos);
+                    case "UnityEngine.Bounds":
+                        return CheckBounds(L, stackPos);
+                    case "UnityEngine.LayerMask":
+                        return CheckLayerMask(L, stackPos);
+                    case "System.Single":
+                    case "System.Double":
+                    // case "System.Decimal":
+                        double d = LuaDLL.luaL_checknumber(L, stackPos);
+                        return Convert.ChangeType(d, t);
+                    case "System.Int32":
+                        return LuaDLL.luaL_checkinteger(L, stackPos);
+                    case "System.UInt32":
+                        return (uint)LuaDLL.luaL_checkinteger(L, stackPos);
+                    case "System.SByte":
+                        return (sbyte)LuaDLL.luaL_checkinteger(L, stackPos);
+                    case "System.Byte":
+                        return (byte)LuaDLL.luaL_checkinteger(L, stackPos);
+                    case "System.Int16":
+                        return (short)LuaDLL.luaL_checkinteger(L, stackPos);
+                    case "System.UInt16":
+                        return (ushort)LuaDLL.luaL_checkinteger(L, stackPos);
+                    case "System.Char":
+                        return (char)LuaDLL.luaL_checkinteger(L, stackPos);
                 }
-                else if (t == typeof(long))
-                {
-                    return LuaDLL.tolua_checkint64(L, stackPos);
-                }
-                else if (t == typeof(ulong))
-                {
-                    return LuaDLL.tolua_checkuint64(L, stackPos);
-                }
-                else if (t.IsPrimitive)
+
+                if (t.IsPrimitive)
                 {
                     double d = LuaDLL.luaL_checknumber(L, stackPos);
                     return Convert.ChangeType(d, t);
-                }
-                else if (t == typeof(LuaByteBuffer))
-                {
-                    int len = 0;
-                    IntPtr source = LuaDLL.tolua_tolstring(L, stackPos, out len);
-                    return new LuaByteBuffer(source, len);
-                }
-                else if (t == typeof(Vector3))
-                {
-                    return CheckVector3(L, stackPos);
-                }
-                else if (t == typeof(Quaternion))
-                {
-                    return CheckQuaternion(L, stackPos);
-                }
-                else if (t == typeof(Vector2))
-                {
-                    return CheckVector2(L, stackPos);
-                }
-                else if (t == typeof(Vector4))
-                {
-                    return CheckVector4(L, stackPos);
-                }
-                else if (t == typeof(Color))
-                {
-                    return CheckColor(L, stackPos);
-                }
-                else if (t == typeof(Ray))
-                {
-                    return CheckRay(L, stackPos);
-                }
-                else if (t == typeof(Bounds))
-                {
-                    return CheckBounds(L, stackPos);
-                }
-                else if (t == typeof(LayerMask))
-                {
-                    return CheckLayerMask(L, stackPos);
                 }
                 else
                 {
@@ -2708,72 +2708,96 @@ namespace LuaInterface
                     t = ts[0];
                 }
 
-                if (t == typeof(bool))
+                string typeFullName = t.FullName;
+                switch (typeFullName)
                 {
-                    bool b = (bool)obj;
-                    LuaDLL.lua_pushboolean(L, b);
+                    case "System.Boolean":
+                        LuaDLL.lua_pushboolean(L, (bool)obj);
+                        return;
+                    case "System.Int64":
+                        LuaDLL.tolua_pushint64(L, (long)obj);
+                        return;
+                    case "System.UInt64":
+                        LuaDLL.tolua_pushuint64(L, (ulong)obj);
+                        return;
+                    case "LuaInterface.LuaByteBuffer":
+                        LuaByteBuffer lbb = (LuaByteBuffer)obj;
+                        LuaDLL.lua_pushlstring(L, lbb.buffer, lbb.Length);
+                        return;
+                    case "UnityEngine.Vector3":
+                        Push(L, (Vector3)obj);
+                        return;
+                    case "UnityEngine.Quaternion":
+                        Push(L, (Quaternion)obj);
+                        return;
+                    case "UnityEngine.Vector2":
+                        Push(L, (Vector2)obj);
+                        return;
+                    case "UnityEngine.Vector4":
+                        Push(L, (Vector4)obj);
+                        return;
+                    case "UnityEngine.Color":
+                        Push(L, (Color)obj);
+                        return;
+                    case "UnityEngine.RaycastHit":
+                        Push(L, (RaycastHit)obj);
+                        return;
+                    case "UnityEngine.Touch":
+                        Push(L, (Touch)obj);
+                        return;
+                    case "UnityEngine.Ray":
+                        Push(L, (Ray)obj);
+                        return;
+                    case "UnityEngine.Bounds":
+                        Push(L, (Bounds)obj);
+                        return;
+                    case "UnityEngine.LayerMask":
+                        Push(L, (LayerMask)obj);
+                        return;
+                    case "System.Single":
+                    case "System.Double":
+                    // case "System.Decimal":
+                        double d = Convert.ToDouble(obj);
+                        LuaDLL.lua_pushnumber(L, d);
+                        return;
+                    case "System.Int32":
+                        int i = Convert.ToInt32(obj);
+                        LuaDLL.lua_pushinteger(L, i);
+                        return;
+                    case "System.UInt32":
+                        uint ui = Convert.ToUInt32(obj);
+                        LuaDLL.lua_pushinteger(L, ui);
+                        return;
+                    case "System.SByte":
+                        sbyte sb = Convert.ToSByte(obj);
+                        LuaDLL.lua_pushinteger(L, sb);
+                        return;
+                    case "System.Byte":
+                        byte b = Convert.ToByte(obj);
+                        LuaDLL.lua_pushinteger(L, b);
+                        return;
+                    case "System.Int16":
+                        short s = Convert.ToInt16(obj);
+                        LuaDLL.lua_pushinteger(L, s);
+                        return;
+                    case "System.UInt16":
+                        ushort us = Convert.ToUInt16(obj);
+                        LuaDLL.lua_pushinteger(L, us);
+                        return;
+                    case "System.Char":
+                        char c = Convert.ToChar(obj);
+                        LuaDLL.lua_pushinteger(L, c);
+                        return;
                 }
-                else if (obj is Enum)
+
+                if (obj is Enum)
                 {
                     Push(L, (System.Enum)obj);
                 }
-                else if (t == typeof(long))
-                {
-                    LuaDLL.tolua_pushint64(L, (long)obj);
-                }
-                else if (t == typeof(ulong))
-                {
-                    LuaDLL.tolua_pushuint64(L, (ulong)obj);
-                }
                 else if (t.IsPrimitive)
                 {
-                    double d = LuaMisc.ToDouble(obj);
+                    double d = Convert.ToDouble(obj);
                     LuaDLL.lua_pushnumber(L, d);
-                }
-                else if (t == typeof(LuaByteBuffer))
-                {
-                    LuaByteBuffer lbb = (LuaByteBuffer)obj;
-                    LuaDLL.lua_pushlstring(L, lbb.buffer, lbb.buffer.Length);
-                }
-                else if (t == typeof(Vector3))
-                {
-                    Push(L, (Vector3)obj);
-                }
-                else if (t == typeof(Quaternion))
-                {
-                    Push(L, (Quaternion)obj);
-                }
-                else if (t == typeof(Vector2))
-                {
-                    Push(L, (Vector2)obj);
-                }
-                else if (t == typeof(Vector4))
-                {
-                    Push(L, (Vector4)obj);
-                }
-                else if (t == typeof(Color))
-                {
-                    Push(L, (Color)obj);
-                }
-                else if (t == typeof(RaycastHit))
-                {
-                    Push(L, (RaycastHit)obj);
-                }
-                else if (t == typeof(Touch))
-                {
-                    Push(L, (Touch)obj);
-                }
-                else if (t == typeof(Ray))
-                {
-                    Push(L, (Ray)obj);
-                }
-                else if (t == typeof(Bounds))
-                {
-                    Push(L, (Bounds)obj);
-                }
-                else if (t == typeof(LayerMask))
-                {
-                    PushLayerMask(L, (LayerMask)obj);
                 }
                 else
                 {

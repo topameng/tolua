@@ -44,76 +44,76 @@ public class System_ArrayWrap
     static bool GetPrimitiveValue(IntPtr L, object obj, Type t, int index)
     {
         bool flag = true;
+        string typeFullName = t.FullName;
 
-        if (t == typeof(System.Single))
+        switch (typeFullName)
         {
-            float[] array = obj as float[];
-            float ret = array[index];
-            LuaDLL.lua_pushnumber(L, ret);            
-        }
-        else if (t == typeof(System.Int32))
-        {
-            int[] array = obj as int[];
-            int ret = array[index];
-            LuaDLL.lua_pushinteger(L, ret);
-        }
-        else if (t == typeof(System.Double))
-        {
-            double[] array = obj as double[];
-            double ret = array[index];
-            LuaDLL.lua_pushnumber(L, ret);
-        }
-        else if (t == typeof(System.Boolean))
-        {
-            bool[] array = obj as bool[];
-            bool ret = array[index];
-            LuaDLL.lua_pushboolean(L, ret);
-        }
-        else if (t == typeof(System.Int64))
-        {
-            long[] array = obj as long[];
-            long ret = array[index];
-            LuaDLL.tolua_pushint64(L, ret);
-        }
-        else if (t == typeof(System.SByte))
-        {
-            sbyte[] array = obj as sbyte[];
-            sbyte ret = array[index];
-            LuaDLL.lua_pushinteger(L, ret);
-        }
-        else if (t == typeof(System.Byte))
-        {
-            byte[] array = obj as byte[];
-            byte ret = array[index];
-            LuaDLL.lua_pushinteger(L, ret);
-        }
-        else if (t == typeof(System.Int16))
-        {
-            short[] array = obj as short[];
-            short ret = array[index];
-            LuaDLL.lua_pushinteger(L, ret);
-        }
-        else if (t == typeof(System.UInt16))
-        {
-            ushort[] array = obj as ushort[];
-            ushort ret = array[index];
-            LuaDLL.lua_pushinteger(L, ret);
-        }
-        else if (t == typeof(System.Char))
-        {
-            char[] array = obj as char[];
-            char ret = array[index];
-            LuaDLL.lua_pushinteger(L, ret);
-        }
-        else if (t == typeof(System.UInt32))
-        {
-            uint[] array = obj as uint[];
-            uint ret = array[index];
-            LuaDLL.lua_pushinteger(L, ret);
-        }
-        else
-        {
-            flag = false;
+            case "System.Single":
+                float[] farray = obj as float[];
+                float fret = farray[index];
+                LuaDLL.lua_pushnumber(L, fret);            
+                break;
+            case "System.Int32":
+                int[] array = obj as int[];
+                int ret = array[index];
+                LuaDLL.lua_pushinteger(L, ret);
+                break;
+            case "System.Double":
+                double[] darray = obj as double[];
+                double dret = darray[index];
+                LuaDLL.lua_pushnumber(L, dret);
+                break;
+            case "System.Boolean":
+                bool[] barray = obj as bool[];
+                bool bret = barray[index];
+                LuaDLL.lua_pushboolean(L, bret);
+                break;
+            case "System.UInt32":
+                uint[] uarray = obj as uint[];
+                uint uret = uarray[index];
+                LuaDLL.lua_pushinteger(L, uret);
+                break;
+            case "System.SByte":
+                sbyte[] sbarray = obj as sbyte[];
+                sbyte sbret = sbarray[index];
+                LuaDLL.lua_pushinteger(L, sbret);
+                break;
+            case "System.Byte":
+                byte[] byarray = obj as byte[];
+                byte byret = byarray[index];
+                LuaDLL.lua_pushinteger(L, byret);
+                break;
+            case "System.Int16":
+                short[] sarray = obj as short[];
+                short sret = sarray[index];
+                LuaDLL.lua_pushinteger(L, sret);
+                break;
+            case "System.UInt16":
+                ushort[] usarray = obj as ushort[];
+                ushort usret = usarray[index];
+                LuaDLL.lua_pushinteger(L, usret);
+                break;
+            case "System.Char":
+                char[] carray = obj as char[];
+                char cret = carray[index];
+                LuaDLL.lua_pushinteger(L, cret);
+                break;
+            case "System.Int64":
+                long[] larray = obj as long[];
+                long lret = larray[index];
+                LuaDLL.tolua_pushint64(L, lret);
+                break;
+            case "System.UInt64":
+                ulong[] ularray = obj as ulong[];  
+                ulong ulret = ularray[index];
+                LuaDLL.tolua_pushuint64(L, ulret);
+                break;
+            case "System.String":
+            case "System.Decimal":
+            case "System.Object":
+            default:
+                flag = false;
+                break;
         }
 
         return flag;
@@ -149,40 +149,37 @@ public class System_ArrayWrap
                         return 1;
                     }
                 }
-                else if (t == typeof(Vector3))
+                else
                 {
-                    Vector3[] array = obj as Vector3[];
-                    Vector3 ret = array[index];
-                    ToLua.Push(L, ret);                    
-                    return 1;
-                }
-                else if (t == typeof(Quaternion))
-                {
-                    Quaternion[] array = obj as Quaternion[];
-                    Quaternion ret = array[index];
-                    ToLua.Push(L, ret);
-                    return 1;                    
-                }
-                else if (t == typeof(Vector2))
-                {
-                    Vector2[] array = obj as Vector2[];
-                    Vector2 ret = array[index];
-                    ToLua.Push(L, ret);
-                    return 1;                    
-                }
-                else if (t == typeof(Vector4))
-                {
-                    Vector4[] array = obj as Vector4[];
-                    Vector4 ret = array[index];
-                    ToLua.Push(L, ret);
-                    return 1;                    
-                }
-                else if (t == typeof(Color))
-                {
-                    Color[] array = obj as Color[];
-                    Color ret = array[index];
-                    ToLua.Push(L, ret);
-                    return 1;                    
+                    string typeFullName = t.FullName;
+                    switch (typeFullName)
+                    {
+                        case "UnityEngine.Vector3":
+                            Vector3[] v3array = obj as Vector3[];
+                            Vector3 v3ret = v3array[index];
+                            ToLua.Push(L, v3ret);                    
+                            return 1;
+                        case "UnityEngine.Quaternion":
+                            Quaternion[] qarray = obj as Quaternion[];
+                            Quaternion qret = qarray[index];
+                            ToLua.Push(L, qret);
+                            return 1;        
+                        case "UnityEngine.Vector2":
+                            Vector2[] v2array = obj as Vector2[];
+                            Vector2 v2ret = v2array[index];
+                            ToLua.Push(L, v2ret);
+                            return 1;               
+                        case "UnityEngine.Vector4":
+                            Vector4[] v4array = obj as Vector4[];
+                            Vector4 v4ret = v4array[index];
+                            ToLua.Push(L, v4ret);
+                            return 1;                    
+                        case "UnityEngine.Color":
+                            Color[] array = obj as Color[];
+                            Color ret = array[index];
+                            ToLua.Push(L, ret);
+                            return 1;                    
+                    }
                 }
             }            
 
@@ -199,76 +196,76 @@ public class System_ArrayWrap
     static bool SetPrimitiveValue(IntPtr L, object obj, Type t, int index)
     {
         bool flag = true;
+        string typeFullName = t.FullName;
 
-        if (t == typeof(System.Single))
+        switch (typeFullName)
         {
-            float[] array = obj as float[];
-            float val = (float)LuaDLL.luaL_checknumber(L, 3);
-            array[index] = val;            
-        }
-        else if (t == typeof(System.Int32))
-        {
-            int[] array = obj as int[];
-            int val = (int)LuaDLL.luaL_checkinteger(L, 3);
-            array[index] = val;
-        }
-        else if (t == typeof(System.Double))
-        {
-            double[] array = obj as double[];
-            double val = LuaDLL.luaL_checknumber(L, 3);
-            array[index] = val;
-        }
-        else if (t == typeof(System.Boolean))
-        {
-            bool[] array = obj as bool[];
-            bool val = LuaDLL.luaL_checkboolean(L, 3);
-            array[index] = val;
-        }
-        else if (t == typeof(System.Int64))
-        {
-            long[] array = obj as long[];
-            long val = LuaDLL.tolua_toint64(L, 3);
-            array[index] = val;
-        }
-        else if (t == typeof(System.SByte))
-        {
-            sbyte[] array = obj as sbyte[];
-            sbyte val = (sbyte)LuaDLL.luaL_checkinteger(L, 3);
-            array[index] = val;
-        }
-        else if (t == typeof(System.Byte))
-        {
-            byte[] array = obj as byte[];
-            byte val = (byte)LuaDLL.luaL_checkinteger(L, 3);
-            array[index] = val;
-        }
-        else if (t == typeof(System.Int16))
-        {
-            short[] array = obj as short[];
-            short val = (short)LuaDLL.luaL_checkinteger(L, 3);
-            array[index] = val;
-        }
-        else if (t == typeof(System.UInt16))
-        {
-            ushort[] array = obj as ushort[];
-            ushort val = (ushort)LuaDLL.luaL_checkinteger(L, 3);
-            array[index] = val;
-        }
-        else if (t == typeof(System.Char))
-        {
-            char[] array = obj as char[];
-            char val = (char)LuaDLL.luaL_checkinteger(L, 3);
-            array[index] = val;
-        }
-        else if (t == typeof(System.UInt32))
-        {
-            uint[] array = obj as uint[];
-            uint val = (uint)LuaDLL.luaL_checkinteger(L, 3);
-            array[index] = val;
-        }
-        else
-        {
-            flag = false;
+            case "System.Single":
+                float[] farray = obj as float[];
+                float fval = (float)LuaDLL.luaL_checknumber(L, 3);
+                farray[index] = fval;                      
+                break;
+            case "System.Int32":
+                int[] iarray = obj as int[];
+                int ival = (int)LuaDLL.luaL_checkinteger(L, 3);
+                iarray[index] = ival;
+                break;
+            case "System.Double":
+                double[] darray = obj as double[];
+                double dval = LuaDLL.luaL_checknumber(L, 3);
+                darray[index] = dval;
+                break;
+            case "System.Boolean":
+                bool[] barray = obj as bool[];
+                bool bval = LuaDLL.luaL_checkboolean(L, 3);
+                barray[index] = bval;
+                break;
+            case "System.UInt32":
+                uint[] uarray = obj as uint[];
+                uint uval = (uint)LuaDLL.luaL_checkinteger(L, 3);
+                uarray[index] = uval;
+                break;
+            case "System.SByte":
+                sbyte[] sbarray = obj as sbyte[];
+                sbyte sbval = (sbyte)LuaDLL.luaL_checkinteger(L, 3);
+                sbarray[index] = sbval;
+                break;
+            case "System.Byte":
+                byte[] byarray = obj as byte[];
+                byte byval = (byte)LuaDLL.luaL_checkinteger(L, 3);
+                byarray[index] = byval;
+                break;
+            case "System.Int16":
+                short[] sarray = obj as short[];
+                short sval = (short)LuaDLL.luaL_checkinteger(L, 3);
+                sarray[index] = sval;
+                break;
+            case "System.UInt16":
+                ushort[] usarray = obj as ushort[];
+                ushort usval = (ushort)LuaDLL.luaL_checkinteger(L, 3);
+                usarray[index] = usval;
+                break;
+            case "System.Char":
+                char[] carray = obj as char[];
+                char cval = (char)LuaDLL.luaL_checkinteger(L, 3);
+                carray[index] = cval;
+                break;
+            case "System.Int64":
+                long[] larray = obj as long[];
+                long lval = LuaDLL.tolua_toint64(L, 3);
+                larray[index] = lval;
+                break;
+            case "System.UInt64":
+                ulong[] ularray = obj as ulong[];
+                ulong ulval = LuaDLL.tolua_touint64(L, 3);
+                ularray[index] = ulval;
+                break;
+            case "System.String":
+            case "System.Decimal":
+            case "System.Object":
+            default:
+                flag = false;
+                break;
         }
 
         return flag;
@@ -298,40 +295,37 @@ public class System_ArrayWrap
                         return 0;
                     }
                 }
-                else if (t == typeof(Vector3))
+                else
                 {
-                    Vector3[] array = obj as Vector3[];
-                    Vector3 val = ToLua.ToVector3(L, 3);
-                    array[index] = val;
-                    return 0;
-                }
-                else if (t == typeof(Quaternion))
-                {
-                    Quaternion[] array = obj as Quaternion[];
-                    Quaternion val = ToLua.ToQuaternion(L, 3);
-                    array[index] = val;
-                    return 0;
-                }
-                else if (t == typeof(Vector2))
-                {
-                    Vector2[] array = obj as Vector2[];
-                    Vector2 val = ToLua.ToVector2(L, 3);
-                    array[index] = val;
-                    return 0;
-                }
-                else if (t == typeof(Vector4))
-                {
-                    Vector4[] array = obj as Vector4[];
-                    Vector4 val = ToLua.ToVector4(L, 3);
-                    array[index] = val;
-                    return 0;
-                }
-                else if (t == typeof(Color))
-                {
-                    Color[] array = obj as Color[];
-                    Color val = ToLua.ToColor(L, 3);
-                    array[index] = val;
-                    return 0;
+                    string typeFullName = t.FullName;
+                    switch (typeFullName)
+                    {
+                        case "UnityEngine.Vector3":
+                            Vector3[] v3array = obj as Vector3[];
+                            Vector3 v3val = ToLua.ToVector3(L, 3);
+                            v3array[index] = v3val;
+                            return 0;
+                        case "UnityEngine.Quaternion":
+                            Quaternion[] qarray = obj as Quaternion[];
+                            Quaternion qval = ToLua.ToQuaternion(L, 3);
+                            qarray[index] = qval;
+                            return 0;
+                        case "UnityEngine.Vector2":
+                            Vector2[] v2array = obj as Vector2[];
+                            Vector2 v2val = ToLua.ToVector2(L, 3);
+                            v2array[index] = v2val;
+                            return 0;
+                        case "UnityEngine.Vector4":
+                            Vector4[] v4array = obj as Vector4[];
+                            Vector4 v4val = ToLua.ToVector4(L, 3);
+                            v4array[index] = v4val;
+                            return 0;            
+                        case "UnityEngine.Color":
+                            Color[] array = obj as Color[];
+                            Color val = ToLua.ToColor(L, 3);
+                            array[index] = val;
+                            return 0;
+                    }
                 }
             }
 
@@ -389,216 +383,205 @@ public class System_ArrayWrap
 
             if (t.IsValueType)
             {
+                string typeFullName = t.FullName;
                 if (t.IsPrimitive)
                 {
-                    if (t == typeof(System.Single))
+                    switch (typeFullName)
                     {
-                        float[] array = obj as float[];
+                        case "System.Single":
+                            float[] farray = obj as float[];
 
-                        for (int i = 0; i < array.Length; i++)
-                        {
-                            float ret = array[i];
-                            LuaDLL.lua_pushnumber(L, ret);
-                            LuaDLL.lua_rawseti(L, -2, i + 1);
-                        }
+                            for (int i = 0; i < farray.Length; i++)
+                            {
+                                float fret = farray[i];
+                                LuaDLL.lua_pushnumber(L, fret);
+                                LuaDLL.lua_rawseti(L, -2, i + 1);
+                            }
 
-                        return 1;
-                    }
-                    else if (t == typeof(System.Int32))
-                    {
-                        int[] array = obj as int[];
+                            return 1;
+                        case "System.Int32":
+                            int[] iarray = obj as int[];
 
-                        for (int i = 0; i < array.Length; i++)
-                        {
-                            int ret = array[i];
-                            LuaDLL.lua_pushinteger(L, ret);
-                            LuaDLL.lua_rawseti(L, -2, i + 1);
-                        }
+                            for (int i = 0; i < iarray.Length; i++)
+                            {
+                                int iret = iarray[i];
+                                LuaDLL.lua_pushinteger(L, iret);
+                                LuaDLL.lua_rawseti(L, -2, i + 1);
+                            }
 
-                        return 1;
-                    }
-                    else if (t == typeof(System.Double))
-                    {
-                        double[] array = obj as double[];
+                            return 1;
+                        case "System.Double":
+                            double[] darray = obj as double[];
 
-                        for (int i = 0; i < array.Length; i++)
-                        {
-                            double ret = array[i];
-                            LuaDLL.lua_pushnumber(L, ret);
-                            LuaDLL.lua_rawseti(L, -2, i + 1);
-                        }
+                            for (int i = 0; i < darray.Length; i++)
+                            {
+                                double dret = darray[i];
+                                LuaDLL.lua_pushnumber(L, dret);
+                                LuaDLL.lua_rawseti(L, -2, i + 1);
+                            }
 
-                        return 1;
-                    }
-                    else if (t == typeof(System.Boolean))
-                    {
-                        bool[] array = obj as bool[];
+                            return 1;
+                        case "System.Boolean":
+                            bool[] barray = obj as bool[];
 
-                        for (int i = 0; i < array.Length; i++)
-                        {
-                            bool ret = array[i];
-                            LuaDLL.lua_pushboolean(L, ret);
-                            LuaDLL.lua_rawseti(L, -2, i + 1);
-                        }
+                            for (int i = 0; i < barray.Length; i++)
+                            {
+                                bool bret = barray[i];
+                                LuaDLL.lua_pushboolean(L, bret);
+                                LuaDLL.lua_rawseti(L, -2, i + 1);
+                            }
 
-                        return 1;
-                    }
-                    else if (t == typeof(System.Int64))
-                    {
-                        long[] array = obj as long[];
+                            return 1;
+                        case "System.UInt32":
+                            uint[] uarray = obj as uint[];
 
-                        for (int i = 0; i < array.Length; i++)
-                        {
-                            long ret = array[i];
-                            LuaDLL.tolua_pushint64(L, ret);
-                            LuaDLL.lua_rawseti(L, -2, i + 1);
-                        }
+                            for (int i = 0; i < uarray.Length; i++)
+                            {
+                                uint uret = uarray[i];
+                                LuaDLL.lua_pushinteger(L, uret);
+                                LuaDLL.lua_rawseti(L, -2, i + 1);
+                            }
 
-                        return 1;
-                    }
-                    else if (t == typeof(System.Byte))
-                    {
-                        byte[] array = obj as byte[];
+                            return 1;
+                        case "System.SByte":
+                            sbyte[] sbarray = obj as sbyte[];
 
-                        for (int i = 0; i < array.Length; i++)
-                        {
-                            byte ret = array[i];
-                            LuaDLL.lua_pushinteger(L, ret);
-                            LuaDLL.lua_rawseti(L, -2, i + 1);
-                        }
+                            for (int i = 0; i < sbarray.Length; i++)
+                            {
+                                sbyte sbret = sbarray[i];
+                                LuaDLL.lua_pushinteger(L, sbret);
+                                LuaDLL.lua_rawseti(L, -2, i + 1);
+                            }
 
-                        return 1;
-                    }
-                    else if (t == typeof(System.SByte))
-                    {
-                        sbyte[] array = obj as sbyte[];
+                            return 1;
+                        case "System.Byte":
+                            byte[] byarray = obj as byte[];
 
-                        for (int i = 0; i < array.Length; i++)
-                        {
-                            sbyte ret = array[i];
-                            LuaDLL.lua_pushinteger(L, ret);
-                            LuaDLL.lua_rawseti(L, -2, i + 1);
-                        }
+                            for (int i = 0; i < byarray.Length; i++)
+                            {
+                                byte byret = byarray[i];
+                                LuaDLL.lua_pushinteger(L, byret);
+                                LuaDLL.lua_rawseti(L, -2, i + 1);
+                            }
 
-                        return 1;
-                    }
-                    else if (t == typeof(System.Char))
-                    {
-                        char[] array = obj as char[];
+                            return 1;
+                        case "System.Int16":
+                            short[] sarray = obj as short[];
 
-                        for (int i = 0; i < array.Length; i++)
-                        {
-                            char ret = array[i];
-                            LuaDLL.lua_pushinteger(L, ret);
-                            LuaDLL.lua_rawseti(L, -2, i + 1);
-                        }
+                            for (int i = 0; i < sarray.Length; i++)
+                            {
+                                short sret = sarray[i];
+                                LuaDLL.lua_pushinteger(L, sret);
+                                LuaDLL.lua_rawseti(L, -2, i + 1);
+                            }
 
-                        return 1;
-                    }
-                    else if (t == typeof(System.UInt32))
-                    {
-                        uint[] array = obj as uint[];
+                            return 1;
+                        case "System.UInt16":
+                            ushort[] array = obj as ushort[];
 
-                        for (int i = 0; i < array.Length; i++)
-                        {
-                            uint ret = array[i];
-                            LuaDLL.lua_pushinteger(L, ret);
-                            LuaDLL.lua_rawseti(L, -2, i + 1);
-                        }
+                            for (int i = 0; i < array.Length; i++)
+                            {
+                                ushort ret = array[i];
+                                LuaDLL.lua_pushinteger(L, ret);
+                                LuaDLL.lua_rawseti(L, -2, i + 1);
+                            }
 
-                        return 1;
-                    }
-                    else if (t == typeof(System.Int16))
-                    {
-                        short[] array = obj as short[];
+                            return 1;
+                        case "System.Char":
+                            char[] carray = obj as char[];
 
-                        for (int i = 0; i < array.Length; i++)
-                        {
-                            short ret = array[i];
-                            LuaDLL.lua_pushinteger(L, ret);
-                            LuaDLL.lua_rawseti(L, -2, i + 1);
-                        }
+                            for (int i = 0; i < carray.Length; i++)
+                            {
+                                char cret = carray[i];
+                                LuaDLL.lua_pushinteger(L, cret);
+                                LuaDLL.lua_rawseti(L, -2, i + 1);
+                            }
 
-                        return 1;
-                    }
-                    else if (t == typeof(System.UInt16))
-                    {
-                        ushort[] array = obj as ushort[];
+                            return 1;
+                        case "System.Int64":
+                            long[] larray = obj as long[];
 
-                        for (int i = 0; i < array.Length; i++)
-                        {
-                            ushort ret = array[i];
-                            LuaDLL.lua_pushinteger(L, ret);
-                            LuaDLL.lua_rawseti(L, -2, i + 1);
-                        }
+                            for (int i = 0; i < larray.Length; i++)
+                            {
+                                long lret = larray[i];
+                                LuaDLL.tolua_pushint64(L, lret);
+                                LuaDLL.lua_rawseti(L, -2, i + 1);
+                            }
 
-                        return 1;
+                            return 1;
+                        case "System.UInt64":
+                            long[] ularray = obj as long[];
+
+                            for (int i = 0; i < ularray.Length; i++)
+                            {
+                                long ulret = ularray[i];
+                                LuaDLL.tolua_pushuint64(L, ulret);
+                                LuaDLL.lua_rawseti(L, -2, i + 1);
+                            }
+
+                            return 1;
                     }
                 }
-                else if (t == typeof(Vector3))
+                else 
                 {
-                    Vector3[] array = obj as Vector3[];
-
-                    for (int i = 0; i < array.Length; i++)
+                    switch (typeFullName)
                     {
-                        Vector3 ret = array[i];
-                        ToLua.Push(L, ret);
-                        LuaDLL.lua_rawseti(L, -2, i + 1);
+                        case "UnityEngine.Vector3":
+                            Vector3[] v3array = obj as Vector3[];
+
+                            for (int i = 0; i < v3array.Length; i++)
+                            {
+                                Vector3 v3ret = v3array[i];
+                                ToLua.Push(L, v3ret);
+                                LuaDLL.lua_rawseti(L, -2, i + 1);
+                            }
+
+                            return 1;
+                        case "UnityEngine.Quaternion":
+                            Quaternion[] qarray = obj as Quaternion[];
+
+                            for (int i = 0; i < qarray.Length; i++)
+                            {
+                                Quaternion qret = qarray[i];
+                                ToLua.Push(L, qret);
+                                LuaDLL.lua_rawseti(L, -2, i + 1);
+                            }
+
+                            return 1;
+                        case "UnityEngine.Vector2":
+                            Vector2[] v2array = obj as Vector2[];
+
+                            for (int i = 0; i < v2array.Length; i++)
+                            {
+                                Vector2 v2ret = v2array[i];
+                                ToLua.Push(L, v2ret);
+                                LuaDLL.lua_rawseti(L, -2, i + 1);
+                            }
+
+                            return 1;
+                        case "UnityEngine.Vector4":
+                            Vector4[] v4array = obj as Vector4[];
+
+                            for (int i = 0; i < v4array.Length; i++)
+                            {
+                                Vector4 v4ret = v4array[i];
+                                ToLua.Push(L, v4ret);
+                                LuaDLL.lua_rawseti(L, -2, i + 1);
+                            }
+
+                            return 1;      
+                        case "UnityEngine.Color":
+                            Color[] array = obj as Color[];
+
+                            for (int i = 0; i < array.Length; i++)
+                            {
+                                Color ret = array[i];
+                                ToLua.Push(L, ret);
+                                LuaDLL.lua_rawseti(L, -2, i + 1);
+                            }
+
+                            return 1;
                     }
-
-                    return 1;
-                }
-                else if (t == typeof(Quaternion))
-                {
-                    Quaternion[] array = obj as Quaternion[];
-
-                    for (int i = 0; i < array.Length; i++)
-                    {
-                        Quaternion ret = array[i];
-                        ToLua.Push(L, ret);
-                        LuaDLL.lua_rawseti(L, -2, i + 1);
-                    }
-
-                    return 1;
-                }
-                else if (t == typeof(Vector2))
-                {
-                    Vector2[] array = obj as Vector2[];
-
-                    for (int i = 0; i < array.Length; i++)
-                    {
-                        Vector2 ret = array[i];
-                        ToLua.Push(L, ret);
-                        LuaDLL.lua_rawseti(L, -2, i + 1);
-                    }
-
-                    return 1;
-                }
-                else if (t == typeof(Vector4))
-                {
-                    Vector4[] array = obj as Vector4[];
-
-                    for (int i = 0; i < array.Length; i++)
-                    {
-                        Vector4 ret = array[i];
-                        ToLua.Push(L, ret);
-                        LuaDLL.lua_rawseti(L, -2, i + 1);
-                    }
-
-                    return 1;
-                }
-                else if (t == typeof(Color))
-                {
-                    Color[] array = obj as Color[];
-
-                    for (int i = 0; i < array.Length; i++)
-                    {
-                        Color ret = array[i];
-                        ToLua.Push(L, ret);
-                        LuaDLL.lua_rawseti(L, -2, i + 1);
-                    }
-
-                    return 1;
                 }
             }
 

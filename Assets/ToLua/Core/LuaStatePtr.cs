@@ -268,7 +268,7 @@ namespace LuaInterface
 
         public void LuaPushInteger(int n)
         {
-            LuaDLL.lua_pushnumber(L, n);
+            LuaDLL.lua_pushinteger(L, n);
         }
 
         public void LuaPushLString(byte[] str, int size)

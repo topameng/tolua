@@ -789,7 +789,7 @@ public class System_TypeWrap
 	{
 		try
 		{
-			LuaDLL.lua_pushnumber(L, System.Type.Delimiter);
+			LuaDLL.lua_pushinteger(L, System.Type.Delimiter);
 			return 1;
 		}
 		catch (Exception e)
