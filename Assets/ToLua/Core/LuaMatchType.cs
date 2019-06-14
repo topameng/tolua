@@ -34,7 +34,7 @@ namespace LuaInterface
 
         public bool CheckInteger(IntPtr L, int pos)
         {
-            return LuaDLL.lua_isinteger(L, pos) != 0;
+            return LuaDLL.tolua_isinteger(L, pos);
         }
 
         public bool CheckBool(IntPtr L, int pos)
@@ -71,7 +71,7 @@ namespace LuaInterface
             switch (luaType)
             {
                 case LuaTypes.LUA_TNUMBER:
-                    return LuaDLL.lua_tonumber(L, pos) >= 0;
+                    return true;
                 case LuaTypes.LUA_TUSERDATA:
                     return LuaDLL.tolua_getvaluetype(L, pos) == LuaValueType.UInt64;                    
                 default:
@@ -88,8 +88,7 @@ namespace LuaInterface
 
         public bool CheckNullInteger(IntPtr L, int pos)
         {
-            LuaTypes luaType;
-            return LuaDLL.lua_isinteger(L, pos) != 0 || (luaType = LuaDLL.lua_type(L, pos)) == LuaTypes.LUA_TNIL;
+            return LuaDLL.tolua_isinteger(L, pos) || LuaDLL.lua_type(L, pos) == LuaTypes.LUA_TNIL;
         }
 
         public bool CheckNullBool(IntPtr L, int pos)
@@ -100,16 +99,14 @@ namespace LuaInterface
 
         public bool CheckNullLong(IntPtr L, int pos)
         {
-            LuaTypes luaType;
 #if LUA_5_3_OR_NEWER
-            return CheckInteger(L, pos) || (luaType = LuaDLL.lua_type(L, pos)) == LuaTypes.LUA_TNIL;
+            return CheckNullInteger(L, pos);
 #else
-            luaType = LuaDLL.lua_type(L, pos);
+            LuaTypes luaType = LuaDLL.lua_type(L, pos);
 
             switch (luaType)
             {
                 case LuaTypes.LUA_TNIL:
-                    return true;
                 case LuaTypes.LUA_TNUMBER:
                     return true;
                 case LuaTypes.LUA_TUSERDATA:
@@ -122,18 +119,16 @@ namespace LuaInterface
 
         public bool CheckNullULong(IntPtr L, int pos)
         {
-            LuaTypes luaType;
 #if LUA_5_3_OR_NEWER
-            return CheckInteger(L, pos) || (luaType = LuaDLL.lua_type(L, pos)) == LuaTypes.LUA_TNIL;
+            return CheckNullInteger(L, pos);
 #else
-            luaType = LuaDLL.lua_type(L, pos);
+            LuaTypes luaType = LuaDLL.lua_type(L, pos);
 
             switch (luaType)
             {
                 case LuaTypes.LUA_TNIL:
-                    return true;
                 case LuaTypes.LUA_TNUMBER:
-                    return LuaDLL.lua_tonumber(L, pos) >= 0;
+                    return true;
                 case LuaTypes.LUA_TUSERDATA:
                     return LuaDLL.tolua_getvaluetype(L, pos) == LuaValueType.UInt64;                    
                 default:

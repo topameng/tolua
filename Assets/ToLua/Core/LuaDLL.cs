@@ -357,29 +357,52 @@ namespace LuaInterface
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
         public static extern void lua_pushinteger(IntPtr L, long n);
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int lua_isinteger(IntPtr L, int n);
+        static extern int lua_isinteger(IntPtr L, int n);
 #else
         public static void lua_pushinteger(IntPtr L, long n)
         {
             lua_pushnumber(L, n);
         }           
 
-        public static int lua_isinteger(IntPtr L, int pos)
+        static int lua_isinteger(IntPtr L, int pos)
         {
             if (LuaDLL.lua_type(L, pos) == LuaTypes.LUA_TNUMBER)
             {
-                // double value = lua_tonumber(L, pos);
-                // long result = (long)value;
-                // double dif = value - result;
-                // if (dif == 0)
-                // {
-                    return 1;
-                // }
+                return 1;
             }
 
             return 0;
         }
 #endif     
+
+        static bool IsStrictInteger(IntPtr L , int pos)
+        {
+            double value = lua_tonumber(L, pos);
+            return value == (long)value;
+        }
+
+        public static bool tolua_isinteger(IntPtr L, int pos)
+        {
+            if (LuaDLL.lua_isinteger(L, pos) != 0) 
+            {
+#if LUA_5_3_OR_NEWER || !TOLUA_STRICT_INTEGER
+                return true;
+#else
+                return IsStrictInteger(L, pos);
+#endif
+            }
+#if LUA_5_3_OR_NEWER
+            else if (LuaDLL.lua_type(L, pos) == LuaTypes.LUA_TNUMBER)
+            {
+#if !TOLUA_STRICT_INTEGER
+                return true;
+#else
+                return IsStrictInteger(L, pos);
+#endif
+            }
+#endif
+            return false;
+        }
 
         public static void lua_pushlstring(IntPtr luaState, byte[] str, int size)                   //[-0, +1, m]
         {
