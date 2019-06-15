@@ -1025,57 +1025,22 @@ public static class ToLuaMenu
         }        
     }
 
-    static void CopyBuildBat(string path, string tempDir)
-    {
-		if (EditorUserBuildSettings.activeBuildTarget == BuildTarget.StandaloneWindows64)
-		{
-			File.Copy(path + "/Luajit64/Build.bat", tempDir + "/Build.bat", true);			
-		}
-		else if (EditorUserBuildSettings.activeBuildTarget == BuildTarget.StandaloneWindows)
-        {
-            if (IntPtr.Size == 4)
-            {
-                File.Copy(path + "/Luajit/Build.bat", tempDir + "/Build.bat", true);
-            }
-            else if (IntPtr.Size == 8)
-            {
-                File.Copy(path + "/Luajit64/Build.bat", tempDir + "/Build.bat", true);
-            }
-        }
-#if UNITY_5_3_OR_NEWER        
-        else if (EditorUserBuildSettings.activeBuildTarget == BuildTarget.iOS)
-#else
-        else if (EditorUserBuildSettings.activeBuildTarget == BuildTarget.iPhone)
-#endif        
-        {
-            //Debug.Log("iOS默认用64位，32位自行考虑");
-            File.Copy(path + "/Luajit64/Build.bat", tempDir + "/Build.bat", true);
-        }
-        else
-        {
-            File.Copy(path + "/Luajit/Build.bat", tempDir + "/Build.bat", true);
-        }
-
-    }
-
     [MenuItem("Lua/Build Lua files to Resources (PC)", false, 53)]
     public static void BuildLuaToResources()
     {
         ClearAllLuaFiles();
         string tempDir = CreateStreamDir("Lua");
         string destDir = Application.dataPath + "/Resources" + "/Lua";        
+        string tempBytesDir = tempDir + "/Out/";
 
-        string path = Application.dataPath.Replace('\\', '/');
-        path = path.Substring(0, path.LastIndexOf('/'));
-        CopyBuildBat(path, tempDir);
         CopyLuaBytesFiles(LuaConst.luaDir, tempDir, false);
-        Process proc = Process.Start(tempDir + "/Build.bat");
-        proc.WaitForExit();
-        CopyLuaBytesFiles(tempDir + "/Out/", destDir, false, "*.lua.bytes");
+        ExportAllLuaToBytecode(tempDir, tempBytesDir);
+        CopyLuaBytesFiles(tempBytesDir, destDir, false, "*.lua.bytes");
         CopyLuaBytesFiles(LuaConst.toluaDir, destDir);
         
         Directory.Delete(tempDir, true);        
         AssetDatabase.Refresh();
+        Debug.Log("generated");
     }
 
     [MenuItem("Lua/Build Lua files to Persistent (PC)", false, 54)]
@@ -1084,33 +1049,31 @@ public static class ToLuaMenu
         ClearAllLuaFiles();
         string tempDir = CreateStreamDir("Lua");        
         string destDir = Application.persistentDataPath + "/" + GetOS() + "/Lua/";
+        string tempBytesDir = tempDir + "/Out/";
 
-        string path = Application.dataPath.Replace('\\', '/');
-        path = path.Substring(0, path.LastIndexOf('/'));        
-        CopyBuildBat(path, tempDir);
         CopyLuaBytesFiles(LuaConst.luaDir, tempDir, false);
-        Process proc = Process.Start(tempDir + "/Build.bat");
-        proc.WaitForExit();        
+        ExportAllLuaToBytecode(tempDir, tempBytesDir);
         CopyLuaBytesFiles(LuaConst.toluaDir, destDir, false);
 
-        path = tempDir + "/Out/";
-        string[] files = Directory.GetFiles(path, "*.lua.bytes");
-        int len = path.Length;
+        string[] files = Directory.GetFiles(tempBytesDir, "*.lua.bytes");
+        int len = tempBytesDir.Length;
 
         for (int i = 0; i < files.Length; i++)
         {
-            path = files[i].Remove(0, len);
-            path = path.Substring(0, path.Length - 6);
-            path = destDir + path;
+            tempBytesDir = files[i].Remove(0, len);
+            tempBytesDir = tempBytesDir.Substring(0, tempBytesDir.Length - 6);
+            tempBytesDir = destDir + tempBytesDir;
 
-            File.Copy(files[i], path, true);
+            File.Copy(files[i], tempBytesDir, true);
         }
 
         Directory.Delete(tempDir, true);
         AssetDatabase.Refresh();
+        Debug.Log("generated");
     }
 
-    [MenuItem("Lua/Build bundle files not jit", false, 55)]
+    [MenuItem("Lua/Build lua string bundle files", false, 55)]
+    //直接将lua字符串打包，不导出成bytecode
     public static void BuildNotJitBundles()
     {
         ClearAllLuaFiles();
@@ -1158,9 +1121,12 @@ public static class ToLuaMenu
         Directory.Delete(Application.streamingAssetsPath + "/Lua/", true);
 #endif
         AssetDatabase.Refresh();
+        Debug.Log("generated");
     }
 
-    [MenuItem("Lua/Build Luajit bundle files   (PC)", false, 56)]
+    [MenuItem("Lua/Build Lua bytecode bundle files   (PC)", false, 56)]
+    // 使用luajit就是编译成当前平台架构（32位、64位）对应的luajit的bytecode。（自己可参考出手机包luajit的32位、64位2套字节码bundle包）
+    // 使用lua5.3就是编译成lua5.3的兼容32/64位tolua运行环境的一份bytecode
     public static void BuildLuaBundles()
     {
         ClearAllLuaFiles();                
@@ -1176,25 +1142,21 @@ public static class ToLuaMenu
             Directory.CreateDirectory(tempDir);
         }
 #endif
+        string tempBytesDir = tempDir + "/Out";
 
-        string path = Application.dataPath.Replace('\\', '/');
-        path = path.Substring(0, path.LastIndexOf('/'));        
-        CopyBuildBat(path, tempDir);
         CopyLuaBytesFiles(LuaConst.luaDir, tempDir, false);
-        Process proc = Process.Start(tempDir + "/Build.bat");
-        proc.WaitForExit();
-        CopyLuaBytesFiles(LuaConst.toluaDir, tempDir + "/Out");
+        ExportAllLuaToBytecode(tempDir, tempBytesDir);
+        CopyLuaBytesFiles(LuaConst.toluaDir, tempBytesDir);
 
         AssetDatabase.Refresh();
 
-        string sourceDir = tempDir + "/Out";
         List<string> dirs = new List<string>();        
-        GetAllDirs(sourceDir, dirs);
+        GetAllDirs(tempBytesDir, dirs);
 
 #if UNITY_5 || UNITY_5_3_OR_NEWER
 		for (int i = 0; i < dirs.Count; i++)
         {
-            string str = dirs[i].Remove(0, sourceDir.Length);
+            string str = dirs[i].Remove(0, tempBytesDir.Length);
             BuildLuaBundle(str.Replace('\\', '/'), "Assets/temp/Lua/Out");
         }
 
@@ -1207,7 +1169,7 @@ public static class ToLuaMenu
 #else
         for (int i = 0; i < dirs.Count; i++)
         {
-            string str = dirs[i].Remove(0, sourceDir.Length);
+            string str = dirs[i].Remove(0, tempBytesDir.Length);
             BuildLuaBundle(str.Replace('\\', '/'), "Assets/StreamingAssets/Lua/Out");
         }
 
@@ -1215,6 +1177,7 @@ public static class ToLuaMenu
         Directory.Delete(tempDir, true);
 #endif
         AssetDatabase.Refresh();
+        Debug.Log("generated");
     }
 
     [MenuItem("Lua/Clear all Lua files", false, 57)]
@@ -1442,5 +1405,147 @@ public static class ToLuaMenu
             sb.Append(retVal[i].ToString("x2"));
         }
         return StringBuilderCache.GetStringAndRelease(sb);
+    }
+
+    static void ExportAllLuaToBytecode(string srcDir, string outDir, string searchPattern = "*.lua")
+    {
+        if (!Directory.Exists(srcDir))
+        {
+            return;
+        }
+        BuildTarget buildTarget;
+#if UNITY_STANDALONE_WIN || UNITY_ANDROID
+        buildTarget = BuildTarget.Android;
+#if LUA_5_3_OR_NEWER
+        Debug.Log("generating bytecode for all platform");
+#else
+        Debug.Log("generating bytecode for android、windows、iOS");
+#endif
+#elif UNITY_IOS || UNITY_STANDALONE_OSX
+        buildTarget = BuildTarget.iOS;
+#if LUA_5_3_OR_NEWER
+        Debug.Log("generating bytecode for all platform");
+#else
+        Debug.Log("generating bytecode for iOS、android、windows");
+#endif
+#endif
+
+        string[] files = Directory.GetFiles(srcDir, searchPattern, SearchOption.AllDirectories);
+        int len = srcDir.Length;
+
+        if (srcDir[len - 1] == '/' || srcDir[len - 1] == '\\')
+        {
+            --len;
+        }         
+
+        for (int i = 0; i < files.Length; i++)
+        {
+            string str = files[i].Remove(0, len);
+            string dest = outDir + "/" + str;
+            dest += ".bytes";
+            string dir = Path.GetDirectoryName(dest);
+            Directory.CreateDirectory(dir);
+            ExportLuaBytecode(files[i], dest, IntPtr.Size, buildTarget);
+        }
+    }
+
+    /// <summary>
+    /// 加密lua代码成字节码
+    /// </summary>
+    /// <param name="srcFile"></param>
+    /// <param name="outFile"></param>
+    static void ExportLuaBytecode(string srcFile, string outFile, int arch, BuildTarget buildTarget)
+    {
+        if (!srcFile.ToLower().EndsWith(".lua"))
+        {
+            File.Copy(srcFile, outFile, true);
+            return;
+        }
+
+        DirectoryInfo curSrcDir = new DirectoryInfo(Path.GetDirectoryName(srcFile));
+        bool isWin = true;
+        bool reserveDebugInfo = false;//curSrcDir.FullName != configSrcDir.FullName;
+        string luaexe = string.Empty;
+        string args = string.Empty;
+        string exedir = string.Empty;
+        string currDir = Directory.GetCurrentDirectory();
+        string libRoot = Application.dataPath.Replace('\\', '/');
+        libRoot = libRoot.Substring(0, libRoot.LastIndexOf('/'));
+
+        if (Application.platform == RuntimePlatform.WindowsEditor)
+        {
+            isWin = true;
+#if LUA_5_3_OR_NEWER
+            luaexe = "luac.exe";
+            args = " -o" + outFile + " " + srcFile;
+            exedir = libRoot + "/Luac53/Win";
+#else            
+            luaexe = "luajit.exe";
+            args = (reserveDebugInfo ? "-bg " : "-b ") + srcFile + " " + outFile;
+            switch (buildTarget)
+            {
+                case BuildTarget.Android:
+                case BuildTarget.StandaloneWindows:
+                case BuildTarget.StandaloneWindows64:
+                    exedir = libRoot + "/Luajit/Win";
+                    break;
+                case BuildTarget.iOS:
+                    exedir = libRoot + "/Luajit_ios/Win";
+                    break;
+            }
+#endif            
+        }
+        else if (Application.platform == RuntimePlatform.OSXEditor)
+        {
+            isWin = false;
+#if LUA_5_3_OR_NEWER
+            luaexe = "./luac";
+            args = " -o" + outFile + " " + srcFile;
+            exedir = libRoot + "/Luac53/Mac";
+#else             
+            luaexe = "./luajit";
+            args = (reserveDebugInfo ? "-bg " : "-b ") + srcFile + " " + outFile;
+            switch (buildTarget)
+            {
+                case BuildTarget.Android:
+                    exedir = libRoot + "/Luajit/Mac";
+                    break;
+                case BuildTarget.iOS:
+                    exedir = libRoot + "/Luajit_ios/Mac";
+                    break;
+            }
+#endif            
+        }
+
+#if LUA_5_3_OR_NEWER
+        string subFolder = arch == 4 ? "/X86" : "/X86_64";
+#else
+        string subFolder = "/X86_64";
+#endif        
+
+        Directory.SetCurrentDirectory(exedir + subFolder);
+        System.Diagnostics.ProcessStartInfo info = new System.Diagnostics.ProcessStartInfo()
+        {
+            FileName = luaexe,
+            Arguments = args,
+            WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden,
+            UseShellExecute = isWin,
+            ErrorDialog = isWin,
+            RedirectStandardOutput = !isWin,
+            RedirectStandardInput = !isWin,
+            RedirectStandardError = !isWin,
+        };
+
+        if (!isWin)
+        {
+            info.StandardErrorEncoding = System.Text.UTF8Encoding.UTF8;
+            info.StandardOutputEncoding = System.Text.UTF8Encoding.UTF8;
+        }
+        //UnityEngine.Debug.Log(info.FileName + " " + info.Arguments);
+
+        System.Diagnostics.Process pro = System.Diagnostics.Process.Start(info);
+        pro.WaitForExit();
+        Directory.SetCurrentDirectory(currDir);
+        pro.Close();
     }
 }
