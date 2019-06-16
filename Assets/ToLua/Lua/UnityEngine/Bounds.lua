@@ -161,7 +161,7 @@ function Bounds:ClosestPoint(point)
 	end
 		
 	if distance == 0 then	    
-		return rkPoint, 0
+		return point, 0
 	else	
 		outPoint = closest + self:GetCenter()
 		return outPoint, distance
