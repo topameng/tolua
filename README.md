@@ -55,6 +55,7 @@ https://github.com/LabOfHoward/unity_tolua-_zerobrane_api<br>
 　**Protol**　　　　　 　 　　 Touch<br>
 　pblua　　　 　　 　 　RaycastHit<br>
 # 特性
+* iOS、Android、Windows上支持luajit和lua5.3，MacOSX上支持lua5.1和lua5.3
 * 自动生成绑定代码文件，非反射调用 <br>
 * 大量内建基础类型支持，如枚举，委托，事件，Type, 数组，迭代器等 <br>
 * 支持多种协同形式 <br>
@@ -81,6 +82,15 @@ https://github.com/LabOfHoward/unity_tolua-_zerobrane_api<br>
 * print信息，在编辑器点击日志, 能自动打开对应lua文件 <br>
 * 支持unity所有版本 <br>
 * **支持Lua hook C#相代码实现，一定程度上支持利用Lua代码修改C#端代码的bug**（[暖更新使用说明](https://zhuanlan.zhihu.com/p/35124260)） <br>
+
+# 使用lua5.3
+* 插件在iOS、Android、windows上默认的lua虚拟机环境为luajit（对应于lua5.1），mac上默认的lua虚拟机环境为lua5.1。<br>
+* 目前ToLua也支持全平台统一成lua5.3的lua虚拟机环境。如果要使用lua5.3的版本，步骤如下
+* 1、前往https://github.com/topameng/tolua_runtime <br>
+* 2、将Plugins53文件夹里面的所有tolua相关的runtime底层库，都拷贝覆盖到unity工程的Plugins目录下。<br>
+* 3、打开unity编辑器，添加“LUA_5_3_OR_NEWER”宏，回车等待编辑器编译完毕既是Lua5.3的虚拟机环境。注意宏定义必须一直常在！！<br>
+* ToLua已经在ToLuaMenu.cs文件里面集成了自动化的导出32位、64位luajit的bytecode（不能混用），以及32位、64位兼容能混用的lua5.3的bytecode,<br>
+* 具体实现请查看ToLuaMenu.cs的改动，现在Lua5.3虚拟机环境的bytecode，默认32位、64位通用。<br>
 
 # 快速入门
 在CustomSetting.cs中添加需要导出的类或者委托，类加入到customTypeList列表，委托加入到customDelegateList列表 <br>
