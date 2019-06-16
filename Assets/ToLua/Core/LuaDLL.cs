@@ -632,7 +632,7 @@ namespace LuaInterface
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
 		public static extern void lua_setglobal(IntPtr luaState, string name);
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-		public static extern void lua_getglobal(IntPtr luaState, string name);
+		public static extern int lua_getglobal(IntPtr luaState, string name);
 
         public static string lua_ptrtostring(IntPtr str, int len)
         {

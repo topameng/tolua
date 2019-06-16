@@ -1462,7 +1462,6 @@ public static class ToLuaMenu
             return;
         }
 
-        DirectoryInfo curSrcDir = new DirectoryInfo(Path.GetDirectoryName(srcFile));
         bool isWin = true;
         bool reserveDebugInfo = false;//curSrcDir.FullName != configSrcDir.FullName;
         string luaexe = string.Empty;
