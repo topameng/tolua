@@ -88,9 +88,14 @@ https://github.com/LabOfHoward/unity_tolua-_zerobrane_api<br>
 * 目前ToLua也支持全平台统一成lua5.3的lua虚拟机环境。如果要使用lua5.3的版本，步骤如下
 * 1、前往https://github.com/topameng/tolua_runtime <br>
 * 2、将Plugins53文件夹里面的所有tolua相关的runtime底层库，都拷贝覆盖到unity工程的Plugins目录下。<br>
-* 3、打开unity编辑器，添加“LUA_5_3_OR_NEWER”宏，回车等待编辑器编译完毕既是Lua5.3的虚拟机环境。注意宏定义必须一直常在！！<br>
+* 3、打开unity编辑器，添加“**LUA_5_3_OR_NEWER**”宏，回车等待编辑器编译完毕既是Lua5.3的虚拟机环境。<br>
+* **注意要用lua5.3宏定义“LUA_5_3_OR_NEWER”必须一直有效！！如果用luajit或lua5.1版本的，宏定义一定要删除！！！！**<br>
 * ToLua已经在ToLuaMenu.cs文件里面集成了自动化的导出32位、64位luajit的bytecode（不能混用），以及32位、64位兼容能混用的lua5.3的bytecode,<br>
 * 具体实现请查看ToLuaMenu.cs的改动，现在Lua5.3虚拟机环境的bytecode，默认32位、64位通用。<br>
+
+# 关于arm64下的luajit
+* 部分童鞋用最新的arm64的luajit版本库会出现莫名的闪退，32位机子上的armv7完全没问题。经定位，是luajit即时编译某种形式的代码的问题。<br>
+* 建议有问题的同学，tolua.lua文件里面加上jit.off(); jit.flush()强制关闭jit模式，开启interpreter模式，并注释jit.opt.start(3)这行相关的代码。 <br>
 
 # 快速入门
 在CustomSetting.cs中添加需要导出的类或者委托，类加入到customTypeList列表，委托加入到customDelegateList列表 <br>
