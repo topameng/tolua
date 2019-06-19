@@ -29,12 +29,25 @@ https://github.com/topameng/protoc-gen-lua <br>
 **LuaFrameWork**<br>
 https://github.com/jarjin/LuaFramework_NGUI <br>
 https://github.com/jarjin/LuaFramework_UGUI <br>
+https://github.com/jarjin/LuaFramework_UGUI_V2 <br>
 **XlsxToLua**<br>
 https://github.com/zhangqi-ulua/XlsxToLua<br>
 **UnityHello**<br>
 https://github.com/woshihuo12/UnityHello<br>
 **UWA-ToLua**<br>
 http://uwa-download.oss-cn-beijing.aliyuncs.com/plugins%2FiOS%2FUWA-iOS-ToLua.zip<br>
+[StriveGame](https://github.com/liuxq/StriveGame)<br>
+[kbengine_unity3d_tolua_demo](https://github.com/liuxq/kbengine_unity3d_tolua_demo)<br>
+[UGFWithToLua](https://github.com/GarfieldJiang/UGFWithToLua)<br>
+[U3dFrameworkTolua](https://github.com/YKPublicGame/U3dFrameworkTolua)<br>
+
+# 网友学习心得
+[Unity3D热更新技术点——ToLua（上）](https://zhuanlan.zhihu.com/p/42472089) <br>
+[Unity3D热更新技术点——ToLua（中）](https://zhuanlan.zhihu.com/p/42472115) <br>
+[Unity3D热更新技术点——ToLua（下）](https://zhuanlan.zhihu.com/p/43632619) <br>
+[tolua学习(一)](https://blog.csdn.net/qq_38317140/article/details/90038858)<br>
+[tolua学习(二)](https://blog.csdn.net/qq_38317140/article/details/90058028)<br>
+[tolua学习(三)](https://blog.csdn.net/qq_38317140/article/details/90147397)<br>
 
 # Debugger
 **EmmyLua**<br>
