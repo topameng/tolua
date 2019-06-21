@@ -24,6 +24,12 @@ public class TestGameObject: MonoBehaviour
             GameObject.Destroy(go, 2)                  
             go.name = '123'
             --print('delay destroy gameobject is: '..go.name)                                           
+            local go2 = GameObject('go2')
+            --GameObject被Destroy的时候，并不代表其在lua环境的proxy(下例中的go2)会被gc立即回收，存在C#端GameObject为null，而lua端相关proxy尚未回收的情况
+            --所以此时就得利用tolua.isnull来判断GameObject是否为“空”
+            GameObject.Destroy(go2)
+            print(go2 == nil)
+            print(tolua.isnull(go2))
         ";
 
     LuaState lua = null;
