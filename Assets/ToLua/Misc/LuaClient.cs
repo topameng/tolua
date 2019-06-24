@@ -59,7 +59,7 @@ public class LuaClient : MonoBehaviour
         luaState.OpenLibs(LuaDLL.luaopen_pb);
         luaState.OpenLibs(LuaDLL.luaopen_struct);
         luaState.OpenLibs(LuaDLL.luaopen_lpeg);
-#if UNITY_STANDALONE_OSX || UNITY_EDITOR_OSX
+#if (UNITY_STANDALONE_OSX || UNITY_EDITOR_OSX) && !LUA_5_3_OR_NEWER
         luaState.OpenLibs(LuaDLL.luaopen_bit);
 #endif
 

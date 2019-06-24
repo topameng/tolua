@@ -2298,7 +2298,11 @@ public static class ToLuaExport
         }
         else if (varType.IsPrimitive || IsNumberEnum(varType))
         {
-            string chkstr = beCheckTypes ? "lua_tonumber" : "luaL_checknumber";
+            string chkstr = beCheckTypes ? "tolua_tointeger" : "luaL_checkinteger";
+            if (varType == typeof(float) || varType == typeof(double) || varType == typeof(decimal))
+            {
+                chkstr = beCheckTypes ? "lua_tonumber" : "luaL_checknumber";
+            }
             sb.AppendFormat("{0}{1} {2} = ({1})LuaDLL.{3}(L, {4});\r\n", head, str, arg, chkstr, stackPos);
         }
         else if (varType == typeof(LuaFunction))
@@ -2637,7 +2641,11 @@ public static class ToLuaExport
         }
         else if ((t.IsPrimitive))
         {
-            sb.AppendFormat("{0}LuaDLL.lua_pushnumber(L, {1});\r\n", head, arg);
+            if (t == typeof(float) || t == typeof(double) || t == typeof(decimal))
+            {
+                sb.AppendFormat("{0}LuaDLL.lua_pushnumber(L, {1});\r\n", head, arg);
+            }
+            else sb.AppendFormat("{0}LuaDLL.lua_pushinteger(L, {1});\r\n", head, arg);
         }
         else
         {           
@@ -3296,7 +3304,11 @@ public static class ToLuaExport
         {
             string type = GetTypeStr(t);
             name = beDefined ? name : type + " " + name;
-            sb.AppendFormat("{0}{1} = ({2})func.CheckNumber();\r\n", head, name, type);
+            if (t == typeof(float) || t == typeof(double) || t == typeof(decimal))
+            {
+                sb.AppendFormat("{0}{1} = ({2})func.CheckNumber();\r\n", head, name, type);
+            }
+            else sb.AppendFormat("{0}{1} = ({2})func.CheckInteger();\r\n", head, name, type);
         }
         else if (t == typeof(string))
         {
@@ -3795,7 +3807,7 @@ public static class ToLuaExport
         sb.AppendLineEx("\r\n\t[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]");
         sb.AppendLineEx("\tstatic int IntToEnum(IntPtr L)");
         sb.AppendLineEx("\t{");
-        sb.AppendLineEx("\t\tint arg0 = (int)LuaDLL.lua_tonumber(L, 1);");
+        sb.AppendLineEx("\t\tint arg0 = LuaDLL.tolua_tointeger(L, 1);");
         sb.AppendFormat("\t\t{0} o = ({0})arg0;\r\n", className);
         sb.AppendLineEx("\t\tToLua.Push(L, o);");
         sb.AppendLineEx("\t\treturn 1;");

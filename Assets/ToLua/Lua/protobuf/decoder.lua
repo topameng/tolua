@@ -25,7 +25,13 @@ local print = print
 local pb = require "pb"
 local encoder = require "protobuf.encoder"
 local wire_format = require "protobuf.wire_format"
-module "protobuf.decoder"
+-- module "protobuf.decoder"
+local decoder = {}
+if setfenv then
+  setfenv(1, decoder);
+else
+  _ENV = decoder
+end
 
 local _DecodeVarint = pb.varint_decoder
 local _DecodeSignedVarint = pb.signed_varint_decoder
@@ -338,3 +344,4 @@ function _FieldSkipper()
 end
 
 SkipField = _FieldSkipper()
+return decoder

@@ -70,7 +70,7 @@ namespace LuaInterface
 
         public int LuaUpValueIndex(int i)
         {
-            return LuaIndexes.LUA_GLOBALSINDEX - i;
+            return LuaDLL.lua_upvalueindex(i);
         }
 
         public IntPtr LuaNewState()
@@ -80,12 +80,14 @@ namespace LuaInterface
 
         public void LuaOpenJit()
         {
+#if !LUA_5_3_OR_NEWER
             if (!LuaDLL.luaL_dostring(L, jit))
             {
                 string str = LuaDLL.lua_tostring(L, -1);
                 LuaDLL.lua_settop(L, 0);
                 throw new Exception(str);
-            }            
+            }        
+#endif    
         }
 
         public void LuaClose()
@@ -127,6 +129,11 @@ namespace LuaInterface
         public void LuaInsert(int idx)
         {
             LuaDLL.lua_insert(L, idx);
+        }
+
+        public bool LuaIsThread(int inx)
+        {
+            return LuaDLL.lua_isthread(L, inx);
         }
 
         public void LuaReplace(int idx)
@@ -206,7 +213,7 @@ namespace LuaInterface
 
         public int LuaToInteger(int idx)
         {
-            return LuaDLL.lua_tointeger(L, idx);
+            return LuaDLL.tolua_tointeger(L, idx);
         }
 
         public bool LuaToBoolean(int idx)
@@ -261,7 +268,7 @@ namespace LuaInterface
 
         public void LuaPushInteger(int n)
         {
-            LuaDLL.lua_pushnumber(L, n);
+            LuaDLL.lua_pushinteger(L, n);
         }
 
         public void LuaPushLString(byte[] str, int size)
@@ -329,10 +336,12 @@ namespace LuaInterface
             return LuaDLL.lua_getmetatable(L, idx);
         }
 
+#if !LUA_5_3_OR_NEWER
         public void LuaGetEnv(int idx)
         {
             LuaDLL.lua_getfenv(L, idx);
         }
+#endif
 
         public void LuaSetTable(int idx)
         {
@@ -359,10 +368,12 @@ namespace LuaInterface
             LuaDLL.lua_setmetatable(L, objIndex);
         }
 
+#if !LUA_5_3_OR_NEWER
         public void LuaSetEnv(int idx)
         {
             LuaDLL.lua_setfenv(L, idx);
         }
+#endif
 
         public void LuaCall(int nArgs, int nResults)
         {
@@ -379,9 +390,22 @@ namespace LuaInterface
             return LuaDLL.lua_yield(L, nresults);
         }
 
+        public int LuaResumeThread(IntPtr thread, int narg)
+        {
+#if LUA_5_3_OR_NEWER
+            return LuaDLL.lua_resume(thread, L, narg);
+#else
+            return LuaDLL.lua_resume(thread, narg);
+#endif
+        }
+
         public int LuaResume(int narg)
         {
+#if LUA_5_3_OR_NEWER
+            return LuaDLL.lua_resume(L, IntPtr.Zero, narg);
+#else
             return LuaDLL.lua_resume(L, narg);
+#endif
         }
 
         public int LuaStatus()
@@ -463,8 +487,7 @@ namespace LuaInterface
 
         public void LuaRawGlobal(string name)
         {
-            LuaDLL.lua_pushstring(L, name);
-            LuaDLL.lua_rawget(L, LuaIndexes.LUA_GLOBALSINDEX);
+            LuaDLL.lua_rawget_global(L, name);
         }
 
         public void LuaSetGlobal(string name)

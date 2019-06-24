@@ -174,27 +174,27 @@ public class TestLuaStack : MonoBehaviour
         {
             LuaState state = LuaState.Get(L);
             LuaFunction func = state.GetFunction("TestCycle");
-            int c = (int)LuaDLL.luaL_checknumber(L, 1);
+            int c = LuaDLL.luaL_checkinteger(L, 1);
 
             if (c <= 2)
             {
-                LuaDLL.lua_pushnumber(L, 1);
+                LuaDLL.lua_pushinteger(L, 1);
             }
             else
             {
                 func.BeginPCall();
                 func.Push(c - 1);
                 func.PCall();
-                int n1 = (int)func.CheckNumber();
+                int n1 = func.CheckInteger();
                 func.EndPCall();
 
                 func.BeginPCall();
                 func.Push(c - 2);
                 func.PCall();
-                int n2 = (int)func.CheckNumber();
+                int n2 = func.CheckInteger();
                 func.EndPCall();
 
-                LuaDLL.lua_pushnumber(L, n1 + n2);
+                LuaDLL.lua_pushinteger(L, n1 + n2);
             }
             
             return 1;

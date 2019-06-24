@@ -16,7 +16,13 @@
 --------------------------------------------------------------------------------
 --
 
-module "protobuf.descriptor"
+-- module "protobuf.descriptor"
+local descriptor = {}
+if setfenv then
+  setfenv(1, descriptor);
+else
+  _ENV = descriptor
+end
 
 FieldDescriptor = {
     TYPE_DOUBLE         = 1,
@@ -62,3 +68,5 @@ FieldDescriptor = {
     LABEL_REPEATED      = 3,
     MAX_LABEL           = 3
 }
+
+return descriptor

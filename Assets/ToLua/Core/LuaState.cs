@@ -288,7 +288,7 @@ namespace LuaInterface
 
             if (string.IsNullOrEmpty(name))
             {
-                LuaDLL.lua_pushvalue(L, LuaIndexes.LUA_GLOBALSINDEX);
+                LuaDLL.lua_pushglobaltable(L);
                 ++beginCount;
                 return top;
             }
@@ -1171,7 +1171,7 @@ namespace LuaInterface
 
         public void Push(uint un)
         {
-            LuaDLL.lua_pushnumber(L, un);
+            LuaDLL.lua_pushinteger(L, un);
         }
 
         public void Push(int n)
@@ -1181,12 +1181,12 @@ namespace LuaInterface
 
         public void Push(short s)
         {
-            LuaDLL.lua_pushnumber(L, s);
+            LuaDLL.lua_pushinteger(L, s);
         }
 
         public void Push(ushort us)
         {
-            LuaDLL.lua_pushnumber(L, us);
+            LuaDLL.lua_pushinteger(L, us);
         }
 
         public void Push(long l)
@@ -1409,7 +1409,7 @@ namespace LuaInterface
         Vector3 ToVector3(int stackPos)
         {            
             float x, y, z;
-            stackPos = LuaDLL.abs_index(L, stackPos);
+            stackPos = LuaDLL.lua_absindex(L, stackPos);
             LuaDLL.tolua_getvec3(L, stackPos, out x, out y, out z);
             return new Vector3(x, y, z);
         }
@@ -1425,7 +1425,7 @@ namespace LuaInterface
             }
             
             float x, y, z;
-            stackPos = LuaDLL.abs_index(L, stackPos);
+            stackPos = LuaDLL.lua_absindex(L, stackPos);
             LuaDLL.tolua_getvec3(L, stackPos, out x, out y, out z);
             return new Vector3(x, y, z);
         }
@@ -1441,7 +1441,7 @@ namespace LuaInterface
             }
 
             float x, y, z, w;
-            stackPos = LuaDLL.abs_index(L, stackPos);
+            stackPos = LuaDLL.lua_absindex(L, stackPos);
             LuaDLL.tolua_getquat(L, stackPos, out x, out y, out z, out w);
             return new Quaternion(x, y, z, w);
         }
@@ -1457,7 +1457,7 @@ namespace LuaInterface
             }
 
             float x, y;
-            stackPos = LuaDLL.abs_index(L, stackPos);
+            stackPos = LuaDLL.lua_absindex(L, stackPos);
             LuaDLL.tolua_getvec2(L, stackPos, out x, out y);
             return new Vector2(x, y);
         }
@@ -1473,7 +1473,7 @@ namespace LuaInterface
             }
 
             float x, y, z, w;
-            stackPos = LuaDLL.abs_index(L, stackPos);
+            stackPos = LuaDLL.lua_absindex(L, stackPos);
             LuaDLL.tolua_getvec4(L, stackPos, out x, out y, out z, out w);
             return new Vector4(x, y, z, w);
         }
@@ -1489,7 +1489,7 @@ namespace LuaInterface
             }
 
             float r, g, b, a;
-            stackPos = LuaDLL.abs_index(L, stackPos);
+            stackPos = LuaDLL.lua_absindex(L, stackPos);
             LuaDLL.tolua_getclr(L, stackPos, out r, out g, out b, out a);
             return new Color(r, g, b, a);
         }
@@ -1504,7 +1504,7 @@ namespace LuaInterface
                 return new Ray();
             }
 
-            stackPos = LuaDLL.abs_index(L, stackPos);
+            stackPos = LuaDLL.lua_absindex(L, stackPos);
             int oldTop = BeginPCall(UnpackRay);
             LuaPushValue(stackPos);
 
@@ -1533,7 +1533,7 @@ namespace LuaInterface
                 return new Bounds();
             }
 
-            stackPos = LuaDLL.abs_index(L, stackPos);
+            stackPos = LuaDLL.lua_absindex(L, stackPos);
             int oldTop = BeginPCall(UnpackBounds);
             LuaPushValue(stackPos);
 
@@ -1562,19 +1562,19 @@ namespace LuaInterface
                 return 0;
             }
 
-            stackPos = LuaDLL.abs_index(L, stackPos);
+            stackPos = LuaDLL.lua_absindex(L, stackPos);
             return LuaDLL.tolua_getlayermask(L, stackPos);
         }
 
         public long CheckLong(int stackPos)
         {
-            stackPos = LuaDLL.abs_index(L, stackPos);
+            stackPos = LuaDLL.lua_absindex(L, stackPos);
             return LuaDLL.tolua_checkint64(L, stackPos);
         }
 
         public ulong CheckULong(int stackPos)
         {
-            stackPos = LuaDLL.abs_index(L, stackPos);
+            stackPos = LuaDLL.lua_absindex(L, stackPos);
             return LuaDLL.tolua_checkuint64(L, stackPos);
         }
 
@@ -1805,7 +1805,8 @@ namespace LuaInterface
                 if (pos > 0)
                 {
                     string tableName = fullPath.Substring(0, pos);
-                    IntPtr p = LuaFindTable(LuaIndexes.LUA_GLOBALSINDEX, tableName);
+                    // IntPtr p = LuaFindTable(LuaIndexes.LUA_GLOBALSINDEX, tableName);
+                    IntPtr p = LuaDLL.lua_findtable_in_global(L, tableName);
 
                     if (p == IntPtr.Zero)
                     {
@@ -2575,13 +2576,13 @@ namespace LuaInterface
         void InitTypeTraits()
         {
             LuaMatchType _ck = new LuaMatchType();
-            TypeTraits<sbyte>.Init(_ck.CheckNumber);
-            TypeTraits<byte>.Init(_ck.CheckNumber);
-            TypeTraits<short>.Init(_ck.CheckNumber);
-            TypeTraits<ushort>.Init(_ck.CheckNumber);
-            TypeTraits<char>.Init(_ck.CheckNumber);
-            TypeTraits<int>.Init(_ck.CheckNumber);
-            TypeTraits<uint>.Init(_ck.CheckNumber);
+            TypeTraits<sbyte>.Init(_ck.CheckInteger);
+            TypeTraits<byte>.Init(_ck.CheckInteger);
+            TypeTraits<short>.Init(_ck.CheckInteger);
+            TypeTraits<ushort>.Init(_ck.CheckInteger);
+            TypeTraits<char>.Init(_ck.CheckInteger);
+            TypeTraits<int>.Init(_ck.CheckInteger);
+            TypeTraits<uint>.Init(_ck.CheckInteger);
             TypeTraits<decimal>.Init(_ck.CheckNumber);
             TypeTraits<float>.Init(_ck.CheckNumber);
             TypeTraits<double>.Init(_ck.CheckNumber);
@@ -2590,13 +2591,13 @@ namespace LuaInterface
             TypeTraits<ulong>.Init(_ck.CheckULong);
             TypeTraits<string>.Init(_ck.CheckString);
 
-            TypeTraits<Nullable<sbyte>>.Init(_ck.CheckNullNumber);
-            TypeTraits<Nullable<byte>>.Init(_ck.CheckNullNumber);
-            TypeTraits<Nullable<short>>.Init(_ck.CheckNullNumber);
-            TypeTraits<Nullable<ushort>>.Init(_ck.CheckNullNumber);
-            TypeTraits<Nullable<char>>.Init(_ck.CheckNullNumber);
-            TypeTraits<Nullable<int>>.Init(_ck.CheckNullNumber);
-            TypeTraits<Nullable<uint>>.Init(_ck.CheckNullNumber);
+            TypeTraits<Nullable<sbyte>>.Init(_ck.CheckNullInteger);
+            TypeTraits<Nullable<byte>>.Init(_ck.CheckNullInteger);
+            TypeTraits<Nullable<short>>.Init(_ck.CheckNullInteger);
+            TypeTraits<Nullable<ushort>>.Init(_ck.CheckNullInteger);
+            TypeTraits<Nullable<char>>.Init(_ck.CheckNullInteger);
+            TypeTraits<Nullable<int>>.Init(_ck.CheckNullInteger);
+            TypeTraits<Nullable<uint>>.Init(_ck.CheckNullInteger);
             TypeTraits<Nullable<decimal>>.Init(_ck.CheckNullNumber);
             TypeTraits<Nullable<float>>.Init(_ck.CheckNullNumber);
             TypeTraits<Nullable<double>>.Init(_ck.CheckNullNumber);

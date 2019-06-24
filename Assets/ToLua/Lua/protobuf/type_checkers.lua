@@ -20,7 +20,13 @@ local type = type
 local error = error
 local string = string
 
-module "protobuf.type_checkers"
+-- module "protobuf.type_checkers"
+local type_checkers = {}
+if setfenv then
+  setfenv(1, type_checkers);
+else
+  _ENV = type_checkers
+end
 
 function TypeChecker(acceptable_types)
     local acceptable_types = acceptable_types
@@ -70,3 +76,5 @@ function UnicodeValueChecker()
         end
     end
 end
+
+return type_checkers

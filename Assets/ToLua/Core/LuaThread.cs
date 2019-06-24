@@ -33,7 +33,7 @@ namespace LuaInterface
 
         protected int Resume(IntPtr L, int nArgs)
         {
-            int ret = LuaDLL.lua_resume(L, nArgs);
+            int ret = luaState.LuaResumeThread(L, nArgs);
 
             if (ret > (int)LuaThreadStatus.LUA_YIELD)
             {

@@ -52,7 +52,7 @@ public class PassStruct : LuaClient
 
     Rect ToRectValue(IntPtr L, int pos)
     {
-        pos = LuaDLL.abs_index(L, pos);
+        pos = LuaDLL.lua_absindex(L, pos);
         LuaDLL.lua_getref(L, GetRect.GetReference());
         LuaDLL.lua_pushvalue(L, pos);
         LuaDLL.lua_call(L, 1, 4);
