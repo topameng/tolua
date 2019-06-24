@@ -1413,16 +1413,13 @@ public static class ToLuaMenu
         {
             return;
         }
-        BuildTarget buildTarget;
 #if UNITY_STANDALONE_WIN || UNITY_ANDROID
-        buildTarget = BuildTarget.Android;
 #if LUA_5_3_OR_NEWER
         Debug.Log("generating bytecode for all platform");
 #else
         Debug.Log("generating bytecode for android、windows、iOS");
 #endif
 #elif UNITY_IOS || UNITY_STANDALONE_OSX
-        buildTarget = BuildTarget.iOS;
 #if LUA_5_3_OR_NEWER
         Debug.Log("generating bytecode for all platform");
 #else
@@ -1436,7 +1433,7 @@ public static class ToLuaMenu
         if (srcDir[len - 1] == '/' || srcDir[len - 1] == '\\')
         {
             --len;
-        }         
+        }
 
         for (int i = 0; i < files.Length; i++)
         {
@@ -1445,8 +1442,11 @@ public static class ToLuaMenu
             dest += ".bytes";
             string dir = Path.GetDirectoryName(dest);
             Directory.CreateDirectory(dir);
-            ExportLuaBytecode(files[i], dest, IntPtr.Size, buildTarget);
+
+            EditorUtility.DisplayProgressBar("Encoding", files[i], (float)i / files.Length);
+            ExportLuaBytecode(files[i], dest, IntPtr.Size);
         }
+        EditorUtility.ClearProgressBar();
     }
 
     /// <summary>
@@ -1454,7 +1454,7 @@ public static class ToLuaMenu
     /// </summary>
     /// <param name="srcFile"></param>
     /// <param name="outFile"></param>
-    static void ExportLuaBytecode(string srcFile, string outFile, int arch, BuildTarget buildTarget)
+    static void ExportLuaBytecode(string srcFile, string outFile, int arch)
     {
         if (!srcFile.ToLower().EndsWith(".lua"))
         {
@@ -1467,62 +1467,24 @@ public static class ToLuaMenu
         string luaexe = string.Empty;
         string args = string.Empty;
         string exedir = string.Empty;
+        string exeRoot = string.Empty;
         string currDir = Directory.GetCurrentDirectory();
         string libRoot = Application.dataPath.Replace('\\', '/');
         libRoot = libRoot.Substring(0, libRoot.LastIndexOf('/'));
-
-        if (Application.platform == RuntimePlatform.WindowsEditor)
-        {
-            isWin = true;
-#if LUA_5_3_OR_NEWER
-            luaexe = "luac.exe";
-            args = " -o" + outFile + " " + srcFile;
-            exedir = libRoot + "/Luac53/Win";
-#else            
-            luaexe = "luajit.exe";
-            args = (reserveDebugInfo ? "-bg " : "-b ") + srcFile + " " + outFile;
-            switch (buildTarget)
-            {
-                case BuildTarget.Android:
-                case BuildTarget.StandaloneWindows:
-                case BuildTarget.StandaloneWindows64:
-                    exedir = libRoot + "/Luajit/Win";
-                    break;
-                case BuildTarget.iOS:
-                    exedir = libRoot + "/Luajit_ios/Win";
-                    break;
-            }
-#endif            
-        }
-        else if (Application.platform == RuntimePlatform.OSXEditor)
-        {
-            isWin = false;
-#if LUA_5_3_OR_NEWER
-            luaexe = "./luac";
-            args = " -o" + outFile + " " + srcFile;
-            exedir = libRoot + "/Luac53/Mac";
-#else             
-            luaexe = "./luajit";
-            args = (reserveDebugInfo ? "-bg " : "-b ") + srcFile + " " + outFile;
-            switch (buildTarget)
-            {
-                case BuildTarget.Android:
-                    exedir = libRoot + "/Luajit/Mac";
-                    break;
-                case BuildTarget.iOS:
-                    exedir = libRoot + "/Luajit_ios/Mac";
-                    break;
-            }
-#endif            
-        }
+        isWin = Application.platform == RuntimePlatform.WindowsEditor;
 
 #if LUA_5_3_OR_NEWER
-        string subFolder = arch == 4 ? "/X86" : "/X86_64";
+        exeRoot = "Luac53";
+        luaexe = isWin ? "luac.exe" : "./luac";
+        args = " -o" + outFile + " " + srcFile;
 #else
-        string subFolder = "/X86_64";
-#endif        
+        exeRoot = arch == 4 ? "Luajit" : "Luajit64";
+        luaexe = isWin ? "luajit.exe" : "./luajit";
+        args = (reserveDebugInfo ? "-bg " : "-b ") + srcFile + " " + outFile;
+#endif
+        exedir = string.Format("{0}/{1}/{2}", libRoot, exeRoot, isWin ? "Win" : "Mac");
 
-        Directory.SetCurrentDirectory(exedir + subFolder);
+        Directory.SetCurrentDirectory(exedir);
         System.Diagnostics.ProcessStartInfo info = new System.Diagnostics.ProcessStartInfo()
         {
             FileName = luaexe,
