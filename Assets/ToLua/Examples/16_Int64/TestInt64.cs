@@ -53,7 +53,7 @@ public class TestInt64 : MonoBehaviour
 
     void Start()
     {
-#if UNITY_5 || UNITY_2017		
+#if UNITY_5 || UNITY_2017 || UNITY_2018		
         Application.logMessageReceived += ShowTips;
 #else
         Application.RegisterLogCallback(ShowTips);
@@ -86,7 +86,7 @@ public class TestInt64 : MonoBehaviour
 
     void OnDestroy()
     {
-#if UNITY_5 || UNITY_2017
+#if UNITY_5 || UNITY_2017 || UNITY_2018
         Application.logMessageReceived -= ShowTips;
 #else
         Application.RegisterLogCallback(null);

@@ -267,6 +267,11 @@ namespace LuaInterface
                         throw new LuaException(error, LuaException.GetLastError());
                     }
                 }
+				else
+				{
+					string err = LuaDLL.lua_tostring(L, -1);
+					throw new LuaException(err, LuaException.GetLastError());
+				}
 
                 return LuaDLL.lua_gettop(L) - n;
             }
@@ -455,7 +460,7 @@ namespace LuaInterface
                 FieldInfo listViewFieldInfo = consoleWindowType.GetField("m_ListView", BindingFlags.Instance | BindingFlags.NonPublic);
                 logListView = listViewFieldInfo.GetValue(consoleWindow);
                 logListViewCurrentRow = listViewFieldInfo.FieldType.GetField("row", BindingFlags.Instance | BindingFlags.Public);
-#if UNITY_2017
+#if UNITY_2017_1_OR_NEWER
                 Type logEntriesType = unityEditorAssembly.GetType("UnityEditor.LogEntries");
                 LogEntriesGetEntry = logEntriesType.GetMethod("GetEntryInternal", BindingFlags.Static | BindingFlags.Public);
                 Type logEntryType = unityEditorAssembly.GetType("UnityEditor.LogEntry");                
@@ -1127,13 +1132,12 @@ namespace LuaInterface
 
                 if (obj != null)
                 {
-                    Type objType = obj.GetType();
-
                     if (obj is T)
                     {
                         return obj;
                     }
 
+                    Type objType = obj.GetType();
                     LuaDLL.luaL_argerror(L, stackPos, string.Format("{0} expected, got {1}", TypeTraits<T>.GetTypeName(), objType.FullName));
                 }
 
@@ -1433,54 +1437,6 @@ namespace LuaInterface
             return null;
         }
 
-        public static int LazyRegisterFunc(bool lazyState, string funcName, LuaCSFunction func, IntPtr luaState)
-        {
-            if (lazyState)
-            {
-                IntPtr fn = Marshal.GetFunctionPointerForDelegate(func);
-                LuaDLL.tolua_function(luaState, funcName, fn);
-                LuaDLL.lua_pop(luaState, 1);
-            }
-
-            return func(luaState);
-        }
-
-        public static int LazyRegisterVariable(bool lazyState, bool getStatus, string variableName, LuaCSFunction getFunc, LuaCSFunction setFunc, IntPtr luaState)
-        {
-            if (lazyState)
-            {
-                IntPtr fn;
-
-                if (getStatus)
-                {
-                    if (getFunc != null)
-                    {
-                        fn = Marshal.GetFunctionPointerForDelegate(getFunc);
-                        LuaDLL.tolua_variable(luaState, variableName, fn, IntPtr.Zero);
-                    }
-                }
-                else
-                {
-                    if (setFunc != null)
-                    {
-                        fn = Marshal.GetFunctionPointerForDelegate(setFunc);
-                        LuaDLL.tolua_variable(luaState, variableName, IntPtr.Zero, fn);
-                    }
-                }
-
-                LuaDLL.lua_pop(luaState, 1);
-            }
-
-            if (getStatus)
-            {
-                return getFunc(luaState);
-            }
-            else
-            {
-                return setFunc(luaState);
-            }
-        }
-
         public static UnityEngine.TrackedReference CheckTrackedReference(IntPtr L, int stackPos, Type type)
         {
             int udata = LuaDLL.tolua_rawnetobj(L, stackPos);
@@ -1679,7 +1635,7 @@ namespace LuaInterface
                     {
                         LuaDLL.lua_rawgeti(L, stackPos, i);                        
 
-                        if (LuaDLL.lua_type(L, pos) != LuaTypes.LUA_TNUMBER)
+                        if (!TypeTraits<T>.Check(L, pos))
                         {
                             LuaDLL.lua_pop(L, 1);
                             LuaDLL.luaL_typerror(L, stackPos, TypeTraits<T[]>.GetTypeName());
@@ -2059,7 +2015,7 @@ namespace LuaInterface
                     {
                         LuaDLL.lua_rawgeti(L, stackPos, i);
 
-                        if (LuaDLL.lua_type(L, pos) != LuaTypes.LUA_TNUMBER)
+                        if (!TypeTraits<T>.Check(L, pos))
                         {
                             LuaDLL.lua_pop(L, 1);
                             LuaDLL.luaL_typerror(L, stackPos, TypeTraits<T[]>.GetTypeName());
@@ -2680,7 +2636,7 @@ namespace LuaInterface
 
         public static void PushSealed<T>(IntPtr L, T o)
         {
-            if (o == null)
+            if (o == null || o.Equals(null))
             {
                 LuaDLL.lua_pushnil(L);
             }

@@ -115,6 +115,7 @@ public class LuaLooper : MonoBehaviour
             ThrowException();
         }
 
+        luaState.StepCollect();
         luaState.LuaPop(1);
     }
 

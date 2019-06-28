@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using LuaInterface;
 
-public class AccessingArray : MonoBehaviour 
+public class AccessingArray : MonoBehaviour
 {
     private string script =
         @"
@@ -38,9 +38,10 @@ public class AccessingArray : MonoBehaviour
     LuaFunction func = null;
     string tips = null;
 
+#pragma warning disable 0618
     void Start()
     {
-#if UNITY_5 || UNITY_2017
+#if UNITY_5 || UNITY_2017 || UNITY_2018
         Application.logMessageReceived += ShowTips;
 #else
         Application.RegisterLogCallback(ShowTips);
@@ -51,7 +52,7 @@ public class AccessingArray : MonoBehaviour
         lua.DoString(script, "AccessingArray.cs");
         tips = "";
 
-        int[] array = { 1, 2, 3, 4, 5};        
+        int[] array = { 1, 2, 3, 4, 5 };
         func = lua.GetFunction("TestArray");
 
         func.BeginPCall();
@@ -71,8 +72,10 @@ public class AccessingArray : MonoBehaviour
             Debugger.Log("return is {0} {1} {2}", objs[0], objs[1], objs[2]);
         }
 
-        lua.CheckTop();                
+        lua.CheckTop();
     }
+
+#pragma warning restore 0618
 
     void ShowTips(string msg, string stackTrace, LogType type)
     {
@@ -87,7 +90,7 @@ public class AccessingArray : MonoBehaviour
 
     void OnApplicationQuit()
     {
-#if UNITY_5 || UNITY_2017
+#if UNITY_5 || UNITY_2017 || UNITY_2018
         Application.logMessageReceived -= ShowTips;
 #else
         Application.RegisterLogCallback(null);

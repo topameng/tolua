@@ -277,7 +277,7 @@ namespace LuaInterface
         static string GetGenericName(Type t)
         {
             Type[] gArgs = t.GetGenericArguments();
-            string typeName = t.FullName;
+            string typeName = t.FullName ?? t.Name;
             int count = gArgs.Length;
             int pos = typeName.IndexOf("[");
 

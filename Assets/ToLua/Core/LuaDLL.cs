@@ -193,7 +193,7 @@ namespace LuaInterface
         }        
     }
 
-#if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
+#if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN || UNITY_WSA_10_0
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate int LuaCSFunction(IntPtr luaState);        
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -1105,9 +1105,6 @@ namespace LuaInterface
         public static extern void tolua_function(IntPtr L, string name, IntPtr fn);
 
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void tolua_lazyfunction(IntPtr L, string name, IntPtr fn);
-
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr tolua_tocbuffer(string name, int sz);
 
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
@@ -1116,11 +1113,6 @@ namespace LuaInterface
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
         public static extern void tolua_variable(IntPtr L, string name, IntPtr get, IntPtr set);
 
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void tolua_lazyVariable(IntPtr L, string name, bool get, bool set, IntPtr dispacher);
-
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int tolua_getInjectFlag(IntPtr L, int index);
 
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
         public static extern void tolua_constant(IntPtr L, string name, double val);

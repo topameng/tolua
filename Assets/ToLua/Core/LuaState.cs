@@ -85,11 +85,12 @@ namespace LuaInterface
         HashSet<string> moduleSet = null;
 
         private static LuaState mainState = null;
+        private static LuaState injectionState = null;
         private static Dictionary<IntPtr, LuaState> stateMap = new Dictionary<IntPtr, LuaState>();
 
         private int beginCount = 0;
         private bool beLogGC = false;
-
+        private bool bInjectionInited = false;
 #if UNITY_EDITOR
         private bool beStart = false;
 #endif
@@ -103,6 +104,8 @@ namespace LuaInterface
             if (mainState == null)
             {
                 mainState = this;
+                // MULTI_STATE Not Support
+                injectionState = mainState;
             }
 
             float time = Time.realtimeSinceStartup;
@@ -215,6 +218,19 @@ namespace LuaInterface
 #endif
             Debugger.Log("LuaState start");
             OpenBaseLuaLibs();
+#if ENABLE_LUA_INJECTION
+            Push(LuaDLL.tolua_tag());
+            LuaSetGlobal("tolua_tag");
+#if UNITY_EDITOR
+            if (UnityEditor.EditorPrefs.GetInt(Application.dataPath + "InjectStatus") == 1)
+            { 
+#endif
+                DoFile("System/Injection/LuaInjectionStation.lua");
+                bInjectionInited = true;
+#if UNITY_EDITOR
+            }
+#endif
+#endif
             PackBounds = GetFuncRef("Bounds.New");
             UnpackBounds = GetFuncRef("Bounds.Get");
             PackRay = GetFuncRef("Ray.New");
@@ -370,18 +386,14 @@ namespace LuaInterface
             return 0;
         }
 
-        public static byte GetInjectFlag(int index)
+        public static bool GetInjectInitState(int index)
         {
-            byte result = 0;
-#if !MULTI_STATE
-            if (mainState != null)
+            if (injectionState != null && injectionState.bInjectionInited)
             {
-                result = (byte)LuaDLL.tolua_getInjectFlag(mainState.L, index);
+                return true;
             }
-#else
-            throw new LuaException("MULTI_STATE Not Support!!!");
-#endif
-            return result;
+
+            return false;
         }
 
         string GetToLuaTypeName(Type t)
@@ -483,11 +495,6 @@ namespace LuaInterface
             LuaDLL.tolua_function(L, name, fn);            
         }
 
-        public void RegLazyFunction(string name, IntPtr func)
-        {
-            LuaDLL.tolua_lazyfunction(L, name, func);
-        }
-
         public void RegVar(string name, LuaCSFunction get, LuaCSFunction set)
         {            
             IntPtr fget = IntPtr.Zero;
@@ -504,11 +511,6 @@ namespace LuaInterface
             }
 
             LuaDLL.tolua_variable(L, name, fget, fset);
-        }
-
-        public void RegLazyVar(string name, bool get, bool set, IntPtr dispacher)
-        {
-            LuaDLL.tolua_lazyVariable(L, name, get, set, dispacher);
         }
 
         public void RegConstant(string name, double d)
@@ -542,7 +544,7 @@ namespace LuaInterface
             if (mainState != null && mainState.L == ptr)
             {
                 return mainState;
-            }
+            }            
 
             LuaState state = null;
 
@@ -551,7 +553,7 @@ namespace LuaInterface
                 return state;
             }
             else
-            {                
+            {
                 return Get(LuaDLL.tolua_getmainstate(ptr));
             }
 #endif
@@ -1736,6 +1738,11 @@ namespace LuaInterface
             return 0;
         }
 
+        public void StepCollect()
+        {
+            translator.StepCollect();
+        }
+
         public void RefreshDelegateMap()
         {
             List<long> list = new List<long>();
@@ -1997,11 +2004,12 @@ namespace LuaInterface
                 typeMap.Clear();
                 enumMap.Clear();
                 preLoadMap.Clear();
-                genericSet.Clear();
-                stateMap.Remove(L);
-                LuaClose();
+                genericSet.Clear();                                
+                LuaDLL.lua_close(L);                
                 translator.Dispose();
-                translator = null;                    
+                stateMap.Remove(L);
+                translator = null;
+                L = IntPtr.Zero;
 #if MISS_WARNING
                 missSet.Clear();
 #endif
@@ -2012,6 +2020,11 @@ namespace LuaInterface
             if (mainState == this)
             {
                 mainState = null;
+            }
+            if (injectionState == this)
+            {
+                injectionState = null;
+                LuaInjectionStation.Clear();
             }
 
 #if UNITY_EDITOR

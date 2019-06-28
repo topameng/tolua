@@ -76,7 +76,7 @@ public class TestCoroutine2 : LuaClient
 
     void Start()
     {
-#if UNITY_5 || UNITY_2017
+#if UNITY_5 || UNITY_2017 || UNITY_2018
         Application.logMessageReceived += ShowTips;
 #else
         Application.RegisterLogCallback(ShowTips);
@@ -91,7 +91,7 @@ public class TestCoroutine2 : LuaClient
 
     new void OnApplicationQuit()
     {
-#if UNITY_5 || UNITY_2017
+#if UNITY_5 || UNITY_2017 || UNITY_2018
         Application.logMessageReceived -= ShowTips;
 #else
         Application.RegisterLogCallback(null);

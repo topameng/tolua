@@ -109,6 +109,12 @@ function Quaternion.Equals(a, b)
 end
 
 function Quaternion.Euler(x, y, z)
+	if y == nil and z == nil then		
+		y = x.y
+		z = x.z	
+		x = x.x
+	end
+	
 	x = x * 0.0087266462599716
     y = y * 0.0087266462599716
     z = z * 0.0087266462599716
