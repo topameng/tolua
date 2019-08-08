@@ -104,26 +104,33 @@ local function dump_trace(what, tr, func, pc, otr, oex)
     if what == "abort" then
       local loc = fmtfunc(func, pc)
       if loc ~= startloc then
-	     print(format("[TRACE --- %s%s -- %s at %s]\n", startex, startloc, fmterr(otr, oex), loc))
+	out:write(format("[TRACE --- %s%s -- %s at %s]\n",
+	  startex, startloc, fmterr(otr, oex), loc))
       else
-	     print(format("[TRACE --- %s%s -- %s]\n", startex, startloc, fmterr(otr, oex)))
+	out:write(format("[TRACE --- %s%s -- %s]\n",
+	  startex, startloc, fmterr(otr, oex)))
       end
     elseif what == "stop" then
       local info = traceinfo(tr)
       local link, ltype = info.link, info.linktype
       if ltype == "interpreter" then
-	     print(format("[TRACE %3s %s%s -- fallback to interpreter]\n", tr, startex, startloc))
+	out:write(format("[TRACE %3s %s%s -- fallback to interpreter]\n",
+	  tr, startex, startloc))
       elseif ltype == "stitch" then
-	     print(format("[TRACE %3s %s%s %s %s]\n", tr, startex, startloc, ltype, fmtfunc(func, pc)))
+	out:write(format("[TRACE %3s %s%s %s %s]\n",
+	  tr, startex, startloc, ltype, fmtfunc(func, pc)))
       elseif link == tr or link == 0 then
-	     print(format("[TRACE %3s %s%s %s]\n", tr, startex, startloc, ltype))
+	out:write(format("[TRACE %3s %s%s %s]\n",
+	  tr, startex, startloc, ltype))
       elseif ltype == "root" then
-	     print(format("[TRACE %3s %s%s -> %d]\n", tr, startex, startloc, link))
+	out:write(format("[TRACE %3s %s%s -> %d]\n",
+	  tr, startex, startloc, link))
       else
-	     print(format("[TRACE %3s %s%s -> %d %s]\n", tr, startex, startloc, link, ltype))
+	out:write(format("[TRACE %3s %s%s -> %d %s]\n",
+	  tr, startex, startloc, link, ltype))
       end
     else
-      print(format("[TRACE %s]\n", what))
+      out:write(format("[TRACE %s]\n", what))
     end
     out:flush()
   end
@@ -150,7 +157,7 @@ local function dumpon(outfile)
   else
     out = stderr
   end
-  jit.attach(dump_trace, "trace")    
+  jit.attach(dump_trace, "trace")
   active = true
 end
 
