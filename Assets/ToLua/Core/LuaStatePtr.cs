@@ -80,12 +80,19 @@ namespace LuaInterface
 
         public void LuaOpenJit()
         {
-            if (!LuaDLL.luaL_dostring(L, jit))
+#if UNITY_ANDROID
+            //某些机型如三星arm64在jit on模式下会崩溃，临时关闭这里
+            if (IntPtr.Size == 8)
+            {
+                LuaDLL.luaL_dostring(L, "jit.off()");                                                
+            }
+            else if (!LuaDLL.luaL_dostring(L, jit))
             {
                 string str = LuaDLL.lua_tostring(L, -1);
                 LuaDLL.lua_settop(L, 0);
                 throw new Exception(str);
-            }            
+            }
+#endif
         }
 
         public void LuaClose()
