@@ -574,7 +574,11 @@ namespace LuaInterface
                         if (path.EndsWith(fileName) || path.EndsWith(fileName + ".bytes"))
                         {
                             UnityEngine.Object obj = AssetDatabase.LoadMainAssetAtPath(path);
-                            AssetDatabase.OpenAsset(obj, line);
+                            if (Application.isPlaying) {
+                                EditorApplication.delayCall = delegate(){ AssetDatabase.OpenAsset(obj, line); };
+                            } else {
+                                AssetDatabase.OpenAsset(obj, line);
+                            }
                             return true;
                         }
                     }
