@@ -46,14 +46,16 @@ namespace LuaInterface
 
 #if UNITY_EDITOR
         static int _instanceID = -1;
-        static int _line = 201;
+        static int _line = 203;
         private static object consoleWindow;
         private static object logListView;
         private static FieldInfo logListViewCurrentRow;
         private static MethodInfo LogEntriesGetEntry;
+        private static MethodInfo StartGettingEntries;
+        private static MethodInfo EndGettingEntries;
         private static object logEntry;
-        private static FieldInfo logEntryCondition;
-#endif                
+        private static FieldInfo logEntryCondition;            
+#endif
 
         static ToLua()
         {
@@ -198,7 +200,7 @@ namespace LuaInterface
                         }
                     }
 
-                    Debugger.Log(sb.ToString());            //200行与_line一致
+                    Debugger.Log(sb.ToString());            //203行与_line一致
                 }
                 return 0;
             }
@@ -448,7 +450,7 @@ namespace LuaInterface
             {
                 Assembly unityEditorAssembly = Assembly.GetAssembly(typeof(EditorWindow));
                 Type consoleWindowType = unityEditorAssembly.GetType("UnityEditor.ConsoleWindow");
-                FieldInfo fieldInfo = consoleWindowType.GetField("ms_ConsoleWindow", BindingFlags.Static | BindingFlags.NonPublic);
+                FieldInfo fieldInfo = consoleWindowType.GetField("ms_ConsoleWindow", BindingFlags.Static | BindingFlags.NonPublic);                
                 consoleWindow = fieldInfo.GetValue(null);
 
                 if (consoleWindow == null)
@@ -461,16 +463,18 @@ namespace LuaInterface
                 logListView = listViewFieldInfo.GetValue(consoleWindow);
                 logListViewCurrentRow = listViewFieldInfo.FieldType.GetField("row", BindingFlags.Instance | BindingFlags.Public);
 #if UNITY_2017_1_OR_NEWER
-                Type logEntriesType = unityEditorAssembly.GetType("UnityEditor.LogEntries");
-                LogEntriesGetEntry = logEntriesType.GetMethod("GetEntryInternal", BindingFlags.Static | BindingFlags.Public);
-                Type logEntryType = unityEditorAssembly.GetType("UnityEditor.LogEntry");                
+                Type logEntriesType = unityEditorAssembly.GetType("UnityEditor.LogEntries");                
+                LogEntriesGetEntry = logEntriesType.GetMethod("GetEntryInternal", BindingFlags.Static | BindingFlags.Public);                
+                Type logEntryType = unityEditorAssembly.GetType("UnityEditor.LogEntry");                                
 #else
                 Type logEntriesType = unityEditorAssembly.GetType("UnityEditorInternal.LogEntries");                
                 LogEntriesGetEntry = logEntriesType.GetMethod("GetEntryInternal", BindingFlags.Static | BindingFlags.Public);
-                Type logEntryType = unityEditorAssembly.GetType("UnityEditorInternal.LogEntry");
-#endif
-                logEntry = Activator.CreateInstance(logEntryType);
+                Type logEntryType = unityEditorAssembly.GetType("UnityEditorInternal.LogEntry");                
+#endif                                
                 logEntryCondition = logEntryType.GetField("condition", BindingFlags.Instance | BindingFlags.Public);
+                StartGettingEntries = logEntriesType.GetMethod("StartGettingEntries", BindingFlags.Static | BindingFlags.Public);
+                EndGettingEntries = logEntriesType.GetMethod("EndGettingEntries", BindingFlags.Static | BindingFlags.Public);
+                logEntry = Activator.CreateInstance(logEntryType);
             }
 
             return true;
@@ -479,17 +483,23 @@ namespace LuaInterface
 
         private static string GetListViewRowCount(ref int line)
         {
-            int row = (int)logListViewCurrentRow.GetValue(logListView);
-            LogEntriesGetEntry.Invoke(null, new object[] { row, logEntry });
+#if UNITY_2017_1_OR_NEWER
+            object rows = StartGettingEntries.Invoke(null, null);
+#endif
+            int row = (int)logListViewCurrentRow.GetValue(logListView);            
+            LogEntriesGetEntry.Invoke(null, new object[] { row, logEntry });                            
             string condition = logEntryCondition.GetValue(logEntry) as string;
+#if UNITY_2017_1_OR_NEWER
+            EndGettingEntries.Invoke(null, null);
+#endif
             condition = condition.Substring(0, condition.IndexOf('\n'));
-            int index = condition.IndexOf(".lua:");
+            int index = condition.IndexOf(".lua:");            
 
             if (index >= 0)
             {
                 int start = condition.IndexOf("[");
                 int end = condition.IndexOf("]:");
-                string _line = condition.Substring(index + 5, end - index - 4);
+                string _line = condition.Substring(index + 5, end - index - 5);
                 Int32.TryParse(_line, out line);
                 return condition.Substring(start + 1, index + 3 - start);
             }
@@ -500,7 +510,7 @@ namespace LuaInterface
             {
                 int start = condition.IndexOf("[");
                 int end = condition.IndexOf("]:");
-                string _line = condition.Substring(index + 5, end - index - 4);
+                string _line = condition.Substring(index + 4, end - index - 4);
                 Int32.TryParse(_line, out line);
                 return condition.Substring(start + 1, index + 2 - start);
             }
@@ -574,11 +584,12 @@ namespace LuaInterface
                         if (path.EndsWith(fileName) || path.EndsWith(fileName + ".bytes"))
                         {
                             UnityEngine.Object obj = AssetDatabase.LoadMainAssetAtPath(path);
-                            if (Application.isPlaying) {
-                                EditorApplication.delayCall = delegate(){ AssetDatabase.OpenAsset(obj, line); };
-                            } else {
-                                AssetDatabase.OpenAsset(obj, line);
-                            }
+#if !UNITY_2017_1_OR_NEWER
+                            EditorApplication.delayCall += () => { AssetDatabase.OpenAsset(obj, line); };
+#else
+                            AssetDatabase.OpenAsset(obj, line);
+#endif
+
                             return true;
                         }
                     }
@@ -590,9 +601,9 @@ namespace LuaInterface
         }
 #endif
 #endregion
-                /*-------------------------------------------------------------------------------------------*/
+                            /*-------------------------------------------------------------------------------------------*/
 
-        public static string ToString(IntPtr L, int stackPos)
+                            public static string ToString(IntPtr L, int stackPos)
         {
             LuaTypes luaType = LuaDLL.lua_type(L, stackPos);
 
