@@ -165,6 +165,7 @@ public static class ToLuaExport
         "Dictionary.TryAdd",
         "KeyValuePair.Deconstruct",
         "ParticleSystem.SetJob",
+        "ParticleSystem.subEmitters", /*2019.09 ios编译出错，也可能是unity版本问题*/
         "Type.IsSZArray"
     };
 
