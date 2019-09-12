@@ -123,7 +123,9 @@ public static class CustomSettings
         _GT(typeof(UnityWebRequest)),
         _GT(typeof(DownloadHandler)),
         _GT(typeof(DownloadHandlerBuffer)),
+#if UNITY_2017_1_OR_NEWER
         _GT(typeof(UnityWebRequestAsyncOperation)),
+#endif
 #endif
         _GT(typeof(Screen)),        
         _GT(typeof(CameraClearFlags)),
