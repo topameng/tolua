@@ -7,7 +7,7 @@ public class CallLuaFunction : MonoBehaviour
 {
     private string script =
         @"  function luaFunc(num)                        
-                return num ^ 2
+                return num + 1
             end
 
             test = {}
