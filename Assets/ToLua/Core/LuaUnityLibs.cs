@@ -1,5 +1,6 @@
 ﻿/*
-Copyright (c) 2015-2017 topameng(topameng@qq.com)
+Copyright (c) 2015-2021 topameng(topameng@qq.com)
+https://github.com/topameng/tolua
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -42,23 +43,23 @@ namespace LuaInterface
                 throw new LuaException(error);
             }
 
-            SetOutMethods(L, "Vector3", GetOutVector3);
-            SetOutMethods(L, "Vector2", GetOutVector2);
-            SetOutMethods(L, "Vector4", GetOutVector4);
-            SetOutMethods(L, "Color", GetOutColor);
-            SetOutMethods(L, "Quaternion", GetOutQuaternion);
-            SetOutMethods(L, "Ray", GetOutRay);
-            SetOutMethods(L, "Bounds", GetOutBounds);
-            SetOutMethods(L, "Touch", GetOutTouch);
-            SetOutMethods(L, "RaycastHit", GetOutRaycastHit);
-            SetOutMethods(L, "LayerMask", GetOutLayerMask);            
+            SetOutMethods(L, "Vector3", new LuaCSFunction(GetOutVector3));
+            SetOutMethods(L, "Vector2", new LuaCSFunction(GetOutVector2));
+            SetOutMethods(L, "Vector4", new LuaCSFunction(GetOutVector4));
+            SetOutMethods(L, "Color", new LuaCSFunction(GetOutColor));
+            SetOutMethods(L, "Quaternion", new LuaCSFunction(GetOutQuaternion));
+            SetOutMethods(L, "Ray", new LuaCSFunction(GetOutRay));
+            SetOutMethods(L, "Bounds", new LuaCSFunction(GetOutBounds));
+            SetOutMethods(L, "Touch", new LuaCSFunction(GetOutTouch));
+            SetOutMethods(L, "RaycastHit", new LuaCSFunction(GetOutRaycastHit));
+            SetOutMethods(L, "LayerMask", new LuaCSFunction(GetOutLayerMask));
         }
 
         static void InitMathf(IntPtr L)
         {
             LuaDLL.lua_getglobal(L, "Mathf");
             LuaDLL.lua_pushstring(L, "PerlinNoise");
-            LuaDLL.tolua_pushcfunction(L, PerlinNoise);
+            LuaDLL.tolua_pushcfunction(L, new LuaCSFunction(PerlinNoise));
             LuaDLL.lua_rawset(L, -3);
             LuaDLL.lua_pop(L, 1);
         }

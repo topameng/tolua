@@ -27,11 +27,12 @@ public class TestCustomLoader : LuaClient
 
     new void Awake()
     {
-#if UNITY_5 || UNITY_2017 || UNITY_2018
-        Application.logMessageReceived += Logger;
+#if UNITY_4_6 || UNITY_4_7
+        Application.RegisterLogCallback(ShowTips);
 #else
-        Application.RegisterLogCallback(Logger);
-#endif    
+        Application.logMessageReceived += ShowTips;
+#endif
+        
         base.Awake();
     }
 
@@ -39,14 +40,15 @@ public class TestCustomLoader : LuaClient
     {
         base.OnApplicationQuit();
 
-#if UNITY_5 || UNITY_2017 || UNITY_2018
-        Application.logMessageReceived -= Logger;
-#else
+#if UNITY_4_6 || UNITY_4_7
         Application.RegisterLogCallback(null);
-#endif    
+
+#else
+        Application.logMessageReceived -= ShowTips;
+#endif  
     }
 
-    void Logger(string msg, string stackTrace, LogType type)
+    void ShowTips(string msg, string stackTrace, LogType type)
     {
         tips += msg;
         tips += "\r\n";

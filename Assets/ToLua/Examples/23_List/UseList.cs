@@ -130,6 +130,12 @@ public class UseList : LuaClient
                     print('for:'..list[i])
                 end
 
+                local iter = list:GetEnumerator()
+                
+                while iter:MoveNext() do
+                    print('iter'..iter.Current)
+                end
+
                 list:Clear()
                 print('list Clear not count is '..list.Count)
             end
@@ -146,26 +152,19 @@ public class UseList : LuaClient
 
     protected override void OnLoadFinished()
     {
-#if UNITY_5 || UNITY_2017 || UNITY_2018
-        Application.logMessageReceived += ShowTips;
-#else
+#if UNITY_4_6 || UNITY_4_7
         Application.RegisterLogCallback(ShowTips);
-#endif          
+#else
+        Application.logMessageReceived += ShowTips;
+#endif         
         base.OnLoadFinished();
         luaState.DoString(script, "UseList.cs");
         List<int> list1 = new List<int>();
         list1.Add(1);
         list1.Add(2);
         list1.Add(4);
-
-        LuaFunction func = luaState.GetFunction("Test");
-        func.BeginPCall();
-        func.Push(new List<int>());
-        func.Push(list1);
-        func.PCall();
-        func.EndPCall();
-        func.Dispose();
-        func = null;        
+        
+        luaState.Call("Test", new List<int>(), list1, true);                
     }
 
     string tips;
@@ -179,10 +178,11 @@ public class UseList : LuaClient
     new void OnApplicationQuit()
     {
         base.OnApplicationQuit();
-#if UNITY_5 || UNITY_2017 || UNITY_2018
-        Application.logMessageReceived -= ShowTips;
-#else
+#if UNITY_4_6 || UNITY_4_7
         Application.RegisterLogCallback(null);
+
+#else
+        Application.logMessageReceived -= ShowTips;
 #endif
     }
 

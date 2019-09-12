@@ -27,6 +27,10 @@ function Test4()
     TestStack.Test4()          
 end
 
+function CheckResult()
+    return "string"
+end
+
 function Test5()
     TestStack.Test5()          
 end
@@ -40,8 +44,7 @@ function resume(co, ...)
     local func = function(...)
          r, msg = coroutine.resume(co, ...)
         
-        if not r then
-            print('xxxxxxxxxxxxxxxxxxxxxx')
+        if not r then            
             error(msg)
         end
     end
@@ -50,15 +53,16 @@ function resume(co, ...)
     return r, msg
 end
 
-function Test6()
-    print('--------------------------')                
-    --TestStack.Test6()                
-    local co = coroutine.create(function()  coroutine.yield() print('hahahahaha')  TestStack.Test6(go) end)                                                                                        
+function Test6()                  
+    local co = coroutine.create(function()  coroutine.yield() print('resume')  TestStack.Test6(go) end)                                                                                        
     coroutine.resume(co)                
-    local r, msg = coroutine.resume(co)                
-    print('go error')
-    print(msg)
-    print('--------------------------')            
+    local ret, msg = coroutine.resume(co)                
+
+    if not ret then
+        print("got error, handling errors here then rethrow error info")
+        error(msg)
+    end
+    print("if error can't reach here")
 end     
 
 function Test8()

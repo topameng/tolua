@@ -7,9 +7,9 @@ public class LuaInterface_LuaMethodWrap
 	public static void Register(LuaState L)
 	{
 		L.BeginClass(typeof(LuaInterface.LuaMethod), typeof(System.Object));
-		L.RegFunction("Destroy", Destroy);
-		L.RegFunction("Call", Call);
-		L.RegFunction("__tostring", ToLua.op_ToString);
+		L.RegFunction("Destroy", new LuaCSFunction(Destroy));
+		L.RegFunction("Call", new LuaCSFunction(Call));
+		L.RegFunction("__tostring", new LuaCSFunction(ToLua.op_ToString));
 		L.EndClass();
 	}
 
@@ -19,7 +19,7 @@ public class LuaInterface_LuaMethodWrap
 		try
 		{
 			ToLua.CheckArgsCount(L, 1);
-			LuaMethod obj = (LuaMethod)ToLua.CheckObject(L, 1, typeof(LuaMethod));
+			LuaMethod obj = (LuaMethod)ToLua.CheckObject<LuaMethod>(L, 1);
 			obj.Destroy();
             ToLua.Destroy(L);
 			return 0;
@@ -35,7 +35,7 @@ public class LuaInterface_LuaMethodWrap
 	{
 		try
 		{			
-			LuaMethod obj = (LuaMethod)ToLua.CheckObject(L, 1, typeof(LuaMethod));            
+			LuaMethod obj = (LuaMethod)ToLua.CheckObject<LuaMethod>(L, 1);
 			return obj.Call(L);						
 		}
 		catch(Exception e)

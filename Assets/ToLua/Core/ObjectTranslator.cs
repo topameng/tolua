@@ -1,5 +1,6 @@
 ﻿/*
-Copyright (c) 2015-2017 topameng(topameng@qq.com)
+Copyright (c) 2015-2021 topameng(topameng@qq.com)
+https://github.com/topameng/tolua
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -46,7 +47,7 @@ namespace LuaInterface
         {
             public new bool Equals(object x, object y)
             {
-                return object.ReferenceEquals(x, y);                
+                return System.Object.ReferenceEquals(x, y);                
             }
 
             public int GetHashCode(object obj)

@@ -32,13 +32,13 @@ public class TestString : LuaClient
 
     protected override void OnLoadFinished()
     {
-#if UNITY_5 || UNITY_2017 || UNITY_2018
-        Application.logMessageReceived += ShowTips;
-#else
+#if UNITY_4_6 || UNITY_4_7
         Application.RegisterLogCallback(ShowTips);
-#endif  
+#else
+        Application.logMessageReceived += ShowTips;
+#endif
         base.OnLoadFinished();
-        luaState.DoString(script);
+        luaState.DoString(script, "TestString.cs");
         LuaFunction func = luaState.GetFunction("Test");
         func.Call();
         func.Dispose();
@@ -57,10 +57,11 @@ public class TestString : LuaClient
     {
         base.OnApplicationQuit();
 
-#if UNITY_5 || UNITY_2017 || UNITY_2018	
-        Application.logMessageReceived -= ShowTips;
-#else
+#if UNITY_4_6 || UNITY_4_7
         Application.RegisterLogCallback(null);
+
+#else
+        Application.logMessageReceived -= ShowTips;
 #endif
     }
 

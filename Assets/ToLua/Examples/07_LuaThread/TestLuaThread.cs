@@ -40,16 +40,16 @@ public class TestLuaThread : MonoBehaviour
 
     void Start () 
     {
-#if UNITY_5 || UNITY_2017 || UNITY_2018
-        Application.logMessageReceived += ShowTips;
-#else
+#if UNITY_4_6 || UNITY_4_7
         Application.RegisterLogCallback(ShowTips);
+#else
+        Application.logMessageReceived += ShowTips;
 #endif
         new LuaResLoader();
         state = new LuaState();
         state.Start();
         state.LogGC = true;
-        state.DoString(script);
+        state.DoString(script, "TestLuaThread.cs");
 
         LuaFunction func = state.GetFunction("Test");
         func.BeginPCall();
@@ -73,10 +73,11 @@ public class TestLuaThread : MonoBehaviour
 
         state.Dispose();
         state = null;
-#if UNITY_5 || UNITY_2017 || UNITY_2018
-        Application.logMessageReceived -= ShowTips;
-#else
+#if UNITY_4_6 || UNITY_4_7
         Application.RegisterLogCallback(null);
+
+#else
+        Application.logMessageReceived -= ShowTips;
 #endif
     }
 
@@ -101,8 +102,8 @@ public class TestLuaThread : MonoBehaviour
             int ret = -1;
 
             if (thread != null && thread.Resume(true, out ret) == (int)LuaThreadStatus.LUA_YIELD)
-            {                
-                Debugger.Log("lua yield: " + ret);
+            {
+                Debugger.Log("lua yield: " + ret);                
             }
         }
         else if (GUI.Button(new Rect(10, 150, 120, 40), "Close Thread"))

@@ -16,12 +16,20 @@ function CoFunc()
     end	
 	print("current frameCount: "..Time.frameCount)
 	coroutine.step()
-	print("yield frameCount: "..Time.frameCount)
+	print("yield frameCount: "..Time.frameCount)                                           
 
-	local www = UnityEngine.WWW("http://www.baidu.com")
-	coroutine.www(www)
-	local s = tolua.tolstring(www.bytes)
-	print(s:sub(1, 128))
+    if UnityEngine.WWW == nil then
+        local www = UnityEngine.Networking.UnityWebRequest.Get("http://www.baidu.com")        
+        local request = www:SendWebRequest()        
+        coroutine.www(request)
+        local s = tolua.tolstring(www.downloadHandler.data) 
+        print(s:sub(1, 128))
+    else
+	    local www = UnityEngine.WWW("http://www.baidu.com")
+	    coroutine.www(www)
+	    local s = tolua.tolstring(www.bytes)
+	    print(s:sub(1, 128))
+    end
     print('Coroutine ended')
 end
 

@@ -1,5 +1,6 @@
 ﻿/*
-Copyright (c) 2015-2017 topameng(topameng@qq.com)
+Copyright (c) 2015-2021 topameng(topameng@qq.com)
+https://github.com/topameng/tolua
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -39,6 +40,8 @@ namespace LuaInterface
             kclass = t;            
         }
 
+        readonly Type TypeOfMulticastDelegate = typeof(System.MulticastDelegate);
+
         public int Get(IntPtr L)
         {
             try
@@ -49,7 +52,7 @@ namespace LuaInterface
 
                 if (o == null)
                 {
-                    if (typeof(System.MulticastDelegate).IsAssignableFrom(field.FieldType))
+                    if (TypeOfMulticastDelegate.IsAssignableFrom(field.FieldType))
                     {
                         o = DelegateFactory.CreateDelegate(field.FieldType, null);
                         ToLua.Push(L, (Delegate)o);
@@ -72,6 +75,9 @@ namespace LuaInterface
             }            
         }
 
+        readonly Type TypeOfBinder = typeof(Binder);
+        readonly Type TypeOfCultureInfo = typeof(CultureInfo);
+
         public int Set(IntPtr L)
         {
             try
@@ -92,8 +98,8 @@ namespace LuaInterface
                     object arg1 = ToLua.ToVarObject(L, 3);
                     if (arg1 != null) arg1 = TypeChecker.ChangeType(arg1, field.FieldType);
                     BindingFlags arg2 = (BindingFlags)LuaDLL.luaL_checknumber(L, 4);
-                    Binder arg3 = (Binder)ToLua.CheckObject(L, 5, typeof(Binder));
-                    CultureInfo arg4 = (CultureInfo)ToLua.CheckObject(L, 6, typeof(CultureInfo));                    
+                    Binder arg3 = (Binder)ToLua.CheckObject(L, 5, TypeOfBinder);
+                    CultureInfo arg4 = (CultureInfo)ToLua.CheckObject(L, 6, TypeOfCultureInfo);
                     field.SetValue(arg0, arg1, arg2, arg3, arg4);
                     return 0;
                 }

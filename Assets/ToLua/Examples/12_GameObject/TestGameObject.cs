@@ -12,7 +12,7 @@ public class TestGameObject: MonoBehaviour
 
             function OnComplete()
                 print('OnComplete CallBack')
-            end                       
+            end                              
             
             local go = GameObject('go')
             go:AddComponent(typeof(ParticleSystem))
@@ -36,10 +36,10 @@ public class TestGameObject: MonoBehaviour
 
     void Start()
     {
-#if UNITY_5 || UNITY_2017 || UNITY_2018
-        Application.logMessageReceived += ShowTips;
-#else
+#if UNITY_4_6 || UNITY_4_7
         Application.RegisterLogCallback(ShowTips);
+#else
+        Application.logMessageReceived += ShowTips;
 #endif
         new LuaResLoader();
         lua = new LuaState();
@@ -67,11 +67,12 @@ public class TestGameObject: MonoBehaviour
     {        
         lua.Dispose();
         lua = null;
-#if UNITY_5 || UNITY_2017 || UNITY_2018
-        Application.logMessageReceived -= ShowTips;
-#else
+#if UNITY_4_6 || UNITY_4_7
         Application.RegisterLogCallback(null);
-#endif    
+
+#else
+        Application.logMessageReceived -= ShowTips;
+#endif 
     }
 
     void OnGUI()

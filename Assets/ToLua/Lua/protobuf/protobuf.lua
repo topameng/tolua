@@ -28,7 +28,7 @@ local string = string
 local tostring = tostring
 local type = type
 
-local pb = require "pb"
+local pb = require "pb2"
 local wire_format = require "protobuf.wire_format"
 local type_checkers = require "protobuf.type_checkers"
 local encoder = require "protobuf.encoder"

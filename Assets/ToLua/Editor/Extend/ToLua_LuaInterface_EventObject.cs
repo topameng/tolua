@@ -7,7 +7,7 @@ public class ToLua_LuaInterface_EventObject
     public static string op_AdditionDefined =
 @"        try
         {
-            EventObject arg0 = (EventObject)ToLua.CheckObject(L, 1, typeof(EventObject));
+            EventObject arg0 = StackTraits<EventObject>.Check(L, 1);
             arg0.func = ToLua.CheckDelegate(arg0.type, L, 2);
             arg0.op = EventOp.Add;
             ToLua.Push(L, arg0);
@@ -22,7 +22,7 @@ public class ToLua_LuaInterface_EventObject
     public static string op_SubtractionDefined =
 @"        try
         {
-            EventObject arg0 = (EventObject)ToLua.CheckObject(L, 1, typeof(EventObject));
+            EventObject arg0 = StackTraits<EventObject>.Check(L, 1);
             arg0.func = ToLua.CheckDelegate(arg0.type, L, 2);
             arg0.op = EventOp.Sub;
             ToLua.Push(L, arg0);

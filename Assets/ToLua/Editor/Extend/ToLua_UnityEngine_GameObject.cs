@@ -16,7 +16,7 @@ public class ToLua_UnityEngine_GameObject
 
 			if (count == 2 && TypeChecker.CheckTypes<string>(L, 2))
 			{
-				UnityEngine.GameObject obj = (UnityEngine.GameObject)ToLua.CheckObject(L, 1, typeof(UnityEngine.GameObject));
+				UnityEngine.GameObject obj = (UnityEngine.GameObject)ToLua.CheckObject<UnityEngine.GameObject>(L, 1);
 				string arg0 = ToLua.ToString(L, 2);
 				obj.SendMessage(arg0);                
 
@@ -33,7 +33,7 @@ public class ToLua_UnityEngine_GameObject
 			}
 			else if (count == 3 && TypeChecker.CheckTypes<string, UnityEngine.SendMessageOptions>(L, 2))
 			{
-				UnityEngine.GameObject obj = (UnityEngine.GameObject)ToLua.CheckObject(L, 1, typeof(UnityEngine.GameObject));
+				UnityEngine.GameObject obj = (UnityEngine.GameObject)ToLua.CheckObject<UnityEngine.GameObject>(L, 1);
 				string arg0 = ToLua.ToString(L, 2);
 				UnityEngine.SendMessageOptions arg1 = (UnityEngine.SendMessageOptions)ToLua.ToObject(L, 3);
 				obj.SendMessage(arg0, arg1);                
@@ -51,7 +51,7 @@ public class ToLua_UnityEngine_GameObject
 			}
 			else if (count == 3 && TypeChecker.CheckTypes<string, object>(L, 2))
 			{
-				UnityEngine.GameObject obj = (UnityEngine.GameObject)ToLua.CheckObject(L, 1, typeof(UnityEngine.GameObject));
+				UnityEngine.GameObject obj = (UnityEngine.GameObject)ToLua.CheckObject<UnityEngine.GameObject>(L, 1);
 				string arg0 = ToLua.ToString(L, 2);
 				object arg1 = ToLua.ToVarObject(L, 3);
 				obj.SendMessage(arg0, arg1);                
@@ -69,7 +69,7 @@ public class ToLua_UnityEngine_GameObject
 			}
 			else if (count == 4 && TypeChecker.CheckTypes<string, object, UnityEngine.SendMessageOptions>(L, 2))
 			{
-				UnityEngine.GameObject obj = (UnityEngine.GameObject)ToLua.CheckObject(L, 1, typeof(UnityEngine.GameObject));
+				UnityEngine.GameObject obj = (UnityEngine.GameObject)ToLua.CheckObject<UnityEngine.GameObject>(L, 1);
 				string arg0 = ToLua.ToString(L, 2);
 				object arg1 = ToLua.ToVarObject(L, 3);
 				UnityEngine.SendMessageOptions arg2 = (UnityEngine.SendMessageOptions)ToLua.ToObject(L, 4);
@@ -111,7 +111,7 @@ public class ToLua_UnityEngine_GameObject
 
 			if (count == 2 && TypeChecker.CheckTypes<string>(L, 2))
 			{
-				UnityEngine.GameObject obj = (UnityEngine.GameObject)ToLua.CheckObject(L, 1, typeof(UnityEngine.GameObject));
+				UnityEngine.GameObject obj = (UnityEngine.GameObject)ToLua.CheckObject<UnityEngine.GameObject>(L, 1);
 				string arg0 = ToLua.ToString(L, 2);
 				obj.SendMessageUpwards(arg0);                
 
@@ -128,7 +128,7 @@ public class ToLua_UnityEngine_GameObject
 			}
 			else if (count == 3 && TypeChecker.CheckTypes<string, UnityEngine.SendMessageOptions>(L, 2))
 			{
-				UnityEngine.GameObject obj = (UnityEngine.GameObject)ToLua.CheckObject(L, 1, typeof(UnityEngine.GameObject));
+				UnityEngine.GameObject obj = (UnityEngine.GameObject)ToLua.CheckObject<UnityEngine.GameObject>(L, 1);
 				string arg0 = ToLua.ToString(L, 2);
 				UnityEngine.SendMessageOptions arg1 = (UnityEngine.SendMessageOptions)ToLua.ToObject(L, 3);
 				obj.SendMessageUpwards(arg0, arg1);                
@@ -146,7 +146,7 @@ public class ToLua_UnityEngine_GameObject
 			}
 			else if (count == 3 && TypeChecker.CheckTypes<string, object>(L, 2))
 			{
-				UnityEngine.GameObject obj = (UnityEngine.GameObject)ToLua.CheckObject(L, 1, typeof(UnityEngine.GameObject));
+				UnityEngine.GameObject obj = (UnityEngine.GameObject)ToLua.CheckObject<UnityEngine.GameObject>(L, 1);
 				string arg0 = ToLua.ToString(L, 2);
 				object arg1 = ToLua.ToVarObject(L, 3);
 				obj.SendMessageUpwards(arg0, arg1);                
@@ -164,7 +164,7 @@ public class ToLua_UnityEngine_GameObject
 			}
 			else if (count == 4 && TypeChecker.CheckTypes<string, object, UnityEngine.SendMessageOptions>(L, 2))
 			{
-				UnityEngine.GameObject obj = (UnityEngine.GameObject)ToLua.CheckObject(L, 1, typeof(UnityEngine.GameObject));
+				UnityEngine.GameObject obj = (UnityEngine.GameObject)ToLua.CheckObject<UnityEngine.GameObject>(L, 1);
 				string arg0 = ToLua.ToString(L, 2);
 				object arg1 = ToLua.ToVarObject(L, 3);
 				UnityEngine.SendMessageOptions arg2 = (UnityEngine.SendMessageOptions)ToLua.ToObject(L, 4);
@@ -206,7 +206,7 @@ public class ToLua_UnityEngine_GameObject
 
 			if (count == 2 && TypeChecker.CheckTypes<string>(L, 2))
 			{
-				UnityEngine.GameObject obj = (UnityEngine.GameObject)ToLua.CheckObject(L, 1, typeof(UnityEngine.GameObject));
+				UnityEngine.GameObject obj = (UnityEngine.GameObject)ToLua.CheckObject<UnityEngine.GameObject>(L, 1);
 				string arg0 = ToLua.ToString(L, 2);
 				obj.BroadcastMessage(arg0);                
 
@@ -223,7 +223,7 @@ public class ToLua_UnityEngine_GameObject
 			}
 			else if (count == 3 && TypeChecker.CheckTypes<string, UnityEngine.SendMessageOptions>(L, 2))
 			{
-				UnityEngine.GameObject obj = (UnityEngine.GameObject)ToLua.CheckObject(L, 1, typeof(UnityEngine.GameObject));
+				UnityEngine.GameObject obj = (UnityEngine.GameObject)ToLua.CheckObject<UnityEngine.GameObject>(L, 1);
 				string arg0 = ToLua.ToString(L, 2);
 				UnityEngine.SendMessageOptions arg1 = (UnityEngine.SendMessageOptions)ToLua.ToObject(L, 3);
 				obj.BroadcastMessage(arg0, arg1);                
@@ -241,7 +241,7 @@ public class ToLua_UnityEngine_GameObject
 			}
 			else if (count == 3 && TypeChecker.CheckTypes<string, object>(L, 2))
 			{
-				UnityEngine.GameObject obj = (UnityEngine.GameObject)ToLua.CheckObject(L, 1, typeof(UnityEngine.GameObject));
+				UnityEngine.GameObject obj = (UnityEngine.GameObject)ToLua.CheckObject<UnityEngine.GameObject>(L, 1);
 				string arg0 = ToLua.ToString(L, 2);
 				object arg1 = ToLua.ToVarObject(L, 3);
 				obj.BroadcastMessage(arg0, arg1);                
@@ -259,7 +259,7 @@ public class ToLua_UnityEngine_GameObject
 			}
 			else if (count == 4 && TypeChecker.CheckTypes<string, object, UnityEngine.SendMessageOptions>(L, 2))
 			{
-				UnityEngine.GameObject obj = (UnityEngine.GameObject)ToLua.CheckObject(L, 1, typeof(UnityEngine.GameObject));
+				UnityEngine.GameObject obj = (UnityEngine.GameObject)ToLua.CheckObject<UnityEngine.GameObject>(L, 1);
 				string arg0 = ToLua.ToString(L, 2);
 				object arg1 = ToLua.ToVarObject(L, 3);
 				UnityEngine.SendMessageOptions arg2 = (UnityEngine.SendMessageOptions)ToLua.ToObject(L, 4);
@@ -291,7 +291,7 @@ public class ToLua_UnityEngine_GameObject
 		}";
 
 
-    public static string AddComponentDefined = 
+    public static string AddComponentDefined =
 @"		IntPtr L0 = LuaException.L;
 
         try
@@ -299,7 +299,7 @@ public class ToLua_UnityEngine_GameObject
             ++LuaException.InstantiateCount;
             LuaException.L = L;
             ToLua.CheckArgsCount(L, 2);
-			UnityEngine.GameObject obj = (UnityEngine.GameObject)ToLua.CheckObject(L, 1, typeof(UnityEngine.GameObject));
+			UnityEngine.GameObject obj = (UnityEngine.GameObject)ToLua.CheckObject<UnityEngine.GameObject>(L, 1);
 			System.Type arg0 = ToLua.CheckMonoType(L, 2);
 			UnityEngine.Component o = obj.AddComponent(arg0);
 

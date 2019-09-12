@@ -7,9 +7,9 @@ public class LuaInterface_LuaPropertyWrap
 	public static void Register(LuaState L)
 	{
 		L.BeginClass(typeof(LuaInterface.LuaProperty), typeof(System.Object));
-		L.RegFunction("Get", Get);
-		L.RegFunction("Set", Set);
-		L.RegFunction("__tostring", ToLua.op_ToString);
+		L.RegFunction("Get", new LuaCSFunction(Get));
+		L.RegFunction("Set", new LuaCSFunction(Set));
+		L.RegFunction("__tostring", new LuaCSFunction(ToLua.op_ToString));
 		L.EndClass();
 	}
 
@@ -18,7 +18,7 @@ public class LuaInterface_LuaPropertyWrap
 	{
 		try
 		{			
-			LuaProperty obj = (LuaProperty)ToLua.CheckObject(L, 1, typeof(LuaProperty));            
+			LuaProperty obj = (LuaProperty)ToLua.CheckObject<LuaProperty>(L, 1);            
             return obj.Get(L);						
 		}
 		catch (Exception e)
@@ -32,7 +32,7 @@ public class LuaInterface_LuaPropertyWrap
 	{
 		try
 		{			
-            LuaProperty obj = (LuaProperty)ToLua.CheckObject(L, 1, typeof(LuaProperty));            
+            LuaProperty obj = (LuaProperty)ToLua.CheckObject<LuaProperty>(L, 1);            
             return obj.Set(L);
         }
         catch (Exception e)

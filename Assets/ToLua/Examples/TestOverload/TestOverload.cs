@@ -19,7 +19,7 @@ public class TestEnum
 
 public sealed class TestExport
 {
-    [LuaByteBufferAttribute]
+    [LuaByteBuffer]
     public delegate void TestBuffer(byte[] buffer);       
 
     public enum Space
@@ -62,7 +62,7 @@ public sealed class TestExport
         set { Debugger.Log(value); }
     }
 
-    [LuaByteBufferAttribute]
+    [LuaByteBuffer]
     public byte[] buffer;
 
     public static int get_Item(string pos) { return 0; }
@@ -272,6 +272,22 @@ public sealed class TestExport
         Debugger.Log("call TestNullable(Nullable<Vector3> v)");
         return v;
     }
+
+    [LuaByteBuffer]
+    public void Send(byte[] buffer)
+    {
+
+    }
+
+    public static bool operator >=(TestExport lhs, TestExport rhs)
+    {
+        return true;
+    }
+
+    public static bool operator <=(TestExport lhs, TestExport rhs)
+    {
+        return true;
+    }   
 }
 
 public class TestOverload : MonoBehaviour

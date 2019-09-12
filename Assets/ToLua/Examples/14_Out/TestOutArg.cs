@@ -11,7 +11,7 @@ public class TestOutArg : MonoBehaviour
                                                                             
             function TestPick(ray)                                                                  
                 local _layer = 2 ^ LayerMask.NameToLayer('Default')                
-                local time = os.clock()                                                  
+                local time = os.clock()                                                         
                 local flag, hit = UnityEngine.Physics.Raycast(ray, nil, 5000, _layer)                                              
                 --local flag, hit = UnityEngine.Physics.Raycast(ray, RaycastHit.out, 5000, _layer)                                
                                 
@@ -27,10 +27,10 @@ public class TestOutArg : MonoBehaviour
 
     void Start () 
     {
-#if UNITY_5 || UNITY_2017 || UNITY_2018
-        Application.logMessageReceived += ShowTips;
-#else
+#if UNITY_4_6 || UNITY_4_7
         Application.RegisterLogCallback(ShowTips);
+#else
+        Application.logMessageReceived += ShowTips;
 #endif
         new LuaResLoader();
         state = new LuaState();
@@ -48,11 +48,12 @@ public class TestOutArg : MonoBehaviour
 
     void OnApplicationQuit()
     {
-#if UNITY_5 || UNITY_2017 || UNITY_2018
-        Application.logMessageReceived -= ShowTips;
-#else
+#if UNITY_4_6 || UNITY_4_7
         Application.RegisterLogCallback(null);
-#endif        
+
+#else
+        Application.logMessageReceived -= ShowTips;
+#endif     
     }
 
     private void OnGUI()

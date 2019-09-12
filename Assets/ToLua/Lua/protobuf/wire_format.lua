@@ -15,7 +15,7 @@
 --------------------------------------------------------------------------------
 --
 
-local pb = require "pb"
+local pb = require "pb2"
 -- module "protobuf.wire_format"
 local wire_format = {}
 if setfenv then

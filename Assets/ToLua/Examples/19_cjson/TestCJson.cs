@@ -4,8 +4,8 @@ using LuaInterface;
 
 public class TestCJson : LuaClient
 {
-    string script = @"
-    local json = require 'cjson'
+    string script = @"    
+    local json = require 'cjson'        
 
     function Test(str)
 	    local data = json.decode(str)
@@ -17,26 +17,20 @@ public class TestCJson : LuaClient
     protected override LuaFileUtils InitLoader()
     {
         return new LuaResLoader();
-    }
-    
-    protected override void OpenLibs()
-    {
-        base.OpenLibs();
-        OpenCJson();                   
-    }
+    }   
 
     protected override void OnLoadFinished()
     {
-#if UNITY_5 || UNITY_2017 || UNITY_2018
-        Application.logMessageReceived += ShowTips;
-#else
+#if UNITY_4_6 || UNITY_4_7
         Application.RegisterLogCallback(ShowTips);
-#endif  
+#else
+        Application.logMessageReceived += ShowTips;
+#endif
         base.OnLoadFinished();
 
         TextAsset text = (TextAsset)Resources.Load("jsonexample", typeof(TextAsset));
         string str = text.ToString();
-        luaState.DoString(script);
+        luaState.DoString(script, "TestCJson.cs");
         LuaFunction func = luaState.GetFunction("Test");
         func.BeginPCall();
         func.Push(str);
@@ -60,10 +54,11 @@ public class TestCJson : LuaClient
     {
         base.OnApplicationQuit();
 
-#if UNITY_5 || UNITY_2017 || UNITY_2018	
-        Application.logMessageReceived -= ShowTips;
-#else
+#if UNITY_4_6 || UNITY_4_7
         Application.RegisterLogCallback(null);
+
+#else
+        Application.logMessageReceived -= ShowTips;
 #endif
     }
 

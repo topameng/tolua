@@ -4,15 +4,19 @@ using System.Collections.Generic;
 using System.IO;
 using LuaInterface;
 using System;
+#if UNITY_5_4_OR_NEWER
+using UnityEngine.Networking;
+#endif
 
 //click Lua/Build lua bundle
-public class TestABLoader : MonoBehaviour 
+public class TestABLoader : MonoBehaviour
 {
     int bundleCount = int.MaxValue;
     string tips = null;
 
     IEnumerator CoLoadBundle(string name, string path)
     {
+#if UNITY_4_6 || UNITY_4_7
         using (WWW www = new WWW(path))
         {
             if (www == null)
@@ -32,7 +36,14 @@ public class TestABLoader : MonoBehaviour
             --bundleCount;
             LuaFileUtils.Instance.AddSearchBundle(name, www.assetBundle);
             www.Dispose();
-        }                     
+        }  
+#else
+        AssetBundleCreateRequest request = AssetBundle.LoadFromFileAsync(path);
+        yield return request;
+
+        --bundleCount;
+        LuaFileUtils.Instance.AddSearchBundle(name, request.assetBundle);
+#endif        
     }
 
     IEnumerator LoadFinished()
@@ -48,35 +59,39 @@ public class TestABLoader : MonoBehaviour
     public IEnumerator LoadBundles()
     {
         string streamingPath = Application.streamingAssetsPath.Replace('\\', '/');
+        string dir = streamingPath + "/" + LuaConst.osDir;
 
-#if UNITY_5 || UNITY_2017 || UNITY_2018
-#if UNITY_ANDROID && !UNITY_EDITOR
-        string main = streamingPath + "/" + LuaConst.osDir + "/" + LuaConst.osDir;
-#else
-        string main = "file:///" + streamingPath + "/" + LuaConst.osDir + "/" + LuaConst.osDir;
+#if UNITY_EDITOR
+        if (!Directory.Exists(dir))
+        {
+            throw new Exception("must build bundle files first");
+        }
 #endif
-        WWW www = new WWW(main);
-        yield return www;
 
-        AssetBundleManifest manifest = (AssetBundleManifest)www.assetBundle.LoadAsset("AssetBundleManifest");
-        List<string> list = new List<string>(manifest.GetAllAssetBundles());        
-#else
+#if UNITY_4_6 || UNITY_4_7
         //此处应该配表获取
-        List<string> list = new List<string>() { "lua.unity3d", "lua_cjson.unity3d", "lua_system.unity3d", "lua_unityengine.unity3d", "lua_protobuf.unity3d", "lua_misc.unity3d", "lua_socket.unity3d", "lua_system_reflection.unity3d" };
+        List<string> list = new List<string>() { "lua.unity3d", "lua_cjson.unity3d", "lua_system.unity3d", "lua_unityengine.unity3d", "lua_protobuf.unity3d", "lua_misc.unity3d", "lua_socket.unity3d", "lua_system_reflection.unity3d" };   
+#else       
+        AssetBundleCreateRequest request = AssetBundle.LoadFromFileAsync(dir + "/" + LuaConst.osDir);
+        yield return request;
+
+        AssetBundleManifest manifest = (AssetBundleManifest)request.assetBundle.LoadAsset("AssetBundleManifest");
+        List<string> list = new List<string>(manifest.GetAllAssetBundles());
 #endif
+
         bundleCount = list.Count;
 
         for (int i = 0; i < list.Count; i++)
         {
             string str = list[i];
 
-#if UNITY_ANDROID && !UNITY_EDITOR
-            string path = streamingPath + "/" + LuaConst.osDir + "/" + str;
-#else
+#if (UNITY_4_6 || UNITY_4_7) && UNITY_EDITOR
             string path = "file:///" + streamingPath + "/" + LuaConst.osDir + "/" + str;
+#else
+            string path = streamingPath + "/" + LuaConst.osDir + "/" + str;
 #endif
             string name = Path.GetFileNameWithoutExtension(str);
-            StartCoroutine(CoLoadBundle(name, path));            
+            StartCoroutine(CoLoadBundle(name, path));
         }
 
         yield return StartCoroutine(LoadFinished());
@@ -84,19 +99,20 @@ public class TestABLoader : MonoBehaviour
 
     void Awake()
     {
-#if UNITY_5 || UNITY_2017 || UNITY_2018
-        Application.logMessageReceived += ShowTips;
-#else
+#if UNITY_4_6 || UNITY_4_7
         Application.RegisterLogCallback(ShowTips);
+#else
+        Application.logMessageReceived += ShowTips;
 #endif
         LuaFileUtils file = new LuaFileUtils();
         file.beZip = true;
 #if UNITY_ANDROID && UNITY_EDITOR
         if (IntPtr.Size == 8)
         {
-            throw new Exception("can't run this in unity5.x process for 64 bits, switch to pc platform, or run it in android mobile");
+            throw new Exception("can't run this on standalone 64 bits, switch to pc platform, or run it in android mobile");
         }
 #endif
+
         StartCoroutine(LoadBundles());
     }
 
@@ -113,23 +129,24 @@ public class TestABLoader : MonoBehaviour
 
     void OnApplicationQuit()
     {
-#if UNITY_5 || UNITY_2017 || UNITY_2018
-        Application.logMessageReceived -= ShowTips;
-#else
+#if UNITY_4_6 || UNITY_4_7
         Application.RegisterLogCallback(null);
+
+#else
+        Application.logMessageReceived -= ShowTips;
 #endif
     }
 
     void OnBundleLoad()
-    {                
+    {
         LuaState state = new LuaState();
         state.Start();
-        state.DoString("print('hello tolua#:'..tostring(Vector3.zero))");
-        state.DoFile("Main.lua");
+        state.DoString("print('hello tolua#:'..tostring(Vector3.zero))", "TestABLoader.cs");
+        state.Require("Main");
         LuaFunction func = state.GetFunction("Main");
         func.Call();
         func.Dispose();
         state.Dispose();
         state = null;
-	}	
+    }
 }

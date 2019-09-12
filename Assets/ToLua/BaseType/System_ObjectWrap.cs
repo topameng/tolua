@@ -7,14 +7,14 @@ public class System_ObjectWrap
 	public static void Register(LuaState L)
 	{
 		L.BeginClass(typeof(System.Object), null);
-		L.RegFunction("Equals", Equals);
-		L.RegFunction("GetHashCode", GetHashCode);
-		L.RegFunction("GetType", GetType);
-		L.RegFunction("ToString", ToString);
-		L.RegFunction("ReferenceEquals", ReferenceEquals);
-		L.RegFunction("Destroy", Destroy);
-		L.RegFunction("New", _CreateSystem_Object);
-		L.RegFunction("__eq", op_Equality);
+		L.RegFunction("Equals", new LuaCSFunction(Equals));
+		L.RegFunction("GetHashCode", new LuaCSFunction(GetHashCode));
+		L.RegFunction("GetType", new LuaCSFunction(GetType));
+		L.RegFunction("ToString", new LuaCSFunction(ToString));
+		L.RegFunction("ReferenceEquals", new LuaCSFunction(ReferenceEquals));
+		L.RegFunction("Destroy", new LuaCSFunction(Destroy));
+		L.RegFunction("New", new LuaCSFunction(_CreateSystem_Object));
+		L.RegFunction("__eq", new LuaCSFunction(op_Equality));
 		L.EndClass();
 	}
 
