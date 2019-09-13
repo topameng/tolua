@@ -1,5 +1,6 @@
 ﻿/*
-Copyright (c) 2015-2017 topameng(topameng@qq.com)
+Copyright (c) 2015-2021 topameng(topameng@qq.com)
+https://github.com/topameng/tolua
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -28,15 +29,17 @@ using System.Runtime.CompilerServices;
 
 namespace LuaInterface
 {
-    public class GCRef
+    public struct GCRef
     {
         public int reference;
-        public string name = null;
+        public string name;
+        public bool beFunction;
 
-        public GCRef(int reference, string name)
+        public GCRef(int reference, string name, bool befunc)
         {
             this.reference = reference;
             this.name = name;
+            this.beFunction = befunc;
         }
     }
 
@@ -98,40 +101,82 @@ namespace LuaInterface
     {
         public LuaFunction func = null;
         public LuaTable self = null;
-        public MethodInfo method = null; 
+        public MethodInfo method = null;
+
+        private int count = 0;
+        private int reference = 0;
 
         public LuaDelegate(LuaFunction func)
         {
             this.func = func;
+            this.func.AddRef();
+            reference = func.GetReference();
+            self = null;
+            method = null;
+            count = 1;
         }
 
         public LuaDelegate(LuaFunction func, LuaTable self)
         {
             this.func = func;
+            this.func.AddRef();
             this.self = self;
+            this.self.AddRef();
+            reference = func.GetReference();
+            method = null;
+            count = 1;
         }
 
-        //如果count不是1，说明还有其他人引用，只能等待gc来处理
-        public virtual void Dispose()
+        public void AddRef()
         {
-            method = null;
-
-            if (func != null)
-            {
-                func.Dispose(1);
-                func = null;
-            }
+            ++count;
+            //Debugger.Log("LuaDelegate {0} AddRef {1}", reference, count);
+            func.AddRef();            
 
             if (self != null)
             {
-                self.Dispose(1);
+                self.AddRef();
+            }
+        }
+        
+        public void Dispose()
+        {
+            --count;
+            //Debugger.Log("LuaDelegate {0} SubRef {1}", reference, count);
+            
+            func.Dispose();
+
+            if (self != null)
+            {                
+                self.Dispose();
+            }
+
+            if (count == 0)
+            {
+                method = null;
+                func = null;
                 self = null;
             }
         }
 
+        public void DelayDispose()
+        {
+            if (count <= 0)
+            {
+                throw new LuaException(string.Format("LuaDelegate {0} Dispose more than reference count", reference));
+            }
+
+            LuaState state = func.GetLuaState();
+            state.DelayDispose(this);
+        }
+
         public override bool Equals(object o)
-        {                                    
-            if (o == null) return func == null && self == null;
+        {
+            if (o == null)
+            {
+                return func == null;
+            }
+
             LuaDelegate ld = o as LuaDelegate;
 
             if (ld == null || ld.func != func || ld.self != self)
@@ -139,10 +184,10 @@ namespace LuaInterface
                 return false;
             }
 
-            return ld.func != null;
+            return reference == ld.reference;
         }
 
-        static bool CompareLuaDelegate(LuaDelegate a, LuaDelegate b)
+        static bool Equals(LuaDelegate a, LuaDelegate b)
         {
             if (System.Object.ReferenceEquals(a, b))
             {
@@ -154,12 +199,12 @@ namespace LuaInterface
 
             if (l == null && r != null)
             {
-                return b.func == null && b.self == null;
+                return b.func == null;
             }
 
             if (l != null && r == null)
             {
-                return a.func == null && a.self == null;
+                return a.func == null;
             }
 
             if (a.func != b.func || a.self != b.self)
@@ -167,27 +212,30 @@ namespace LuaInterface
                 return false;
             }
 
-            return a.func != null;
+            return a.reference == b.reference;
         }
 
         public static bool operator == (LuaDelegate a, LuaDelegate b)
         {
-            return CompareLuaDelegate(a, b);
+            return Equals(a, b);
         }
 
         public static bool operator != (LuaDelegate a, LuaDelegate b)
         {
-            return !CompareLuaDelegate(a, b);
-        }
+            return !Equals(a, b);
+        }        
+
         public override int GetHashCode()
         {
-            return RuntimeHelpers.GetHashCode(this);            
+            return reference;
         }
     }
 
     [NoToLuaAttribute]
     public static class LuaMisc
     {
+        static readonly Il2cppType il2cpp = new Il2cppType();
+
         public static string GetArrayRank(Type t)
         {
             int count = t.GetArrayRank();
@@ -229,7 +277,7 @@ namespace LuaInterface
             {
                 return GetGenericName(t);
             }
-            else if (t == typeof(void))
+            else if (t == il2cpp.TypeOfVoid)
             {
                 return "void";
             }
@@ -330,63 +378,65 @@ namespace LuaInterface
 
         public static string GetPrimitiveStr(Type t)
         {
-            if (t == typeof(System.Single))
+            Il2cppType il = il2cpp;
+
+            if (t == il.TypeOfFloat)
             {
                 return "float";
             }
-            else if (t == typeof(System.String))
+            else if (t == il.TypeOfString)
             {
                 return "string";
             }
-            else if (t == typeof(System.Int32))
+            else if (t == il.TypeOfInt)
             {
                 return "int";
             }
-            else if (t == typeof(System.Double))
+            else if (t == il.TypeOfDouble)
             {
                 return "double";
             }
-            else if (t == typeof(System.Boolean))
+            else if (t == il.TypeOfBool)
             {
                 return "bool";
             }
-            else if (t == typeof(System.UInt32))
+            else if (t == il.TypeOfUInt)
             {
                 return "uint";
             }
-            else if (t == typeof(System.SByte))
+            else if (t == il.TypeOfSByte)
             {
                 return "sbyte";
             }
-            else if (t == typeof(System.Byte))
+            else if (t == il.TypeOfByte)
             {
                 return "byte";
             }
-            else if (t == typeof(System.Int16))
+            else if (t == il.TypeOfShort)
             {
                 return "short";
             }
-            else if (t == typeof(System.UInt16))
+            else if (t == il.TypeOfUShort)
             {
                 return "ushort";
             }
-            else if (t == typeof(System.Char))
+            else if (t == il.TypeOfChar)
             {
                 return "char";
             }
-            else if (t == typeof(System.Int64))
+            else if (t == il.TypeOfLong)
             {
                 return "long";
             }
-            else if (t == typeof(System.UInt64))
+            else if (t == il.TypeOfULong)
             {
                 return "ulong";
             }
-            else if (t == typeof(System.Decimal))
+            else if (t == il.TypeOfDecimal)
             {
                 return "decimal";
             }
-            else if (t == typeof(System.Object))
+            else if (t == il.TypeOfObject)
             {
                 return "object";
             }
@@ -396,77 +446,19 @@ namespace LuaInterface
             }
         }        
 
-        public static double ToDouble(object obj)
-        {
-            Type t = obj.GetType();
-
-            if (t == typeof(double) || t == typeof(float))
-            {
-                double d = Convert.ToDouble(obj);
-                return d;
-            }
-            else if (t == typeof(int))
-            {
-                int n = Convert.ToInt32(obj);
-                return (double)n;
-            }
-            else if (t == typeof(uint))
-            {
-                uint n = Convert.ToUInt32(obj);
-                return (double)n;
-            }
-            else if (t == typeof(long))
-            {
-                long n = Convert.ToInt64(obj);
-                return (double)n;
-            }
-            else if (t == typeof(ulong))
-            {
-                ulong n = Convert.ToUInt64(obj);
-                return (double)n;
-            }
-            else if (t == typeof(byte))
-            {
-                byte b = Convert.ToByte(obj);
-                return (double)b;
-            }
-            else if (t == typeof(sbyte))
-            {
-                sbyte b = Convert.ToSByte(obj);
-                return (double)b;
-            }
-            else if (t == typeof(char))
-            {
-                char c = Convert.ToChar(obj);
-                return (double)c;
-            }            
-            else if (t == typeof(short))
-            {
-                Int16 n = Convert.ToInt16(obj);
-                return (double)n;
-            }
-            else if (t == typeof(ushort))
-            {
-                UInt16 n = Convert.ToUInt16(obj);
-                return (double)n;
-            }
-
-            return 0;
-        }
-
         //可产生导出文件的基类
         public static Type GetExportBaseType(Type t)
         {
             Type baseType = t.BaseType;
 
-            if (baseType == typeof(ValueType))
+            if (baseType == il2cpp.TypeOfStruct)
             {
                 return null;
             }
 
             if (t.IsAbstract && t.IsSealed)
             {
-                return baseType == typeof(object) ? null : baseType;
+                return baseType == il2cpp.TypeOfObject ? null : baseType;
             }
 
             return baseType;
@@ -529,6 +521,7 @@ namespace LuaInterface
         Sub = 2,
     }
 
+    /*因为事件只能加或者减不能set，故使用此类记录加减操作*/
     public class EventObject
     {
         [NoToLuaAttribute]

@@ -1,5 +1,6 @@
 ﻿/*
-Copyright (c) 2015-2017 topameng(topameng@qq.com)
+Copyright (c) 2015-2021 topameng(topameng@qq.com)
+https://github.com/topameng/tolua
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -44,10 +45,9 @@ namespace LuaInterface
         private int stackPos = -1;
         private Stack<FuncData> stack = new Stack<FuncData>();
 
-        public LuaFunction(int reference, LuaState state)
+        public LuaFunction(int reference, LuaState state) : base(reference, state)
         {
-            this.reference = reference;
-            this.luaState = state;
+            type = LuaTypes.LUA_TFUNCTION;
         }
 
         public override void Dispose()
@@ -406,7 +406,7 @@ namespace LuaInterface
             ++argCount;
         }
 
-        public void PushLayerMask(LayerMask n)
+		public void PushLayerMask(LayerMask n)
         {
             luaState.PushLayerMask(n);
             ++argCount;
@@ -683,6 +683,19 @@ namespace LuaInterface
             }
         }
 
+        public long CheckInteger()
+        {
+            try
+            {
+                return luaState.LuaCheckInteger(stackPos++);
+            }
+            catch (Exception e)
+            {
+                EndPCall();
+                throw e;
+            }
+        }
+
         public bool CheckBoolean()
         {
             try
@@ -839,6 +852,7 @@ namespace LuaInterface
             }
         }
 
+        ////处理引用计数
         public Delegate CheckDelegate()
         {
             try

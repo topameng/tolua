@@ -7,99 +7,99 @@ public class System_TypeWrap
 	public static void Register(LuaState L)
 	{
 		L.BeginClass(typeof(System.Type), typeof(System.Object));
-		L.RegFunction("Equals", Equals);
-		L.RegFunction("GetType", GetType);
-		L.RegFunction("GetTypeArray", GetTypeArray);
-		L.RegFunction("GetTypeCode", GetTypeCode);
-		L.RegFunction("GetTypeFromHandle", GetTypeFromHandle);
-		L.RegFunction("GetTypeHandle", GetTypeHandle);
-		L.RegFunction("IsSubclassOf", IsSubclassOf);
-		L.RegFunction("FindInterfaces", FindInterfaces);
-		L.RegFunction("GetInterface", GetInterface);
-		L.RegFunction("GetInterfaceMap", GetInterfaceMap);
-		L.RegFunction("GetInterfaces", GetInterfaces);
-		L.RegFunction("IsAssignableFrom", IsAssignableFrom);
-		L.RegFunction("IsInstanceOfType", IsInstanceOfType);
-		L.RegFunction("GetArrayRank", GetArrayRank);
-		L.RegFunction("GetElementType", GetElementType);
-		L.RegFunction("GetHashCode", GetHashCode);
-		L.RegFunction("GetNestedType", GetNestedType);
-		L.RegFunction("GetNestedTypes", GetNestedTypes);
-		L.RegFunction("GetDefaultMembers", GetDefaultMembers);
-		L.RegFunction("FindMembers", FindMembers);
-		L.RegFunction("InvokeMember", InvokeMember);
-		L.RegFunction("ToString", ToString);
-		L.RegFunction("GetGenericArguments", GetGenericArguments);
-		L.RegFunction("GetGenericTypeDefinition", GetGenericTypeDefinition);
-		L.RegFunction("MakeGenericType", MakeGenericType);
-		L.RegFunction("GetGenericParameterConstraints", GetGenericParameterConstraints);
-		L.RegFunction("MakeArrayType", MakeArrayType);
-		L.RegFunction("MakeByRefType", MakeByRefType);
-		L.RegFunction("MakePointerType", MakePointerType);
-		L.RegFunction("ReflectionOnlyGetType", ReflectionOnlyGetType);
-		L.RegFunction("__tostring", ToLua.op_ToString);
-		L.RegVar("Delimiter", get_Delimiter, null);
-		L.RegVar("EmptyTypes", get_EmptyTypes, null);
-		L.RegVar("FilterAttribute", get_FilterAttribute, null);
-		L.RegVar("FilterName", get_FilterName, null);
-		L.RegVar("FilterNameIgnoreCase", get_FilterNameIgnoreCase, null);
-		L.RegVar("Missing", get_Missing, null);
-		L.RegVar("Assembly", get_Assembly, null);
-		L.RegVar("AssemblyQualifiedName", get_AssemblyQualifiedName, null);
-		L.RegVar("Attributes", get_Attributes, null);
-		L.RegVar("BaseType", get_BaseType, null);
-		L.RegVar("DeclaringType", get_DeclaringType, null);
-		L.RegVar("DefaultBinder", get_DefaultBinder, null);
-		L.RegVar("FullName", get_FullName, null);
-		L.RegVar("GUID", get_GUID, null);
-		L.RegVar("HasElementType", get_HasElementType, null);
-		L.RegVar("IsAbstract", get_IsAbstract, null);
-		L.RegVar("IsAnsiClass", get_IsAnsiClass, null);
-		L.RegVar("IsArray", get_IsArray, null);
-		L.RegVar("IsAutoClass", get_IsAutoClass, null);
-		L.RegVar("IsAutoLayout", get_IsAutoLayout, null);
-		L.RegVar("IsByRef", get_IsByRef, null);
-		L.RegVar("IsClass", get_IsClass, null);
-		L.RegVar("IsCOMObject", get_IsCOMObject, null);
-		L.RegVar("IsContextful", get_IsContextful, null);
-		L.RegVar("IsEnum", get_IsEnum, null);
-		L.RegVar("IsExplicitLayout", get_IsExplicitLayout, null);
-		L.RegVar("IsImport", get_IsImport, null);
-		L.RegVar("IsInterface", get_IsInterface, null);
-		L.RegVar("IsLayoutSequential", get_IsLayoutSequential, null);
-		L.RegVar("IsMarshalByRef", get_IsMarshalByRef, null);
-		L.RegVar("IsNestedAssembly", get_IsNestedAssembly, null);
-		L.RegVar("IsNestedFamANDAssem", get_IsNestedFamANDAssem, null);
-		L.RegVar("IsNestedFamily", get_IsNestedFamily, null);
-		L.RegVar("IsNestedFamORAssem", get_IsNestedFamORAssem, null);
-		L.RegVar("IsNestedPrivate", get_IsNestedPrivate, null);
-		L.RegVar("IsNestedPublic", get_IsNestedPublic, null);
-		L.RegVar("IsNotPublic", get_IsNotPublic, null);
-		L.RegVar("IsPointer", get_IsPointer, null);
-		L.RegVar("IsPrimitive", get_IsPrimitive, null);
-		L.RegVar("IsPublic", get_IsPublic, null);
-		L.RegVar("IsSealed", get_IsSealed, null);
-		L.RegVar("IsSerializable", get_IsSerializable, null);
-		L.RegVar("IsSpecialName", get_IsSpecialName, null);
-		L.RegVar("IsUnicodeClass", get_IsUnicodeClass, null);
-		L.RegVar("IsValueType", get_IsValueType, null);
-		L.RegVar("MemberType", get_MemberType, null);
-		L.RegVar("Module", get_Module, null);
-		L.RegVar("Namespace", get_Namespace, null);
-		L.RegVar("ReflectedType", get_ReflectedType, null);
-		L.RegVar("TypeHandle", get_TypeHandle, null);
-		L.RegVar("TypeInitializer", get_TypeInitializer, null);
-		L.RegVar("UnderlyingSystemType", get_UnderlyingSystemType, null);
-		L.RegVar("ContainsGenericParameters", get_ContainsGenericParameters, null);
-		L.RegVar("IsGenericTypeDefinition", get_IsGenericTypeDefinition, null);
-		L.RegVar("IsGenericType", get_IsGenericType, null);
-		L.RegVar("IsGenericParameter", get_IsGenericParameter, null);
-		L.RegVar("IsNested", get_IsNested, null);
-		L.RegVar("IsVisible", get_IsVisible, null);
-		L.RegVar("GenericParameterPosition", get_GenericParameterPosition, null);
-		L.RegVar("GenericParameterAttributes", get_GenericParameterAttributes, null);
-		L.RegVar("DeclaringMethod", get_DeclaringMethod, null);
-		L.RegVar("StructLayoutAttribute", get_StructLayoutAttribute, null);
+		L.RegFunction("Equals", new LuaCSFunction(Equals));
+		L.RegFunction("GetType", new LuaCSFunction(GetType));
+		L.RegFunction("GetTypeArray", new LuaCSFunction(GetTypeArray));
+		L.RegFunction("GetTypeCode", new LuaCSFunction(GetTypeCode));
+		L.RegFunction("GetTypeFromHandle", new LuaCSFunction(GetTypeFromHandle));
+		L.RegFunction("GetTypeHandle", new LuaCSFunction(GetTypeHandle));
+		L.RegFunction("IsSubclassOf", new LuaCSFunction(IsSubclassOf));
+		L.RegFunction("FindInterfaces", new LuaCSFunction(FindInterfaces));
+		L.RegFunction("GetInterface", new LuaCSFunction(GetInterface));
+		L.RegFunction("GetInterfaceMap", new LuaCSFunction(GetInterfaceMap));
+		L.RegFunction("GetInterfaces", new LuaCSFunction(GetInterfaces));
+		L.RegFunction("IsAssignableFrom", new LuaCSFunction(IsAssignableFrom));
+		L.RegFunction("IsInstanceOfType", new LuaCSFunction(IsInstanceOfType));
+		L.RegFunction("GetArrayRank", new LuaCSFunction(GetArrayRank));
+		L.RegFunction("GetElementType", new LuaCSFunction(GetElementType));
+		L.RegFunction("GetHashCode", new LuaCSFunction(GetHashCode));
+		L.RegFunction("GetNestedType", new LuaCSFunction(GetNestedType));
+		L.RegFunction("GetNestedTypes", new LuaCSFunction(GetNestedTypes));
+		L.RegFunction("GetDefaultMembers", new LuaCSFunction(GetDefaultMembers));
+		L.RegFunction("FindMembers", new LuaCSFunction(FindMembers));
+		L.RegFunction("InvokeMember", new LuaCSFunction(InvokeMember));
+		L.RegFunction("ToString", new LuaCSFunction(ToString));
+		L.RegFunction("GetGenericArguments", new LuaCSFunction(GetGenericArguments));
+		L.RegFunction("GetGenericTypeDefinition", new LuaCSFunction(GetGenericTypeDefinition));
+		L.RegFunction("MakeGenericType", new LuaCSFunction(MakeGenericType));
+		L.RegFunction("GetGenericParameterConstraints", new LuaCSFunction(GetGenericParameterConstraints));
+		L.RegFunction("MakeArrayType", new LuaCSFunction(MakeArrayType));
+		L.RegFunction("MakeByRefType", new LuaCSFunction(MakeByRefType));
+		L.RegFunction("MakePointerType", new LuaCSFunction(MakePointerType));
+		L.RegFunction("ReflectionOnlyGetType", new LuaCSFunction(ReflectionOnlyGetType));
+		L.RegFunction("__tostring", new LuaCSFunction(ToLua.op_ToString));
+		L.RegVar("Delimiter", new LuaCSFunction(get_Delimiter), null);
+		L.RegVar("EmptyTypes", new LuaCSFunction(get_EmptyTypes), null);
+		L.RegVar("FilterAttribute", new LuaCSFunction(get_FilterAttribute), null);
+		L.RegVar("FilterName", new LuaCSFunction(get_FilterName), null);
+		L.RegVar("FilterNameIgnoreCase", new LuaCSFunction(get_FilterNameIgnoreCase), null);
+		L.RegVar("Missing", new LuaCSFunction(get_Missing), null);
+		L.RegVar("Assembly", new LuaCSFunction(get_Assembly), null);
+		L.RegVar("AssemblyQualifiedName", new LuaCSFunction(get_AssemblyQualifiedName), null);
+		L.RegVar("Attributes", new LuaCSFunction(get_Attributes), null);
+		L.RegVar("BaseType", new LuaCSFunction(get_BaseType), null);
+		L.RegVar("DeclaringType", new LuaCSFunction(get_DeclaringType), null);
+		L.RegVar("DefaultBinder", new LuaCSFunction(get_DefaultBinder), null);
+		L.RegVar("FullName", new LuaCSFunction(get_FullName), null);
+		L.RegVar("GUID", new LuaCSFunction(get_GUID), null);
+		L.RegVar("HasElementType", new LuaCSFunction(get_HasElementType), null);
+		L.RegVar("IsAbstract", new LuaCSFunction(get_IsAbstract), null);
+		L.RegVar("IsAnsiClass", new LuaCSFunction(get_IsAnsiClass), null);
+		L.RegVar("IsArray", new LuaCSFunction(get_IsArray), null);
+		L.RegVar("IsAutoClass", new LuaCSFunction(get_IsAutoClass), null);
+		L.RegVar("IsAutoLayout", new LuaCSFunction(get_IsAutoLayout), null);
+		L.RegVar("IsByRef", new LuaCSFunction(get_IsByRef), null);
+		L.RegVar("IsClass", new LuaCSFunction(get_IsClass), null);
+		L.RegVar("IsCOMObject", new LuaCSFunction(get_IsCOMObject), null);
+		L.RegVar("IsContextful", new LuaCSFunction(get_IsContextful), null);
+		L.RegVar("IsEnum", new LuaCSFunction(get_IsEnum), null);
+		L.RegVar("IsExplicitLayout", new LuaCSFunction(get_IsExplicitLayout), null);
+		L.RegVar("IsImport", new LuaCSFunction(get_IsImport), null);
+		L.RegVar("IsInterface", new LuaCSFunction(get_IsInterface), null);
+		L.RegVar("IsLayoutSequential", new LuaCSFunction(get_IsLayoutSequential), null);
+		L.RegVar("IsMarshalByRef", new LuaCSFunction(get_IsMarshalByRef), null);
+		L.RegVar("IsNestedAssembly", new LuaCSFunction(get_IsNestedAssembly), null);
+		L.RegVar("IsNestedFamANDAssem", new LuaCSFunction(get_IsNestedFamANDAssem), null);
+		L.RegVar("IsNestedFamily", new LuaCSFunction(get_IsNestedFamily), null);
+		L.RegVar("IsNestedFamORAssem", new LuaCSFunction(get_IsNestedFamORAssem), null);
+		L.RegVar("IsNestedPrivate", new LuaCSFunction(get_IsNestedPrivate), null);
+		L.RegVar("IsNestedPublic", new LuaCSFunction(get_IsNestedPublic), null);
+		L.RegVar("IsNotPublic", new LuaCSFunction(get_IsNotPublic), null);
+		L.RegVar("IsPointer", new LuaCSFunction(get_IsPointer), null);
+		L.RegVar("IsPrimitive", new LuaCSFunction(get_IsPrimitive), null);
+		L.RegVar("IsPublic", new LuaCSFunction(get_IsPublic), null);
+		L.RegVar("IsSealed", new LuaCSFunction(get_IsSealed), null);
+		L.RegVar("IsSerializable", new LuaCSFunction(get_IsSerializable), null);
+		L.RegVar("IsSpecialName", new LuaCSFunction(get_IsSpecialName), null);
+		L.RegVar("IsUnicodeClass", new LuaCSFunction(get_IsUnicodeClass), null);
+		L.RegVar("IsValueType", new LuaCSFunction(get_IsValueType), null);
+		L.RegVar("MemberType", new LuaCSFunction(get_MemberType), null);
+		L.RegVar("Module", new LuaCSFunction(get_Module), null);
+		L.RegVar("Namespace", new LuaCSFunction(get_Namespace), null);
+		L.RegVar("ReflectedType", new LuaCSFunction(get_ReflectedType), null);
+		L.RegVar("TypeHandle", new LuaCSFunction(get_TypeHandle), null);
+		L.RegVar("TypeInitializer", new LuaCSFunction(get_TypeInitializer), null);
+		L.RegVar("UnderlyingSystemType", new LuaCSFunction(get_UnderlyingSystemType), null);
+		L.RegVar("ContainsGenericParameters", new LuaCSFunction(get_ContainsGenericParameters), null);
+		L.RegVar("IsGenericTypeDefinition", new LuaCSFunction(get_IsGenericTypeDefinition), null);
+		L.RegVar("IsGenericType", new LuaCSFunction(get_IsGenericType), null);
+		L.RegVar("IsGenericParameter", new LuaCSFunction(get_IsGenericParameter), null);
+		L.RegVar("IsNested", new LuaCSFunction(get_IsNested), null);
+		L.RegVar("IsVisible", new LuaCSFunction(get_IsVisible), null);
+		L.RegVar("GenericParameterPosition", new LuaCSFunction(get_GenericParameterPosition), null);
+		L.RegVar("GenericParameterAttributes", new LuaCSFunction(get_GenericParameterAttributes), null);
+		L.RegVar("DeclaringMethod", new LuaCSFunction(get_DeclaringMethod), null);
+		L.RegVar("StructLayoutAttribute", new LuaCSFunction(get_StructLayoutAttribute), null);
 		L.EndClass();
 	}
 
@@ -467,7 +467,7 @@ public class System_TypeWrap
 			{
 				System.Type obj = ToLua.CheckMonoType(L, 1);
 				string arg0 = ToLua.CheckString(L, 2);
-				System.Reflection.BindingFlags arg1 = (System.Reflection.BindingFlags)LuaDLL.luaL_checknumber(L, 3);
+				System.Reflection.BindingFlags arg1 = (System.Reflection.BindingFlags)LuaDLL.luaL_checkinteger(L, 3);
 				System.Type o = obj.GetNestedType(arg0, arg1);
 				ToLua.Push(L, o);
 				return 1;
@@ -500,7 +500,7 @@ public class System_TypeWrap
 			else if (count == 2)
 			{
 				System.Type obj = ToLua.CheckMonoType(L, 1);
-				System.Reflection.BindingFlags arg0 = (System.Reflection.BindingFlags)LuaDLL.luaL_checknumber(L, 2);
+				System.Reflection.BindingFlags arg0 = (System.Reflection.BindingFlags)LuaDLL.luaL_checkinteger(L, 2);
 				System.Type[] o = obj.GetNestedTypes(arg0);
 				ToLua.Push(L, o);
 				return 1;
@@ -540,8 +540,8 @@ public class System_TypeWrap
 		{
 			ToLua.CheckArgsCount(L, 5);
 			System.Type obj = ToLua.CheckMonoType(L, 1);
-			System.Reflection.MemberTypes arg0 = (System.Reflection.MemberTypes)ToLua.CheckObject(L, 2, typeof(System.Reflection.MemberTypes));
-			System.Reflection.BindingFlags arg1 = (System.Reflection.BindingFlags)LuaDLL.luaL_checknumber(L, 3);
+			System.Reflection.MemberTypes arg0 = (System.Reflection.MemberTypes)ToLua.CheckObject(L, 2, TypeTraits<System.Reflection.MemberTypes>.type);
+			System.Reflection.BindingFlags arg1 = (System.Reflection.BindingFlags)LuaDLL.luaL_checkinteger(L, 3);
 			System.Reflection.MemberFilter arg2 = (System.Reflection.MemberFilter)ToLua.CheckDelegate<System.Reflection.MemberFilter>(L, 4);
 			object arg3 = ToLua.ToVarObject(L, 5);
 			System.Reflection.MemberInfo[] o = obj.FindMembers(arg0, arg1, arg2, arg3);
@@ -565,7 +565,7 @@ public class System_TypeWrap
 			{
 				System.Type obj = ToLua.CheckMonoType(L, 1);
 				string arg0 = ToLua.CheckString(L, 2);
-				System.Reflection.BindingFlags arg1 = (System.Reflection.BindingFlags)LuaDLL.luaL_checknumber(L, 3);
+				System.Reflection.BindingFlags arg1 = (System.Reflection.BindingFlags)LuaDLL.luaL_checkinteger(L, 3);
 				System.Reflection.Binder arg2 = (System.Reflection.Binder)ToLua.CheckObject<System.Reflection.Binder>(L, 4);
 				object arg3 = ToLua.ToVarObject(L, 5);
 				object[] arg4 = ToLua.CheckObjectArray(L, 6);
@@ -577,7 +577,7 @@ public class System_TypeWrap
 			{
 				System.Type obj = ToLua.CheckMonoType(L, 1);
 				string arg0 = ToLua.CheckString(L, 2);
-				System.Reflection.BindingFlags arg1 = (System.Reflection.BindingFlags)LuaDLL.luaL_checknumber(L, 3);
+				System.Reflection.BindingFlags arg1 = (System.Reflection.BindingFlags)LuaDLL.luaL_checkinteger(L, 3);
 				System.Reflection.Binder arg2 = (System.Reflection.Binder)ToLua.CheckObject<System.Reflection.Binder>(L, 4);
 				object arg3 = ToLua.ToVarObject(L, 5);
 				object[] arg4 = ToLua.CheckObjectArray(L, 6);
@@ -590,7 +590,7 @@ public class System_TypeWrap
 			{
 				System.Type obj = ToLua.CheckMonoType(L, 1);
 				string arg0 = ToLua.CheckString(L, 2);
-				System.Reflection.BindingFlags arg1 = (System.Reflection.BindingFlags)LuaDLL.luaL_checknumber(L, 3);
+				System.Reflection.BindingFlags arg1 = (System.Reflection.BindingFlags)LuaDLL.luaL_checkinteger(L, 3);
 				System.Reflection.Binder arg2 = (System.Reflection.Binder)ToLua.CheckObject<System.Reflection.Binder>(L, 4);
 				object arg3 = ToLua.ToVarObject(L, 5);
 				object[] arg4 = ToLua.CheckObjectArray(L, 6);
@@ -715,7 +715,7 @@ public class System_TypeWrap
 			else if (count == 2)
 			{
 				System.Type obj = ToLua.CheckMonoType(L, 1);
-				int arg0 = (int)LuaDLL.luaL_checknumber(L, 2);
+				int arg0 = (int)LuaDLL.luaL_checkinteger(L, 2);
 				System.Type o = obj.MakeArrayType(arg0);
 				ToLua.Push(L, o);
 				return 1;
@@ -789,7 +789,7 @@ public class System_TypeWrap
 	{
 		try
 		{
-			LuaDLL.lua_pushnumber(L, System.Type.Delimiter);
+			LuaDLL.lua_pushinteger(L, System.Type.Delimiter);
 			return 1;
 		}
 		catch (Exception e)

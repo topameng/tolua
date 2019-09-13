@@ -1,5 +1,6 @@
 ﻿/*
-Copyright (c) 2015-2017 topameng(topameng@qq.com)
+Copyright (c) 2015-2021 topameng(topameng@qq.com)
+https://github.com/topameng/tolua
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -46,7 +47,7 @@ public class LuaClient : MonoBehaviour
 
     protected virtual LuaFileUtils InitLoader()
     {
-        return LuaFileUtils.Instance;       
+        return LuaFileUtils.Instance;                       
     }
 
     protected virtual void LoadLuaFiles()
@@ -56,17 +57,23 @@ public class LuaClient : MonoBehaviour
 
     protected virtual void OpenLibs()
     {
-        luaState.OpenLibs(LuaDLL.luaopen_pb);
-        luaState.OpenLibs(LuaDLL.luaopen_struct);
-        luaState.OpenLibs(LuaDLL.luaopen_lpeg);
-#if UNITY_STANDALONE_OSX || UNITY_EDITOR_OSX
-        luaState.OpenLibs(LuaDLL.luaopen_bit);
+        //保持库名字与5.1.5库中一致
+        luaState.BeginPreLoad();                        
+        luaState.AddPreLoadLib("pb2", new LuaCSFunction(LuaDLL.luaopen_pb));
+        luaState.AddPreLoadLib("struct", new LuaCSFunction(LuaDLL.luaopen_struct));
+        luaState.AddPreLoadLib("lpeg", new LuaCSFunction(LuaDLL.luaopen_lpeg));
+        luaState.AddPreLoadLib("cjson", new LuaCSFunction(LuaDLL.luaopen_cjson));
+        luaState.AddPreLoadLib("cjson.safe", new LuaCSFunction(LuaDLL.luaopen_cjson_safe));
+#if (UNITY_STANDALONE_OSX || UNITY_EDITOR_OSX) && !LUAC_5_3
+        luaState.AddPreLoadLib("bit", new LuaCSFunction(LuaDLL.luaopen_bit));
 #endif
 
-        if (LuaConst.openLuaSocket)
+        if (LuaConst.openLuaSocket || LuaConst.openLuaDebugger)
         {
-            OpenLuaSocket();            
-        }        
+            OpenLuaSocket();
+        }
+
+        luaState.EndPreLoad();          
 
         if (LuaConst.openLuaDebugger)
         {
@@ -82,11 +89,6 @@ public class LuaClient : MonoBehaviour
             return;
         }
 
-        if (!LuaConst.openLuaSocket)
-        {                            
-            OpenLuaSocket();
-        }
-
         if (!string.IsNullOrEmpty(LuaConst.zbsDir))
         {
             luaState.AddSearchPath(LuaConst.zbsDir);
@@ -95,26 +97,11 @@ public class LuaClient : MonoBehaviour
         luaState.LuaDoString(string.Format("DebugServerIp = '{0}'", ip), "@LuaClient.cs");
     }
 
-    [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-    static int LuaOpen_Socket_Core(IntPtr L)
-    {        
-        return LuaDLL.luaopen_socket_core(L);
-    }
-
-    [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-    static int LuaOpen_Mime_Core(IntPtr L)
-    {
-        return LuaDLL.luaopen_mime_core(L);
-    }
-
     protected void OpenLuaSocket()
     {
-        LuaConst.openLuaSocket = true;
-
-        luaState.BeginPreLoad();
-        luaState.RegFunction("socket.core", LuaOpen_Socket_Core);
-        luaState.RegFunction("mime.core", LuaOpen_Mime_Core);                
-        luaState.EndPreLoad();                     
+        LuaConst.openLuaSocket = true;        
+        luaState.AddPreLoadLib("socket.core", new LuaCSFunction(LuaDLL.luaopen_socket_core));
+        luaState.AddPreLoadLib("mime.core", new LuaCSFunction(LuaDLL.luaopen_mime_core));        
     }
 
     //cjson 比较特殊，只new了一个table，没有注册库，这里注册一下
@@ -138,7 +125,7 @@ public class LuaClient : MonoBehaviour
 
     protected virtual void StartMain()
     {
-        luaState.DoFile("Main.lua");
+        luaState.Require("Main");
         levelLoaded = luaState.GetFunction("OnLevelWasLoaded");
         CallMain();
     }
@@ -161,7 +148,7 @@ public class LuaClient : MonoBehaviour
         InitLoader();
         luaState = new LuaState();
         OpenLibs();
-        luaState.LuaSetTop(0);
+        luaState.LuaSetTop(0);  //清掉可能残留的堆栈
         Bind();        
         LoadLuaFiles();        
     }

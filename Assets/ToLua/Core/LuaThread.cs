@@ -1,5 +1,6 @@
 ﻿/*
-Copyright (c) 2015-2017 topameng(topameng@qq.com)
+Copyright (c) 2015-2021 topameng(topameng@qq.com)
+https://github.com/topameng/tolua
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -25,15 +26,14 @@ namespace LuaInterface
 {
     public class LuaThread : LuaBaseRef
     {        
-        public LuaThread(int reference, LuaState state)
+        public LuaThread(int reference, LuaState state) : base(reference, state)
         {
-            this.luaState = state;
-            this.reference = reference;
+            type = LuaTypes.LUA_TTHREAD;
         }
 
         protected int Resume(IntPtr L, int nArgs)
         {
-            int ret = LuaDLL.lua_resume(L, nArgs);
+            int ret = luaState.LuaResumeThread(L, nArgs);
 
             if (ret > (int)LuaThreadStatus.LUA_YIELD)
             {

@@ -20,9 +20,15 @@ local table = table
 local ipairs = ipairs
 local assert =assert
 
-local pb = require "pb"
+local pb = require "pb2"
 local wire_format = require "protobuf.wire_format"
-module "protobuf.encoder"
+-- module "protobuf.encoder"
+local encoder = {}
+if setfenv then
+  setfenv(1, encoder);
+else
+  _ENV = encoder
+end
 
 function _VarintSize(value)    
     if value <= 0x7f then return 1 end
@@ -471,3 +477,4 @@ function MessageEncoder(field_number, is_repeated, is_packed)
     end
 end
 
+return encoder

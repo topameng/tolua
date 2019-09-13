@@ -28,7 +28,7 @@ local string = string
 local tostring = tostring
 local type = type
 
-local pb = require "pb"
+local pb = require "pb2"
 local wire_format = require "protobuf.wire_format"
 local type_checkers = require "protobuf.type_checkers"
 local encoder = require "protobuf.encoder"
@@ -39,7 +39,13 @@ local descriptor = require "protobuf.descriptor"
 local FieldDescriptor = descriptor.FieldDescriptor
 local text_format = require "protobuf.text_format"
 
-module("protobuf.protobuf")
+-- module("protobuf.protobuf")
+local protobuf = {}
+if setfenv then
+  setfenv(1, protobuf);
+else
+  _ENV = protobuf
+end
 
 local function make_descriptor(name, descriptor, usable_key)
     local meta = {
@@ -56,7 +62,7 @@ local function make_descriptor(name, descriptor, usable_key)
         return setmetatable({}, meta)
     end
 
-    _M[name] = setmetatable(descriptor, meta);
+    protobuf[name] = setmetatable(descriptor, meta);
 end
 
 
@@ -911,7 +917,7 @@ function _AddClassAttributesForNestedExtensions(descriptor, message_meta)
     end
 end
 
-local function Message(descriptor)
+function Message(descriptor)
     local message_meta = {}
     message_meta._decoders_by_tag = {}
     rawset(descriptor, "_extensions_by_name", {})
@@ -956,5 +962,6 @@ local function Message(descriptor)
     return ns 
 end
 
-_M.Message = Message
+-- _M.Message = Message
 
+return protobuf

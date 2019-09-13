@@ -1,13 +1,17 @@
 ﻿using UnityEngine;
 using System.Collections;
 using LuaInterface;
+#if UNITY_5_4_OR_NEWER
+using UnityEngine.Networking;
+#endif
 
 //两套协同勿交叉使用，类unity原生，大量使用效率低
 public class TestCoroutine2 : LuaClient 
 {
+#if UNITY_5_4_OR_NEWER
     string script =
     @"
-        function CoExample()            
+        function CoExample()       
             WaitForSeconds(1)
             print('WaitForSeconds end time: '.. UnityEngine.Time.time)            
             WaitForFixedUpdate()
@@ -17,6 +21,53 @@ public class TestCoroutine2 : LuaClient
             Yield(null)
             print('yield null end frameCount: '..UnityEngine.Time.frameCount)
             Yield(0)
+            print('yield(0) end frameCime: '..UnityEngine.Time.frameCount)            
+            local www = UnityEngine.Networking.UnityWebRequest.Get('http://www.baidu.com')            
+            Yield(www:SendWebRequest())
+            print('yield(www) end time: '.. UnityEngine.Time.time)
+            local s = tolua.tolstring(www.downloadHandler.data)            
+            print(s:sub(1, 128))
+            print('coroutine over')
+        end
+
+        function TestCo()            
+            StartCoroutine(CoExample)                                   
+        end
+
+        local coDelay = nil
+
+        function Delay()
+	        local c = 1
+
+	        while true do
+		        WaitForSeconds(1) 
+		        print('Count: '..c)
+		        c = c + 1
+	        end
+        end
+
+        function StartDelay()
+	        coDelay = StartCoroutine(Delay)            
+        end
+
+        function StopDelay()
+	        StopCoroutine(coDelay)
+            coDelay = nil
+        end
+    ";
+#else
+    string script =
+@"
+        function CoExample()            
+            WaitForSeconds(1)                       
+            print('WaitForSeconds end time: '.. UnityEngine.Time.time)            
+            WaitForFixedUpdate()
+            print('WaitForFixedUpdate end frameCount: '..UnityEngine.Time.frameCount)
+            WaitForEndOfFrame()
+            print('WaitForEndOfFrame end frameCount: '..UnityEngine.Time.frameCount)
+            Yield(null)
+            print('yield null end frameCount: '..UnityEngine.Time.frameCount)
+            Yield(0)            
             print('yield(0) end frameCime: '..UnityEngine.Time.frameCount)
             local www = UnityEngine.WWW('http://www.baidu.com')
             Yield(www)
@@ -51,6 +102,7 @@ public class TestCoroutine2 : LuaClient
             coDelay = nil
         end
     ";
+#endif
 
     protected override LuaFileUtils InitLoader()
     {
@@ -63,9 +115,10 @@ public class TestCoroutine2 : LuaClient
 
         luaState.DoString(script, "TestCoroutine2.cs");
         LuaFunction func = luaState.GetFunction("TestCo");
+        //luaState.LogGC = true;
         func.Call();
         func.Dispose();
-        func = null;
+        func = null;        
     }
 
     //屏蔽，例子不需要运行
@@ -76,10 +129,10 @@ public class TestCoroutine2 : LuaClient
 
     void Start()
     {
-#if UNITY_5 || UNITY_2017 || UNITY_2018
-        Application.logMessageReceived += ShowTips;
-#else
+#if UNITY_4_6 || UNITY_4_7
         Application.RegisterLogCallback(ShowTips);
+#else
+        Application.logMessageReceived += ShowTips;
 #endif
     }
 
@@ -91,10 +144,11 @@ public class TestCoroutine2 : LuaClient
 
     new void OnApplicationQuit()
     {
-#if UNITY_5 || UNITY_2017 || UNITY_2018
-        Application.logMessageReceived -= ShowTips;
-#else
+#if UNITY_4_6 || UNITY_4_7
         Application.RegisterLogCallback(null);
+
+#else
+        Application.logMessageReceived -= ShowTips;
 #endif
         base.OnApplicationQuit();
     }
@@ -123,6 +177,11 @@ public class TestCoroutine2 : LuaClient
                 func.Call();
                 func.Dispose();
             }
+        }
+        else if (GUI.Button(new Rect(50, 250, 120, 45), "GC"))
+        {
+            luaState.DoString("collectgarbage('collect')");
+            System.GC.Collect();
         }
     }
 }

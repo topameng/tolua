@@ -48,7 +48,7 @@ function import(moduleName, currentModuleName)
     return require(moduleFullName)
 end
 
---重新require一个lua文件，替代系统文件。
+--重新require一个lua文件，替代系统文件,用于Time。
 function reimport(name)
     local package = package
     package.loaded[name] = nil
@@ -56,3 +56,74 @@ function reimport(name)
     return require(name)    
 end
 
+if _VERSION == "Lua 5.3" then
+    table.getn = function(t)        
+        return #t
+    end
+
+    --5.3 用math.atan2功能替换掉了函数math.atan
+    math.atan2 = math.atan
+end
+
+if math.fmod == nil then
+    math.fmod = function(x, y)
+        return x % y
+    end
+end
+
+local function _vardump(value, set, depth, key)
+  local linePrefix = ""
+  local spaces = ""
+  
+  if key ~= nil then
+    linePrefix = "["..tostring(key).."] = "
+  end
+  
+  if depth == nil then
+    depth = 0
+  else
+    depth = depth + 1
+    for i=1, depth do spaces = spaces .. "  " end
+  end
+  
+  if type(value) == 'table' then
+    if set[value] ~= nil then
+        return
+    end
+
+    set[value] = 1
+    mTable = getmetatable(value)
+    if mTable == nil then
+      print(spaces ..linePrefix.."(table) ")
+    else
+      print(spaces .."(metatable) ")
+        value = mTable
+    end     
+    for k, v in pairs(value) do            
+      _vardump(v, set, depth, k)
+    end
+  elseif type(value) == 'function' or type(value) == 'thread' or type(value) == 'userdata' or value == nil then
+    print(spaces..linePrefix..tostring(value))
+  else
+    print(spaces..linePrefix.."("..type(value)..") "..tostring(value))
+  end
+end
+
+function vardump(value, depth, key)
+    local _set = {}
+    _vardump(value, _set, depth, key)
+    _set = nil
+end
+
+function fullgc()
+  local c = collectgarbage("count")
+  print("begin gc count = "..c.." kb")
+  collectgarbage("collect")
+  c = collectgarbage("count")
+  print("end gc count = "..c.." kb")
+end
+
+function stepgc()
+    collectgarbage("step")    
+    if jit then jit.flush() end
+end

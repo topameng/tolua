@@ -128,6 +128,16 @@ function source.string(s)
     else return source.empty() end
 end
 
+-- creates table source
+function source.table(t)
+    base.assert('table' == type(t))
+    local i = 0
+    return function()
+        i = i + 1
+        return t[i]
+    end
+end
+
 -- creates rewindable source
 function source.rewind(src)
     base.assert(src)

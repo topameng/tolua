@@ -8,7 +8,8 @@ local running = coroutine.running
 local resume = coroutine.resume
 local yield = coroutine.yield
 local error = error
-local unpack = unpack
+local select = select
+local unpack = unpack or table.unpack
 local debug = debug
 local FrameTimer = FrameTimer
 local CoTimer = CoTimer
@@ -27,13 +28,14 @@ function coroutine.start(f, ...)
 			error(debug.traceback(co, msg))
 		end					
 	else
-		local args = {...}
-		local timer = nil		
-		
+		local timer = nil
+		local n = select("#", ...)		
+		local args = {...}		
+
 		local action = function()												
 			comap[co] = nil
-			timer.func = nil
-			local flag, msg = resume(co, unpack(args, 1, table.maxn(args)))						
+			timer.func = nil			
+			local flag, msg = resume(co, unpack(args, 1, n))						
 			table.insert(pool, timer)
 	
 			if not flag then	
@@ -57,14 +59,15 @@ function coroutine.start(f, ...)
 end
 
 function coroutine.wait(t, co, ...)
-	local args = {...}
 	co = co or running()		
 	local timer = nil
-		
+	local args = {...}
+	local n = select("#", ...)
+
 	local action = function()		
 		comap[co] = nil		
 		timer.func = nil
-		local flag, msg = resume(co, unpack(args, 1, table.maxn(args)))
+		local flag, msg = resume(co, unpack(args, 1, n))
 		
 		if not flag then	
 			timer:Stop()						
@@ -80,14 +83,15 @@ function coroutine.wait(t, co, ...)
 end
 
 function coroutine.step(t, co, ...)
-	local args = {...}
 	co = co or running()		
 	local timer = nil
-	
+	local args = {...}
+	local n = select("#", ...)
+
 	local action = function()	
 		comap[co] = nil					
 		timer.func = nil
-		local flag, msg = resume(co, unpack(args, 1, table.maxn(args)))
+		local flag, msg = resume(co, unpack(args, 1, n))
 		table.insert(pool, timer)
 	
 		if not flag then	

@@ -1,5 +1,6 @@
 ﻿/*
-Copyright (c) 2015-2017 topameng(topameng@qq.com)
+Copyright (c) 2015-2021 topameng(topameng@qq.com)
+https://github.com/topameng/tolua
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -38,6 +39,9 @@ namespace LuaInterface
             kclass = t;            
         }
 
+        readonly Type TypeOfBinder = typeof(Binder);
+        readonly Type TypeOfCultureInfo = typeof(CultureInfo);
+
         public int Get(IntPtr L)
         {
             int count = LuaDLL.lua_gettop(L);            
@@ -54,9 +58,9 @@ namespace LuaInterface
             {
                 object arg0 = ToLua.CheckVarObject(L, 2, kclass);
                 BindingFlags arg1 = (BindingFlags)LuaDLL.luaL_checknumber(L, 3);
-                Binder arg2 = (Binder)ToLua.CheckObject(L, 4, typeof(Binder));
+                Binder arg2 = (Binder)ToLua.CheckObject(L, 4, TypeOfBinder);
                 object[] arg3 = ToLua.CheckObjectArray(L, 5);
-                CultureInfo arg4 = (CultureInfo)ToLua.CheckObject(L, 6, typeof(CultureInfo));
+                CultureInfo arg4 = (CultureInfo)ToLua.CheckObject(L, 6, TypeOfCultureInfo);
                 object o = property.GetValue(arg0, arg1, arg2, arg3, arg4);
                 ToLua.Push(L, o);
                 return 1;
@@ -86,9 +90,9 @@ namespace LuaInterface
                 object arg1 = ToLua.ToVarObject(L, 3);
                 if (arg1 != null) arg1 = TypeChecker.ChangeType(arg1, property.PropertyType);
                 BindingFlags arg2 = (BindingFlags)LuaDLL.luaL_checknumber(L, 4);
-                Binder arg3 = (Binder)ToLua.CheckObject(L, 5, typeof(Binder));
+                Binder arg3 = (Binder)ToLua.CheckObject(L, 5, TypeOfBinder);
                 object[] arg4 = ToLua.CheckObjectArray(L, 6);
-                CultureInfo arg5 = (CultureInfo)ToLua.CheckObject(L, 7, typeof(CultureInfo));                
+                CultureInfo arg5 = (CultureInfo)ToLua.CheckObject(L, 7, TypeOfCultureInfo);
                 property.SetValue(arg0, arg1, arg2, arg3, arg4, arg5);
                 return 0;
             }

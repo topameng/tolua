@@ -25,8 +25,9 @@ public class TestReflection : LuaClient
         func = nil
         
         local objs = {Vector3.one, Vector3.zero}
-        local array = tolua.toarray(objs, typeof(Vector3))
-        local obj = tolua.createinstance(t, array)
+        local array = tolua.toarray(objs, typeof(Vector3))        
+        --这之后会有一个Type TestExport not wrap to lua警告，这里可以不用关心，因为走的反射， 需要反射的对象肯定是没有wrap的
+        local obj = tolua.createinstance(t, array) 
         --local constructor = tolua.getconstructor(t, typeof(Vector3):MakeArrayType())
         --local obj = constructor:Call(array)        
         --constructor:Destroy()

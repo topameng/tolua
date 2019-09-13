@@ -23,16 +23,16 @@ public class AccessingLuaVariables : MonoBehaviour
 
 	void Start () 
     {
-#if UNITY_5 || UNITY_2017 || UNITY_2018
-        Application.logMessageReceived += ShowTips;
-#else
+#if UNITY_4_6 || UNITY_4_7
         Application.RegisterLogCallback(ShowTips);
+#else
+        Application.logMessageReceived += ShowTips;
 #endif
         new LuaResLoader();
         LuaState lua = new LuaState();
         lua.Start();
         lua["Objs2Spawn"] = 5;
-        lua.DoString(script);
+        lua.DoString(script, "AccessingLuaVariables.cs");
 
         //通过LuaState访问
         Debugger.Log("Read var from lua: {0}", lua["var2read"]);
@@ -42,9 +42,9 @@ public class AccessingLuaVariables : MonoBehaviour
         func.Call();
         func.Dispose();
 
-        //cache成LuaTable进行访问
+		//cache成LuaTable进行访问
         LuaTable table = lua.GetTable("varTable");
-        Debugger.Log("Read varTable from lua, default: {0} name: {1}", table["default"], table["map.name"]);
+		Debugger.Log("Read varTable from lua, default: {0} name: {1}", table["default"], table["map.name"]);
         table["map.name"] = "new";  //table 字符串只能是key
         Debugger.Log("Modify varTable name: {0}", table["map.name"]);
 
@@ -75,10 +75,11 @@ public class AccessingLuaVariables : MonoBehaviour
 
     private void OnApplicationQuit()
     {
-#if UNITY_5 || UNITY_2017 || UNITY_2018
-        Application.logMessageReceived -= ShowTips;
-#else
+#if UNITY_4_6 || UNITY_4_7
         Application.RegisterLogCallback(null);
+
+#else
+        Application.logMessageReceived -= ShowTips;
 #endif
     }
 

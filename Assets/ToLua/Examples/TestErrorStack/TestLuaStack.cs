@@ -13,6 +13,7 @@ public class TestLuaStack : MonoBehaviour
     public static LuaFunction testRay = null;
     public static LuaFunction showStack = null;
     public static LuaFunction test4 = null;
+    public static LuaFunction CheckResult = null;
 
     private static GameObject testGo = null;
     private string tips = "";
@@ -93,26 +94,22 @@ public class TestLuaStack : MonoBehaviour
     {
         try
         {
-            test4.BeginPCall();            
-            test4.PCall();
-            bool ret = test4.CheckBoolean();
-            ret = !ret;
-            test4.EndPCall();
+            int n = (int)LuaDLL.luaL_checkinteger(L, 1);
+            LuaDLL.lua_pushinteger(L, n);
+            return 1;
         }
         catch (Exception e)
         {
             return LuaDLL.toluaL_exception(L, e);
-        }
-
-        return 0;
+        }        
     }
 
     [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
     static int Test6(IntPtr L)
     {        
         try
-        {
-            throw new LuaException("this a lua exception");
+        {            
+            return LuaDLL.luaL_throw(L, "this a lua exception");            
         }
         catch (Exception e)
         {            
@@ -174,27 +171,27 @@ public class TestLuaStack : MonoBehaviour
         {
             LuaState state = LuaState.Get(L);
             LuaFunction func = state.GetFunction("TestCycle");
-            int c = (int)LuaDLL.luaL_checknumber(L, 1);
+            int c = (int)LuaDLL.luaL_checkinteger(L, 1);
 
             if (c <= 2)
             {
-                LuaDLL.lua_pushnumber(L, 1);
+                LuaDLL.lua_pushinteger(L, 1);
             }
             else
             {
                 func.BeginPCall();
                 func.Push(c - 1);
                 func.PCall();
-                int n1 = (int)func.CheckNumber();
+                int n1 = (int)func.CheckInteger();
                 func.EndPCall();
 
                 func.BeginPCall();
                 func.Push(c - 2);
                 func.PCall();
-                int n2 = (int)func.CheckNumber();
+                int n2 = (int)func.CheckInteger();
                 func.EndPCall();
 
-                LuaDLL.lua_pushnumber(L, n1 + n2);
+                LuaDLL.lua_pushinteger(L, n1 + n2);
             }
             
             return 1;
@@ -283,10 +280,10 @@ public class TestLuaStack : MonoBehaviour
 
     void Awake()
     {
-#if UNITY_5 || UNITY_2017 || UNITY_2018	
-        Application.logMessageReceived += ShowTips;
-#else
+#if UNITY_4_6 || UNITY_4_7
         Application.RegisterLogCallback(ShowTips);
+#else
+        Application.logMessageReceived += ShowTips;
 #endif
         Instance = this;
         new LuaResLoader();
@@ -320,6 +317,8 @@ public class TestLuaStack : MonoBehaviour
 
         showStack = state.GetFunction("ShowStack");
         test4 = state.GetFunction("Test4");
+        CheckResult = state.GetFunction("CheckResult");
+
 
         TestDelegate += TestD1;
         TestDelegate += TestD2;
@@ -332,10 +331,11 @@ public class TestLuaStack : MonoBehaviour
 
     void OnApplicationQuit()
     {
-#if UNITY_5 || UNITY_2017 || UNITY_2018
-        Application.logMessageReceived -= ShowTips;
-#else
+#if UNITY_4_6 || UNITY_4_7
         Application.RegisterLogCallback(null);
+
+#else
+        Application.logMessageReceived -= ShowTips;
 #endif
         state.Dispose();
         state = null;
@@ -402,7 +402,7 @@ public class TestLuaStack : MonoBehaviour
             tips = "";
             LuaFunction func = state.GetFunction("TestRay");
             func.BeginPCall();
-            func.Push(Instance);
+            func.Push(gameObject);
             func.PCall();            
             func.EndPCall();
             func.Dispose();

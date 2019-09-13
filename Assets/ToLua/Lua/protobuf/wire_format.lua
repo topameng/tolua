@@ -15,8 +15,14 @@
 --------------------------------------------------------------------------------
 --
 
-local pb = require "pb"
-module "protobuf.wire_format"
+local pb = require "pb2"
+-- module "protobuf.wire_format"
+local wire_format = {}
+if setfenv then
+  setfenv(1, wire_format);
+else
+  _ENV = wire_format
+end
 
 WIRETYPE_VARINT = 0
 WIRETYPE_FIXED64 = 1
@@ -135,3 +141,4 @@ function TagByteSize(field_number)
     return _VarUInt64ByteSizeNoTag(PackTag(field_number, 0))
 end
 
+return wire_format

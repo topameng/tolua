@@ -1,5 +1,6 @@
 ﻿/*
-Copyright (c) 2015-2017 topameng(topameng@qq.com)
+Copyright (c) 2015-2021 topameng(topameng@qq.com)
+https://github.com/topameng/tolua
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -47,43 +48,43 @@ namespace LuaInterface
         {
             LuaDLL.lua_getglobal(L, "tolua");
 
-            LuaDLL.lua_pushstring(L, "findtype");
-            LuaDLL.lua_pushcfunction(L, FindType);
+            LuaDLL.lua_pushstring(L, "findtype");            
+            LuaDLL.lua_pushcfunction(L, new LuaCSFunction(FindType));
             LuaDLL.lua_rawset(L, -3);
 
             LuaDLL.lua_pushstring(L, "loadassembly");            
-            LuaDLL.tolua_pushcfunction(L, LoadAssembly);
+            LuaDLL.tolua_pushcfunction(L, new LuaCSFunction(LoadAssembly));
             LuaDLL.lua_rawset(L, -3);
 
             LuaDLL.lua_pushstring(L, "getmethod");
-            LuaDLL.tolua_pushcfunction(L, GetMethod);
+            LuaDLL.tolua_pushcfunction(L, new LuaCSFunction(GetMethod));
             LuaDLL.lua_rawset(L, -3);
 
             LuaDLL.lua_pushstring(L, "getconstructor");
-            LuaDLL.tolua_pushcfunction(L, GetConstructor);
+            LuaDLL.tolua_pushcfunction(L, new LuaCSFunction(GetConstructor));
             LuaDLL.lua_rawset(L, -3);
 
             LuaDLL.lua_pushstring(L, "gettypemethod");
-            LuaDLL.tolua_pushcfunction(L, GetTypeMethod);
+            LuaDLL.tolua_pushcfunction(L, new LuaCSFunction(GetTypeMethod));
             LuaDLL.lua_rawset(L, -3);
 
             LuaDLL.lua_pushstring(L, "getfield");
-            LuaDLL.tolua_pushcfunction(L, GetField);
+            LuaDLL.tolua_pushcfunction(L, new LuaCSFunction(GetField));
             LuaDLL.lua_rawset(L, -3);
 
             LuaDLL.lua_pushstring(L, "getproperty");
-            LuaDLL.tolua_pushcfunction(L, GetProperty);
+            LuaDLL.tolua_pushcfunction(L, new LuaCSFunction(GetProperty));
             LuaDLL.lua_rawset(L, -3);
 
             LuaDLL.lua_pushstring(L, "createinstance");
-            LuaDLL.tolua_pushcfunction(L, CreateInstance);
+            LuaDLL.tolua_pushcfunction(L, new LuaCSFunction(CreateInstance));
             LuaDLL.lua_rawset(L, -3);
 
             LuaDLL.lua_pop(L, 1);
 
             LuaState state = LuaState.Get(L);
             state.BeginPreLoad();
-            state.AddPreLoad("tolua.reflection", OpenReflectionLibs);            
+            state.AddPreLoad("tolua.reflection", new LuaCSFunction(OpenReflectionLibs));
             state.EndPreLoad();
         }
 
@@ -224,7 +225,7 @@ namespace LuaInterface
             {
                 LuaDLL.lua_pushnil(L);
             }
-        }
+        }        
 
         [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
         static int GetConstructor(IntPtr L)
@@ -232,7 +233,7 @@ namespace LuaInterface
             try
             {
                 int count = LuaDLL.lua_gettop(L);
-                Type t = (Type)ToLua.CheckObject(L, 1, typeof(Type));                
+                Type t = ToLua.CheckMonoType(L, 1);                
                 Type[] types = null;
 
                 if (count > 1)

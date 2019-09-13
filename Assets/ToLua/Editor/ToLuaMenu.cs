@@ -1,5 +1,6 @@
 ﻿/*
-Copyright (c) 2015-2017 topameng(topameng@qq.com)
+Copyright (c) 2015-2021 topameng(topameng@qq.com)
+https://github.com/topameng/tolua
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -37,6 +38,7 @@ using Object = UnityEngine.Object;
 using Debug = UnityEngine.Debug;
 using Debugger = LuaInterface.Debugger;
 using System.Threading;
+using System.Runtime.CompilerServices;
 
 [InitializeOnLoad]
 public static class ToLuaMenu
@@ -231,7 +233,8 @@ public static class ToLuaMenu
             {
                 Type t = attrs[j].GetType();
 
-                if (t == typeof(System.ObsoleteAttribute) || t == typeof(NoToLuaAttribute) || t.Name == "MonoNotSupportedAttribute" || t.Name == "MonoTODOAttribute")
+                if (t == typeof(System.ObsoleteAttribute) || t == typeof(NoToLuaAttribute) || t == typeof(CompilerGeneratedAttribute) || t == typeof(UnsafeValueTypeAttribute)
+                    || t.Name == "MonoNotSupportedAttribute" || t.Name == "MonoTODOAttribute")
                 {
                     return true;
                 }
@@ -347,7 +350,7 @@ public static class ToLuaMenu
             return;
         }
 
-        if (!File.Exists(CustomSettings.saveDir))
+        if (!Directory.Exists(CustomSettings.saveDir))
         {
             Directory.CreateDirectory(CustomSettings.saveDir);
         }
@@ -382,7 +385,27 @@ public static class ToLuaMenu
         AssetDatabase.Refresh();
     }
 
-    static HashSet<Type> GetCustomTypeDelegates()
+    static bool IsDelegateInClass(Type delegateType, Type classType)
+    {
+        string funcName;
+        string space = ToLuaExport.GetNameSpace(delegateType, out funcName);
+
+        if (space == classType.FullName)
+        {
+            return true;
+        }
+
+        BindType bt = Array.Find(CustomSettings.customTypeList, (iter) => { return iter.type.FullName == space; });
+
+        if (bt != null)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    static HashSet<Type> GetCustomTypeDelegates(bool force = false)
     {
         BindType[] list = CustomSettings.customTypeList;
         HashSet<Type> set = new HashSet<Type>();
@@ -410,7 +433,10 @@ public static class ToLuaMenu
 
                 if (ToLuaExport.IsDelegateType(t))
                 {
-                    set.Add(t);
+                    if (!IsDelegateInClass(t, type) || force)
+                    {
+                        set.Add(t);
+                    }
                 }
             }
 
@@ -419,8 +445,11 @@ public static class ToLuaMenu
                 Type t = props[j].PropertyType;
 
                 if (ToLuaExport.IsDelegateType(t))
-                {
-                    set.Add(t);
+                {                    
+                    if (!IsDelegateInClass(t, type) || force)
+                    {
+                        set.Add(t);
+                    }
                 }
             }
 
@@ -441,8 +470,11 @@ public static class ToLuaMenu
                     if (t.IsByRef) t = t.GetElementType();
 
                     if (ToLuaExport.IsDelegateType(t))
-                    {
-                        set.Add(t);
+                    {                                                
+                        if (!IsDelegateInClass(t, type) || force)
+                        {
+                            set.Add(t);
+                        }
                     }
                 }
             }
@@ -464,7 +496,7 @@ public static class ToLuaMenu
         ToLuaExport.Clear();
         List<DelegateType> list = new List<DelegateType>();
         list.AddRange(CustomSettings.customDelegateList);
-        HashSet<Type> set = GetCustomTypeDelegates();        
+        HashSet<Type> set = GetCustomTypeDelegates(true);        
 
         foreach (Type t in set)
         {
@@ -678,8 +710,8 @@ public static class ToLuaMenu
             for (int i = 0; i < CustomSettings.dynamicList.Count; i++)
             {
                 Type t1 = CustomSettings.dynamicList[i];
-                BindType bt = backupList.Find((p) => { return p.type == t1; });
-                if (bt != null) sb.AppendFormat("\t\tL.AddPreLoad(\"{0}\", LuaOpen_{1}, typeof({0}));\r\n", bt.name, bt.wrapName);
+                BindType bt = backupList.Find((p) => { return p.type == t1; });                
+                if (bt != null) sb.AppendFormat("\t\tL.AddPreLoad(\"{0}\", new LuaCSFunction(LuaOpen_{1}), typeof({0}));\r\n", bt.name, bt.wrapName);
             }
 
             sb.AppendLineEx("\t\tL.EndPreLoad();");
@@ -745,8 +777,8 @@ public static class ToLuaMenu
             {
                 funcName = ToLuaExport.ConvertToLibSign(funcName);
                 string abr = dt.abr;
-                abr = abr == null ? funcName : abr;
-                sb.AppendFormat("\t\tL.RegFunction(\"{0}\", {1});\r\n", abr, dt.name);
+                abr = abr == null ? funcName : abr;                
+                sb.AppendFormat("\t\tL.RegFunction(\"{0}\", new LuaCSFunction({1}));\r\n", abr, dt.name);
                 wrappedDelegatesCache.Add(dt);
             }
         }
@@ -784,7 +816,7 @@ public static class ToLuaMenu
     {
         dir = Application.streamingAssetsPath + "/" + dir;
 
-        if (!File.Exists(dir))
+        if (!Directory.Exists(dir))
         {
             Directory.CreateDirectory(dir);
         }
@@ -855,6 +887,11 @@ public static class ToLuaMenu
         if (Directory.Exists(path))
         {
             Directory.Delete(path, true);
+        }
+
+        if (Directory.Exists(osPath))
+        {
+            Directory.Delete(osPath, true);
         }
 
         path = Application.dataPath + "/temp";
@@ -968,13 +1005,15 @@ public static class ToLuaMenu
 
         for (int i = 0; i < files.Length; i++)
         {
-            string str = files[i].Remove(0, len);
+            string str = files[i].Remove(0, len + 1);
             string dest = destDir + "/" + str;
             if (appendext) dest += ".bytes";
             string dir = Path.GetDirectoryName(dest);
-            Directory.CreateDirectory(dir);
-            File.Copy(files[i], dest, true);
+            if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);            
+            File.Copy(files[i], dest, true);            
         }
+
+        Debug.Log("copy " + sourceDir + " " + destDir);
     }
 
 
@@ -1025,94 +1064,82 @@ public static class ToLuaMenu
         }        
     }
 
-    static void CopyBuildBat(string path, string tempDir)
-    {
-		if (EditorUserBuildSettings.activeBuildTarget == BuildTarget.StandaloneWindows64)
-		{
-			File.Copy(path + "/Luajit64/Build.bat", tempDir + "/Build.bat", true);			
-		}
-		else if (EditorUserBuildSettings.activeBuildTarget == BuildTarget.StandaloneWindows)
-        {
-            if (IntPtr.Size == 4)
-            {
-                File.Copy(path + "/Luajit/Build.bat", tempDir + "/Build.bat", true);
-            }
-            else if (IntPtr.Size == 8)
-            {
-                File.Copy(path + "/Luajit64/Build.bat", tempDir + "/Build.bat", true);
-            }
-        }
-#if UNITY_5_3_OR_NEWER        
-        else if (EditorUserBuildSettings.activeBuildTarget == BuildTarget.iOS)
-#else
-        else if (EditorUserBuildSettings.activeBuildTarget == BuildTarget.iPhone)
-#endif        
-        {
-            //Debug.Log("iOS默认用64位，32位自行考虑");
-            File.Copy(path + "/Luajit64/Build.bat", tempDir + "/Build.bat", true);
-        }
-        else
-        {
-            File.Copy(path + "/Luajit/Build.bat", tempDir + "/Build.bat", true);
-        }
-
-    }
-
     [MenuItem("Lua/Build Lua files to Resources (PC)", false, 53)]
     public static void BuildLuaToResources()
     {
+#if LUAC_5_3
+        Debug.Log("Building luac5.3 bytecode for all platform");
+#else
+        Debug.Log("Building Luajit bytecode for " + LuaConst.osDir);
+#endif
+
         ClearAllLuaFiles();
         string tempDir = CreateStreamDir("Lua");
         string destDir = Application.dataPath + "/Resources" + "/Lua";        
+        string tempBytesDir = tempDir + "/Out";
 
-        string path = Application.dataPath.Replace('\\', '/');
-        path = path.Substring(0, path.LastIndexOf('/'));
-        CopyBuildBat(path, tempDir);
         CopyLuaBytesFiles(LuaConst.luaDir, tempDir, false);
-        Process proc = Process.Start(tempDir + "/Build.bat");
-        proc.WaitForExit();
-        CopyLuaBytesFiles(tempDir + "/Out/", destDir, false, "*.lua.bytes");
+        ExportAllLuaToBytecode(tempDir, tempBytesDir);
+        CopyLuaBytesFiles(tempBytesDir, destDir, false, "*.lua.bytes");
         CopyLuaBytesFiles(LuaConst.toluaDir, destDir);
         
-        Directory.Delete(tempDir, true);        
+        Directory.Delete(tempDir, true);                
         AssetDatabase.Refresh();
+#if !LUAC_5_3
+        Debug.Log("Building Luajit bytecode for " + LuaConst.osDir + " over");
+#else
+        Debug.Log("Building Luac5.3 bytecode for " + LuaConst.osDir + " over");
+#endif
     }
 
     [MenuItem("Lua/Build Lua files to Persistent (PC)", false, 54)]
     public static void BuildLuaToPersistent()
     {
+#if LUAC_5_3
+        Debug.Log("Building luac5.3 bytecode for all platform");
+#else
+        Debug.Log("Building Luajit bytecode for " + LuaConst.osDir);
+#endif
         ClearAllLuaFiles();
         string tempDir = CreateStreamDir("Lua");        
         string destDir = Application.persistentDataPath + "/" + GetOS() + "/Lua/";
+        string tempBytesDir = tempDir + "/Out/";
 
-        string path = Application.dataPath.Replace('\\', '/');
-        path = path.Substring(0, path.LastIndexOf('/'));        
-        CopyBuildBat(path, tempDir);
         CopyLuaBytesFiles(LuaConst.luaDir, tempDir, false);
-        Process proc = Process.Start(tempDir + "/Build.bat");
-        proc.WaitForExit();        
+        ExportAllLuaToBytecode(tempDir, tempBytesDir);
+        CopyLuaBytesFiles(tempBytesDir, destDir, false, "*.lua.bytes");
         CopyLuaBytesFiles(LuaConst.toluaDir, destDir, false);
 
-        path = tempDir + "/Out/";
-        string[] files = Directory.GetFiles(path, "*.lua.bytes");
-        int len = path.Length;
+        //string[] files = Directory.GetFiles(tempBytesDir, "*.lua.bytes");
+        //int len = tempBytesDir.Length;
 
-        for (int i = 0; i < files.Length; i++)
-        {
-            path = files[i].Remove(0, len);
-            path = path.Substring(0, path.Length - 6);
-            path = destDir + path;
+        //for (int i = 0; i < files.Length; i++)
+        //{
+        //    tempBytesDir = files[i].Remove(0, len);
+        //    tempBytesDir = tempBytesDir.Substring(0, tempBytesDir.Length - 6);
+        //    tempBytesDir = destDir + tempBytesDir;
 
-            File.Copy(files[i], path, true);
-        }
+        //    File.Copy(files[i], tempBytesDir, true);
+        //}
 
         Directory.Delete(tempDir, true);
         AssetDatabase.Refresh();
+#if !LUAC_5_3
+        Debug.Log("Building Luajit bytecode for " + LuaConst.osDir + " over");
+#else
+        Debug.Log("Building Luac5.3 bytecode for " + LuaConst.osDir + " over");
+#endif        
     }
 
-    [MenuItem("Lua/Build bundle files not jit", false, 55)]
+    [MenuItem("Lua/Build lua string bundle files", false, 55)]
+    //直接将lua字符串打包，不导出成bytecode
     public static void BuildNotJitBundles()
     {
+#if LUAC_5_3
+        Debug.Log("Building luac5.3 bundle for all platform");
+#else
+        Debug.Log("Building Luajit bundle for " + LuaConst.osDir);
+#endif
         ClearAllLuaFiles();
         CreateStreamDir(GetOS());
 
@@ -1121,7 +1148,7 @@ public static class ToLuaMenu
 #else
         string tempDir = Application.dataPath + "/temp/Lua";
 
-        if (!File.Exists(tempDir))
+        if (!Directory.Exists(tempDir))
         {
             Directory.CreateDirectory(tempDir);
         }        
@@ -1146,7 +1173,7 @@ public static class ToLuaMenu
         string output = string.Format("{0}/{1}", Application.streamingAssetsPath, GetOS());        
         BuildPipeline.BuildAssetBundles(output, BuildAssetBundleOptions.DeterministicAssetBundle, EditorUserBuildSettings.activeBuildTarget);
 
-        //Directory.Delete(Application.dataPath + "/temp/", true);
+        Directory.Delete(Application.dataPath + "/temp/", true);
 #else
         for (int i = 0; i < dirs.Count; i++)
         {
@@ -1158,11 +1185,23 @@ public static class ToLuaMenu
         Directory.Delete(Application.streamingAssetsPath + "/Lua/", true);
 #endif
         AssetDatabase.Refresh();
+#if !LUAC_5_3
+        Debug.Log("Building Luajit bundle for " + LuaConst.osDir + " over");
+#else
+        Debug.Log("Building Luac5.3 bundle for " + LuaConst.osDir + " over");
+#endif        
     }
 
-    [MenuItem("Lua/Build Luajit bundle files   (PC)", false, 56)]
+    [MenuItem("Lua/Build Lua bytecode bundle files   (PC)", false, 56)]
+    // 使用luajit就是编译成当前平台架构（32位、64位）对应的luajit的bytecode。（自己可参考出手机包luajit的32位、64位2套字节码bundle包）
+    // 使用lua5.3就是编译成lua5.3的兼容32/64位tolua运行环境的一份bytecode
     public static void BuildLuaBundles()
     {
+#if LUAC_5_3
+        Debug.Log("Building luac5.3 bytecode bundle for all platform");
+#else
+        Debug.Log("Building Luajit bytecode bundle for " + LuaConst.osDir);
+#endif
         ClearAllLuaFiles();                
         CreateStreamDir(GetOS());
 
@@ -1171,30 +1210,26 @@ public static class ToLuaMenu
 #else
         string tempDir = Application.dataPath + "/temp/Lua";
 
-        if (!File.Exists(tempDir))
+        if (!Directory.Exists(tempDir))
         {
             Directory.CreateDirectory(tempDir);
         }
 #endif
+        string tempBytesDir = tempDir + "/Out";
 
-        string path = Application.dataPath.Replace('\\', '/');
-        path = path.Substring(0, path.LastIndexOf('/'));        
-        CopyBuildBat(path, tempDir);
         CopyLuaBytesFiles(LuaConst.luaDir, tempDir, false);
-        Process proc = Process.Start(tempDir + "/Build.bat");
-        proc.WaitForExit();
-        CopyLuaBytesFiles(LuaConst.toluaDir, tempDir + "/Out");
+        ExportAllLuaToBytecode(tempDir, tempBytesDir);
+        CopyLuaBytesFiles(LuaConst.toluaDir, tempBytesDir);
 
         AssetDatabase.Refresh();
 
-        string sourceDir = tempDir + "/Out";
         List<string> dirs = new List<string>();        
-        GetAllDirs(sourceDir, dirs);
+        GetAllDirs(tempBytesDir, dirs);
 
 #if UNITY_5 || UNITY_5_3_OR_NEWER
 		for (int i = 0; i < dirs.Count; i++)
         {
-            string str = dirs[i].Remove(0, sourceDir.Length);
+            string str = dirs[i].Remove(0, tempBytesDir.Length);
             BuildLuaBundle(str.Replace('\\', '/'), "Assets/temp/Lua/Out");
         }
 
@@ -1207,7 +1242,7 @@ public static class ToLuaMenu
 #else
         for (int i = 0; i < dirs.Count; i++)
         {
-            string str = dirs[i].Remove(0, sourceDir.Length);
+            string str = dirs[i].Remove(0, tempBytesDir.Length);
             BuildLuaBundle(str.Replace('\\', '/'), "Assets/StreamingAssets/Lua/Out");
         }
 
@@ -1215,6 +1250,11 @@ public static class ToLuaMenu
         Directory.Delete(tempDir, true);
 #endif
         AssetDatabase.Refresh();
+#if !LUAC_5_3
+        Debug.Log("Building Luajit bytecode bundle for " + LuaConst.osDir + " over");
+#else
+        Debug.Log("Building Luac5.3 bytecode bundle for " + LuaConst.osDir + " over");
+#endif           
     }
 
     [MenuItem("Lua/Clear all Lua files", false, 57)]
@@ -1222,7 +1262,6 @@ public static class ToLuaMenu
     {
         ClearAllLuaFiles();
     }
-
 
     [MenuItem("Lua/Gen BaseType Wrap", false, 101)]
     static void GenBaseTypeLuaWrap()
@@ -1235,7 +1274,7 @@ public static class ToLuaMenu
 
         string dir = CustomSettings.toluaBaseType;
 
-        if (!File.Exists(dir))
+        if (!Directory.Exists(dir))
         {
             Directory.CreateDirectory(dir);
         }
@@ -1355,23 +1394,28 @@ public static class ToLuaMenu
         {
             directory = appPath.Substring(0, appPath.IndexOf("MacOS")) + "Managed/";
         }
+
         string suitedMonoCecilPath = directory +
 #if UNITY_2017_1_OR_NEWER
             "Unity.Cecil.dll";
 #else
             "Mono.Cecil.dll";
 #endif
+
+#if UNITY_5_3_OR_NEWER
         string suitedMonoCecilMdbPath = directory +
 #if UNITY_2017_1_OR_NEWER
             "Unity.Cecil.Mdb.dll";
 #else
             "Mono.Cecil.Mdb.dll";
 #endif
+
         string suitedMonoCecilPdbPath = directory +
 #if UNITY_2017_1_OR_NEWER
             "Unity.Cecil.Pdb.dll";
 #else
             "Mono.Cecil.Pdb.dll";
+#endif
 #endif
         string suitedMonoCecilToolPath = directory + "Unity.CecilTools.dll";
 
@@ -1390,8 +1434,10 @@ public static class ToLuaMenu
         bool bInjectionToolUpdated = false;
         string injectionToolPath = CustomSettings.injectionFilesPath + "Editor/";
         string existMonoCecilPath = injectionToolPath + Path.GetFileName(suitedMonoCecilPath);
+#if UNITY_5_3_OR_NEWER
         string existMonoCecilPdbPath = injectionToolPath + Path.GetFileName(suitedMonoCecilPdbPath);
         string existMonoCecilMdbPath = injectionToolPath + Path.GetFileName(suitedMonoCecilMdbPath);
+#endif
         string existMonoCecilToolPath = injectionToolPath + Path.GetFileName(suitedMonoCecilToolPath);
 
         try
@@ -1442,5 +1488,336 @@ public static class ToLuaMenu
             sb.Append(retVal[i].ToString("x2"));
         }
         return StringBuilderCache.GetStringAndRelease(sb);
+    }
+
+    static void ExportAllLuaToBytecode(string srcDir, string outDir, string searchPattern = "*.lua")
+    {
+        if (!Directory.Exists(srcDir))
+        {
+            return;
+        }
+
+        string[] files = Directory.GetFiles(srcDir, searchPattern, SearchOption.AllDirectories);
+        int len = srcDir.Length;
+
+        if (srcDir[len - 1] == '/' || srcDir[len - 1] == '\\')
+        {
+            --len;
+        }
+
+        for (int i = 0; i < files.Length; i++)
+        {
+            string str = files[i].Remove(0, len + 1);
+            string dest = outDir + "/" + str;
+            dest += ".bytes";
+            string dir = Path.GetDirectoryName(dest);
+            if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
+            EditorUtility.DisplayProgressBar("Encoding", files[i], (float)i / files.Length);
+            string src = files[i].Replace('\\', '/');
+            ExportLuaBytecode(src, dest);
+        }
+        EditorUtility.ClearProgressBar();
+    }
+
+    /// <summary>
+    /// 加密lua代码成字节码
+    /// </summary>
+    /// <param name="srcFile"></param>
+    /// <param name="outFile"></param>
+    static void ExportLuaBytecode(string srcFile, string outFile)
+    {
+        if (!srcFile.ToLower().EndsWith(".lua"))
+        {
+            File.Copy(srcFile, outFile, true);
+            return;
+        }
+
+        bool isWin = true;        
+        string luaexe = string.Empty;
+        string args = string.Empty;
+        string exedir = string.Empty;
+        string exeRoot = string.Empty;        
+        string libRoot = Application.dataPath.Replace('\\', '/');
+        libRoot = libRoot.Substring(0, libRoot.LastIndexOf('/'));
+        isWin = Application.platform == RuntimePlatform.WindowsEditor;
+
+#if LUAC_5_3
+        exeRoot = "Luac53";
+        luaexe = isWin ? "luac.exe" : "./luac";
+        args = " -o " + outFile + " " + srcFile;
+#else
+
+#if UNITY_IPHONE
+        exeRoot = "Luajit64";
+#elif UNITY_ANDROID
+        exeRoot = "Luajit";
+#else
+        exeRoot = IntPtr.Size == 4 ? "Luajit" : "Luajit64";
+#endif
+
+        luaexe = isWin ? "luajit.exe" : "./luajit";
+        args = CustomSettings.LUAJIT_CMD_OPTION + " " + srcFile + " " + outFile;
+#endif
+        exedir = string.Format("{0}/{1}/{2}/", libRoot, exeRoot, isWin ? "Win" : "Mac");
+        
+        System.Diagnostics.ProcessStartInfo info = new System.Diagnostics.ProcessStartInfo()
+        {
+            FileName = exedir + luaexe,
+            Arguments = args,            
+            UseShellExecute = false,
+            ErrorDialog = true,
+            RedirectStandardOutput = true,
+            RedirectStandardInput = true,
+            RedirectStandardError = true,
+            WorkingDirectory = exedir,            
+        };
+
+        if (!isWin)
+        {
+            info.StandardErrorEncoding = System.Text.UTF8Encoding.UTF8;
+            info.StandardOutputEncoding = System.Text.UTF8Encoding.UTF8;
+        }        
+
+        using (System.Diagnostics.Process process = System.Diagnostics.Process.Start(info))
+        {                                                
+            string msg = process.StandardError.ReadToEnd();
+
+            if (!string.IsNullOrEmpty(msg))
+            {
+                Debug.LogError(msg);
+            }
+            else
+            {
+                Debug.Log(luaexe + args);
+            }
+
+            process.WaitForExit();
+        }
+    }
+
+    [MenuItem("Lua/Gen u3d Wrap Files", false, 103)]
+    public static void U3dBinding()
+    {
+        List<string> dropList = new List<string>
+        {                             
+            //一般情况不需要的类, 编辑器相关的
+            "HideInInspector" ,
+            "ExecuteInEditMode" ,
+            "AddComponentMenu" ,
+            "ContextMenu" ,
+            "RequireComponent" ,
+            "DisallowMultipleComponent" ,
+            "SerializeField" ,
+            "AssemblyIsEditorAssembly" ,
+            "Attribute" ,  //一些列文件，都是编辑器相关的    
+            "FFTWindow" ,
+
+            "Types" ,
+            "UnitySurrogateSelector" ,
+            "TypeInferenceRules" ,
+            "ThreadPriority" ,
+            "Debug" ,        //自定义debugger取代
+            "GenericStack" ,
+
+            //异常，lua无法catch
+            "PlayerPrefsException" ,
+            "UnassignedReferenceException" ,
+            "UnityException" ,
+            "MissingComponentException" ,
+            "MissingReferenceException" ,
+
+            //RPC网络
+            "RPC" ,
+            "Network" ,
+            "MasterServer" ,
+            "BitStream" ,
+            "HostData" ,
+            "ConnectionTesterStatus" ,
+
+            //unity 自带编辑器GUI
+            "GUI" ,
+            "EventType" ,
+            "EventModifiers" ,
+            //"Event",
+            "FontStyle" ,
+            "TextAlignment" ,
+            "TextEditor" ,
+            "TextEditorDblClickSnapping" ,
+            "TextGenerator" ,
+            "TextClipping" ,
+            "TextGenerationSettings" ,
+            "TextAnchor" ,
+            "TextAsset" ,
+            "TextWrapMode" ,
+            "Gizmos" ,
+            "ImagePosition" ,
+            "FocusType" ,
+           
+
+            //地形相关
+            "Terrain" ,
+            "Tree" ,
+            "SplatPrototype" ,
+            "DetailPrototype" ,
+            "DetailRenderMode" ,
+
+            //其他
+            "MeshSubsetCombineUtility" ,
+            "AOT" ,
+            "Random" ,
+            "Mathf" ,
+            "Social" ,
+            "Enumerator" ,
+            "SendMouseEvents" ,
+            "Cursor" ,
+            "Flash" ,
+            "ActionScript" ,
+            "CacheIndex",
+            "QualityLevel",
+            "RaycastCollider",
+            "SerializePrivateVariables",
+            "RaycastCollider",
+           
+   
+            //非通用的类
+            "ADBannerView" ,
+            "ADInterstitialAd" ,
+            "Android" ,
+            "jvalue" ,
+            "iPhone" ,
+            "iOS" ,
+            "CalendarIdentifier" ,
+            "CalendarUnit" ,
+            "CalendarUnit" ,
+            "FullScreenMovieControlMode" ,
+            "FullScreenMovieScalingMode" ,
+            "Handheld" ,
+            "LocalNotification" ,
+            "Motion" ,   //空类
+            "NotificationServices" ,
+            "RemoteNotificationType" ,
+            "RemoteNotification" ,
+            "SamsungTV" ,
+            "TextureCompressionQuality" ,
+            "TouchScreenKeyboardType" ,
+            "TouchScreenKeyboard" ,
+            "MovieTexture" ,
+            
+            //2d 类
+            "AccelerationEventWrap" , //加速
+            "AnimatorUtility" ,
+            "AudioChorusFilter" ,
+            "AudioDistortionFilter" ,
+            "AudioEchoFilter" ,
+            "AudioHighPassFilter" ,
+            "AudioLowPassFilter" ,
+            "AudioReverbFilter" ,
+            "AudioReverbPreset" ,
+            "AudioReverbZone" ,
+            "AudioRolloffMode" ,
+            "AudioSettings" ,
+            "AudioSpeakerMode" ,
+            "AudioType" ,
+            "AudioVelocityUpdateMode" ,
+
+            "Profiler" ,
+            "StaticBatchingUtility" ,
+            "Font" ,
+            "Gyroscope" ,                        //不需要重力感应
+            "ISerializationCallbackReceiver" ,   //u3d 继承的序列化接口，lua不需要
+            "ImageEffectOpaque" ,                //后处理
+            "ImageEffectTransformsToLDR" ,
+            "PrimitiveType" ,                // 暂时不需要 GameObject.CreatePrimitive          
+            "Skybox" ,                       //不会u3d自带的Skybox
+            "SparseTexture" ,                // mega texture 不需要
+            "Plane" ,
+            "PlayerPrefs" ,
+            
+            //不需要轮子碰撞体
+            "WheelCollider" ,
+            "WheelFrictionCurve" ,
+            "WheelHit" ,
+
+            //手机不适用雾
+            "FogMode" ,
+
+            "LightProbeGroup" ,
+            "LightProbes" ,            
+
+            //没用到substance纹理
+            "ProceduralCacheSize" ,
+            "ProceduralLoadingBehavior" ,
+            "ProceduralMaterial" ,
+            "ProceduralOutputType" ,
+            "ProceduralProcessorUsage" ,
+            "ProceduralPropertyDescription" ,
+            "ProceduralPropertyType" ,
+            "ProceduralTexture" ,
+
+            //物理关节系统
+            "JointDriveMode" ,
+            "JointDrive" ,
+            "JointLimits" ,
+            "JointMotor" ,
+            "JointProjectionMode" ,
+            "JointSpring" ,
+            "SoftJointLimit" ,
+            "SpringJoint" ,
+            "HingeJoint" ,
+            "FixedJoint" ,
+            "ConfigurableJoint" ,
+            "CharacterJoint" ,
+            "Joint" ,
+
+            "LODGroup" ,
+            "LOD" ,
+
+            "CrashReport" ,
+            "CombineInstance" ,
+#if UNITY_5_4_OR_NEWER
+            "ParticleEmitter",
+            "ParticleRenderer",
+            "ParticleAnimator",
+            "AnimatorClipInfo",
+            "VRDeviceType",
+            "Particle",
+            "ParticleRenderMode"
+#endif
+        };
+
+        List<BindType> list = new List<BindType>();
+        Assembly assembly = Assembly.Load("UnityEngine");
+        Type[] types = assembly.GetExportedTypes();
+
+        for (int i = 0; i < types.Length; i++)
+        {
+            //不导出： 模版类，event委托, c#协同相关, obsolete 类
+            if (!types[i].IsGenericType && types[i].BaseType != typeof(System.MulticastDelegate) && !typeof(YieldInstruction).IsAssignableFrom(types[i]) && !types[i].IsInterface
+                && !BindType.IsObsolete(types[i]))
+            {
+                list.Add(CustomSettings._GT(types[i]));
+            }
+            else
+            {
+                Debug.Log("drop generic type " + types[i].ToString());
+            }
+        }
+
+        for (int i = 0; i < dropList.Count; i++)
+        {
+            list.RemoveAll((p) => { return p.type.ToString().Contains(dropList[i]); });
+        }
+
+        for (int i = 0; i < list.Count; i++)
+        {
+            CustomSettings.customTypeList = list.ToArray();
+        }
+
+        beAutoGen = true;
+        GenLuaDelegates();
+        AssetDatabase.Refresh();
+        GenerateClassWraps();
+        GenLuaBinder();
+        beAutoGen = false;
     }
 }

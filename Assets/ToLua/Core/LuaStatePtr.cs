@@ -3,13 +3,14 @@ using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Runtime.CompilerServices;
 
 namespace LuaInterface
 {
     public class LuaStatePtr
     {
-        protected IntPtr L;
-
+        public IntPtr L;
+#if !LUAC_5_3 && UNITY_ANDROID
         string jit = @"            
         function Euler(x, y, z)
             x = x * 0.0087266462599716
@@ -64,13 +65,16 @@ namespace LuaInterface
                 for i=1,10000 do
                     local q1 = Euler(i, i, i)
                     Slerp({ x = 0, y = 0, z = 0, w = 1}, q1, 0.5)
-                end                
+                end        
+            else
+                print('jit has been closed')
             end	                   
         end";
+#endif
 
         public int LuaUpValueIndex(int i)
         {
-            return LuaIndexes.LUA_GLOBALSINDEX - i;
+            return LuaDLL.lua_upvalueindex(i);
         }
 
         public IntPtr LuaNewState()
@@ -80,12 +84,19 @@ namespace LuaInterface
 
         public void LuaOpenJit()
         {
-            if (!LuaDLL.luaL_dostring(L, jit))
+#if UNITY_ANDROID && !LUAC_5_3
+            //某些机型如三星arm64在jit on模式下会崩溃，临时关闭这里
+            if (IntPtr.Size == 8)
+            {                
+                LuaDLL.luaL_dostring(L, "jit.off()");                                                
+            }
+            else if (!LuaDLL.luaL_dostring(L, jit))
             {
                 string str = LuaDLL.lua_tostring(L, -1);
                 LuaDLL.lua_settop(L, 0);
                 throw new Exception(str);
-            }            
+            }
+#endif
         }
 
         public void LuaClose()
@@ -129,6 +140,11 @@ namespace LuaInterface
             LuaDLL.lua_insert(L, idx);
         }
 
+        public bool LuaIsThread(int inx)
+        {
+            return LuaDLL.lua_isthread(L, inx);
+        }
+
         public void LuaReplace(int idx)
         {
             LuaDLL.lua_replace(L, idx);
@@ -148,6 +164,13 @@ namespace LuaInterface
         {
             return LuaDLL.lua_isnumber(L, idx) != 0;
         }
+
+#if LUAC_5_3
+        public bool LuaIsInteger(int idx)
+        {
+            return LuaDLL.lua_isinteger(L, idx) != 0;
+        }
+#endif
 
         public bool LuaIsString(int index)
         {
@@ -204,7 +227,7 @@ namespace LuaInterface
             return LuaDLL.lua_tonumber(L, idx);
         }
 
-        public int LuaToInteger(int idx)
+        public long LuaToInteger(int idx)
         {
             return LuaDLL.lua_tointeger(L, idx);
         }
@@ -259,9 +282,9 @@ namespace LuaInterface
             LuaDLL.lua_pushnumber(L, number);
         }
 
-        public void LuaPushInteger(int n)
+        public void LuaPushInteger(long n)
         {
-            LuaDLL.lua_pushnumber(L, n);
+            LuaDLL.lua_pushinteger(L, n);
         }
 
         public void LuaPushLString(byte[] str, int size)
@@ -329,10 +352,12 @@ namespace LuaInterface
             return LuaDLL.lua_getmetatable(L, idx);
         }
 
+#if !LUAC_5_3
         public void LuaGetEnv(int idx)
         {
             LuaDLL.lua_getfenv(L, idx);
         }
+#endif
 
         public void LuaSetTable(int idx)
         {
@@ -359,10 +384,12 @@ namespace LuaInterface
             LuaDLL.lua_setmetatable(L, objIndex);
         }
 
+#if !LUAC_5_3
         public void LuaSetEnv(int idx)
         {
             LuaDLL.lua_setfenv(L, idx);
         }
+#endif
 
         public void LuaCall(int nArgs, int nResults)
         {
@@ -374,14 +401,30 @@ namespace LuaInterface
             return LuaDLL.lua_pcall(L, nArgs, nResults, errfunc);
         }
 
-        public int LuaYield(int nresults)
-        {
-            return LuaDLL.lua_yield(L, nresults);
-        }
+#if LUAC_5_3
+		public void LuaCallK(int nArgs, int nResults, IntPtr ctx, LuaKFunction k)
+		{
+			LuaDLL.lua_callk(L, nArgs, nResults, ctx, k);
+		}
 
-        public int LuaResume(int narg)
+		public void LuaPCallK(int nArgs, int nResults, int errfunc, IntPtr ctx, LuaKFunction k)
+		{
+			LuaDLL.lua_pcallk(L, nArgs, nResults, errfunc, ctx, k);
+		}
+
+		public int LuaYieldK(int nresults, IntPtr ctx, LuaKFunction k)
         {
-            return LuaDLL.lua_resume(L, narg);
+            return LuaDLL.lua_yieldk(L, nresults, ctx, k);
+        }
+#endif
+
+		public int LuaResumeThread(IntPtr thread, int narg)
+        {
+#if LUAC_5_3
+            return LuaDLL.lua_resume(thread, L, narg);
+#else
+            return LuaDLL.lua_resume(thread, narg);
+#endif
         }
 
         public int LuaStatus()
@@ -461,10 +504,24 @@ namespace LuaInterface
             return LuaDLL.lua_type(L, n) <= LuaTypes.LUA_TNIL;
         }
 
-        public void LuaRawGlobal(string name)
+		public void lua_pushglobaltable()
+		{
+			LuaDLL.lua_pushglobaltable(L);
+		}
+
+		public void LuaRawGlobal(string name)
         {
+#if LUAC_5_3
+            LuaDLL.lua_pushglobaltable(L);
+            int top = LuaDLL.lua_gettop(L);
             LuaDLL.lua_pushstring(L, name);
-            LuaDLL.lua_rawget(L, LuaIndexes.LUA_GLOBALSINDEX);
+            LuaDLL.lua_rawget(L, top);
+            //弹出global table
+            LuaDLL.lua_remove(L, top);	
+#else
+			LuaDLL.lua_pushstring(L, name);
+			LuaDLL.lua_rawget(L, LuaIndexes.LUA_GLOBALSINDEX);
+#endif
         }
 
         public void LuaSetGlobal(string name)
@@ -497,7 +554,7 @@ namespace LuaInterface
             return LuaDLL.luaL_checknumber(L, stackPos);
         }
 
-        public int LuaCheckInteger(int idx)
+        public long LuaCheckInteger(int idx)
         {
             return LuaDLL.luaL_checkinteger(L, idx);
         }
@@ -585,6 +642,7 @@ namespace LuaInterface
                 throw new LuaException("Require not need file extension: " + str);
             }
 #endif
+            //fileName = fileName.Replace('/', '.');            
             return LuaDLL.tolua_require(L, fileName);
         }
 
@@ -633,7 +691,7 @@ namespace LuaInterface
         }
 
         public void ToLuaUnRef(int reference)
-        {
+        {            
             LuaDLL.toluaL_unref(L, reference);
         }
 

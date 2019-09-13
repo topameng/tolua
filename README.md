@@ -29,12 +29,17 @@ https://github.com/topameng/protoc-gen-lua <br>
 **LuaFrameWork**<br>
 https://github.com/jarjin/LuaFramework_NGUI <br>
 https://github.com/jarjin/LuaFramework_UGUI <br>
+https://github.com/jarjin/LuaFramework_UGUI_V2 <br>
 **XlsxToLua**<br>
 https://github.com/zhangqi-ulua/XlsxToLua<br>
 **UnityHello**<br>
 https://github.com/woshihuo12/UnityHello<br>
 **UWA-ToLua**<br>
 http://uwa-download.oss-cn-beijing.aliyuncs.com/plugins%2FiOS%2FUWA-iOS-ToLua.zip<br>
+[StriveGame](https://github.com/liuxq/StriveGame)<br>
+[kbengine_unity3d_tolua_demo](https://github.com/liuxq/kbengine_unity3d_tolua_demo)<br>
+[UGFWithToLua](https://github.com/GarfieldJiang/UGFWithToLua)<br>
+[U3dFrameworkTolua](https://github.com/YKPublicGame/U3dFrameworkTolua)<br>
 
 # Debugger
 **EmmyLua**<br>
@@ -55,6 +60,7 @@ https://github.com/LabOfHoward/unity_tolua-_zerobrane_api<br>
 　**Protol**　　　　　 　 　　 Touch<br>
 　pblua　　　 　　 　 　RaycastHit<br>
 # 特性
+* iOS、Android、Windows上支持luajit和lua5.3，MacOSX上支持lua5.1和lua5.3
 * 自动生成绑定代码文件，非反射调用 <br>
 * 大量内建基础类型支持，如枚举，委托，事件，Type, 数组，迭代器等 <br>
 * 支持多种协同形式 <br>
@@ -81,6 +87,28 @@ https://github.com/LabOfHoward/unity_tolua-_zerobrane_api<br>
 * print信息，在编辑器点击日志, 能自动打开对应lua文件 <br>
 * 支持unity所有版本 <br>
 * **支持Lua hook C#相代码实现，一定程度上支持利用Lua代码修改C#端代码的bug**（[暖更新使用说明](https://zhuanlan.zhihu.com/p/35124260)） <br>
+
+# 使用lua5.3
+* 插件在iOS、Android、windows上默认的lua虚拟机环境为luajit（对应于lua5.1），mac上默认的lua虚拟机环境为lua5.1。<br>
+* 目前ToLua也支持全平台统一成lua5.3的lua虚拟机环境。如果要使用lua5.3的版本，步骤如下
+* 1、前往https://github.com/topameng/tolua_runtime <br>
+* 2、将Plugins53文件夹里面的所有tolua相关的runtime底层库，都拷贝覆盖到unity工程的Plugins目录下。<br>
+* 3、打开unity编辑器，添加“**LUA_5_3_OR_NEWER**”宏，回车等待编辑器编译完毕既是Lua5.3的虚拟机环境。<br>
+* **注意要用lua5.3宏定义“LUA_5_3_OR_NEWER”必须一直有效！！如果用luajit或lua5.1版本的，宏定义一定要删除！！！！**<br>
+* ToLua已经在ToLuaMenu.cs文件里面集成了自动化的导出32位、64位luajit的bytecode（不能混用），以及32位、64位兼容能混用的lua5.3的bytecode,<br>
+* 具体实现请查看ToLuaMenu.cs的改动，现在Lua5.3虚拟机环境的bytecode，默认32位、64位通用。<br>
+
+# 关于arm64下的luajit
+* 部分童鞋用最新的arm64的luajit版本库会出现莫名的闪退，32位机子上的armv7完全没问题。经定位，是luajit即时编译某种形式的代码的问题。<br>
+* 建议有问题的同学，tolua.lua文件里面加上jit.off(); jit.flush()强制关闭jit模式，开启interpreter模式，并注释jit.opt.start(3)这行相关的代码。 <br>
+
+# 网友学习心得
+[Unity3D热更新技术点——ToLua（上）](https://zhuanlan.zhihu.com/p/42472089) <br>
+[Unity3D热更新技术点——ToLua（中）](https://zhuanlan.zhihu.com/p/42472115) <br>
+[Unity3D热更新技术点——ToLua（下）](https://zhuanlan.zhihu.com/p/43632619) <br>
+[tolua学习(一)](https://blog.csdn.net/qq_38317140/article/details/90038858)<br>
+[tolua学习(二)](https://blog.csdn.net/qq_38317140/article/details/90058028)<br>
+[tolua学习(三)](https://blog.csdn.net/qq_38317140/article/details/90147397)<br>
 
 # 快速入门
 在CustomSetting.cs中添加需要导出的类或者委托，类加入到customTypeList列表，委托加入到customDelegateList列表 <br>
