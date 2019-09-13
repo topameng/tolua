@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 82bce848ef6ade348a8220c2ada7da08
+guid: e2827a88f4a23d04da2852ef02a102ed
 PluginImporter:
   serializedVersion: 1
   iconMap: {}
@@ -51,11 +51,6 @@ PluginImporter:
       enabled: 1
       settings:
         CPU: AnyCPU
-    iOS:
-      enabled: 0
-      settings:
-        CompileFlags: 
-        FrameworkDependencies: 
   userData: 
   assetBundleName: 
   assetBundleVariant: 

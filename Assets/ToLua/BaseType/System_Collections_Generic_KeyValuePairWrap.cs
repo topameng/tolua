@@ -7,9 +7,9 @@ public class System_Collections_Generic_KeyValuePairWrap
     public static void Register(LuaState L)
     {
         L.BeginClass(typeof(KeyValuePair<,>), null, "KeyValuePair");
-        L.RegFunction("__tostring", ToLua.op_ToString);
-        L.RegVar("Key", get_Key, null);
-        L.RegVar("Value", get_Value, null);
+        L.RegFunction("__tostring", new LuaCSFunction(ToLua.op_ToString));
+        L.RegVar("Key", new LuaCSFunction(get_Key), null);
+        L.RegVar("Value", new LuaCSFunction(get_Value), null);
         L.EndClass();
     }
 

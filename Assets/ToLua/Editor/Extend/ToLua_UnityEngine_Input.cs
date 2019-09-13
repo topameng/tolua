@@ -7,7 +7,7 @@ public class ToLua_UnityEngine_Input
 @"        try
         {
 		    int arg0 = (int)LuaDLL.luaL_checknumber(L, 1);
-            int arg1 = LuaDLL.luaL_optinteger(L, 2, TouchBits.ALL);        
+            int arg1 = (int)LuaDLL.luaL_optinteger(L, 2, TouchBits.ALL);        
 		    UnityEngine.Touch o = UnityEngine.Input.GetTouch(arg0);
             ToLua.Push(L, o, arg1);
             return 1;

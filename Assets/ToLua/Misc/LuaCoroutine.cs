@@ -1,5 +1,6 @@
 ﻿/*
-Copyright (c) 2015-2017 topameng(topameng@qq.com)
+Copyright (c) 2015-2021 topameng(topameng@qq.com)
+https://github.com/topameng/tolua
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -123,7 +124,7 @@ public static class LuaCoroutine
         state.RegFunction("WrapLuaCoroutine", WrapLuaCoroutine);
         state.EndModule();
 
-        state.LuaDoString(strCo, "LuaCoroutine.cs");
+        state.LuaDoString(strCo, "@LuaCoroutine.cs");
         mb = behaviour;
     }
 
@@ -159,8 +160,10 @@ public static class LuaCoroutine
         {
             float sec = (float)LuaDLL.luaL_checknumber(L, 1);
             LuaFunction func = ToLua.ToLuaFunction(L, 2);
+            func.name = "_WaitForSeconds";
             Coroutine co = mb.StartCoroutine(CoWaitForSeconds(sec, func));
             ToLua.PushSealed(L, co);
+            func.Dispose();
             return 1;
         }
         catch (Exception e)
@@ -171,8 +174,10 @@ public static class LuaCoroutine
 
 	private static IEnumerator CoWaitForSeconds(float sec, LuaFunction func)
     {
+        func.AddRef();
         yield return new WaitForSeconds(sec);
         func.Call();
+        func.Dispose();
     }
 
     [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
@@ -181,8 +186,10 @@ public static class LuaCoroutine
         try
         {
             LuaFunction func = ToLua.ToLuaFunction(L, 1);
+            func.name = "WaitForFixedUpdate";
             Coroutine co = mb.StartCoroutine(CoWaitForFixedUpdate(func));
             ToLua.PushSealed(L, co);
+            func.Dispose();
             return 1;
         }
         catch (Exception e)
@@ -193,8 +200,10 @@ public static class LuaCoroutine
 
 	private static IEnumerator CoWaitForFixedUpdate(LuaFunction func)
     {
+        func.AddRef();
         yield return new WaitForFixedUpdate();
         func.Call();
+        func.Dispose();
     }
 
     [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
@@ -203,8 +212,10 @@ public static class LuaCoroutine
         try
         {
             LuaFunction func = ToLua.ToLuaFunction(L, 1);
+            func.name = "WaitForEndOfFrame";
             Coroutine co = mb.StartCoroutine(CoWaitForEndOfFrame(func));
             ToLua.PushSealed(L, co);
+            func.Dispose();
             return 1;
         }
         catch (Exception e)
@@ -215,8 +226,10 @@ public static class LuaCoroutine
 
 	private static IEnumerator CoWaitForEndOfFrame(LuaFunction func)
     {
+        func.AddRef();
         yield return new WaitForEndOfFrame();
         func.Call();
+        func.Dispose();
     }
 
     [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
@@ -226,8 +239,10 @@ public static class LuaCoroutine
         {
             object o = ToLua.ToVarObject(L, 1);
             LuaFunction func = ToLua.ToLuaFunction(L, 2);
+            func.name = "Yield";
             Coroutine co = mb.StartCoroutine(CoYield(o, func));
             ToLua.PushSealed(L, co);
+            func.Dispose();
             return 1;
         }
         catch (Exception e)
@@ -237,7 +252,9 @@ public static class LuaCoroutine
     }
 
 	private static IEnumerator CoYield(object o, LuaFunction func)
-    {
+    {        
+        func.AddRef();
+
         if (o is IEnumerator)
         {
             yield return mb.StartCoroutine((IEnumerator)o);
@@ -246,16 +263,19 @@ public static class LuaCoroutine
         {
             yield return o;
         }
-
+        
         func.Call();
+        func.Dispose();
     }
+
+    static readonly Type TypeOfCoroutine = typeof(Coroutine);
 
     [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	private static int StopCoroutine(IntPtr L)
     {
         try
         {
-            Coroutine co = (Coroutine)ToLua.CheckObject(L, 1, typeof(Coroutine));
+            Coroutine co = (Coroutine)ToLua.CheckObject(L, 1, TypeOfCoroutine);
             mb.StopCoroutine(co);
             return 0;
         }
@@ -269,13 +289,17 @@ public static class LuaCoroutine
     private static int WrapLuaCoroutine(IntPtr L)
     {
         LuaFunction func = ToLua.ToLuaFunction(L, 1);
-        IEnumerator enumerator = CoWrap(func);
+        func.name = "WrapLuaCoroutine";
+        IEnumerator enumerator = CoWrap(func);        
         ToLua.Push(L, enumerator);
+        func.Dispose();
         return 1;
     }
 
     private static IEnumerator CoWrap(LuaFunction func)
     {
+        if (func != null) func.AddRef();
+
         if (func == null)
         {
             yield break;
@@ -285,6 +309,8 @@ public static class LuaCoroutine
         {
             yield return null;
         }
+
+        func.Dispose();
     }
 }
 

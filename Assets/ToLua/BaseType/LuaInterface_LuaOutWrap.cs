@@ -6,7 +6,7 @@ public class LuaInterface_LuaOutWrap
     public static void Register(LuaState L)
     {
         L.BeginPreLoad();
-        L.RegFunction("tolua.out", LuaOpen_ToLua_Out);
+        L.RegFunction("tolua.out", new LuaCSFunction(LuaOpen_ToLua_Out));
         L.EndPreLoad();
     }
 

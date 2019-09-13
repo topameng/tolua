@@ -45,8 +45,8 @@ public class TestProtoBuffer : LuaClient
 {
     private string script = @"      
         local common_pb = require 'Protol.common_pb'
-        local person_pb = require 'Protol.person_pb'
-       
+        local person_pb = require 'Protol.person_pb'                
+
         function Decoder()  
             local msg = person_pb.Person()
             msg:ParseFromString(TestProtol.data)
@@ -80,12 +80,17 @@ public class TestProtoBuffer : LuaClient
     //pb_data = msg.data    
     new void Awake()
     {
-#if UNITY_5 || UNITY_2017 || UNITY_2018
-        Application.logMessageReceived += ShowTips;
-#else
+#if UNITY_4_6 || UNITY_4_7
         Application.RegisterLogCallback(ShowTips);
-#endif  
-        base.Awake();
+#else
+        Application.logMessageReceived += ShowTips;
+#endif
+        Instance = this;            
+    }
+
+    private void Start()
+    {
+        Init();
     }
 
     protected override LuaFileUtils InitLoader()
@@ -162,10 +167,11 @@ public class TestProtoBuffer : LuaClient
     new void OnApplicationQuit()
     {
         base.Destroy();
-#if UNITY_5 || UNITY_2017 || UNITY_2018
-        Application.logMessageReceived -= ShowTips;
-#else
+#if UNITY_4_6 || UNITY_4_7
         Application.RegisterLogCallback(null);
+
+#else
+        Application.logMessageReceived -= ShowTips;
 #endif
     }
 }

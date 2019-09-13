@@ -12,11 +12,11 @@ public class TestCoroutine : MonoBehaviour
 
 	void Awake () 
     {
-#if UNITY_5 || UNITY_2017 || UNITY_2018
-        Application.logMessageReceived += ShowTips;
-#else
+#if UNITY_4_6 || UNITY_4_7
         Application.RegisterLogCallback(ShowTips);
-#endif        
+#else
+        Application.logMessageReceived += ShowTips;
+#endif      
         new LuaResLoader();
         lua  = new LuaState();
         lua.Start();
@@ -25,7 +25,8 @@ public class TestCoroutine : MonoBehaviour
         looper = gameObject.AddComponent<LuaLooper>();
         looper.luaState = lua;
 
-        lua.DoString(luaFile.text, "TestLuaCoroutine.lua");
+        //lua.DoString(luaFile.text, "TestLuaCoroutine.lua");
+        lua.Require("TestLuaCoroutine");
         LuaFunction f = lua.GetFunction("TestCortinue");
         f.Call();
         f.Dispose();
@@ -37,10 +38,11 @@ public class TestCoroutine : MonoBehaviour
         looper.Destroy();
         lua.Dispose();
         lua = null;
-#if UNITY_5 || UNITY_2017 || UNITY_2018
-        Application.logMessageReceived -= ShowTips;
-#else
+#if UNITY_4_6 || UNITY_4_7
         Application.RegisterLogCallback(null);
+
+#else
+        Application.logMessageReceived -= ShowTips;
 #endif
     }
 
@@ -54,7 +56,7 @@ public class TestCoroutine : MonoBehaviour
 
     void OnGUI()
     {
-        GUI.Label(new Rect(Screen.width / 2 - 300, Screen.height / 2 - 200, 600, 400), tips);
+        GUI.Label(new Rect(Screen.width / 2 - 300, Screen.height / 2 - 300, 600, 600), tips);
 
         if (GUI.Button(new Rect(50, 50, 120, 45), "Start Counter"))
         {

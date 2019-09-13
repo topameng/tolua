@@ -18,30 +18,40 @@ local ilist = ilist
 
 local _xpcall = {}
 
-_xpcall.__call = function(self, ...)	
-	if jit then
+if _VERSION == "Lua 5.3" then
+	_xpcall.__call = function(self, ...)				
+		if nil == self.obj then						
+			return xpcall(self.func, traceback, ...)					
+		else			
+			return xpcall(self.func, traceback, self.obj, ...)
+		end
+	end
+elseif jit then
+	_xpcall.__call = function(self, ...)			
 		if nil == self.obj then
 			return xpcall(self.func, traceback, ...)					
 		else		
 			return xpcall(self.func, traceback, self.obj, ...)					
 		end
-	else
+	end	
+else
+	_xpcall.__call = function(self, ...)	
 		local args = {...}
-		n = select("#", ...)
+		local n = select("#", ...)
 
-		if nil == self.obj then
+		if nil == self.obj then			
 			local func = function() self.func(unpack(args, 1, n)) end
 			return xpcall(func, traceback)					
 		else
 			local func = function() self.func(self.obj, unpack(args, 1, n)) end
 			return xpcall(func, traceback)
-		end
-	end	
+		end		
+	end
 end
 
 _xpcall.__eq = function(lhs, rhs)
 	return lhs.func == rhs.func and lhs.obj == rhs.obj
-end
+end	
 
 local function xfunctor(func, obj)	
 	return setmetatable({func = func, obj = obj}, _xpcall)			
@@ -170,7 +180,7 @@ _event.__call = function(self, ...)
 		
 		if not flag then			
 			_list:remove(i)			
-			self.lock = false		
+			self.lock = false				
 			error(msg)				
 		end
 	end	

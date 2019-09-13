@@ -7,14 +7,14 @@ public class TestEventListenerWrap
 	public static void Register(LuaState L)
 	{
 		L.BeginClass(typeof(TestEventListener), typeof(UnityEngine.MonoBehaviour));
-		L.RegFunction("SetOnFinished", SetOnFinished);
-		L.RegFunction("__eq", op_Equality);
-		L.RegFunction("__tostring", ToLua.op_ToString);
-		L.RegVar("onClick", get_onClick, set_onClick);
-		L.RegVar("TestFunc", get_TestFunc, set_TestFunc);
-		L.RegVar("onClickEvent", get_onClickEvent, set_onClickEvent);
-		L.RegFunction("OnClick", TestEventListener_OnClick);
-		L.RegFunction("VoidDelegate", TestEventListener_VoidDelegate);
+		L.RegFunction("SetOnFinished", new LuaCSFunction(SetOnFinished));
+		L.RegFunction("__eq", new LuaCSFunction(op_Equality));
+		L.RegFunction("__tostring", new LuaCSFunction(ToLua.op_ToString));
+		L.RegVar("onClick", new LuaCSFunction(get_onClick), new LuaCSFunction(set_onClick));
+		L.RegVar("TestFunc", new LuaCSFunction(get_TestFunc), new LuaCSFunction(set_TestFunc));
+		L.RegVar("onClickEvent", new LuaCSFunction(get_onClickEvent), new LuaCSFunction(set_onClickEvent));
+		L.RegFunction("OnClick", new LuaCSFunction(TestEventListener_OnClick));
+		L.RegFunction("VoidDelegate", new LuaCSFunction(TestEventListener_VoidDelegate));
 		L.EndClass();
 	}
 
@@ -25,17 +25,17 @@ public class TestEventListenerWrap
 		{
 			int count = LuaDLL.lua_gettop(L);
 
-			if (count == 2 && TypeChecker.CheckTypes<TestEventListener.VoidDelegate>(L, 2))
+			if (count == 2 && TypeChecker.CheckTypes<TestEventListener.OnClick>(L, 2))
 			{
-				TestEventListener obj = (TestEventListener)ToLua.CheckObject(L, 1, typeof(TestEventListener));
-				TestEventListener.VoidDelegate arg0 = (TestEventListener.VoidDelegate)ToLua.ToObject(L, 2);
+				TestEventListener obj = (TestEventListener)ToLua.CheckObject<TestEventListener>(L, 1);
+				TestEventListener.OnClick arg0 = (TestEventListener.OnClick)ToLua.ToObject(L, 2);
 				obj.SetOnFinished(arg0);
 				return 0;
 			}
-			else if (count == 2 && TypeChecker.CheckTypes<TestEventListener.OnClick>(L, 2))
+			else if (count == 2 && TypeChecker.CheckTypes<TestEventListener.VoidDelegate>(L, 2))
 			{
-				TestEventListener obj = (TestEventListener)ToLua.CheckObject(L, 1, typeof(TestEventListener));
-				TestEventListener.OnClick arg0 = (TestEventListener.OnClick)ToLua.ToObject(L, 2);
+				TestEventListener obj = (TestEventListener)ToLua.CheckObject<TestEventListener>(L, 1);
+				TestEventListener.VoidDelegate arg0 = (TestEventListener.VoidDelegate)ToLua.ToObject(L, 2);
 				obj.SetOnFinished(arg0);
 				return 0;
 			}
@@ -109,7 +109,7 @@ public class TestEventListenerWrap
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	static int get_onClickEvent(IntPtr L)
 	{
-		ToLua.Push(L, new EventObject(typeof(TestEventListener.OnClick)));
+		ToLua.Push(L, new EventObject(typeof(TestEventListener.OnClick)));        
 		return 1;
 	}
 
@@ -123,8 +123,14 @@ public class TestEventListenerWrap
 			o = ToLua.ToObject(L, 1);
 			TestEventListener obj = (TestEventListener)o;
 			TestEventListener.OnClick arg0 = (TestEventListener.OnClick)ToLua.CheckDelegate<TestEventListener.OnClick>(L, 2);
-			obj.onClick = arg0;
-			return 0;
+
+            if (!object.ReferenceEquals(obj.onClick, arg0))
+            {
+                if (obj.onClick != null) obj.onClick.SubRef();
+                obj.onClick = arg0;
+            }
+            
+            return 0;
 		}
 		catch(Exception e)
 		{
@@ -156,7 +162,7 @@ public class TestEventListenerWrap
 	{
 		try
 		{
-			TestEventListener obj = (TestEventListener)ToLua.CheckObject(L, 1, typeof(TestEventListener));
+			TestEventListener obj = (TestEventListener)ToLua.CheckObject<TestEventListener>(L, 1);
 			EventObject arg0 = null;
 
 			if (LuaDLL.lua_isuserdata(L, 2) != 0)
@@ -170,13 +176,13 @@ public class TestEventListenerWrap
 
 			if (arg0.op == EventOp.Add)
 			{
-                TestEventListener.OnClick ev = (TestEventListener.OnClick)arg0.func;
-                obj.onClickEvent += ev;
-			}
+				TestEventListener.OnClick ev = (TestEventListener.OnClick)arg0.func;                
+				obj.onClickEvent += ev;                          
+            }
 			else if (arg0.op == EventOp.Sub)
 			{
-                TestEventListener.OnClick ev = (TestEventListener.OnClick)arg0.func;
-                obj.onClickEvent -= ev;
+				TestEventListener.OnClick ev = (TestEventListener.OnClick)arg0.func;                
+                obj.onClickEvent -= ev;                
             }
 
 			return 0;
@@ -199,11 +205,14 @@ public class TestEventListenerWrap
 			{
 				Delegate arg1 = DelegateTraits<TestEventListener.OnClick>.Create(func);
 				ToLua.Push(L, arg1);
+                func.Dispose();
 			}
 			else
 			{
 				LuaTable self = ToLua.CheckLuaTable(L, 2);
 				Delegate arg1 = DelegateTraits<TestEventListener.OnClick>.Create(func, self);
+                func.Dispose();
+                self.Dispose();
 				ToLua.Push(L, arg1);
 			}
 			return 1;

@@ -1,5 +1,6 @@
 ﻿/*
-Copyright (c) 2015-2017 topameng(topameng@qq.com)
+Copyright (c) 2015-2021 topameng(topameng@qq.com)
+https://github.com/topameng/tolua
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,13 +25,13 @@ using System;
 using System.Collections;
 
 namespace LuaInterface
-{
+{    
     public static class TypeTraits<T>
     {        
         static public Func<IntPtr, int, bool> Check = DefaultCheck;
-        static public Type type = typeof(T);
-        static public bool IsValueType = type.IsValueType;
-        static public bool IsArray = type.IsArray;
+        static readonly public Type type = typeof(T);
+        static readonly public bool IsValueType = type.IsValueType;
+        static readonly public bool IsArray = type.IsArray;
 
         static string typeName = string.Empty;                
         static int nilType = -1;
@@ -140,7 +141,7 @@ namespace LuaInterface
 
         static bool IsUserTable(IntPtr L, int pos)
         {            
-            if (type == typeof(LuaTable))
+            if (type == TypeTraits<LuaTable>.type)
             {
                 return true;
             }
@@ -164,7 +165,8 @@ namespace LuaInterface
 
     public static class DelegateTraits<T>
     {        
-        static DelegateFactory.DelegateCreate _Create = null;        
+        static DelegateFactory.DelegateCreate _Create = null;
+        static readonly public Type _type = typeof(T);
 
         static public void Init(DelegateFactory.DelegateCreate func)
         {
@@ -186,7 +188,7 @@ namespace LuaInterface
 
                 if (target != null)
                 {
-                    return Delegate.CreateDelegate(typeof(T), target, target.method);
+                    return Delegate.CreateDelegate(_type, target, target.method);
                 }
                 else
                 {
@@ -215,7 +217,7 @@ namespace LuaInterface
 
                 if (target != null)
                 {
-                    return Delegate.CreateDelegate(typeof(T), target, target.method);
+                    return Delegate.CreateDelegate(_type, target, target.method);
                 }
                 else
                 {

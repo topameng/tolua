@@ -6,6 +6,9 @@ using UnityEditor;
 
 using BindType = ToLuaMenu.BindType;
 using System.Reflection;
+#if UNITY_5_4_OR_NEWER
+using UnityEngine.Networking;
+#endif
 
 public static class CustomSettings
 {
@@ -13,6 +16,13 @@ public static class CustomSettings
     public static string toluaBaseType = Application.dataPath + "/ToLua/BaseType/";
     public static string baseLuaDir = Application.dataPath + "/Tolua/Lua/";
     public static string injectionFilesPath = Application.dataPath + "/ToLua/Injection/";
+
+    //lua print或者error重定向
+    public const int PRINTLOGLINE = 208;                //ToLua.Print函数中Debugger.Log位置
+    public const int PCALLERRORLINE = 810;              //LuaState.Pcall函数中throw位置
+    public const int LUADLLERRORLINE = 803;             //LuaDLL.luaL_argerror函数中throw位置
+
+    public const string LUAJIT_CMD_OPTION = "-b -g";    //luajit.exe 编译命令行参数
 
     //导出时强制做为静态类的类型(注意customTypeList 还要添加这个类型才能导出)
     //unity 有些类作为sealed class, 其实完全等价于静态类
@@ -40,6 +50,8 @@ public static class CustomSettings
         _DT(typeof(System.Action<int>)),
         _DT(typeof(System.Comparison<int>)),
         _DT(typeof(System.Func<int, int>)),
+        //_DT(typeof(TestEventListener.OnClick)),
+        //_DT(typeof(TestEventListener.VoidDelegate)),
     };
 
     //在这里添加你要导出注册到lua的类型列表
@@ -104,7 +116,17 @@ public static class CustomSettings
         _GT(typeof(Texture2D)),
         _GT(typeof(Shader)),        
         _GT(typeof(Renderer)),
+
+#if !UNITY_5_4_OR_NEWER || UNITY_4_6 || UNITY_4_7
         _GT(typeof(WWW)),
+#else
+        _GT(typeof(UnityWebRequest)),
+        _GT(typeof(DownloadHandler)),
+        _GT(typeof(DownloadHandlerBuffer)),
+#if UNITY_2017_1_OR_NEWER
+        _GT(typeof(UnityWebRequestAsyncOperation)),
+#endif
+#endif
         _GT(typeof(Screen)),        
         _GT(typeof(CameraClearFlags)),
         _GT(typeof(AudioClip)),        

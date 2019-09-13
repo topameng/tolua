@@ -1,5 +1,6 @@
 ﻿/*
-Copyright (c) 2015-2017 topameng(topameng@qq.com)
+Copyright (c) 2015-2021 topameng(topameng@qq.com)
+https://github.com/topameng/tolua
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -27,23 +28,26 @@ namespace LuaInterface
 {
     public static class TypeChecker
     {
+        static readonly Il2cppType il2cpp = new Il2cppType();
         public static Type[] LuaValueTypeMap = new Type[LuaValueType.Max];                
 
         static TypeChecker()
         {
+            Il2cppType il = il2cpp;
+
             LuaValueTypeMap[LuaValueType.None] = null;
-            LuaValueTypeMap[LuaValueType.Vector3] = typeof(Vector3);
-            LuaValueTypeMap[LuaValueType.Quaternion] = typeof(Quaternion);
-            LuaValueTypeMap[LuaValueType.Vector2] = typeof(Vector2);
-            LuaValueTypeMap[LuaValueType.Color] = typeof(Color);
-            LuaValueTypeMap[LuaValueType.Vector4] = typeof(Vector4);
-            LuaValueTypeMap[LuaValueType.Ray] = typeof(Ray);
-            LuaValueTypeMap[LuaValueType.Bounds] = typeof(Bounds);
-            LuaValueTypeMap[LuaValueType.Touch] = typeof(Touch);
-            LuaValueTypeMap[LuaValueType.LayerMask] = typeof(LayerMask);
-            LuaValueTypeMap[LuaValueType.RaycastHit] = typeof(RaycastHit);
-            LuaValueTypeMap[LuaValueType.Int64] = typeof(long);
-            LuaValueTypeMap[LuaValueType.UInt64] = typeof(ulong);
+            LuaValueTypeMap[LuaValueType.Vector3] = il.TypeOfVector3;
+            LuaValueTypeMap[LuaValueType.Quaternion] = il.TypeOfQuaternion;
+            LuaValueTypeMap[LuaValueType.Vector2] = il.TypeOfVector2;
+            LuaValueTypeMap[LuaValueType.Color] = il.TypeOfColor;
+            LuaValueTypeMap[LuaValueType.Vector4] = il.TypeOfVector4;
+            LuaValueTypeMap[LuaValueType.Ray] = il.TypeOfRay;
+            LuaValueTypeMap[LuaValueType.Bounds] = il.TypeOfBounds;
+            LuaValueTypeMap[LuaValueType.Touch] = il.TypeOfTouch;
+            LuaValueTypeMap[LuaValueType.LayerMask] = il.TypeOfLayerMask;
+            LuaValueTypeMap[LuaValueType.RaycastHit] = il.TypeOfRaycastHit;
+            LuaValueTypeMap[LuaValueType.Int64] = il.TypeOfLong;
+            LuaValueTypeMap[LuaValueType.UInt64] = il.TypeOfULong;
         }        
 
         public static bool IsValueType(Type t)
@@ -121,7 +125,7 @@ namespace LuaInterface
 
         public static bool CheckParamsType(IntPtr L, Type t, int begin, int count)
         {
-            if (t == typeof(object))
+            if (t == il2cpp.TypeOfObject)
             {
                 return true;
             }
@@ -154,7 +158,7 @@ namespace LuaInterface
 
         public static bool IsNullable(Type t)
         {
-            if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Nullable<>))
+            if (t.IsGenericType && t.GetGenericTypeDefinition() == il2cpp.TypeofGenericNullObject)
             {
                 return true;
             }
@@ -164,7 +168,7 @@ namespace LuaInterface
 
         public static Type GetNullableType(Type t)
         {
-            if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Nullable<>))
+            if (t.IsGenericType && t.GetGenericTypeDefinition() == il2cpp.TypeofGenericNullObject)
             {
                 Type[] ts = t.GetGenericArguments();
                 t = ts[0];
@@ -175,8 +179,9 @@ namespace LuaInterface
 
         public static bool CheckType(IntPtr L, Type type, int pos)
         {
+            Il2cppType il = il2cpp;
             //默认都可以转 object
-            if (type == typeof(object))
+            if (type == il.TypeOfObject)
             {
                 return true;
             }
@@ -189,17 +194,17 @@ namespace LuaInterface
                 case LuaTypes.LUA_TNUMBER:
                     return IsNumberType(t);
                 case LuaTypes.LUA_TSTRING:
-                    return t == typeof(string) || t == typeof(byte[]) || t == typeof(char[]) || t == typeof(LuaByteBuffer);
+                    return t == il.TypeOfString || t == il.TypeOfByteArray || t == il.TypeOfCharArray || t == il.TypeOfLuaByteBuffer;
                 case LuaTypes.LUA_TUSERDATA:
                     return IsMatchUserData(L, t, pos);
                 case LuaTypes.LUA_TBOOLEAN:
-                    return t == typeof(bool);
+                    return t == il.TypeOfBool;
                 case LuaTypes.LUA_TFUNCTION:
-                    return t == typeof(LuaFunction);
+                    return t == il.TypeOfLuaFunction;
                 case LuaTypes.LUA_TTABLE:
                     return IsUserTable(t, L, pos);
                 case LuaTypes.LUA_TLIGHTUSERDATA:
-                    return t == typeof(IntPtr) || t == typeof(UIntPtr);
+                    return t == il.TypeOfIntPtr || t == il.TypeOfUIntPtr;
                 case LuaTypes.LUA_TNIL:
                     return IsNilType(type);
                 default:
@@ -213,20 +218,22 @@ namespace LuaInterface
 
         public static T ChangeType<T>(object temp, Type type)
         {
-            var tempType = temp.GetType();
+            Type tempType = temp.GetType();
+
             if (tempType == monoType || type.IsAssignableFrom(tempType))
             {
                 return (T)temp;
             }
             else
-            {
+            {                
                 return (T)Convert.ChangeType(temp, type);
             }
         }
 
         public static object ChangeType(object temp, Type type)
         {
-            var tempType = temp.GetType();
+            Type tempType = temp.GetType();
+
             if (tempType == monoType)
             {
                 return (Type)temp;
@@ -243,11 +250,13 @@ namespace LuaInterface
 
         static bool IsMatchUserData(IntPtr L, Type t, int pos)
         {
-            if (t == typeof(long))
+            Il2cppType il = il2cpp;
+
+            if (t == il.TypeOfLong)
             {
                 return LuaDLL.tolua_getvaluetype(L, pos) == LuaValueType.Int64;                
             }
-            else if (t == typeof(ulong))
+            else if (t == il.TypeOfULong)
             {
                 return LuaDLL.tolua_getvaluetype(L, pos) == LuaValueType.UInt64;                
             }
@@ -282,7 +291,9 @@ namespace LuaInterface
         {
             if (t.IsPrimitive)
             {
-                if (t == typeof(bool) || t == typeof(IntPtr) || t == typeof(UIntPtr))
+                Il2cppType il = il2cpp;
+
+                if (t == il.TypeOfBool || t == il.TypeOfIntPtr || t == il.TypeOfUIntPtr)
                 {
                     return false;
                 }
@@ -311,7 +322,7 @@ namespace LuaInterface
 
                 return true;
             }
-            else if (t == typeof(LuaTable))
+            else if (t == il2cpp.TypeOfLuaTable)
             {
                 return true;
             }
@@ -394,14 +405,16 @@ namespace LuaInterface
 
         public static bool CheckParamsType<T>(IntPtr L, int begin, int count)
         {
-            if (typeof(T) == typeof(object))
+            if (TypeTraits<T>.type == il2cpp.TypeOfObject)
             {
                 return true;
             }
 
+            Func<IntPtr, int, bool> _Check = TypeTraits<T>.Check;
+
             for (int i = 0; i < count; i++)
             {
-                if (!TypeTraits<T>.Check(L, i + begin))
+                if (!_Check(L, i + begin))
                 {
                     return false;
                 }
@@ -410,6 +423,7 @@ namespace LuaInterface
             return true;
         }
 
+        ////换模板
         static public bool CheckDelegateType(Type type, IntPtr L, int pos)
         {
             LuaTypes luaType = LuaDLL.lua_type(L, pos);
@@ -433,8 +447,31 @@ namespace LuaInterface
             }
         }
 
-        static public bool CheckEnumType(Type type, IntPtr L, int pos)
+        static public bool CheckDelegateType<T>(IntPtr L, int pos) //where T : Delegate
         {
+            LuaTypes luaType = LuaDLL.lua_type(L, pos);
+
+            switch (luaType)
+            {
+                case LuaTypes.LUA_TNIL:
+                    return true;
+                case LuaTypes.LUA_TUSERDATA:
+                    int udata = LuaDLL.tolua_rawnetobj(L, pos);
+
+                    if (udata != -1)
+                    {
+                        ObjectTranslator translator = ObjectTranslator.Get(L);
+                        object obj = translator.GetObject(udata);
+                        return obj == null ? true : obj is T;
+                    }
+                    return false;
+                default:
+                    return false;
+            }
+        }
+
+        static public bool CheckEnumType(Type type, IntPtr L, int pos)
+        {            
             if (LuaDLL.lua_type(L, pos) == LuaTypes.LUA_TUSERDATA)
             {                
                 int udata = LuaDLL.tolua_rawnetobj(L, pos);
@@ -446,7 +483,7 @@ namespace LuaInterface
                     return obj == null ? false : type == obj.GetType();
                 }
             }
-
+            
             return false;
         }
     }

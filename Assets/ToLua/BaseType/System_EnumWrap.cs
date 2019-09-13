@@ -7,21 +7,21 @@ public class System_EnumWrap
 	public static void Register(LuaState L)
 	{
 		L.BeginClass(typeof(System.Enum), null);
-		L.RegFunction("GetTypeCode", GetTypeCode);
-		L.RegFunction("GetValues", GetValues);
-		L.RegFunction("GetNames", GetNames);
-		L.RegFunction("GetName", GetName);
-		L.RegFunction("IsDefined", IsDefined);
-		L.RegFunction("GetUnderlyingType", GetUnderlyingType);
-		L.RegFunction("CompareTo", CompareTo);
-		L.RegFunction("ToString", ToString);
-		L.RegFunction("Equals", Equals);
-		L.RegFunction("GetHashCode", GetHashCode);
-		L.RegFunction("Format", Format);
-		L.RegFunction("Parse", Parse);
-		L.RegFunction("ToObject", ToObject);
-		L.RegFunction("ToInt", ToInt);
-		L.RegFunction("__tostring", ToLua.op_ToString);
+		L.RegFunction("GetTypeCode", new LuaCSFunction(GetTypeCode));
+		L.RegFunction("GetValues", new LuaCSFunction(GetValues));
+		L.RegFunction("GetNames", new LuaCSFunction(GetNames));
+		L.RegFunction("GetName", new LuaCSFunction(GetName));
+		L.RegFunction("IsDefined", new LuaCSFunction(IsDefined));
+		L.RegFunction("GetUnderlyingType", new LuaCSFunction(GetUnderlyingType));
+		L.RegFunction("CompareTo", new LuaCSFunction(CompareTo));
+		L.RegFunction("ToString", new LuaCSFunction(ToString));
+		L.RegFunction("Equals", new LuaCSFunction(Equals));
+		L.RegFunction("GetHashCode", new LuaCSFunction(GetHashCode));
+		L.RegFunction("Format", new LuaCSFunction(Format));
+		L.RegFunction("Parse", new LuaCSFunction(Parse));
+		L.RegFunction("ToObject", new LuaCSFunction(ToObject));
+		L.RegFunction("ToInt", new LuaCSFunction(ToInt));
+		L.RegFunction("__tostring", new LuaCSFunction(ToLua.op_ToString));
 		L.EndClass();
 	}
 

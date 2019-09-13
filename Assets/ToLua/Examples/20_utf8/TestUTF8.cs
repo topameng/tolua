@@ -49,7 +49,7 @@ public class TestUTF8 : LuaClient
         Application.logMessageReceived += ShowTips;
 #endif
         base.OnLoadFinished();
-        luaState.DoString(script);
+        luaState.DoString(script, "TestUTF8.cs");
         LuaFunction func = luaState.GetFunction("Test");
         func.Call();
         func.Dispose();

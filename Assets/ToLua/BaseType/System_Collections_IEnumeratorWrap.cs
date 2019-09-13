@@ -7,9 +7,9 @@ public class System_Collections_IEnumeratorWrap
 	public static void Register(LuaState L)
 	{
 		L.BeginClass(typeof(System.Collections.IEnumerator), null);
-		L.RegFunction("MoveNext", MoveNext);
-		L.RegFunction("Reset", Reset);
-		L.RegVar("Current", get_Current, null);
+		L.RegFunction("MoveNext", new LuaCSFunction(MoveNext));
+		L.RegFunction("Reset", new LuaCSFunction(Reset));
+		L.RegVar("Current", new LuaCSFunction(get_Current), null);
 		L.EndClass();
 	}
 

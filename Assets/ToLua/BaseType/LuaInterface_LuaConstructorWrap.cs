@@ -7,9 +7,9 @@ public class LuaInterface_LuaConstructorWrap
 	public static void Register(LuaState L)
 	{
 		L.BeginClass(typeof(LuaInterface.LuaConstructor), typeof(System.Object));
-		L.RegFunction("Call", Call);
-		L.RegFunction("Destroy", Destroy);
-		L.RegFunction("__tostring", ToLua.op_ToString);
+		L.RegFunction("Call", new LuaCSFunction(Call));
+		L.RegFunction("Destroy", new LuaCSFunction(Destroy));
+		L.RegFunction("__tostring", new LuaCSFunction(ToLua.op_ToString));
 		L.EndClass();
 	}
 
@@ -18,7 +18,7 @@ public class LuaInterface_LuaConstructorWrap
 	{
 		try
 		{			
-			LuaConstructor obj = (LuaConstructor)ToLua.CheckObject(L, 1, typeof(LuaConstructor));            
+			LuaConstructor obj = (LuaConstructor)ToLua.CheckObject<LuaConstructor>(L, 1);
 			return obj.Call(L);						
 		}
 		catch(Exception e)
@@ -33,7 +33,7 @@ public class LuaInterface_LuaConstructorWrap
 		try
 		{
 			ToLua.CheckArgsCount(L, 1);
-			LuaConstructor obj = (LuaConstructor)ToLua.CheckObject(L, 1, typeof(LuaConstructor));
+			LuaConstructor obj = (LuaConstructor)ToLua.CheckObject<LuaConstructor>(L, 1);
 			obj.Destroy();
             ToLua.Destroy(L);
 			return 0;

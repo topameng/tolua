@@ -20,7 +20,7 @@ local table = table
 local ipairs = ipairs
 local assert =assert
 
-local pb = require "pb"
+local pb = require "pb2"
 local wire_format = require "protobuf.wire_format"
 -- module "protobuf.encoder"
 local encoder = {}

@@ -40,17 +40,17 @@ public class AccessingEnum : MonoBehaviour
 
     void Start () 
     {
-#if UNITY_5 || UNITY_2017 || UNITY_2018
-        Application.logMessageReceived += ShowTips;
-#else
+#if UNITY_4_6 || UNITY_4_7
         Application.RegisterLogCallback(ShowTips);
+#else
+        Application.logMessageReceived += ShowTips;
 #endif
         new LuaResLoader();
         state = new LuaState();
         state.Start();
         LuaBinder.Bind(state);
 
-        state.DoString(script);
+        state.DoString(script, "AccessingEnum.cs");
         state["space"] = Space.World;
 
         LuaFunction func = state.GetFunction("TestEnum");
@@ -67,11 +67,12 @@ public class AccessingEnum : MonoBehaviour
         state.Dispose();
         state = null;
 
-#if UNITY_5 || UNITY_2017 || UNITY_2018
-        Application.logMessageReceived -= ShowTips;
-#else
+#if UNITY_4_6 || UNITY_4_7
         Application.RegisterLogCallback(null);
-#endif        
+
+#else
+        Application.logMessageReceived -= ShowTips;
+#endif      
     }
 
     string tips = "";

@@ -65,10 +65,10 @@ public class UseDictionary : MonoBehaviour
 
 	void Awake () 
     {
-#if UNITY_5 || UNITY_2017 || UNITY_2018
-        Application.logMessageReceived += ShowTips;
-#else
+#if UNITY_4_6 || UNITY_4_7
         Application.RegisterLogCallback(ShowTips);
+#else
+        Application.logMessageReceived += ShowTips;
 #endif
         new LuaResLoader();
         map.Add(1, new TestAccount(1, "水水", 0));
@@ -95,11 +95,12 @@ public class UseDictionary : MonoBehaviour
 
     void OnApplicationQuit()
     {
-#if UNITY_5 || UNITY_2017 || UNITY_2018
-        Application.logMessageReceived -= ShowTips;
-#else
+#if UNITY_4_6 || UNITY_4_7
         Application.RegisterLogCallback(null);
-#endif        
+
+#else
+        Application.logMessageReceived -= ShowTips;
+#endif       
     }
 
     string tips = "";
@@ -112,7 +113,7 @@ public class UseDictionary : MonoBehaviour
 
     void OnGUI()
     {
-        GUI.Label(new Rect(Screen.width / 2 - 300, Screen.height / 2 - 200, 600, 400), tips);
+        GUI.Label(new Rect(Screen.width / 2 - 300, Screen.height / 2 - 300, 600, 600), tips);
     }
 
     //示例方式，方便删除，正常导出无需手写下面代码

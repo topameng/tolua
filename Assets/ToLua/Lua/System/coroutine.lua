@@ -28,13 +28,13 @@ function coroutine.start(f, ...)
 			error(debug.traceback(co, msg))
 		end					
 	else
-		local timer = nil		
-		local args = {...}
-		n = select("#", ...)
+		local timer = nil
+		local n = select("#", ...)		
+		local args = {...}		
 
 		local action = function()												
 			comap[co] = nil
-			timer.func = nil
+			timer.func = nil			
 			local flag, msg = resume(co, unpack(args, 1, n))						
 			table.insert(pool, timer)
 	
@@ -62,7 +62,7 @@ function coroutine.wait(t, co, ...)
 	co = co or running()		
 	local timer = nil
 	local args = {...}
-	n = select("#", ...)
+	local n = select("#", ...)
 
 	local action = function()		
 		comap[co] = nil		
@@ -86,7 +86,7 @@ function coroutine.step(t, co, ...)
 	co = co or running()		
 	local timer = nil
 	local args = {...}
-	n = select("#", ...)
+	local n = select("#", ...)
 
 	local action = function()	
 		comap[co] = nil					

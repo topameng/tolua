@@ -20,16 +20,16 @@ public class CallLuaFunction : MonoBehaviour
 	
 	void Start () 
     {
-#if UNITY_5 || UNITY_2017 || UNITY_2018
-        Application.logMessageReceived += ShowTips;
-#else
+#if UNITY_4_6 || UNITY_4_7
         Application.RegisterLogCallback(ShowTips);
+#else
+        Application.logMessageReceived += ShowTips;
 #endif
         new LuaResLoader();
         lua = new LuaState();
         lua.Start();
         DelegateFactory.Init();        
-        lua.DoString(script);
+        lua.DoString(script, "CallLuaFunction.cs");
 
         //Get the function object
         luaFunc = lua.GetFunction("test.luaFunc");
@@ -77,10 +77,11 @@ public class CallLuaFunction : MonoBehaviour
         lua.Dispose();
         lua = null;
 
-#if UNITY_5 || UNITY_2017 || UNITY_2018
-        Application.logMessageReceived -= ShowTips;
-#else
+#if UNITY_4_6 || UNITY_4_7
         Application.RegisterLogCallback(null);
+
+#else
+        Application.logMessageReceived -= ShowTips;
 #endif
     }
 
@@ -89,7 +90,7 @@ public class CallLuaFunction : MonoBehaviour
         luaFunc.BeginPCall();                
         luaFunc.Push(123456);
         luaFunc.PCall();        
-        int num = (int)luaFunc.CheckNumber();
+        int num = (int)luaFunc.CheckInteger();
         luaFunc.EndPCall();
         return num;                
     }

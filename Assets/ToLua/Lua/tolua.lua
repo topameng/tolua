@@ -33,6 +33,7 @@ Time		= reimport "UnityEngine.Time"
 
 list		= require "list"
 utf8		= require "misc.utf8"
+utf8		= require "misc.utf8"
 
 require "event"
 require "typeof"
