@@ -107,6 +107,9 @@ https://github.com/LabOfHoward/unity_tolua-_zerobrane_api<br>
 * ToLua全新集成了Luac 5.3，可以完美支持Long。但是由于ULong的特殊性（负数除法用long代替运算结果可能会出错——“18446744073709552040 / 2”），<br>
 * 斟酌再三之后，ToLua的ULong的扩展，依然还是userdata，请周知！！故准备压进lua的ULong数据，能用Long代替就就用Long代替<br>
 
+# 关于Wrap文件bind速度说明
+* 在以前IL2cpp没普及的时代，mono下Wrap文件的注册非常耗时，经常有项目耗时达到四五秒，而现在，开启IL2cpp后，这个过程几乎没啥耗时，请周知！！<br>
+
 # 网友学习心得
 [Unity3D热更新技术点——ToLua（上）](https://zhuanlan.zhihu.com/p/42472089) <br>
 [Unity3D热更新技术点——ToLua（中）](https://zhuanlan.zhihu.com/p/42472115) <br>
