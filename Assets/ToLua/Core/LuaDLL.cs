@@ -214,7 +214,7 @@ namespace LuaInterface
 
 	public static class LuaDLL
     {
-        public static string version = "1.0.7.386";
+        public static string version = "1.0.9.625";
         public static int LUA_MULTRET = -1;
         public static string[] LuaTypeName = { "none", "nil", "boolean", "lightuserdata", "number", "string", "table", "function", "userdata", "thread" };        
 
