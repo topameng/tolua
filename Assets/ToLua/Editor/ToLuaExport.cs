@@ -656,6 +656,11 @@ public static class ToLuaExport
 				MethodBase mb = (MethodBase)mi;
 				return mb.GetParameters().Length == 2;
 			}
+			if (genericType == typeof(HashSet<>) && mi.Name == "TryGetValue")
+            {
+                MethodBase mb = (MethodBase)mi;
+                return mb.GetParameters().Length == 2;
+            }
 
 			if (genericType == typeof(Dictionary<,>) || genericType == typeof(KeyValuePair<,>))
 			{
@@ -1807,6 +1812,7 @@ public static class ToLuaExport
 		bool isGenericType = type.IsGenericType;
 		Type genericType = isGenericType ? type.GetGenericTypeDefinition() : null;
 		Type dictType = typeof(Dictionary<,>);
+		Type hashType = typeof(HashSet<>);
 
 		for (int i = 0; i < constructors.Length; i++)
 		{
@@ -1827,6 +1833,15 @@ public static class ToLuaExport
 					continue;
 				}
 			}
+			else if (genericType == hashType && length >= 1)
+            {
+                Type pt = constructors[i].GetParameters()[0].ParameterType;
+
+                if (pt == typeof(int))
+                {
+                    continue;
+                }
+            }
 
 			for (int j = 0; j < count + 1; j++)
             {
