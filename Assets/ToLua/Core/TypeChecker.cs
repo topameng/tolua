@@ -261,27 +261,13 @@ namespace LuaInterface
                 return LuaDLL.tolua_getvaluetype(L, pos) == LuaValueType.UInt64;                
             }
 
-            object obj = null;
             int udata = LuaDLL.tolua_rawnetobj(L, pos);
 
             if (udata != -1)
             {
                 ObjectTranslator translator = ObjectTranslator.Get(L);
-                obj = translator.GetObject(udata);
-
-                if (obj != null)
-                {
-                    Type objType = obj.GetType();
-
-                    if (t == objType || t.IsAssignableFrom(objType))
-                    {
-                        return true;
-                    }
-                }
-                else
-                {
-                    return !t.IsValueType;
-                }
+                Type eleType = translator.CheckOutNodeType(udata);
+                return eleType == null ? false : eleType == t || t.IsAssignableFrom(eleType);
             }
 
             return false;
@@ -438,8 +424,8 @@ namespace LuaInterface
                     if (udata != -1)
                     {
                         ObjectTranslator translator = ObjectTranslator.Get(L);
-                        object obj = translator.GetObject(udata);
-                        return obj == null ? true : type == obj.GetType();
+                        Type eleType = translator.CheckOutNodeType(udata);
+                        return eleType == null ? false : type == eleType;
                     }
                     return false;
                 default:
@@ -460,9 +446,10 @@ namespace LuaInterface
 
                     if (udata != -1)
                     {
+                        Type t = typeof(T);
                         ObjectTranslator translator = ObjectTranslator.Get(L);
-                        object obj = translator.GetObject(udata);
-                        return obj == null ? true : obj is T;
+                        Type eleType = translator.CheckOutNodeType(udata);
+                        return eleType == null ? false : eleType == t || t.IsAssignableFrom(eleType);
                     }
                     return false;
                 default:
@@ -479,8 +466,8 @@ namespace LuaInterface
                 if (udata != -1)
                 {
                     ObjectTranslator translator = ObjectTranslator.Get(L);
-                    object obj = translator.GetObject(udata);
-                    return obj == null ? false : type == obj.GetType();
+                    Type eleType = translator.CheckOutNodeType(udata);
+                    return eleType == null ? false : eleType == type;
                 }
             }
             

@@ -1622,7 +1622,7 @@ namespace LuaInterface
 
             if (udata != -1)
             {
-                object obj = translator.GetObject(udata);
+                object obj = translator.GetObject<object>(udata);
 
                 if (obj != null)
                 {                                                  

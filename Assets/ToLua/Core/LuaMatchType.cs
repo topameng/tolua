@@ -28,6 +28,8 @@ namespace LuaInterface
 {
     public class LuaMatchType
     {
+        static readonly Il2cppType il2cpp = new Il2cppType();
+
         public bool CheckNumber(IntPtr L, int pos)
         {            
             return LuaDLL.lua_type(L, pos) == LuaTypes.LUA_TNUMBER;
@@ -697,8 +699,9 @@ namespace LuaInterface
                     if (udata != -1)
                     {
                         ObjectTranslator translator = ObjectTranslator.Get(L);
-                        object obj = translator.GetObject(udata);
-                        return obj == null ? true : obj is IEnumerator;
+                        Il2cppType il = il2cpp;
+                        Type type = translator.CheckOutNodeType(udata);
+                        return type == null ? false : type == il.TypeOfIEnumerator || il.TypeOfIEnumerator.IsAssignableFrom(type);
                     }
                     return false;                    
                 default:
@@ -742,9 +745,10 @@ namespace LuaInterface
 
                     if (udata != -1)
                     {
+                        Il2cppType il = il2cpp;
                         ObjectTranslator translator = ObjectTranslator.Get(L);
-                        object obj = translator.GetObject(udata);
-                        return obj == null ? true : obj is Transform;
+                        Type type = translator.CheckOutNodeType(udata);
+                        return type == null ? false : type == il.TypeOfTransform || il.TypeOfTransform.IsAssignableFrom(type);
                     }
 
                     return false;                    
@@ -782,8 +786,8 @@ namespace LuaInterface
             if (udata != -1)
             {                
                 ObjectTranslator translator = ObjectTranslator.Get(L);
-                object obj = translator.GetObject(udata);
-                return obj == null ? true : obj.GetType() == t;
+                Type type = translator.CheckOutNodeType(udata);
+                return type == null ? false : type == t;
             }
 
             return false;

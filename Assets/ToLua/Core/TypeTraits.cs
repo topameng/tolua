@@ -118,22 +118,13 @@ namespace LuaInterface
 
         static bool IsUserData(IntPtr L, int pos)
         {
-            object obj = null;
             int udata = LuaDLL.tolua_rawnetobj(L, pos);
 
             if (udata != -1)
             {
                 ObjectTranslator translator = ObjectTranslator.Get(L);
-                obj = translator.GetObject(udata);
-
-                if (obj != null)
-                {
-                    return obj is T;
-                }
-                else
-                {
-                    return !IsValueType;
-                }
+                Type eleType = translator.CheckOutNodeType(udata);
+                return eleType == null ? false : eleType == type || type.IsAssignableFrom(eleType);
             }
 
             return false;
@@ -307,21 +298,15 @@ namespace LuaInterface
             if (udata != -1)
             {
                 ObjectTranslator translator = ObjectTranslator.Get(L);
-                object obj = translator.GetObject(udata);
-
-                if (obj != null)
-                {                    
-                    if (obj is T)
-                    {
-                        return (T)obj;
-                    }
-
-                    LuaDLL.luaL_argerror(L, stackPos, string.Format("{0} expected, got {1}", TypeTraits<T>.GetTypeName(), obj.GetType().FullName));
-                }
-
-                if (!TypeTraits<T>.IsValueType)
+                Type eleType = translator.CheckOutNodeType(udata);
+                if (eleType != null)
                 {
-                    return default(T);
+                    bool bValid = eleType == TypeTraits<T>.type || TypeTraits<T>.type.IsAssignableFrom(eleType);
+                    if (bValid)
+                    {
+                        return translator.GetObject<T>(udata);
+                    }
+                    else LuaDLL.luaL_argerror(L, stackPos, string.Format("{0} expected, got {1}", TypeTraits<T>.GetTypeName(), eleType != null ? eleType.FullName : "null")); 
                 }
             }
             else if (LuaDLL.lua_isnil(L, stackPos) && !TypeTraits<T>.IsValueType)

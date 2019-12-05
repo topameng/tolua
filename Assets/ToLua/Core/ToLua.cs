@@ -238,7 +238,7 @@ namespace LuaInterface
 
                 if (!fileName.EndsWith(".lua")) fileName += ".lua";
 
-                if (LuaDLL.luaL_loadbuffer(L, buffer, buffer.Length, "@"+ fileName) != 0)
+                if (LuaDLL.luaL_loadbuffer(L, buffer, buffer.Length, "@" + fileName) != 0)
                 {
                     string err = LuaDLL.lua_tostring(L, -1);
                     throw new LuaException(err, LuaException.GetLastError());
@@ -498,8 +498,8 @@ namespace LuaInterface
             string condition = logEntryCondition.GetValue(logEntry) as string;
 #if UNITY_2017_1_OR_NEWER
             EndGettingEntries.Invoke(null, null);
-#endif
-            condition = condition.Substring(0, condition.IndexOf('\n'));
+        #endif
+                    condition = condition.Substring(0, condition.IndexOf('\n'));
             int index = condition.IndexOf(".lua:");
 
             if (index >= 0)
@@ -631,7 +631,7 @@ namespace LuaInterface
             if (udata != -1)
             {
                 ObjectTranslator translator = ObjectTranslator.Get(L);
-                return translator.GetObject(udata);
+                return translator.GetObject<object>(udata);
             }
 
             return null;
@@ -644,7 +644,7 @@ namespace LuaInterface
             if (udata != -1)
             {
                 ObjectTranslator translator = ObjectTranslator.Get(L);
-                Delegate action = (Delegate)translator.GetObject(udata);
+                Delegate action = (Delegate)translator.GetObject<object>(udata);
                 action.AddRef();
                 return action;
             }
@@ -1009,18 +1009,11 @@ namespace LuaInterface
                     if (udata != -1)
                     {
                         ObjectTranslator translator = ObjectTranslator.Get(L);
-                        object obj = translator.GetObject(udata);
+                        object obj = translator.GetObject<object>(udata);
+                        string value = obj as string;
 
-                        if (obj != null)
-                        {                            
-                            if (obj is string)
-                            {
-                                return (string)obj;
-                            }
-
-                            LuaDLL.luaL_argerror(L, stackPos, string.Format("string expected, got {0}", obj.GetType().FullName));
-                        }
-
+                        if (value != null) return value;
+                        else if (value == null && obj != null) LuaDLL.luaL_argerror(L, stackPos, string.Format("string expected, got {0}", obj.GetType().FullName));
                         return null;
                     }
 
@@ -1054,22 +1047,11 @@ namespace LuaInterface
             if (udata != -1)
             {
                 ObjectTranslator translator = ObjectTranslator.Get(L);
-                object obj = translator.GetObject(udata);
+                object obj = translator.GetObject<object>(udata);
+                Type value = obj as Type;
 
-                if (obj != null)
-                {
-                    if (obj is Type)
-                    {
-                        return (Type)obj;
-                    }
-
-                    LuaDLL.luaL_argerror(L, stackPos, string.Format("Type expected, got {0}", obj.GetType().FullName));
-                }
-
-                return null;
-            }
-            else if (LuaDLL.lua_isnil(L, stackPos))
-            {
+                if (value != null) return value;
+                else if (value == null && obj != null) LuaDLL.luaL_argerror(L, stackPos, string.Format("Type expected, got {0}", obj.GetType().FullName));
                 return null;
             }
 
@@ -1084,18 +1066,11 @@ namespace LuaInterface
             if (udata != -1)
             {
                 ObjectTranslator translator = ObjectTranslator.Get(L);
-                object obj = translator.GetObject(udata);
+                object obj = translator.GetObject<object>(udata);
+                IEnumerator value = obj as IEnumerator;
 
-                if (obj != null)
-                {                    
-                    if (obj is IEnumerator)
-                    {
-                        return (IEnumerator)obj;
-                    }
-
-                    LuaDLL.luaL_argerror(L, stackPos, string.Format("Type expected, got {0}", obj.GetType().FullName));
-                }
-
+                if (value != null) return value;
+                else if (value == null && obj != null) LuaDLL.luaL_argerror(L, stackPos, string.Format("IEnumerator expected, got {0}", obj.GetType().FullName));
                 return null;
             }
             else if (LuaDLL.lua_isnil(L, stackPos))
@@ -1103,7 +1078,7 @@ namespace LuaInterface
                 return null;
             }
 
-            LuaDLL.luaL_typerror(L, stackPos, "Type");
+            LuaDLL.luaL_typerror(L, stackPos, "IEnumerator");
             return null;
         }
 
@@ -1114,7 +1089,7 @@ namespace LuaInterface
             if (udata != -1)
             {
                 ObjectTranslator translator = ObjectTranslator.Get(L);
-                return translator.GetObject(udata);
+                return translator.GetObject<object>(udata);
             }
             else if (LuaDLL.lua_isnil(L, stackPos))
             {
@@ -1132,20 +1107,22 @@ namespace LuaInterface
             if (udata != -1)
             {
                 ObjectTranslator translator = ObjectTranslator.Get(L);
-                object obj = translator.GetObject(udata);
+                Type eleType = translator.CheckOutNodeType(udata);
 
-                if (obj != null)
+                if (eleType != null)
                 {
-                    Type objType = obj.GetType();
-
-                    if (type == objType || type.IsAssignableFrom(objType))
+                    bool bValid = eleType == type || type.IsAssignableFrom(eleType);
+                    if (bValid) 
                     {
-                        return obj;
+                        return translator.GetObject<object>(udata);
                     }
-
-                    LuaDLL.luaL_argerror(L, stackPos, string.Format("{0} expected, got {1}", LuaMisc.GetTypeName(type), LuaMisc.GetTypeName(objType)));
+                    else 
+                    {
+                        string nodeTypeName = eleType != null ? LuaMisc.GetTypeName(eleType) : "null"; 
+                        LuaDLL.luaL_argerror(L, stackPos, string.Format("{0} expected, got {1}", LuaMisc.GetTypeName(type), nodeTypeName));
+                    }
                 }
-
+                
                 return null;
             }
             else if (LuaDLL.lua_isnil(L, stackPos))
@@ -1157,26 +1134,24 @@ namespace LuaInterface
             return null;
         }
 
-        public static object CheckObject<T>(IntPtr L, int stackPos) where T : class
+        public static T CheckObject<T>(IntPtr L, int stackPos) where T : class
         {
             int udata = LuaDLL.tolua_rawnetobj(L, stackPos);
 
             if (udata != -1)
             {
                 ObjectTranslator translator = ObjectTranslator.Get(L);
-                object obj = translator.GetObject(udata);
+                object obj = translator.GetObject<object>(udata);
+                T value = obj as T;
 
-                if (obj != null)
+                if (value != null) 
                 {
-                    if (obj is T)
-                    {
-                        return obj;
-                    }
-
-                    Type objType = obj.GetType();
-                    LuaDLL.luaL_argerror(L, stackPos, string.Format("{0} expected, got {1}", TypeTraits<T>.GetTypeName(), objType.FullName));
+                    return value;
                 }
-
+                else if (value == null && obj != null) 
+                {
+                    LuaDLL.luaL_argerror(L, stackPos, string.Format("{0} expected, got {1}", TypeTraits<T>.GetTypeName(), obj.GetType().FullName));
+                }
                 return null;
             }
             else if (LuaDLL.lua_isnil(L, stackPos))
@@ -1435,33 +1410,21 @@ namespace LuaInterface
         public static UnityEngine.Object CheckUnityObject(IntPtr L, int stackPos, Type type)
         {
             int udata = LuaDLL.tolua_rawnetobj(L, stackPos);
-            object obj = null;
 
             if (udata != -1)
             {
                 ObjectTranslator translator = ObjectTranslator.Get(L);
-                obj = translator.GetObject(udata);
+                object obj = translator.GetObject<object>(udata);
+                UnityEngine.Object value = obj as UnityEngine.Object;
 
-                if (obj != null)
+                if (value != null) 
                 {
-                    UnityEngine.Object uObj = (UnityEngine.Object)obj;
-
-                    if (uObj == null)
-                    {
-                        LuaDLL.luaL_argerror(L, stackPos, string.Format("{0} expected, got nil", type.FullName));
-                        return null;
-                    }
-
-                    Type objType = uObj.GetType();
-
-                    if (type == objType || objType.IsSubclassOf(type))
-                    {
-                        return uObj;
-                    }
-
-                    LuaDLL.luaL_argerror(L, stackPos, string.Format("{0} expected, got {1}", type.FullName, objType.FullName));
+                    return value;
                 }
-
+                else if (value == null && obj != null) 
+                {
+                    LuaDLL.luaL_argerror(L, stackPos, string.Format("{0} expected, got {1}", type.FullName, obj.GetType().FullName));
+                }
                 //传递了tolua.null过来
                 return null;
             }
@@ -1477,31 +1440,20 @@ namespace LuaInterface
         public static UnityEngine.TrackedReference CheckTrackedReference(IntPtr L, int stackPos, Type type)
         {
             int udata = LuaDLL.tolua_rawnetobj(L, stackPos);
-            object obj = null;
 
             if (udata != -1)
             {
                 ObjectTranslator translator = ObjectTranslator.Get(L);
-                obj = translator.GetObject(udata);
+                object obj = translator.GetObject<object>(udata);
+                UnityEngine.TrackedReference value = obj as UnityEngine.TrackedReference;
 
-                if (obj != null)
-                {                    
-                    UnityEngine.TrackedReference uObj = (UnityEngine.TrackedReference)obj;
-
-                    if (uObj == null)
-                    {
-                        LuaDLL.luaL_argerror(L, stackPos, string.Format("{0} expected, got nil", type.FullName));
-                        return null;
-                    }
-
-                    Type objType = uObj.GetType();
-
-                    if (type == objType || objType.IsSubclassOf(type))
-                    {
-                        return uObj;
-                    }
-
-                    LuaDLL.luaL_argerror(L, stackPos, string.Format("{0} expected, got {1}", type.FullName, objType.FullName));
+                if (value != null) 
+                {
+                    return value;
+                }
+                else if (value == null && obj != null) 
+                {
+                    LuaDLL.luaL_argerror(L, stackPos, string.Format("{0} expected, got {1}", type.FullName, obj.GetType().FullName));
                 }
 
                 return null;
@@ -2547,7 +2499,7 @@ namespace LuaInterface
         public static void PushOut<T>(IntPtr L, LuaOut<T> lo)
         {
             ObjectTranslator translator = ObjectTranslator.Get(L);
-            int index = translator.AddObject(lo);
+            int index = translator.AddObject((object)lo);
             LuaDLL.tolua_pushnewudata(L, LuaIndexes.LUA_REGISTRYINDEX, index);
         }
 
@@ -2895,7 +2847,7 @@ namespace LuaInterface
             }
         }
 
-        public static void SetBack(IntPtr L, int stackPos, object o)
+        public static void SetBack<T>(IntPtr L, int stackPos, T o) where T : struct
         {
             int udata = LuaDLL.tolua_rawnetobj(L, stackPos);
             ObjectTranslator translator = ObjectTranslator.Get(L);
