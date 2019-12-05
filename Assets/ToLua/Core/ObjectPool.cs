@@ -167,6 +167,7 @@ namespace LuaInterface
                 node = list[pos];
                 var gNode = node as PoolNode<T>;
                 gNode.obj = obj;
+                gNode.eleType = obj.GetType();
                 head.index = node.index;
             }
             else
