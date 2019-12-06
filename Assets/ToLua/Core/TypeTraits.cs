@@ -265,7 +265,7 @@ namespace LuaInterface
 
         static void PushValue(IntPtr L, T o)
         {
-            ToLua.PushStruct(L, o);
+            ToLua.PushData(L, o);
         }
 
         static void PushObject(IntPtr L, T o)

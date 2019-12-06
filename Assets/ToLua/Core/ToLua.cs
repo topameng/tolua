@@ -2521,6 +2521,11 @@ namespace LuaInterface
 
         public static void PushStruct<T>(IntPtr L, T o)
         {
+            PushData<T>(L, o);
+        }
+
+        public static void PushData<T>(IntPtr L, T o)
+        {
             Type type = o.GetType();
             int reference = LuaStatic.GetMetaReference(L, type);            
 
@@ -2608,15 +2613,8 @@ namespace LuaInterface
         //o 不为 null
         static void PushUserObject(IntPtr L, object o)
         {
-            Type type = o.GetType();
-            int reference = LuaStatic.GetMetaReference(L, type);
-
-            if (reference <= 0)
-            {
-                reference = LoadPreType(L, type);
-            }
-                        
-            PushUserData<object>(L, o, reference);
+            // remove duplicate code
+            PushData<object>(L, o);
         }
 
         public static void Push(IntPtr L, UnityEngine.Object obj)
@@ -2807,7 +2805,7 @@ namespace LuaInterface
                     }
                     else
                     {
-                        PushStruct(L, obj);
+                        PushData(L, obj);
                     }
                 }
             }
