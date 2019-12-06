@@ -249,7 +249,7 @@ namespace LuaInterface
 
         static Action<IntPtr, T> SelectPush()
         {
-            if (TypeTraits<T>.IsValueType)
+            if (TypeChecker.IsValueType(TypeTraits<T>.type))
             {
                 return PushValue;
             }
@@ -282,14 +282,14 @@ namespace LuaInterface
             else
             {
                 int arrayMetaTable = LuaStatic.GetArrayMetatable(L);
-                ToLua.PushUserData(L, array, arrayMetaTable);
+                ToLua.PushUserData<object>(L, array, arrayMetaTable);
             }
         }
 
         static T DefaultTo(IntPtr L, int pos)
         {
-            return (T)ToLua.ToObject(L, pos);
-        }           
+            return ToLua.ToGenericObject<T>(L, pos);
+        }
         
         static T DefaultCheck(IntPtr L, int stackPos)
         {

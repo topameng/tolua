@@ -446,7 +446,7 @@ public static class ToLuaExport
                         }
                         else
                         {
-                            sb.AppendFormat("{0}{1} obj = ({1})ToLua.ToObject(L, 1);\r\n", head, className);
+                            sb.AppendFormat("{0}{1} obj = ToLua.ToGenericObject<{1}>(L, 1);\r\n", head, className);
                         }
                     }
                     else if (checkTypePos > 0)// && methodType == 0)
@@ -455,7 +455,7 @@ public static class ToLuaExport
                     }
                     else
                     {
-                        ToObject(head, type, className, 1);
+                        sb.AppendFormat("{0}{1} obj = ToLua.ToGenericObject<{1}>(L, {2});\r\n", head, className, 1);
                     }
                 }
             }
@@ -1658,10 +1658,10 @@ public static class ToLuaExport
 
     static bool IsNotCheckGeneric(Type t)
     {
-        if (t.IsEnum || t.IsValueType)
-        {
-            return true;
-        }
+        // if (t.IsEnum || t.IsValueType)
+        // {
+        //     return true;
+        // }
 
         if (t.IsGenericType && (t.GetGenericTypeDefinition() == typeof(List<>) || t.GetGenericTypeDefinition() == typeof(Dictionary<,>)))
         {
@@ -2269,21 +2269,14 @@ public static class ToLuaExport
             }
             else
             {
-                sb.AppendFormat("{0}{1} obj = ({1})ToLua.CheckObject<{1}>(L, {2});\r\n", head, className, pos);
+                sb.AppendFormat("{0}{1} obj = ToLua.CheckObject<{1}>(L, {2});\r\n", head, className, pos);
             }
         }
     }
 
     static void ToObject(string head, Type type, string className, int pos)
     {
-        if (type == typeof(object))
-        {
-            sb.AppendFormat("{0}object obj = ToLua.ToObject(L, {1});\r\n", head, pos);
-        }
-        else
-        {
-            sb.AppendFormat("{0}{1} obj = ({1})ToLua.ToObject(L, {2});\r\n", head, className, pos);
-        }
+        sb.AppendFormat("{0}{1} obj = ToLua.ToGenericObject<{1}>(L, {2});\r\n", head, className, pos);
     }
 
     static void BeginTry()
@@ -2370,7 +2363,7 @@ public static class ToLuaExport
         {
             if (beCheckTypes)
             {
-                sb.AppendFormat("{0}{1} {2} = ({1})ToLua.ToObject(L, {3});\r\n", head, str, arg, stackPos);                
+                sb.AppendFormat("{0}{1} {2} = ToLua.ToGenericObject<{1}>(L, {3});\r\n", head, str, arg, stackPos);                
             }
             else
             {
@@ -2425,7 +2418,7 @@ public static class ToLuaExport
         {
             if (beCheckTypes)
             {
-                sb.AppendFormat("{0}System.Type {1} = (System.Type)ToLua.ToObject(L, {2});\r\n", head, arg, stackPos);
+                sb.AppendFormat("{0}System.Type {1} = ToLua.ToGenericObject<System.Type>(L, {2});\r\n", head, arg, stackPos);
             }
             else
             {
@@ -2436,7 +2429,7 @@ public static class ToLuaExport
         {
             if (beCheckTypes)
             {                
-                sb.AppendFormat("{0}System.Collections.IEnumerator {1} = (System.Collections.IEnumerator)ToLua.ToObject(L, {2});\r\n", head, arg, stackPos);
+                sb.AppendFormat("{0}System.Collections.IEnumerator {1} = ToLua.ToGenericObject<System.Collections.IEnumerator>(L, {2});\r\n", head, arg, stackPos);
             }
             else
             {
@@ -2583,7 +2576,7 @@ public static class ToLuaExport
         {
             if (beCheckTypes)
             {
-                sb.AppendFormat("{0}{1} {2} = ({1})ToLua.ToObject(L, {3});\r\n", head, str, arg, stackPos);
+                sb.AppendFormat("{0}{1} {2} = ToLua.ToGenericObject<{1}>(L, {3});\r\n", head, str, arg, stackPos);
             }
             //else if (varType == typeof(UnityEngine.TrackedReference) || typeof(UnityEngine.TrackedReference).IsAssignableFrom(varType))
             //{
@@ -2601,7 +2594,7 @@ public static class ToLuaExport
                 }
                 else
                 {
-                    sb.AppendFormat("{0}{1} {2} = ({1})ToLua.CheckObject<{1}>(L, {3});\r\n", head, str, arg, stackPos);
+                    sb.AppendFormat("{0}{1} {2} = ToLua.CheckObject<{1}>(L, {3});\r\n", head, str, arg, stackPos);
                 }
             }
         }
@@ -3125,17 +3118,17 @@ public static class ToLuaExport
         return sb.ToString();
     }
 
-    static void CheckObjectNull()
-    {
-        if (type.IsValueType)
-        {
-            sb.AppendLineEx("\t\t\tif (o == null)");
-        }
-        else
-        {
-            sb.AppendLineEx("\t\t\tif (obj == null)");
-        }
-    }
+    // static void CheckObjectNull()
+    // {
+    //     if (type.IsValueType)
+    //     {
+    //         sb.AppendLineEx("\t\t\tif (o == null)");
+    //     }
+    //     else
+    //     {
+    //         sb.AppendLineEx("\t\t\tif (obj == null)");
+    //     }
+    // }
 
     static void GenGetFieldStr(string varName, Type varType, bool isStatic, bool isByteBuffer, bool beOverride = false)
     {
@@ -3153,10 +3146,12 @@ public static class ToLuaExport
         }
         else
         {
-            sb.AppendLineEx("\t\tobject o = null;\r\n");
+            if (type.IsValueType)
+                sb.AppendFormat("\t\t{0} obj = default({0});\r\n", className);                               
+            else
+                sb.AppendFormat("\t\t{0} obj = null;\r\n", className);                               
             BeginTry();
-            sb.AppendLineEx("\t\t\to = ToLua.ToObject(L, 1);");
-            sb.AppendFormat("\t\t\t{0} obj = ({0})o;\r\n", className);                               
+            sb.AppendFormat("\t\t\tobj = ToLua.ToGenericObject<{0}>(L, 1);\r\n", className);                               
             sb.AppendFormat("\t\t\t{0} ret = obj.{1};\r\n", GetTypeStr(varType), varName);
             GenPushStr(varType, "ret", "\t\t\t", isByteBuffer);
             sb.AppendLineEx("\t\t\treturn 1;");
@@ -3165,7 +3160,7 @@ public static class ToLuaExport
             sb.AppendLineEx("\t\tcatch(Exception e)");
             sb.AppendLineEx("\t\t{");
             
-            sb.AppendFormat("\t\t\treturn LuaDLL.toluaL_exception(L, e, o, \"attempt to index {0} on a nil value\");\r\n", varName);
+            sb.AppendFormat("\t\t\treturn LuaDLL.toluaL_exception(L, e, obj, \"attempt to index {0} on a nil value\");\r\n", varName);
             sb.AppendLineEx("\t\t}");                       
         }
 
@@ -3230,10 +3225,12 @@ public static class ToLuaExport
 
         if (!isStatic)
         {            
-            sb.AppendLineEx("\t\tobject o = null;\r\n");
+            if (type.IsValueType)
+                sb.AppendFormat("\t\t{0} obj = default({0});\r\n", className);
+            else
+                sb.AppendFormat("\t\t{0} obj = null;\r\n", className);
             BeginTry();
-            sb.AppendLineEx("\t\t\to = ToLua.ToObject(L, 1);");
-            sb.AppendFormat("\t\t\t{0} obj = ({0})o;\r\n", className);
+            sb.AppendFormat("\t\t\tobj = ToLua.ToGenericObject<{0}>(L, 1);\r\n", className);
             ProcessArg(varType, "\t\t\t", "arg0", 2);
 
             if (typeof(System.MulticastDelegate).IsAssignableFrom(varType))
@@ -3297,7 +3294,7 @@ public static class ToLuaExport
 
         if (!isStatic)
         {
-            sb.AppendFormat("\t\t\t{0} obj = ({0})ToLua.CheckObject<{0}>(L, 1);\r\n", className);            
+            sb.AppendFormat("\t\t\t{0} obj = ToLua.CheckObject<{0}>(L, 1);\r\n", className);            
         }
 
         string strVarType = GetTypeStr(varType);
@@ -3306,7 +3303,7 @@ public static class ToLuaExport
         sb.AppendLineEx("\t\t\tEventObject arg0 = null;\r\n");
         sb.AppendLineEx("\t\t\tif (LuaDLL.lua_isuserdata(L, 2) != 0)");
         sb.AppendLineEx("\t\t\t{");
-        sb.AppendLineEx("\t\t\t\targ0 = (EventObject)ToLua.ToObject(L, 2);");
+        sb.AppendLineEx("\t\t\t\targ0 = ToLua.ToGenericObject<EventObject>(L, 2);");
         sb.AppendLineEx("\t\t\t}");
         sb.AppendLineEx("\t\t\telse");
         sb.AppendLineEx("\t\t\t{");
@@ -3468,7 +3465,7 @@ public static class ToLuaExport
         {
             string type = GetTypeStr(t);
             name = beDefined ? name : type + " " + name;
-            sb.AppendFormat("{0}{1} = ({2})func.CheckObject(TypeTraits<{2}>.type);\r\n", head, name, type);
+            sb.AppendFormat("{0}{1} = ({2})func.CheckObject<{2}>();\r\n", head, name, type);
 
             //Debugger.LogError("GenLuaFunctionCheckValue undefined type:" + t.FullName);
         }

@@ -1664,6 +1664,11 @@ namespace LuaInterface
         {
             return ToLua.CheckObject(L, stackPos, type);
         }
+        
+        public T CheckObject<T>(int stackPos)
+        {
+            return ToLua.CheckObject<T>(L, stackPos);
+        }
 
         public object CheckVarObject(int stackPos, Type type)
         {
