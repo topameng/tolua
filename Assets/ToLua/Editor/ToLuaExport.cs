@@ -1658,10 +1658,10 @@ public static class ToLuaExport
 
     static bool IsNotCheckGeneric(Type t)
     {
-        // if (t.IsEnum || t.IsValueType)
-        // {
-        //     return true;
-        // }
+        if (t.IsEnum /*|| t.IsValueType*/)
+        {
+            return true;
+        }
 
         if (t.IsGenericType && (t.GetGenericTypeDefinition() == typeof(List<>) || t.GetGenericTypeDefinition() == typeof(Dictionary<,>)))
         {
@@ -3163,7 +3163,7 @@ public static class ToLuaExport
                 sb.AppendFormat("\t\t{0} obj = null;\r\n", className);                               
             BeginTry();
             if (!TypeChecker.IsValueType(type))
-                sb.AppendFormat("\t\t\t obj = ({0})ToLua.ToObject(L, 1);\r\n", className);
+                sb.AppendFormat("\t\t\tobj = ({0})ToLua.ToObject(L, 1);\r\n", className);
             else
                 sb.AppendFormat("\t\t\tobj = ToLua.ToGenericObject<{0}>(L, 1);\r\n", className); 
             sb.AppendFormat("\t\t\t{0} ret = obj.{1};\r\n", GetTypeStr(varType), varName);
@@ -3245,7 +3245,7 @@ public static class ToLuaExport
                 sb.AppendFormat("\t\t{0} obj = null;\r\n", className);
             BeginTry();
             if (!TypeChecker.IsValueType(type))
-                sb.AppendFormat("\t\t\t obj = ({0})ToLua.ToObject(L, 1);\r\n", className);
+                sb.AppendFormat("\t\t\tobj = ({0})ToLua.ToObject(L, 1);\r\n", className);
             else
                 sb.AppendFormat("\t\t\tobj = ToLua.ToGenericObject<{0}>(L, 1);\r\n", className);
             ProcessArg(varType, "\t\t\t", "arg0", 2);
@@ -3482,7 +3482,7 @@ public static class ToLuaExport
         {
             string type = GetTypeStr(t);
             name = beDefined ? name : type + " " + name;
-            sb.AppendFormat("{0}{1} = ({2})func.CheckObject<{2}>();\r\n", head, name, type);
+            sb.AppendFormat("{0}{1} = ({2})func.CheckObject(TypeTraits<{2}>.type);\r\n", head, name, type);
 
             //Debugger.LogError("GenLuaFunctionCheckValue undefined type:" + t.FullName);
         }

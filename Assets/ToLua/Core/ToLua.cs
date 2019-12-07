@@ -2653,17 +2653,17 @@ namespace LuaInterface
 
                 if (reference <= 0)
                 {
-                    reference = LoadPreType(L, o.GetType());
+                    reference = LoadPreType(L, TypeTraits<T>.type);
                 }
 
-                if (!TypeChecker.IsValueType(TypeTraits<T>.type))
+#if UNITY_EDITOR
+                // auto generated wrap files won't hit this condition, only custom writting code would hits this condition by mistake.
+                if (TypeTraits<T>.type.IsValueType)
                 {
-                    ToLua.PushUserData<object>(L, o, reference);
+                    Debugger.LogError("PushValue suggested! This will cause unbox!");
                 }
-                else 
-                {
-                    ToLua.PushUserData<T>(L, o, reference);
-                }
+#endif
+                ToLua.PushUserData<object>(L, o, reference);
             }
         }
 

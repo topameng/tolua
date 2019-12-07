@@ -84,7 +84,7 @@ namespace LuaInterface
 
                 int result = head.index;
                 head.index = pos;
-                if (bLogGC) Debugger.Log("destroy object {0}, id {1}", obj, pos);
+                if (bLogGC) Debugger.Log("gc object {0}, id {1}", obj, pos);
                 obj = default(T);
 
                 return result;

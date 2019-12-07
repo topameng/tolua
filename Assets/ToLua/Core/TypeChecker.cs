@@ -52,7 +52,7 @@ namespace LuaInterface
 
         public static bool IsValueType(Type t)
         {
-            return !t.IsEnum && t.IsValueType;
+            return t.IsValueType && !t.IsEnum;
         }
 
         public static bool CheckTypes(IntPtr L, int begin, Type type0)
