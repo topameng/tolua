@@ -61,11 +61,14 @@ namespace LuaInterface
             public T obj;
             //同lua_ref策略，0作为一个回收链表头，不使用这个位置
             public static readonly NodeBase head;
+            private static readonly bool bObjType;
 
             static PoolNode()
             {
                 head = new NodeBase(0);
                 headList.Add(head);
+                Type nodeType = typeof(T);
+                bObjType = !TypeChecker.IsValueType(nodeType);
             }
 
             public PoolNode(int index, T obj)
@@ -73,7 +76,7 @@ namespace LuaInterface
             {
                 this.obj = obj;
                 eleType = obj.GetType();
-                bObjectType = !TypeChecker.IsValueType(eleType);
+                bObjectType = bObjType;
             }
 
             internal override object GetResult() { return (object)obj; }

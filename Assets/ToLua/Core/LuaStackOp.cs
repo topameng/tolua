@@ -264,7 +264,7 @@ namespace LuaInterface
 
         public GameObject CheckGameObject(IntPtr L, int stackPos)
 		{
-			return (GameObject)ToLua.CheckObject<GameObject>(L, stackPos);
+			return (GameObject)ToLua.CheckObject(L, stackPos, TypeOfGameObject);
 		}
 
 		public void Push(IntPtr L, sbyte n)

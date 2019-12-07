@@ -1150,9 +1150,9 @@ namespace LuaInterface
         {
             int udata = LuaDLL.tolua_rawnetobj(L, stackPos);
 
-            Type type = typeof(T);
             if (udata != -1)
             {
+                Type type = typeof(T);
                 ObjectTranslator translator = ObjectTranslator.Get(L);
                 Type eleType = translator.CheckOutNodeType(udata);
 
