@@ -1150,9 +1150,9 @@ namespace LuaInterface
         {
             int udata = LuaDLL.tolua_rawnetobj(L, stackPos);
 
+            Type type = TypeTraits<T>.type;
             if (udata != -1)
             {
-                Type type = typeof(T);
                 ObjectTranslator translator = ObjectTranslator.Get(L);
                 Type eleType = translator.CheckOutNodeType(udata);
 
@@ -1165,7 +1165,7 @@ namespace LuaInterface
                     }
                     else 
                     {
-                        LuaDLL.luaL_argerror(L, stackPos, string.Format("{0} expected, got {1}", LuaMisc.GetTypeName(type), LuaMisc.GetTypeName(eleType)));
+                        LuaDLL.luaL_argerror(L, stackPos, string.Format("{0} expected, got {1}", TypeTraits<T>.GetTypeName(), LuaMisc.GetTypeName(eleType)));
                     }
                 }
                 return default(T);
@@ -1175,7 +1175,7 @@ namespace LuaInterface
                 return default(T);
             }
 
-            LuaDLL.luaL_typerror(L, stackPos, LuaMisc.GetTypeName(type));
+            LuaDLL.luaL_typerror(L, stackPos, TypeTraits<T>.GetTypeName());
             return default(T);
         }
 

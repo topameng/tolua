@@ -67,7 +67,7 @@ namespace LuaInterface
             {
                 head = new NodeBase(0);
                 headList.Add(head);
-                Type nodeType = typeof(T);
+                Type nodeType = TypeTraits<T>.type;
                 bObjType = !TypeChecker.IsValueType(nodeType);
             }
 
@@ -183,7 +183,7 @@ namespace LuaInterface
             }
 
 #if UNITY_EDITOR
-            Type dataType = typeof(T);
+            Type dataType = TypeTraits<T>.type;
             if (node.bObjectType && dataType != objType)
             {
                 Debugger.LogError("strict object type required, got :" + node.eleType);
@@ -208,7 +208,7 @@ namespace LuaInterface
 
                 var gNode = node as PoolNode<T>;
                 if (gNode != null) return gNode.obj;
-                else if (typeof(T) == objType) return (T)node.GetResult();
+                else if (TypeTraits<T>.type == objType) return (T)node.GetResult();
             }
 
             return default(T);
@@ -218,7 +218,7 @@ namespace LuaInterface
         {
             index = -1;
 #if UNITY_EDITOR
-            Type dataType = typeof(T);
+            Type dataType = TypeTraits<T>.type;
             Type dataOriginType = o.GetType();
             if (!TypeChecker.IsValueType(dataOriginType) && dataType != objType)
             {
@@ -363,7 +363,7 @@ namespace LuaInterface
 
             private StackDataMapping(LuaObjectPool luaObjectPool)
             {
-                if (typeof(T) == objType) container = new Dictionary<T, int>(2017, new CompareObject());
+                if (TypeTraits<T>.type == objType) container = new Dictionary<T, int>(2017, new CompareObject());
                 else container = new Dictionary<T, int>(17);
                 luaObjectPool.AttachDisposeListenter(Clear);
             }

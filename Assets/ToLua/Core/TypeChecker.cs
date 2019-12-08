@@ -446,7 +446,7 @@ namespace LuaInterface
 
                     if (udata != -1)
                     {
-                        Type t = typeof(T);
+                        Type t = TypeTraits<T>.type;
                         ObjectTranslator translator = ObjectTranslator.Get(L);
                         Type eleType = translator.CheckOutNodeType(udata);
                         return eleType == null ? false : eleType == t || t.IsAssignableFrom(eleType);
