@@ -54,6 +54,32 @@ namespace LuaInterface
             };
         }
 
+        public static Func<IntPtr, int> GetLuaReference(Type type)
+        {
+            int metaref = -1;
+            return (IntPtr L )=>
+            {
+#if MULTI_STATE
+                return LuaStatic.GetMetaReference(L, type);
+#else
+                if (metaref > 0)
+                {                
+                    return metaref;
+                }
+
+                metaref = LuaStatic.GetMetaReference(L, type);
+
+                if (metaref > 0)
+                {
+                    LuaState.Get(L).OnDestroy += () => { metaref = -1; };
+                }
+
+                return metaref; 
+#endif
+
+            };
+        }
+
         static bool IsNilType(bool IsValueType, Type type)
         {
             if (!IsValueType)
@@ -110,16 +136,17 @@ namespace LuaInterface
     public static class TypeTraits<T>
     {        
         static public Func<IntPtr, int, bool> Check;
+        static readonly public Func<IntPtr, int> GetLuaReference;
         static readonly public Type type = typeof(T);
         static readonly public bool IsValueType = type.IsValueType;
         static readonly public bool IsArray = type.IsArray;
 
         static string typeName = string.Empty;                
-        static int metaref = -1;
 
         static TypeTraits()
         {
             Check = TypeTraitsBase.GetDefaultCheck(IsValueType, type);
+            GetLuaReference = TypeTraitsBase.GetLuaReference(type);
         }
 
         static public void Init(Func<IntPtr, int, bool> check)
@@ -139,27 +166,6 @@ namespace LuaInterface
 
             return typeName;
         }
-
-        static public int GetLuaReference(IntPtr L)
-        {
-#if MULTI_STATE
-            return LuaStatic.GetMetaReference(L, type);
-#else
-            if (metaref > 0)
-            {                
-                return metaref;
-            }
-
-            metaref = LuaStatic.GetMetaReference(L, type);
-
-            if (metaref > 0)
-            {
-                LuaState.Get(L).OnDestroy += () => { metaref = -1; };
-            }
-
-            return metaref; 
-#endif
-        }   
     }    
 
     public static class DelegateTraits<T>
