@@ -45,6 +45,8 @@ public class Il2cppType
     public Type TypeOfLuaByteBuffer = typeof(LuaByteBuffer);
     public Type TypeOfEventObject = typeof(EventObject);
     public Type TypeOfNullObject = typeof(NullObject);
+    public Type TypeOfTransform = typeof(Transform);
+    public Type TypeOfIEnumerator = typeof(System.Collections.IEnumerator);
 
     public Type TypeOfArray = typeof(Array);
     public Type TypeOfByteArray = typeof(byte[]);

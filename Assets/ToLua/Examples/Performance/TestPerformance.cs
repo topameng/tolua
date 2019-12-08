@@ -125,6 +125,9 @@ public class TestPerformance : MonoBehaviour
             func.Call();
             func.Dispose();
             func = null;
+#if UNITY_EDITOR
+            Debugger.Log("Lua new GameObject cost time tested on Editor isn't the truly cost due to some analyst assistance only actived on Editor, test this on mobile!");
+#endif
         }
         else if (GUI.Button(new Rect(50, 450, 120, 45), "Test5"))
         {            

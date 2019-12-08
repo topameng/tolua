@@ -910,6 +910,19 @@ namespace LuaInterface
             }
         }
 
+        public T CheckObject<T>()
+        {
+            try
+            {
+                return luaState.CheckObject<T>(stackPos++);
+            }
+            catch (Exception e)
+            {
+                EndPCall();
+                throw e;
+            }
+        }
+
         public LuaFunction CheckLuaFunction()
         {
             try

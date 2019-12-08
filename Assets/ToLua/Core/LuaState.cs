@@ -1622,7 +1622,7 @@ namespace LuaInterface
 
             if (udata != -1)
             {
-                object obj = translator.GetObject(udata);
+                object obj = translator.GetObject<object>(udata);
 
                 if (obj != null)
                 {                                                  
@@ -1663,6 +1663,11 @@ namespace LuaInterface
         public object CheckObject(int stackPos, Type type)
         {
             return ToLua.CheckObject(L, stackPos, type);
+        }
+        
+        public T CheckObject<T>(int stackPos)
+        {
+            return ToLua.CheckObject<T>(L, stackPos);
         }
 
         public object CheckVarObject(int stackPos, Type type)

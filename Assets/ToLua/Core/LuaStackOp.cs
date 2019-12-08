@@ -264,7 +264,7 @@ namespace LuaInterface
 
         public GameObject CheckGameObject(IntPtr L, int stackPos)
 		{
-			return (GameObject)ToLua.CheckObject<GameObject>(L, stackPos);
+			return (GameObject)ToLua.CheckObject(L, stackPos, TypeOfGameObject);
 		}
 
 		public void Push(IntPtr L, sbyte n)
@@ -342,7 +342,7 @@ namespace LuaInterface
 					reference = ToLua.LoadPreType(L, TypeOfGameObject);
 				}
 
-				ToLua.PushUserData(L, o, reference);
+				ToLua.PushUserData<object>(L, o, reference);
 			}
 		}
 
@@ -371,7 +371,7 @@ namespace LuaInterface
 					reference = ToLua.LoadPreType(L, type);
 				}
 
-				ToLua.PushUserData(L, o, reference);
+				ToLua.PushUserData<object>(L, o, reference);
 			}
 		}
 
