@@ -267,7 +267,7 @@ namespace LuaInterface
             {
                 ObjectTranslator translator = ObjectTranslator.Get(L);
                 Type eleType = translator.CheckOutNodeType(udata);
-                return eleType == null ? false : eleType == t || t.IsAssignableFrom(eleType);
+                return eleType == null ? udata == 1 : eleType == t || t.IsAssignableFrom(eleType);
             }
 
             return false;
@@ -425,7 +425,7 @@ namespace LuaInterface
                     {
                         ObjectTranslator translator = ObjectTranslator.Get(L);
                         Type eleType = translator.CheckOutNodeType(udata);
-                        return eleType == null ? false : type == eleType;
+                        return eleType == null ? udata == 1 : type == eleType;
                     }
                     return false;
                 default:
@@ -449,7 +449,7 @@ namespace LuaInterface
                         Type t = TypeTraits<T>.type;
                         ObjectTranslator translator = ObjectTranslator.Get(L);
                         Type eleType = translator.CheckOutNodeType(udata);
-                        return eleType == null ? false : eleType == t || t.IsAssignableFrom(eleType);
+                        return eleType == null ? udata == 1 : eleType == t || t.IsAssignableFrom(eleType);
                     }
                     return false;
                 default:
@@ -467,7 +467,7 @@ namespace LuaInterface
                 {
                     ObjectTranslator translator = ObjectTranslator.Get(L);
                     Type eleType = translator.CheckOutNodeType(udata);
-                    return eleType == null ? false : eleType == type;
+                    return eleType == null ? udata == 1 : eleType == type;
                 }
             }
             

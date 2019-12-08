@@ -701,7 +701,7 @@ namespace LuaInterface
                         ObjectTranslator translator = ObjectTranslator.Get(L);
                         Il2cppType il = il2cpp;
                         Type type = translator.CheckOutNodeType(udata);
-                        return type == null ? false : type == il.TypeOfIEnumerator || il.TypeOfIEnumerator.IsAssignableFrom(type);
+                        return type == null ? udata == 1 : type == il.TypeOfIEnumerator || il.TypeOfIEnumerator.IsAssignableFrom(type);
                     }
                     return false;                    
                 default:
@@ -748,7 +748,7 @@ namespace LuaInterface
                         Il2cppType il = il2cpp;
                         ObjectTranslator translator = ObjectTranslator.Get(L);
                         Type type = translator.CheckOutNodeType(udata);
-                        return type == null ? false : type == il.TypeOfTransform || il.TypeOfTransform.IsAssignableFrom(type);
+                        return type == null ? udata == 1 : type == il.TypeOfTransform || il.TypeOfTransform.IsAssignableFrom(type);
                     }
 
                     return false;                    
@@ -787,7 +787,7 @@ namespace LuaInterface
             {                
                 ObjectTranslator translator = ObjectTranslator.Get(L);
                 Type type = translator.CheckOutNodeType(udata);
-                return type == null ? false : type == t;
+                return type == null ? udata == 1 : type == t;
             }
 
             return false;

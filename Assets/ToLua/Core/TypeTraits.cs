@@ -36,7 +36,7 @@ namespace LuaInterface
                 LuaTypes luaType = LuaDLL.lua_type(L, pos);
                 switch (luaType)
                 {
-                        case LuaTypes.LUA_TUSERDATA:
+                    case LuaTypes.LUA_TUSERDATA:
                         return IsUserData(L, pos, type);
                     case LuaTypes.LUA_TNIL:
                         if (nilType != -1)
@@ -103,7 +103,7 @@ namespace LuaInterface
             {
                 ObjectTranslator translator = ObjectTranslator.Get(L);
                 Type eleType = translator.CheckOutNodeType(udata);
-                return eleType == null ? false : eleType == type || type.IsAssignableFrom(eleType);
+                return eleType == null ? udata == 1 : eleType == type || type.IsAssignableFrom(eleType);
             }
 
             return false;
@@ -322,6 +322,7 @@ namespace LuaInterface
                     }
                     else LuaDLL.luaL_argerror(L, stackPos, string.Format("{0} expected, got {1}", TypeTraits<T>.GetTypeName(), eleType != null ? eleType.FullName : "null")); 
                 }
+                return default(T);
             }
             else if (LuaDLL.lua_isnil(L, stackPos) && !TypeTraits<T>.IsValueType)
             {
