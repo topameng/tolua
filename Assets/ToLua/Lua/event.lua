@@ -20,14 +20,16 @@ local unpack = unpack
 
 local _xpcall = {}
 
-_xpcall.__call = function(self, ...)	
-	if jit then
+if jit then
+	_xpcall.__call = function(self, ...)
 		if nil == self.obj then
 			return xpcall(self.func, traceback, ...)					
-		else		
+		else
 			return xpcall(self.func, traceback, self.obj, ...)					
 		end
-	else
+	end	
+else
+	_xpcall.__call = function(self, ...)
 		local nargs, args = select('#', ...), {...}
 
 		if nil == self.obj then
@@ -37,7 +39,7 @@ _xpcall.__call = function(self, ...)
 			local func = function() self.func(self.obj, unpack(args, 1, nargs)) end
 			return xpcall(func, traceback)
 		end
-	end	
+	end
 end
 
 _xpcall.__eq = function(lhs, rhs)
