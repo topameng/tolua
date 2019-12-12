@@ -13,7 +13,10 @@ local error = error
 local print = print
 local select = select
 local traceback = tolua.traceback
-local ilist = ilist
+local list, ilist = list, ilist
+local table = table
+local ipairs = ipairs
+local unpack = unpack
 
 local _xpcall = {}
 
