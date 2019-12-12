@@ -11,7 +11,7 @@ local assert = assert
 local rawget = rawget
 local error = error
 local print = print
-local maxn = table.maxn
+local select = select
 local traceback = tolua.traceback
 local ilist = ilist
 
@@ -25,13 +25,13 @@ _xpcall.__call = function(self, ...)
 			return xpcall(self.func, traceback, self.obj, ...)					
 		end
 	else
-		local args = {...}
+		local nargs, args = select('#', ...), {...}
 
 		if nil == self.obj then
-			local func = function() self.func(unpack(args, 1, maxn(args))) end
+			local func = function() self.func(unpack(args, 1, nargs)) end
 			return xpcall(func, traceback)					
 		else		
-			local func = function() self.func(self.obj, unpack(args, 1, maxn(args))) end
+			local func = function() self.func(self.obj, unpack(args, 1, nargs)) end
 			return xpcall(func, traceback)
 		end
 	end	
