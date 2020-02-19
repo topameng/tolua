@@ -92,6 +92,38 @@ function coroutine.step(t, co, ...)
 	return yield()
 end
 
+function coroutine.wait_until(conditionFunc, co)
+	co = co or running()
+	local timer = nil
+
+	local action = function()
+		if not conditionFunc() then
+			return
+		end
+
+		comap[co] = nil
+		timer:Stop()
+		timer.func = nil
+		local flag, msg = resume(co)
+		table.insert(pool, timer)
+		if not flag then
+			error(debug.traceback(co, msg))
+			return
+		end
+	end
+
+	if #pool > 0 then
+		timer = table.remove(pool)
+		timer:Reset(action, 1, -1)
+	else
+		timer = FrameTimer.New(action, 1, -1)
+	end
+
+	comap[co] = timer
+	timer:Start()
+	return yield()
+end
+
 function coroutine.www(www, co)			
 	co = co or running()			
 	local timer = nil			
