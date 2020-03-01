@@ -22,6 +22,7 @@ public class LuaHotLoader : MonoBehaviour
             if (luaState == value)
                 return;
             luaState = value;
+            luaState.OpenLibs(LuaDLL.luaopen_hot);
             luaState.DoString(reload);
         }
     }
@@ -112,7 +113,7 @@ function hotreload(...)
                 if old[k] == nil then
                     old[k] = v
                 else
-                    tolua.swap(old[k], v)
+                    hot.swaplfunc(old[k], v)
                 end
             end
         end
