@@ -95,7 +95,7 @@ public class LuaHotLoader : MonoBehaviour
             moduleList.Add(moduleFileName);
         }
 
-        LuaState.DoString(string.Format("hotreload('{0}')", string.Join(",", moduleList)));
+        LuaState.DoString(string.Format("hotreload('{0}')", string.Join("', '", moduleList)));
     }
 
     private readonly string reload = @"
@@ -103,21 +103,33 @@ function hotreload(...)
     local cache = {}
     for i, moduleName in ipairs({...}) do
         cache[moduleName] = require(moduleName)
+        if type(cache[moduleName]) == 'string' then
+            cache[moduleName] = _G[cache[moduleName]]
+        end
         package.loaded[moduleName] = nil
     end
     for i, moduleName in ipairs({...}) do
-        local new = require(moduleName)
-        local old = cache[moduleName]
-        for k, v in pairs(new) do
-            if type(v) == 'function' then
-                if old[k] == nil then
-                    old[k] = v
-                else
-                    hot.swaplfunc(old[k], v)
+        local ret = require(moduleName)
+        local new = ret
+        if type(ret) == 'string' then
+            new = _G[ret]
+        end
+        if type(new) == 'table' then
+            local old = cache[moduleName]
+            for k, v in pairs(new) do
+                if type(v) == 'function' then
+                    if old[k] == nil then
+                        old[k] = v
+                    else
+                        hot.swaplfunc(old[k], v)
+                    end
                 end
             end
+            package.loaded[moduleName] = old
+            if type(ret) == 'string' then
+                _G[ret] = old
+            end
         end
-        package.loaded[moduleName] = old
     end
 end
 ";

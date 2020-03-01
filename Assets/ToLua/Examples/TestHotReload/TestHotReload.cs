@@ -123,6 +123,16 @@ end
 
 return bellringer
 ", DateTime.Now));
+            var gbellringer = Path.Combine(loader.FullScriptPath, "Gbellringer.lua");
+            File.WriteAllText(gbellringer, string.Format(@"
+Gbellringer = {{}}
+
+function Gbellringer:gettime()
+    print('Current time is {0}. My name is ' .. self.name)
+end
+
+return 'Gbellringer'
+", DateTime.Now));
             loader.CheckAndReload();
         }
     }
@@ -143,5 +153,19 @@ end
 
 return bellringer
 ");
+
+
+        var gbellringer = Path.Combine(loader.FullScriptPath, "Gbellringer.lua");
+        File.WriteAllText(gbellringer, @"
+Gbellringer= {name='best Gbellringer'}
+
+function Gbellringer:gettime()
+    print('I dont know current time. My name is ' .. self.name)
+end
+
+return 'Gbellringer'
+");
+
+
     }
 }
