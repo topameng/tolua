@@ -99,37 +99,65 @@ public class LuaHotLoader : MonoBehaviour
     }
 
     private readonly string reload = @"
-function hotreload(...)
-    local cache = {}
-    for i, moduleName in ipairs({...}) do
-        cache[moduleName] = require(moduleName)
-        if type(cache[moduleName]) == 'string' then
-            cache[moduleName] = _G[cache[moduleName]]
-        end
-        package.loaded[moduleName] = nil
+local rawrequire = require
+local cache = {}
+local loaded = package.loaded
+function require(path)
+    if loaded[path] ~= nil then
+        return loaded[path]
     end
-    for i, moduleName in ipairs({...}) do
-        local ret = require(moduleName)
-        local new = ret
+    local ret = rawrequire(path)
+    if cache[path] == nil then
         if type(ret) == 'string' then
-            new = _G[ret]
+            cache[path] = _G[ret]
+            return cache[path]
+        elseif type(ret) == 'table' then
+            cache[path] = ret
+            return cache[path]
+        else
+            return ret
         end
-        if type(new) == 'table' then
-            local old = cache[moduleName]
-            for k, v in pairs(new) do
+    else
+        local raw = cache[path]
+        if type(ret) == 'string' then
+            local t = _G[ret]
+            if type(t) == 'table' then
+                for k, v in pairs(t) do
+                    if type(v) == 'function' then
+                        if raw[k] == nil then
+                            raw[k] = v
+                        else
+                            hot.swaplfunc(raw[k], v)
+                        end
+                    end
+                end
+                _G[ret] = raw
+            end
+            loaded[path] = raw
+            return raw
+        elseif type(ret) == 'table' then
+            for k, v in pairs(ret) do
                 if type(v) == 'function' then
-                    if old[k] == nil then
-                        old[k] = v
+                    if raw[k] == nil then
+                        raw[k] = v
                     else
-                        hot.swaplfunc(old[k], v)
+                        hot.swaplfunc(raw[k], v)
                     end
                 end
             end
-            package.loaded[moduleName] = old
-            if type(ret) == 'string' then
-                _G[ret] = old
-            end
+            loaded[path] = raw
+            return raw
+        else
+            return ret
         end
+    end
+end
+function hotreload(...)
+    for i, path in ipairs({...}) do
+        package.loaded[path] = nil
+    end
+    for i, path in ipairs({...}) do
+        require(path)
     end
 end
 ";
