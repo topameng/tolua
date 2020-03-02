@@ -22,8 +22,10 @@ public class LuaHotLoader : MonoBehaviour
             if (luaState == value)
                 return;
             luaState = value;
+#if UNITY_EDITOR
             luaState.OpenLibs(LuaDLL.luaopen_hot);
             luaState.DoString(reload);
+#endif
         }
     }
     public string FullScriptPath
@@ -40,8 +42,9 @@ public class LuaHotLoader : MonoBehaviour
 
     void Start()
     {
+#if UNITY_EDITOR
         regex = new Regex(Pattern, RegexOptions.Compiled);
-         var files = new DirectoryInfo(FullScriptPath).GetFiles("*.lua", SearchOption.AllDirectories);
+        var files = new DirectoryInfo(FullScriptPath).GetFiles("*.lua", SearchOption.AllDirectories);
         fileInfo = new Dictionary<string, DateTime>();
         foreach (var file in files)
         {
@@ -50,11 +53,15 @@ public class LuaHotLoader : MonoBehaviour
                 fileInfo.Add(file.FullName, file.LastWriteTime);
             }
         }
+#endif
     }
 
     public void CheckAndReload()
     {
+#if UNITY_EDITOR
         if (LuaState == null)
+            return;
+        if (enabled == false)
             return;
 
         var files = new DirectoryInfo(FullScriptPath).GetFiles("*.lua", SearchOption.AllDirectories);
@@ -76,14 +83,17 @@ public class LuaHotLoader : MonoBehaviour
         }
         if (reloadList.Count > 0)
             Reload(reloadList);
+#endif
     }
 
+#if UNITY_EDITOR
     private void OnApplicationFocus(bool focus)
     {
         if (focus == false)
             return;
         CheckAndReload();
     }
+#endif
 
     private void Reload(List<string> reloadList)
     {

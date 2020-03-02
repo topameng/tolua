@@ -8,6 +8,8 @@ using UnityEngine.Events;
 
 public class TestHotReload : MonoBehaviour
 {
+    public bool start;
+
     private LuaState luaState;
     private LuaHotLoader loader;
 
@@ -109,6 +111,8 @@ public class TestHotReload : MonoBehaviour
         while (true)
         {
             yield return new WaitForSeconds(1);
+            if (start == false)
+                continue;
             var bellringer = Path.Combine(loader.FullScriptPath, "bellringer.lua");
             File.WriteAllText(bellringer, string.Format(@"
 local bellringer = {{}}
