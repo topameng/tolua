@@ -11,7 +11,7 @@ public static class CustomSettings
 {
     public static string saveDir = Application.dataPath + "/Source/Generate/";    
     public static string toluaBaseType = Application.dataPath + "/ToLua/BaseType/";
-    public static string baseLuaDir = Application.dataPath + "/Tolua/Lua/";
+    public static string baseLuaDir = Application.dataPath + "/ToLua/Lua/";
     public static string injectionFilesPath = Application.dataPath + "/ToLua/Injection/";
 
     //导出时强制做为静态类的类型(注意customTypeList 还要添加这个类型才能导出)
