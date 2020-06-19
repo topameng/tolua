@@ -1481,32 +1481,41 @@ namespace LuaInterface
         ** third party library
         */
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+	    [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
         public static extern int luaopen_pb(IntPtr L);
 
 #if !LUAC_5_3
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+	    [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
         public static extern int luaopen_ffi(IntPtr L);
 
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+	    [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
         public static extern int luaopen_bit(IntPtr L);
 #endif
 
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+	    [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
         public static extern int luaopen_struct(IntPtr L);
 
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+	    [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
         public static extern int luaopen_lpeg(IntPtr L);
 
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+	    [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
         public static extern int luaopen_socket_core(IntPtr L);
 
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+	    [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
         public static extern int luaopen_mime_core(IntPtr L);
 
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+	    [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
         public static extern int luaopen_cjson(IntPtr L);
 
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+	    [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
         public static extern int luaopen_cjson_safe(IntPtr L);
     }
 }
