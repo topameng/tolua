@@ -703,7 +703,8 @@ namespace LuaInterface
             LuaPop(2);
         }
 
-        string ToPackagePath(string path)
+        // d:\Lua -> d:/Lua/
+        string ToPackageDir(string path)
         {
             using (CString.Block())
             {
@@ -716,7 +717,6 @@ namespace LuaInterface
                     sb.Append('/');
                 }
 
-                sb.Append("?.lua");
                 return sb.ToString();
             }
         }
@@ -728,8 +728,9 @@ namespace LuaInterface
                 throw new LuaException(fullPath + " is not a full path");
             }
 
-            fullPath = ToPackagePath(fullPath);
-            LuaFileUtils.Instance.AddSearchPath(fullPath);        
+            string pkgDir = ToPackageDir(fullPath);
+            LuaFileUtils.Instance.AddSearchPath(pkgDir + "?.lua");
+            LuaFileUtils.Instance.AddSearchPath(pkgDir + "?/init.lua");
         }
 
         public void RemoveSeachPath(string fullPath)
@@ -739,9 +740,10 @@ namespace LuaInterface
                 throw new LuaException(fullPath + " is not a full path");
             }
 
-            fullPath = ToPackagePath(fullPath);
-            LuaFileUtils.Instance.RemoveSearchPath(fullPath);
-        }        
+            string pkgDir = ToPackageDir(fullPath);
+            LuaFileUtils.Instance.RemoveSearchPath(pkgDir + "?.lua");
+            LuaFileUtils.Instance.RemoveSearchPath(pkgDir + "?/init.lua");
+        }
 
         public int BeginPCall(int reference)
         {
