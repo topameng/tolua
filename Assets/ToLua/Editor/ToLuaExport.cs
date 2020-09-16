@@ -3155,7 +3155,7 @@ public static class ToLuaExport
 
         for (int i = 0; i < props.Length; i++)
         {
-            if (!props[i].CanRead)
+            if (!props[i].CanRead || !props[i].GetGetMethod(true).IsPublic)
             {
                 continue;
             }
