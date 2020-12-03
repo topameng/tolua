@@ -495,15 +495,19 @@ namespace LuaInterface
             LuaDLL.tolua_function(L, name, fn);            
         }
 
+        
+	    [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	    public static int InvalidPropertyGetter(IntPtr L)
+        {
+            throw new LuaException("InvalidPropertyGetter !");     
+        }
+        
         public void RegVar(string name, LuaCSFunction get, LuaCSFunction set)
         {            
             IntPtr fget = IntPtr.Zero;
             IntPtr fset = IntPtr.Zero;
 
-            if (get != null)
-            {
-                fget = Marshal.GetFunctionPointerForDelegate(get);
-            }
+            fget = Marshal.GetFunctionPointerForDelegate(get != null ? get : InvalidPropertyGetter);
 
             if (set != null)
             {
