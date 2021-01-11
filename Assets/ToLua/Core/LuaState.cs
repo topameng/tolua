@@ -1516,10 +1516,10 @@ namespace LuaInterface
                 EndPCall(oldTop);                
                 return new Ray(origin, dir);
             }
-            catch(Exception e)
+            catch
             {
                 EndPCall(oldTop);
-                throw e;
+                throw;
             }
         }
 
@@ -1545,10 +1545,10 @@ namespace LuaInterface
                 EndPCall(oldTop);
                 return new Bounds(center, size);
             }
-            catch(Exception e)
+            catch
             {
                 EndPCall(oldTop);
-                throw e;
+                throw;
             }
         }
 
@@ -2248,10 +2248,10 @@ namespace LuaInterface
                     LuaDLL.lua_settop(L, top);
                 }
             }
-            catch (Exception e)
+            catch
             {
                 LuaDLL.lua_settop(L, top);
-                throw e;
+                throw;
             }
         }
 
@@ -2268,10 +2268,10 @@ namespace LuaInterface
                     LuaDLL.lua_settop(L, top);
                 }
             }
-            catch (Exception e)
+            catch
             {
                 LuaDLL.lua_settop(L, top);
-                throw e;
+                throw;
             }
         }
 
@@ -2289,10 +2289,10 @@ namespace LuaInterface
                     LuaDLL.lua_settop(L, top);
                 }
             }
-            catch (Exception e)
+            catch
             {
                 LuaDLL.lua_settop(L, top);
-                throw e;
+                throw;
             }
         }
 
@@ -2311,10 +2311,10 @@ namespace LuaInterface
                     LuaDLL.lua_settop(L, top);
                 }
             }
-            catch (Exception e)
+            catch
             {
                 LuaDLL.lua_settop(L, top);
-                throw e;
+                throw;
             }
         }
 
@@ -2334,10 +2334,10 @@ namespace LuaInterface
                     LuaDLL.lua_settop(L, top);
                 }
             }
-            catch (Exception e)
+            catch
             {
                 LuaDLL.lua_settop(L, top);
-                throw e;
+                throw;
             }
         }
 
@@ -2358,10 +2358,10 @@ namespace LuaInterface
                     LuaDLL.lua_settop(L, top);
                 }
             }
-            catch (Exception e)
+            catch
             {
                 LuaDLL.lua_settop(L, top);
-                throw e;
+                throw;
             }
         }
 
@@ -2383,10 +2383,10 @@ namespace LuaInterface
                     LuaDLL.lua_settop(L, top);
                 }
             }
-            catch (Exception e)
+            catch
             {
                 LuaDLL.lua_settop(L, top);
-                throw e;
+                throw;
             }
         }
 
@@ -2406,10 +2406,10 @@ namespace LuaInterface
 
                 return default(R1);
             }
-            catch (Exception e)
+            catch
             {
                 LuaDLL.lua_settop(L, top);
-                throw e;
+                throw;
             }
         }
 
@@ -2430,10 +2430,10 @@ namespace LuaInterface
 
                 return default(R1);
             }
-            catch (Exception e)
+            catch
             {
                 LuaDLL.lua_settop(L, top);
-                throw e;
+                throw;
             }
         }
 
@@ -2455,10 +2455,10 @@ namespace LuaInterface
 
                 return default(R1);
             }
-            catch (Exception e)
+            catch
             {
                 LuaDLL.lua_settop(L, top);
-                throw e;
+                throw;
             }
         }
 
@@ -2481,10 +2481,10 @@ namespace LuaInterface
 
                 return default(R1);
             }
-            catch (Exception e)
+            catch
             {
                 LuaDLL.lua_settop(L, top);
-                throw e;
+                throw;
             }
         }
 
@@ -2508,10 +2508,10 @@ namespace LuaInterface
 
                 return default(R1);
             }
-            catch (Exception e)
+            catch
             {
                 LuaDLL.lua_settop(L, top);
-                throw e;
+                throw;
             }
         }
 
@@ -2536,10 +2536,10 @@ namespace LuaInterface
 
                 return default(R1);
             }
-            catch (Exception e)
+            catch
             {
                 LuaDLL.lua_settop(L, top);
-                throw e;
+                throw;
             }
         }
 
@@ -2565,10 +2565,10 @@ namespace LuaInterface
 
                 return default(R1);
             }
-            catch (Exception e)
+            catch
             {
                 LuaDLL.lua_settop(L, top);
-                throw e;
+                throw;
             }
         }
 

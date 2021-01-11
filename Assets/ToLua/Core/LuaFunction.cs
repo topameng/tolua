@@ -95,10 +95,10 @@ namespace LuaInterface
             {
                 luaState.PCall(argCount, oldTop);
             }
-            catch (Exception e)
+            catch
             {
                 EndPCall();
-                throw e;
+                throw;
             }
         }
 
@@ -521,10 +521,10 @@ namespace LuaInterface
                 luaState.Push(ray);
                 ++argCount;
             }
-            catch (Exception e)
+            catch
             {
                 EndPCall();
-                throw e;
+                throw;
             }
         }
 
@@ -535,10 +535,10 @@ namespace LuaInterface
                 luaState.Push(bounds);
                 ++argCount;
             }
-            catch (Exception e)
+            catch
             {
                 EndPCall();
-                throw e;
+                throw;
             }
         }
 
@@ -549,10 +549,10 @@ namespace LuaInterface
                 luaState.Push(hit);
                 ++argCount;
             }
-            catch (Exception e)
+            catch
             {
                 EndPCall();
-                throw e;
+                throw;
             }
         }
 
@@ -563,10 +563,10 @@ namespace LuaInterface
                 luaState.Push(t);
                 ++argCount;
             }
-            catch (Exception e)
+            catch
             {
                 EndPCall();
-                throw e;
+                throw;
             }
         }
 
@@ -577,10 +577,10 @@ namespace LuaInterface
                 luaState.Push(buffer);
                 ++argCount;
             }
-            catch (Exception e)
+            catch
             {
                 EndPCall();
-                throw e;
+                throw;
             }
         }
 
@@ -591,10 +591,10 @@ namespace LuaInterface
                 luaState.PushValue(value);
                 ++argCount;
             }
-            catch (Exception e)
+            catch
             {
                 EndPCall();
-                throw e;
+                throw;
             }
         }
 
@@ -605,10 +605,10 @@ namespace LuaInterface
                 luaState.PushObject(o);
                 ++argCount;
             }
-            catch (Exception e)
+            catch
             {
                 EndPCall();
-                throw e;
+                throw;
             }
         }
 
@@ -619,10 +619,10 @@ namespace LuaInterface
                 luaState.PushSealed(o);
                 ++argCount;
             }
-            catch (Exception e)
+            catch
             {
                 EndPCall();
-                throw e;
+                throw;
             }
         }
 
@@ -633,10 +633,10 @@ namespace LuaInterface
                 luaState.PushGeneric(t);
                 ++argCount;
             }
-            catch (Exception e)
+            catch
             {
                 EndPCall();
-                throw e;
+                throw;
             }
         }
 
@@ -663,10 +663,10 @@ namespace LuaInterface
                 luaState.PushByteBuffer(buffer, len);
                 ++argCount;
             }
-            catch (Exception e)
+            catch
             {
                 EndPCall();
-                throw e;
+                throw;
             }
         }
 
@@ -676,10 +676,10 @@ namespace LuaInterface
             {
                 return luaState.LuaCheckNumber(stackPos++);
             }
-            catch (Exception e)
+            catch
             {
                 EndPCall();
-                throw e;
+                throw;
             }
         }
 
@@ -689,10 +689,10 @@ namespace LuaInterface
             {
                 return luaState.LuaCheckBoolean(stackPos++);
             }
-            catch (Exception e)
+            catch
             {
                 EndPCall();
-                throw e;
+                throw;
             }
         }
 
@@ -702,10 +702,10 @@ namespace LuaInterface
             {
                 return luaState.CheckString(stackPos++);
             }
-            catch (Exception e)
+            catch
             {
                 EndPCall();
-                throw e;
+                throw;
             }
         }
 
@@ -715,10 +715,10 @@ namespace LuaInterface
             {
                 return luaState.CheckVector3(stackPos++);
             }
-            catch (Exception e)
+            catch
             {
                 EndPCall();
-                throw e;
+                throw;
             }
         }
 
@@ -728,10 +728,10 @@ namespace LuaInterface
             {
                 return luaState.CheckQuaternion(stackPos++);
             }
-            catch (Exception e)
+            catch
             {
                 EndPCall();
-                throw e;
+                throw;
             }
         }
 
@@ -741,10 +741,10 @@ namespace LuaInterface
             {
                 return luaState.CheckVector2(stackPos++);
             }
-            catch (Exception e)
+            catch
             {
                 EndPCall();
-                throw e;
+                throw;
             }
         }
 
@@ -754,10 +754,10 @@ namespace LuaInterface
             {
                 return luaState.CheckVector4(stackPos++);
             }
-            catch (Exception e)
+            catch
             {
                 EndPCall();
-                throw e;
+                throw;
             }
         }
 
@@ -767,10 +767,10 @@ namespace LuaInterface
             {
                 return luaState.CheckColor(stackPos++);
             }
-            catch (Exception e)
+            catch
             {
                 EndPCall();
-                throw e;
+                throw;
             }
         }
 
@@ -780,10 +780,10 @@ namespace LuaInterface
             {
                 return luaState.CheckRay(stackPos++);
             }
-            catch (Exception e)
+            catch
             {
                 EndPCall();
-                throw e;
+                throw;
             }
         }
 
@@ -793,10 +793,10 @@ namespace LuaInterface
             {
                 return luaState.CheckBounds(stackPos++);
             }
-            catch (Exception e)
+            catch
             {
                 EndPCall();
-                throw e;
+                throw;
             }
         }
 
@@ -806,10 +806,10 @@ namespace LuaInterface
             {
                 return luaState.CheckLayerMask(stackPos++);
             }
-            catch (Exception e)
+            catch
             {
                 EndPCall();
-                throw e;
+                throw;
             }
         }
 
@@ -819,10 +819,10 @@ namespace LuaInterface
             {
                 return luaState.CheckLong(stackPos++);
             }
-            catch (Exception e)
+            catch
             {
                 EndPCall();
-                throw e;
+                throw;
             }
         }
 
@@ -832,10 +832,10 @@ namespace LuaInterface
             {
                 return luaState.CheckULong(stackPos++);
             }
-            catch (Exception e)
+            catch
             {
                 EndPCall();
-                throw e;
+                throw;
             }
         }
 
@@ -845,10 +845,10 @@ namespace LuaInterface
             {
                 return luaState.CheckDelegate(stackPos++);
             }
-            catch (Exception e)
+            catch
             {
                 EndPCall();
-                throw e;
+                throw;
             }
         }
 
@@ -863,10 +863,10 @@ namespace LuaInterface
             {
                 return luaState.CheckCharBuffer(stackPos++);
             }
-            catch (Exception e)
+            catch
             {
                 EndPCall();
-                throw e;
+                throw;
             }
         }
 
@@ -876,10 +876,10 @@ namespace LuaInterface
             {
                 return luaState.CheckByteBuffer(stackPos++);
             }
-            catch (Exception e)
+            catch
             {
                 EndPCall();
-                throw e;
+                throw;
             }
         }
 
@@ -889,10 +889,10 @@ namespace LuaInterface
             {
                 return luaState.CheckObject(stackPos++, t);
             }
-            catch (Exception e)
+            catch
             {
                 EndPCall();
-                throw e;
+                throw;
             }
         }
 
@@ -902,10 +902,10 @@ namespace LuaInterface
             {
                 return luaState.CheckLuaFunction(stackPos++);
             }
-            catch (Exception e)
+            catch
             {
                 EndPCall();
-                throw e;
+                throw;
             }
         }
 
@@ -915,10 +915,10 @@ namespace LuaInterface
             {
                 return luaState.CheckLuaTable(stackPos++);
             }
-            catch (Exception e)
+            catch
             {
                 EndPCall();
-                throw e;
+                throw;
             }
         }
 
@@ -928,10 +928,10 @@ namespace LuaInterface
             {
                 return luaState.CheckLuaThread(stackPos++);
             }
-            catch (Exception e)
+            catch
             {
                 EndPCall();
-                throw e;
+                throw;
             }
         }
 
@@ -941,10 +941,10 @@ namespace LuaInterface
             {
                 return luaState.CheckValue<T>(stackPos++);
             }
-            catch (Exception e)
+            catch
             {
                 EndPCall();
-                throw e;
+                throw;
             }
         }
     }    

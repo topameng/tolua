@@ -48,10 +48,10 @@ namespace LuaInterface
                     luaState.LuaSetTop(top);
                     return ret;
                 }
-                catch (Exception e)
+                catch
                 {
                     luaState.LuaSetTop(top);
-                    throw e;                    
+                    throw;                    
                 }                
             }
 
@@ -67,10 +67,10 @@ namespace LuaInterface
                     luaState.LuaSetTable(top + 1);
                     luaState.LuaSetTop(top);
                 }
-                catch (Exception e)
+                catch
                 {
                     luaState.LuaSetTop(top);
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -89,10 +89,10 @@ namespace LuaInterface
                     luaState.LuaSetTop(oldTop);
                     return obj;
                 }
-                catch (Exception e)
+                catch
                 {
                     luaState.LuaSetTop(oldTop);
-                    throw e;
+                    throw;
                 }
             }
 
@@ -107,10 +107,10 @@ namespace LuaInterface
                     luaState.LuaRawSetI(oldTop + 1, key);
                     luaState.LuaSetTop(oldTop);
                 }
-                catch (Exception e)
+                catch
                 {
                     luaState.LuaSetTop(oldTop);
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -138,10 +138,10 @@ namespace LuaInterface
                 luaState.LuaSetTop(top);
                 return ret;
             }
-            catch (Exception e)
+            catch
             {
                 luaState.LuaSetTop(top);
-                throw e;
+                throw;
             }
         }
 
@@ -156,10 +156,10 @@ namespace LuaInterface
                 luaState.LuaRawSetI(top + 1, index);                
                 luaState.LuaSetTop(top);                
             }
-            catch (Exception e)
+            catch
             {
                 luaState.LuaSetTop(top);
-                throw e;
+                throw;
             }
         }
 
@@ -176,10 +176,10 @@ namespace LuaInterface
                 luaState.LuaSetTop(top);
                 return ret;
             }
-            catch (Exception e)
+            catch
             {
                 luaState.LuaSetTop(top);
-                throw e;
+                throw;
             }
         }
 
@@ -195,10 +195,10 @@ namespace LuaInterface
                 luaState.LuaRawSet(top + 1);
                 luaState.LuaSetTop(top);
             }
-            catch (Exception e)
+            catch
             {
                 luaState.LuaSetTop(top);
-                throw e;
+                throw;
             }
         }
 
@@ -215,10 +215,10 @@ namespace LuaInterface
                 luaState.LuaSetTop(top);
                 return ret;
             }
-            catch (Exception e)
+            catch
             {
                 luaState.LuaSetTop(top);
-                throw e;
+                throw;
             }
         }
 
@@ -234,10 +234,10 @@ namespace LuaInterface
                 luaState.LuaSetTable(top + 1);
                 luaState.LuaSetTop(top);
             }
-            catch (Exception e)
+            catch
             {
                 luaState.LuaSetTop(top);
-                throw e;
+                throw;
             }
         }
 
@@ -260,10 +260,10 @@ namespace LuaInterface
 #endif
                 return func;
             }
-            catch(Exception e)            
+            catch
             {
                 luaState.LuaSetTop(top);
-                throw e;
+                throw;
             }
         }
 
@@ -286,10 +286,10 @@ namespace LuaInterface
 #endif
                 return func;
             }
-            catch(Exception e)
+            catch
             {
                 luaState.LuaSetTop(top);
-                throw e;
+                throw;
             }
         }
 
@@ -304,6 +304,7 @@ namespace LuaInterface
 
         public void Call(string name)
         {
+            LuaState luaState = this.luaState;
             int top = luaState.LuaGetTop();
 
             try
@@ -315,15 +316,16 @@ namespace LuaInterface
 
                 luaState.LuaSetTop(top);                
             }
-            catch (Exception e)
+            catch
             {
                 luaState.LuaSetTop(top);
-                throw e;
+                throw;
             }
         }
 
         public void Call<T1>(string name, T1 arg1)
         {
+            LuaState luaState = this.luaState;
             int top = luaState.LuaGetTop();
 
             try
@@ -336,15 +338,16 @@ namespace LuaInterface
 
                 luaState.LuaSetTop(top);
             }
-            catch (Exception e)
+            catch
             {
                 luaState.LuaSetTop(top);
-                throw e;
+                throw;
             }
         }
 
         public void Call<T1, T2>(string name, T1 arg1, T2 arg2)
         {
+            LuaState luaState = this.luaState;
             int top = luaState.LuaGetTop();
 
             try
@@ -358,15 +361,16 @@ namespace LuaInterface
 
                 luaState.LuaSetTop(top);
             }
-            catch (Exception e)
+            catch
             {
                 luaState.LuaSetTop(top);
-                throw e;
+                throw;
             }
         }
 
         public void Call<T1, T2, T3>(string name, T1 arg1, T2 arg2, T3 arg3)
         {
+            LuaState luaState = this.luaState;
             int top = luaState.LuaGetTop();
 
             try
@@ -381,15 +385,16 @@ namespace LuaInterface
 
                 luaState.LuaSetTop(top);
             }
-            catch (Exception e)
+            catch
             {
                 luaState.LuaSetTop(top);
-                throw e;
+                throw;
             }
         }
 
         public void Call<T1, T2, T3, T4>(string name, T1 arg1, T2 arg2, T3 arg3, T4 arg4)
         {
+            LuaState luaState = this.luaState;
             int top = luaState.LuaGetTop();
 
             try
@@ -405,15 +410,16 @@ namespace LuaInterface
 
                 luaState.LuaSetTop(top);
             }
-            catch (Exception e)
+            catch
             {
                 luaState.LuaSetTop(top);
-                throw e;
+                throw;
             }
         }
 
         public void Call<T1, T2, T3, T4, T5>(string name, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5)
         {
+            LuaState luaState = this.luaState;
             int top = luaState.LuaGetTop();
 
             try
@@ -430,15 +436,16 @@ namespace LuaInterface
 
                 luaState.LuaSetTop(top);
             }
-            catch (Exception e)
+            catch
             {
                 luaState.LuaSetTop(top);
-                throw e;
+                throw;
             }
         }
 
         public void Call<T1, T2, T3, T4, T5, T6>(string name, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6)
         {
+            LuaState luaState = this.luaState;
             int top = luaState.LuaGetTop();
 
             try
@@ -456,15 +463,16 @@ namespace LuaInterface
 
                 luaState.LuaSetTop(top);
             }
-            catch (Exception e)
+            catch
             {
                 luaState.LuaSetTop(top);
-                throw e;
+                throw;
             }
         }
 
         public R1 Invoke<R1>(string name)
         {
+            LuaState luaState = this.luaState;
             int top = luaState.LuaGetTop();
 
             try
@@ -480,15 +488,16 @@ namespace LuaInterface
                 luaState.LuaSetTop(top);
                 return ret1;
             }
-            catch (Exception e)
+            catch
             {
                 luaState.LuaSetTop(top);
-                throw e;
+                throw;
             }
         }
 
         public R1 Invoke<T1, R1>(string name, T1 arg1)
         {
+            LuaState luaState = this.luaState;
             int top = luaState.LuaGetTop();
 
             try
@@ -505,15 +514,16 @@ namespace LuaInterface
                 luaState.LuaSetTop(top);
                 return ret1;
             }
-            catch (Exception e)
+            catch
             {
                 luaState.LuaSetTop(top);
-                throw e;
+                throw;
             }
         }
 
         public R1 Invoke<T1, T2, R1>(string name, T1 arg1, T2 arg2)
         {
+            LuaState luaState = this.luaState;
             int top = luaState.LuaGetTop();
 
             try
@@ -531,15 +541,16 @@ namespace LuaInterface
                 luaState.LuaSetTop(top);
                 return ret1;
             }
-            catch (Exception e)
+            catch
             {
                 luaState.LuaSetTop(top);
-                throw e;
+                throw;
             }
         }
 
         public R1 Invoke<T1, T2, T3, R1>(string name, T1 arg1, T2 arg2, T3 arg3)
         {
+            LuaState luaState = this.luaState;
             int top = luaState.LuaGetTop();
 
             try
@@ -558,15 +569,16 @@ namespace LuaInterface
                 luaState.LuaSetTop(top);
                 return ret1;
             }
-            catch (Exception e)
+            catch
             {
                 luaState.LuaSetTop(top);
-                throw e;
+                throw;
             }
         }
 
         public R1 Invoke<T1, T2, T3, T4, R1>(string name, T1 arg1, T2 arg2, T3 arg3, T4 arg4)
         {
+            LuaState luaState = this.luaState;
             int top = luaState.LuaGetTop();
 
             try
@@ -586,15 +598,16 @@ namespace LuaInterface
                 luaState.LuaSetTop(top);
                 return ret1;
             }
-            catch (Exception e)
+            catch
             {
                 luaState.LuaSetTop(top);
-                throw e;
+                throw;
             }
         }
 
         public R1 Invoke<T1, T2, T3, T4, T5, R1>(string name, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5)
         {
+            LuaState luaState = this.luaState;
             int top = luaState.LuaGetTop();
 
             try
@@ -615,15 +628,16 @@ namespace LuaInterface
                 luaState.LuaSetTop(top);
                 return ret1;
             }
-            catch (Exception e)
+            catch
             {
                 luaState.LuaSetTop(top);
-                throw e;
+                throw;
             }
         }
 
         public R1 Invoke<T1, T2, T3, T4, T5, T6, R1>(string name, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6)
         {
+            LuaState luaState = this.luaState;
             int top = luaState.LuaGetTop();
 
             try
@@ -645,10 +659,10 @@ namespace LuaInterface
                 luaState.LuaSetTop(top);
                 return ret1;
             }
-            catch (Exception e)
+            catch
             {
                 luaState.LuaSetTop(top);
-                throw e;
+                throw;
             }
         }
 
@@ -664,10 +678,10 @@ namespace LuaInterface
                 luaState.LuaSetTop(oldTop);
                 return str;
             }
-            catch(LuaException e)
+            catch
             {
                 luaState.LuaSetTop(oldTop);
-                throw e;
+                throw;
             }
         }
 
@@ -683,10 +697,10 @@ namespace LuaInterface
                 luaState.LuaRawSet(oldTop + 1);
                 luaState.LuaSetTop(oldTop);
             }
-            catch (Exception e)
+            catch
             {
                 luaState.LuaSetTop(oldTop);
-                throw e;
+                throw;
             }
         }
 
@@ -713,10 +727,10 @@ namespace LuaInterface
                 luaState.LuaSetTop(oldTop);
                 return list.ToArray();
             }
-            catch (Exception e)
+            catch
             {
                 luaState.LuaSetTop(oldTop);
-                throw e;
+                throw;
             }
         }
 
@@ -760,10 +774,10 @@ namespace LuaInterface
                 luaState.LuaSetTop(oldTop);
                 return t;
             }
-            catch (Exception e)
+            catch
             {
                 luaState.LuaSetTop(oldTop);
-                throw e;
+                throw;
             }
         }
     }
