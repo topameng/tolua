@@ -791,7 +791,13 @@ namespace LuaInterface
 
             switch (type)
             {
-                case LuaTypes.LUA_TNUMBER:                    
+                case LuaTypes.LUA_TNUMBER:
+#if LUAC_5_3
+                    if (LuaDLL.lua_isinteger(L, stackPos) != 0)
+                    {
+                        return LuaDLL.lua_tointeger(L, stackPos);
+                    }
+#endif
                     return LuaDLL.lua_tonumber(L, stackPos);
                 case LuaTypes.LUA_TSTRING:
                     return LuaDLL.lua_tostring(L, stackPos);
