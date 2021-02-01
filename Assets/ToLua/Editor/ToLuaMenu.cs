@@ -1570,7 +1570,7 @@ public static class ToLuaMenu
             RedirectStandardInput = true,
             RedirectStandardError = true,
             WorkingDirectory = exedir,            
-		CreateNoWindow = true,
+            CreateNoWindow = true,
         };
 
         if (!isWin)
