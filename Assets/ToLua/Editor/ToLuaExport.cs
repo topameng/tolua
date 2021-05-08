@@ -577,7 +577,7 @@ public static class ToLuaExport
                 {
                     if (type.IsValueType || method.GetParameters().Length > 1)
                     {
-                        sb.AppendFormat("{0}{1} o = obj.Equals({2});\r\n", head, ret, sbArgs.ToString());
+                        sb.AppendFormat("{0}{1} o = {2}.Equals({3});\r\n", head, ret, obj, sbArgs.ToString());
                     }
                     else
                     {
