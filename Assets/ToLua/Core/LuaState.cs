@@ -899,9 +899,10 @@ namespace LuaInterface
                 if (weak.IsAlive)
                 {
                     LuaFunction func = weak.Target as LuaFunction;
-                    CheckNull(func, "{0} not a lua function", name);
+					//当多个key同时引用相同的LuaFunction,Dispose只能移除一个key的引用。
+                    //CheckNull(func, "{0} not a lua function", name);
 
-                    if (func.IsAlive)
+                    if (func != null && func.IsAlive)
                     {
                         func.AddRef();
                         RemoveFromGCList(func.GetReference());
