@@ -134,10 +134,9 @@ namespace LuaInterface
 
         public void StepCollect(Action<object, int> collectListener)
         {
-            ++collectedIndex;
             for (int i = 0; i < collectStep; ++i)
             {
-                collectedIndex += i;
+                ++collectedIndex;
                 if (collectedIndex >= count)
                 {
                     collectedIndex = -1;
