@@ -1334,23 +1334,27 @@ public static class ToLuaExport
 
         for (int i = 0; i < props.Length; i++)
         {
-            if (props[i].CanRead && props[i].CanWrite && props[i].GetSetMethod(true).IsPublic)
+            var prop = props[i];
+            var canRead = prop.CanRead && prop.GetGetMethod(true).IsPublic;
+            var canWrite = prop.CanWrite && prop.GetSetMethod(true).IsPublic;
+
+            if (canRead && canWrite)
             {
-                _MethodBase md = methods.Find((p) => { return p.Name == "get_" + props[i].Name; });
+                var md = methods.Find((p) => { return p.Name == "get_" + prop.Name; });
                 string get = md == null ? "get" : "_get";
-                md = methods.Find((p) => { return p.Name == "set_" + props[i].Name; });
+                md = methods.Find((p) => { return p.Name == "set_" + prop.Name; });
                 string set = md == null ? "set" : "_set";
-                sb.AppendFormat("\t\tL.RegVar(\"{0}\", {1}_{0}, {2}_{0});\r\n", props[i].Name, get, set);
+                sb.AppendFormat("\t\tL.RegVar(\"{0}\", {1}_{0}, {2}_{0});\r\n", prop.Name, get, set);
             }
-            else if (props[i].CanRead)
+            else if (canRead)
             {
-                _MethodBase md = methods.Find((p) => { return p.Name == "get_" + props[i].Name; });
-                sb.AppendFormat("\t\tL.RegVar(\"{0}\", {1}_{0}, null);\r\n", props[i].Name, md == null ? "get" : "_get");
+                var md = methods.Find((p) => { return p.Name == "get_" + prop.Name; });
+                sb.AppendFormat("\t\tL.RegVar(\"{0}\", {1}_{0}, null);\r\n", prop.Name, md == null ? "get" : "_get");
             }
-            else if (props[i].CanWrite)
+            else if (canWrite)
             {
-                _MethodBase md = methods.Find((p) => { return p.Name == "set_" + props[i].Name; });
-                sb.AppendFormat("\t\tL.RegVar(\"{0}\", null, {1}_{0});\r\n", props[i].Name, md == null ? "set" : "_set");
+                var md = methods.Find((p) => { return p.Name == "set_" + prop.Name; });
+                sb.AppendFormat("\t\tL.RegVar(\"{0}\", null, {1}_{0});\r\n", prop.Name, md == null ? "set" : "_set");
             }
         }
 
@@ -3151,7 +3155,7 @@ public static class ToLuaExport
 
         for (int i = 0; i < props.Length; i++)
         {
-            if (!props[i].CanRead)
+            if (!props[i].CanRead || !props[i].GetGetMethod(true).IsPublic)
             {
                 continue;
             }
