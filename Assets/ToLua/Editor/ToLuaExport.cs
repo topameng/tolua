@@ -3764,7 +3764,7 @@ public static class ToLuaExport
         fields = type.GetFields(BindingFlags.GetField | BindingFlags.Public | BindingFlags.Static);
         List<FieldInfo> list = new List<FieldInfo>(fields);
 
-        for (int i = list.Count - 1; i > 0; i--)
+        for (int i = list.Count - 1; i >= 0; i--)
         {
             if (IsObsolete(list[i]))
             {
