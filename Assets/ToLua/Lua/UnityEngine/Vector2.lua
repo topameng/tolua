@@ -279,7 +279,7 @@ Vector2.__mul = function(a, d)
 	if type(d) == "number" then
 		return setmetatable({x = a.x * d, y = a.y * d}, Vector2)
 	else
-		return setmetatable({x = a * d.x, y = a * d.y}, Vector2)
+		return setmetatable({x = a.x * d.x, y = a.y * d.y}, Vector2)
 	end
 end
 
