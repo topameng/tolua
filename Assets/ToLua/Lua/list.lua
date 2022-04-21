@@ -74,6 +74,7 @@ function list:remove(iter)
 
 	local _prev = iter._prev
 	local _next = iter._next
+	if _prev._next ~= iter or _next._prev ~= iter then return end
 	_next._prev = _prev
 	_prev._next = _next
 	
